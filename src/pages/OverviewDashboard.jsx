@@ -51,13 +51,14 @@ export default function OverviewDashboard({ onNavigate, onOpenProfile }) {
       if (txFilter !== 'all' && tx.category !== txFilter) return false;
       if (!q) return true;
       const hay = [
-        tx.title.th,
-        tx.title.en,
-        tx.note.th,
-        tx.note.en,
-        tx.categoryLabel.th,
-        tx.categoryLabel.en,
+        tx.title?.th,
+        tx.title?.en,
+        tx.note?.th,
+        tx.note?.en,
+        tx.categoryLabel?.th,
+        tx.categoryLabel?.en,
       ]
+        .filter(Boolean)
         .join(' ')
         .toLowerCase();
       return hay.includes(q);
@@ -88,12 +89,13 @@ export default function OverviewDashboard({ onNavigate, onOpenProfile }) {
       ? `อ้างอิงจากรายจ่าย ${formatTHB(profile.monthlyExpenses)} × ${targetMonths} เดือน`
       : `Based on ${formatTHB(profile.monthlyExpenses)} expenses × ${targetMonths} months`;
 
+  const netMonthlySavings = profile.monthlyIncome - profile.monthlyExpenses;
   const remainingToGoal = Math.max(0, emergencyTarget - profile.liquidEmergencyFund);
   const monthsToGoal =
     remainingToGoal === 0
       ? 0
-      : profile.monthlySavings > 0
-        ? Math.ceil(remainingToGoal / profile.monthlySavings)
+      : netMonthlySavings > 0
+        ? Math.ceil(remainingToGoal / netMonthlySavings)
         : null;
 
   const runwayDisplay =
@@ -261,14 +263,18 @@ export default function OverviewDashboard({ onNavigate, onOpenProfile }) {
                   <span className="metric-icon-badge saving" aria-hidden="true">
                     <PiggyBank size={18} strokeWidth={2.1} />
                   </span>
-                  <span className="metric-pill-tag blue tabular-nums">
-                    +{savingsRatio}%
+                  <span
+                    className={`metric-pill-tag ${netMonthlySavings < 0 ? 'danger' : 'blue'} tabular-nums`}
+                  >
+                    {savingsRatio >= 0 ? `+${savingsRatio}%` : `${savingsRatio}%`}
                   </span>
                 </div>
                 <div>
                   <div className="metric-mini-label">{t('overview.metricSavings')}</div>
-                  <div className="metric-mini-value saving tabular-nums">
-                    {formatTHB(profile.monthlySavings)}
+                  <div
+                    className={`metric-mini-value ${netMonthlySavings < 0 ? 'expense' : 'saving'} tabular-nums`}
+                  >
+                    {formatTHB(netMonthlySavings, { showSign: netMonthlySavings < 0 })}
                   </div>
                 </div>
               </article>
@@ -585,7 +591,7 @@ export default function OverviewDashboard({ onNavigate, onOpenProfile }) {
                             <span className="tx-status-cell">
                               <span
                                 className={`status-dot ${
-                                  tx.category === 'saving' ? 'teal' : 'green'
+                                  tx.category === 'saving' ? 'blue' : 'green'
                                 }`}
                                 aria-hidden="true"
                               />
@@ -642,7 +648,7 @@ export default function OverviewDashboard({ onNavigate, onOpenProfile }) {
                         <span className="tx-status-cell">
                           <span
                             className={`status-dot ${
-                              tx.category === 'saving' ? 'teal' : 'green'
+                              tx.category === 'saving' ? 'blue' : 'green'
                             }`}
                             aria-hidden="true"
                           />

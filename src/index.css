@@ -7149,5 +7149,20 @@ p {
   cursor: not-allowed;
 }
 
+.status-dot.blue {
+  background: #2563eb;
+}
+
+[data-theme='dark'] .status-dot.blue {
+  background: #60a5fa;
+}
+
+@media (max-width: 440px) {
+  .top-utility-row.has-subpage-profile .mobile-brand-bar .oic-mini-chip {
+    display: none;
+  }
+}
+
+
 
 

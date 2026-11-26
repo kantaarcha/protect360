@@ -422,9 +422,10 @@ export function FinanceProvider({ children }) {
   );
 
   const derived = useMemo(() => {
+    const netMonthlySavings = profile.monthlyIncome - profile.monthlyExpenses;
     const savingsRatio =
       profile.monthlyIncome > 0
-        ? Math.round((profile.monthlySavings / profile.monthlyIncome) * 100)
+        ? Math.round((netMonthlySavings / profile.monthlyIncome) * 100)
         : 0;
 
     const targetMonths = userProfile.emergencyTargetMonths || 3;
@@ -498,10 +499,11 @@ export function FinanceProvider({ children }) {
 
     // Dynamic Risk Status Indicators for Card 6
     const medicalCat = protectionComparison.find((c) => c.id === 'medical');
+    const medicalPct = medicalCat ? medicalCat.coveragePct : 0;
     const healthLevel =
-      hasUnknownCoverage || (medicalCat && medicalCat.coveragePct < 50)
+      hasUnknownCoverage || medicalPct < 50
         ? 'high'
-        : medicalCat && medicalCat.coveragePct < 80
+        : medicalPct < 80
           ? 'moderate'
           : 'low';
 
@@ -519,8 +521,21 @@ export function FinanceProvider({ children }) {
         id: 'health-accident',
         level: healthLevel,
         titleKey: 'overview.riskHealthTitle',
-        descKey: 'overview.riskHealthDesc',
-        metric: `${medicalCat ? medicalCat.coveragePct : 0}%`,
+        descObj: hasUnknownCoverage
+          ? {
+              th: 'มีสิทธิที่ยังไม่ทราบวงเงิน (นับเป็น ฿0) ควรตรวจสอบสิทธิจริง',
+              en: 'Contains unknown-limit coverage (counted as ฿0) — verify actual limit',
+            }
+          : healthLevel === 'low'
+            ? {
+                th: `วงเงินค่ารักษาครอบคลุม ${medicalPct}% ของเกณฑ์อ้างอิงแล้ว`,
+                en: `Medical protection covers ${medicalPct}% of benchmark`,
+              }
+            : {
+                th: `วงเงินค่ารักษาครอบคลุม ${medicalPct}% ยังมีช่องว่างควรพิจารณาเพิ่ม`,
+                en: `Medical coverage at ${medicalPct}% — residual gap remains`,
+              },
+        metric: `${medicalPct}%`,
       },
       {
         id: 'income-emergency',
