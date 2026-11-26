@@ -102,19 +102,37 @@ function AppShellContent() {
       <SidebarNav activePage={activePage} onNavigate={handleNavigate} />
 
       <main className="app-main">
-        {/* Row 1: Clean, Symmetrical Utility Strip (Brand on mobile + 2 separated control groups) */}
-        <div className="top-utility-row">
-          <button
-            type="button"
-            className="mobile-brand-bar"
-            onClick={() => handleNavigate('overview')}
-          >
-            <span className="mobile-brand-mark" aria-hidden="true">
-              <img src="/logo.png" alt="PROTECT360" className="brand-logo-img" />
-            </span>
-            <span className="mobile-brand-name">PROTECT360</span>
-            <span className="oic-mini-chip">OIC</span>
-          </button>
+        {/* Row 1: Clean, Symmetrical Utility Strip (Brand + Subpage Profile Pill + Control Groups) */}
+        <div className={`top-utility-row ${activePage !== 'overview' ? 'has-subpage-profile' : ''}`}>
+          <div className="top-utility-left">
+            <button
+              type="button"
+              className="mobile-brand-bar"
+              onClick={() => handleNavigate('overview')}
+            >
+              <span className="mobile-brand-mark" aria-hidden="true">
+                <img src="/logo.png" alt="PROTECT360" className="brand-logo-img" />
+              </span>
+              <span className="mobile-brand-name">PROTECT360</span>
+              <span className="oic-mini-chip">OIC</span>
+            </button>
+
+            {activePage !== 'overview' && (
+              <button
+                id="user-profile-pill-btn"
+                type="button"
+                className="user-profile-pill subpage-top-profile-pill"
+                onClick={() => handleOpenProfile('profile')}
+                title={t('header.editProfile')}
+              >
+                <span className="user-avatar-circle" aria-hidden="true">
+                  {userInitials}
+                </span>
+                <span className="user-pill-name">{userPillLabel}</span>
+                <Pencil size={12} strokeWidth={2.3} className="user-pill-edit-icon" aria-hidden="true" />
+              </button>
+            )}
+          </div>
 
           <TopControlBar onOpenProfile={handleOpenProfile} />
         </div>
@@ -195,20 +213,6 @@ function AppShellContent() {
                   : t('header.philosophy')}
               </p>
             </div>
-
-            <button
-              id="user-profile-pill-btn"
-              type="button"
-              className="user-profile-pill"
-              onClick={() => handleOpenProfile('profile')}
-              title={t('header.editProfile')}
-            >
-              <span className="user-avatar-circle" aria-hidden="true">
-                {userInitials}
-              </span>
-              <span className="user-pill-name">{userPillLabel}</span>
-              <Pencil size={12} strokeWidth={2.3} className="user-pill-edit-icon" aria-hidden="true" />
-            </button>
           </header>
         )}
 

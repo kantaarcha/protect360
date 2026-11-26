@@ -1422,32 +1422,44 @@ export default function AutoKey({ onNavigate }) {
                     onChange={(e) => setManualAmount(e.target.value)}
                     required
                   />
-                  {/* Quick + and - adjustment chips */}
+                  {/* Quick + and - adjustment chips (context-aware: Income +G/-R, Expense +R/-G, Saving +B/-R) */}
                   <div className="ak-quick-amt-stack">
                     <div className="ak-quick-amt-row">
-                      {QUICK_AMOUNTS.map((amt) => (
-                        <button
-                          key={`plus-${amt}`}
-                          type="button"
-                          className="ak-quick-amt-chip plus tabular-nums"
-                          onClick={() => handleQuickAmountAdjust(amt)}
-                        >
-                          +{amt.toLocaleString('en-US')}
-                        </button>
-                      ))}
+                      {QUICK_AMOUNTS.map((amt) => {
+                        const plusTone =
+                          manualType === 'income'
+                            ? 'tone-green'
+                            : manualType === 'expense'
+                              ? 'tone-red'
+                              : 'tone-blue';
+                        return (
+                          <button
+                            key={`plus-${amt}`}
+                            type="button"
+                            className={`ak-quick-amt-chip ${plusTone} tabular-nums`}
+                            onClick={() => handleQuickAmountAdjust(amt)}
+                          >
+                            +{amt.toLocaleString('en-US')}
+                          </button>
+                        );
+                      })}
                     </div>
                     <div className="ak-quick-amt-row">
-                      {QUICK_AMOUNTS.map((amt) => (
-                        <button
-                          key={`minus-${amt}`}
-                          type="button"
-                          className="ak-quick-amt-chip minus tabular-nums"
-                          disabled={!manualAmount || Number(manualAmount) <= 0}
-                          onClick={() => handleQuickAmountAdjust(-amt)}
-                        >
-                          -{amt.toLocaleString('en-US')}
-                        </button>
-                      ))}
+                      {QUICK_AMOUNTS.map((amt) => {
+                        const minusTone =
+                          manualType === 'expense' ? 'tone-green' : 'tone-red';
+                        return (
+                          <button
+                            key={`minus-${amt}`}
+                            type="button"
+                            className={`ak-quick-amt-chip ${minusTone} tabular-nums`}
+                            disabled={!manualAmount || Number(manualAmount) <= 0}
+                            onClick={() => handleQuickAmountAdjust(-amt)}
+                          >
+                            -{amt.toLocaleString('en-US')}
+                          </button>
+                        );
+                      })}
                       {manualAmount && Number(manualAmount) > 0 && (
                         <button
                           type="button"

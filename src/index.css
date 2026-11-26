@@ -6986,4 +6986,138 @@ p {
   margin: 0;
 }
 
+/* ==========================================================================
+   Round 2.8: Subpage Profile Pill Placement (Desktop/Tablet Top-Left,
+   Mobile Top-Right aligned with Logo), Unified Bar Shades, & Context +/- Chips
+   ========================================================================== */
+
+.top-utility-left {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+@media (min-width: 901px) {
+  .top-utility-row:not(.has-subpage-profile) .top-utility-left {
+    display: none;
+  }
+}
+
+/* Desktop & iPad/Tablet (> 720px): Push user profile pill to top-left next to sidebar rail */
+.top-utility-row.has-subpage-profile {
+  justify-content: space-between;
+}
+
+.top-utility-row.has-subpage-profile .top-controls-groups {
+  margin-left: auto;
+}
+
+.subpage-top-profile-pill {
+  flex-shrink: 0;
+  max-width: 240px;
+}
+
+.subpage-top-profile-pill .user-pill-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Phone (<= 720px): Logo + PROTECT360 on top-left, Profile pill pinned top-right on same row */
+@media (max-width: 720px) {
+  .top-utility-row.has-subpage-profile {
+    justify-content: flex-start;
+  }
+
+  .top-utility-left {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+  }
+
+  .subpage-top-profile-pill {
+    padding: 5px 10px 5px 6px;
+    max-width: 52%;
+  }
+
+  .subpage-top-profile-pill .user-avatar-circle {
+    width: 24px;
+    height: 24px;
+    font-size: 0.68rem;
+  }
+
+  .subpage-top-profile-pill .user-pill-name {
+    font-size: 0.76rem;
+  }
+}
+
+/* Unified Exact Gradient Shades Across Macro Bars, Category Bars & Emergency Bar */
+.ak-cat-bar-item.type-income .ak-bar-fill-cat {
+  background: linear-gradient(90deg, #1fa86b 0%, #34c785 100%);
+}
+
+[data-theme='dark'] .ak-cat-bar-item.type-income .ak-bar-fill-cat {
+  background: linear-gradient(90deg, #2ad188 0%, #56e6a5 100%);
+}
+
+.ak-cat-bar-item.type-expense .ak-bar-fill-cat {
+  background: linear-gradient(90deg, #e05252 0%, #c63636 100%);
+}
+
+[data-theme='dark'] .ak-cat-bar-item.type-expense .ak-bar-fill-cat {
+  background: linear-gradient(90deg, #f26d6d 0%, #ff8a8a 100%);
+}
+
+.ak-cat-bar-item.type-saving .ak-bar-fill-cat {
+  background: linear-gradient(90deg, #2563eb 0%, #38bdf8 100%);
+}
+
+[data-theme='dark'] .ak-cat-bar-item.type-saving .ak-bar-fill-cat {
+  background: linear-gradient(90deg, #4aa3ff 0%, #7dd3fc 100%);
+}
+
+/* Context-Aware +/- Quick Amount Chip Tones */
+.ak-quick-amt-chip.tone-green {
+  background: var(--success-bg);
+  color: var(--success-text);
+  border-color: rgba(49, 168, 121, 0.25);
+}
+
+.ak-quick-amt-chip.tone-green:hover:not(:disabled) {
+  background: rgba(49, 168, 121, 0.2);
+}
+
+.ak-quick-amt-chip.tone-red {
+  background: var(--danger-bg);
+  color: var(--danger-text);
+  border-color: rgba(231, 111, 111, 0.25);
+}
+
+.ak-quick-amt-chip.tone-red:hover:not(:disabled) {
+  background: rgba(231, 111, 111, 0.22);
+}
+
+.ak-quick-amt-chip.tone-blue {
+  background: var(--accent-blue-bg);
+  color: var(--accent-blue-text);
+  border-color: rgba(40, 120, 200, 0.22);
+}
+
+[data-theme='dark'] .ak-quick-amt-chip.tone-blue {
+  color: #7cc0ff;
+}
+
+.ak-quick-amt-chip.tone-blue:hover:not(:disabled) {
+  background: rgba(40, 120, 200, 0.2);
+}
+
+.ak-quick-amt-chip:disabled {
+  opacity: 0.42;
+  cursor: not-allowed;
+}
+
+
 
