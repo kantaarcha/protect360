@@ -130,7 +130,7 @@ export default function OverviewDashboard({ onNavigate, onOpenProfile }) {
         <div className="bento-row-top">
           {/* Col 1: Liquid Emergency Fund + 2x2 Summary Metrics */}
           <div className="bento-left-stack">
-            {/* CARD 1: Liquid Emergency Fund */}
+            {/* CARD 1: Bundled Liquid Emergency Fund + Emergency Goal */}
             <section className="bento-card emergency-card" aria-labelledby="emergency-fund-title">
               <div>
                 <h2 id="emergency-fund-title" className="card-title">
@@ -154,6 +154,64 @@ export default function OverviewDashboard({ onNavigate, onOpenProfile }) {
                   />
                   {runwayDisplay}
                 </span>
+              </div>
+
+              {/* Bundled Emergency Goal Progress (Decoupled from Recent Activities) */}
+              <div className="emergency-goal-embedded">
+                <div className="goal-embedded-head">
+                  <div className="goal-embedded-heading">
+                    <span className="goal-embedded-title">{dynamicGoalTitle}</span>
+                    <span className="goal-embedded-formula">{dynamicGoalFormula}</span>
+                  </div>
+                  <span className="goal-pct-badge tabular-nums">{emergencyProgress}%</span>
+                </div>
+
+                <div
+                  className="progress-track"
+                  role="progressbar"
+                  aria-valuenow={emergencyProgress}
+                  aria-valuemin={0}
+                  aria-valuemax={100}
+                  aria-label={dynamicGoalTitle}
+                >
+                  <div
+                    className="progress-fill"
+                    style={{ width: `${emergencyProgress}%` }}
+                  />
+                </div>
+
+                <div className="goal-numbers-row tabular-nums">
+                  <span className="goal-limit-text">
+                    {dynamicGoalTargetLabel}: {formatTHB(emergencyTarget)}
+                  </span>
+                  <span className="goal-remaining-inline">
+                    {t('overview.goalRemaining')}{' '}
+                    <strong>{formatTHB(remainingToGoal)}</strong>
+                    {monthsToGoal > 0 && (
+                      <>
+                        {' • '}
+                        {lang === 'TH' ? `~${monthsToGoal} ด.` : `~${monthsToGoal} mo`}
+                      </>
+                    )}
+                  </span>
+                </div>
+
+                <div className="goal-milestones-row tabular-nums">
+                  {[1, 3, 6].map((mo) => {
+                    const reached = emergencyRunway >= mo;
+                    const isSelectedTarget = targetMonths === mo;
+                    return (
+                      <span
+                        key={mo}
+                        className={`goal-milestone-pill ${reached ? 'reached' : ''} ${
+                          isSelectedTarget ? 'target' : ''
+                        }`}
+                      >
+                        {lang === 'TH' ? `${mo} เดือน` : `${mo} mo`}
+                      </span>
+                    );
+                  })}
+                </div>
               </div>
 
               <div className="cta-button-row">
@@ -302,13 +360,12 @@ export default function OverviewDashboard({ onNavigate, onOpenProfile }) {
                       }}
                     >
                       <div className="vcard-top">
-                        <span className="vcard-provider">
-                          {t(cov.providerTag)}
+                        <div className="vcard-provider">
+                          <span className="vcard-provider-label">{t(cov.providerTag)}</span>
                           <span className="vcard-mask-inline tabular-nums">
-                            {' • '}
                             {cov.cardNumberMask}
                           </span>
-                        </span>
+                        </div>
                         <div className="vcard-top-actions">
                           <span className={`vcard-status-pill ${isUnknown ? 'warn' : ''}`}>
                             <span
@@ -419,100 +476,8 @@ export default function OverviewDashboard({ onNavigate, onOpenProfile }) {
           ))}
         </section>
 
-        {/* ================= ROW 3: FLUSH 2-COLUMN BOTTOM BENTO (Goal + Activities) ================= */}
-        <div className="bento-row-bottom">
-          {/* CARD 3: Dynamic Emergency Goal Progress & Saving Pace */}
-          <section className="bento-card goal-card" aria-labelledby="emergency-goal-title">
-            <div className="goal-top-section">
-              <div className="goal-header-row">
-                <div>
-                  <h2 id="emergency-goal-title" className="card-title">
-                    {dynamicGoalTitle}
-                  </h2>
-                  <p className="card-subtitle">{dynamicGoalFormula}</p>
-                </div>
-                <span className="goal-pct-badge tabular-nums">{emergencyProgress}%</span>
-              </div>
-
-              <div
-                className="progress-track"
-                role="progressbar"
-                aria-valuenow={emergencyProgress}
-                aria-valuemin={0}
-                aria-valuemax={100}
-                aria-label={dynamicGoalTitle}
-              >
-                <div
-                  className="progress-fill"
-                  style={{ width: `${emergencyProgress}%` }}
-                />
-              </div>
-
-              <div className="goal-numbers-row tabular-nums">
-                <span className="goal-saved-text">
-                  {formatTHB(profile.liquidEmergencyFund)}
-                </span>
-                <span className="goal-limit-text">
-                  {dynamicGoalTargetLabel}: {formatTHB(emergencyTarget)}
-                </span>
-              </div>
-
-              <div className="goal-milestones-row tabular-nums">
-                {[1, 3, 6].map((mo) => {
-                  const reached = emergencyRunway >= mo;
-                  const isSelectedTarget = targetMonths === mo;
-                  return (
-                    <span
-                      key={mo}
-                      className={`goal-milestone-pill ${reached ? 'reached' : ''} ${
-                        isSelectedTarget ? 'target' : ''
-                      }`}
-                    >
-                      {lang === 'TH' ? `${mo} เดือน` : `${mo} mo`}
-                    </span>
-                  );
-                })}
-              </div>
-            </div>
-
-            <div className="goal-insights-grid tabular-nums">
-              <div className="goal-insight-tile">
-                <span className="goal-insight-label">
-                  {lang === 'TH' ? 'อัตราออมปัจจุบัน' : 'Monthly Saving Pace'}
-                </span>
-                <span className="goal-insight-val">
-                  {formatTHB(profile.monthlySavings)}
-                  <small>{t('overview.perMonth')}</small>
-                </span>
-              </div>
-              <div className="goal-insight-tile">
-                <span className="goal-insight-label">
-                  {lang === 'TH' ? 'คาดว่าจะครบเป้าใน' : 'Est. Time to Goal'}
-                </span>
-                <span className="goal-insight-val accent">
-                  {monthsToGoal === 0
-                    ? lang === 'TH'
-                      ? 'ครบแล้ว'
-                      : 'Reached'
-                    : monthsToGoal
-                      ? lang === 'TH'
-                        ? `~${monthsToGoal} เดือน`
-                        : `~${monthsToGoal} mo.`
-                      : '—'}
-                </span>
-              </div>
-            </div>
-
-            <div className="goal-footer-note">
-              <span>{t('overview.goalRemaining')}</span>
-              <span className="goal-remaining-val tabular-nums">
-                {formatTHB(remainingToGoal)}
-              </span>
-            </div>
-          </section>
-
-          {/* CARD 7: Recent Activities Table */}
-          <section className="bento-card activities-card" aria-labelledby="recent-activities-title">
+        {/* ================= ROW 3: FULL-WIDTH RECENT ACTIVITIES ================= */}
+        <section className="bento-card activities-card" aria-labelledby="recent-activities-title">
             <div className="activities-toolbar">
               <div>
                 <h2 id="recent-activities-title" className="card-title">
@@ -702,7 +667,6 @@ export default function OverviewDashboard({ onNavigate, onOpenProfile }) {
               </button>
             </div>
           </section>
-        </div>
       </div>
 
       {modalOpen && (

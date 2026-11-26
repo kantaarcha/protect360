@@ -4539,3 +4539,106 @@ p {
     justify-content: center;
   }
 }
+
+/* ==========================================================================
+   Round 1.9.9: Top-Right Pinned Coverage Actions & Bundled Emergency Goal
+   ========================================================================== */
+
+/* Keep status pill + delete trash button ALWAYS pinned top-right; left provider retreats cleanly */
+.vcard-top {
+  flex-wrap: nowrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.vcard-provider {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  line-height: 1.25;
+}
+
+.vcard-provider-label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.vcard-mask-inline {
+  font-size: 0.65rem;
+  opacity: 0.78;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.vcard-top-actions {
+  flex-shrink: 0;
+  margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+}
+
+.vcard-status-pill {
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+/* Bundled Emergency Goal Block inside Card 1 (Never shifts when filtering Activities!) */
+.emergency-goal-embedded {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px 14px;
+  border-radius: 16px;
+  background: var(--bg-muted);
+  border: 1px solid var(--border-subtle);
+}
+
+.goal-embedded-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.goal-embedded-heading {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+}
+
+.goal-embedded-title {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1.28;
+}
+
+.goal-embedded-formula {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  line-height: 1.3;
+}
+
+.goal-remaining-inline {
+  font-size: 0.74rem;
+  color: var(--text-secondary);
+}
+
+.goal-remaining-inline strong {
+  color: var(--text-primary);
+  font-weight: 700;
+}
+
+/* Full-width independent Recent Activities Card (Row 3) */
+.bento-dashboard-stack > .activities-card {
+  width: 100%;
+  height: auto;
+}
