@@ -103,7 +103,9 @@ function AppShellContent() {
           <TopControlBar onOpenProfile={handleOpenProfile} />
         </header>
 
-        {renderActivePage()}
+        <div key={activePage} className="page-transition-stage">
+          {renderActivePage()}
+        </div>
       </main>
 
       {profileModal.open && (

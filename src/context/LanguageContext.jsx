@@ -92,6 +92,8 @@ const TRANSLATIONS = {
       personalNoneNote: 'เบี้ยประกันส่วนตัว: ฿0 / เดือน (ยังไม่ทำเพิ่มเติม)',
       cardHolderLabel: 'ผู้ถือสิทธิ',
       editCardHolderHint: 'แก้ไขชื่อผู้ถือบัตร',
+      viewDetails: 'รายละเอียด',
+      editLimitAction: 'ระบุวงเงิน',
 
       // Card 6
       riskSectionTitle: 'สถานะความเสี่ยงรายหมวด',
@@ -279,6 +281,8 @@ const TRANSLATIONS = {
       personalNoneNote: 'Personal Insurance: ฿0 / mo (None active)',
       cardHolderLabel: 'Card Holder',
       editCardHolderHint: 'Edit card holder name',
+      viewDetails: 'Details',
+      editLimitAction: 'Enter limit',
 
       // Card 6
       riskSectionTitle: 'Risk Status Overview',

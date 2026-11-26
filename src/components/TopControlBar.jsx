@@ -1,8 +1,9 @@
-import { useEffect, useRef, useState } from 'react';
-import { CheckCircle2, Moon, Pencil, ShieldCheck, Sun } from 'lucide-react';
+import { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { CheckCircle2, Moon, Pencil, ShieldCheck, Sun, X } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import { useTheme } from '../context/ThemeContext';
 import { useFinance } from '../context/FinanceContext';
+import { useLiquidSlider } from '../hooks/useLiquidSlider';
 import { getProfilePillLabel, getUserInitials } from '../utils/userHelpers';
 
 export default function TopControlBar({ onOpenProfile }) {
@@ -10,6 +11,7 @@ export default function TopControlBar({ onOpenProfile }) {
     lang,
     setLang,
     t,
+    fontStepIdx,
     fontScaleLabel,
     canDecreaseFont,
     canIncreaseFont,
@@ -21,18 +23,71 @@ export default function TopControlBar({ onOpenProfile }) {
   const { isDark, toggleTheme } = useTheme();
   const { userProfile } = useFinance();
 
+  const langSlider = useLiquidSlider(lang, [fontStepIdx]);
+
   const [showCharter, setShowCharter] = useState(false);
-  const popoverRef = useRef(null);
+  const [popoverCoords, setPopoverCoords] = useState({ top: 72, left: 12, width: 310 });
+  const charterBtnRef = useRef(null);
+  const popoverBoxRef = useRef(null);
+
+  // Viewport-clamped positioning for "ไม่ขายประกัน" popover — never clips off-screen even at 125% font scale on mobile
+  useLayoutEffect(() => {
+    if (!showCharter) return;
+
+    const updatePosition = () => {
+      const btn = charterBtnRef.current;
+      if (!btn) return;
+      const rect = btn.getBoundingClientRect();
+      const vw = window.innerWidth;
+      const vh = window.innerHeight;
+      const margin = 12;
+
+      const isNarrow = vw <= 640;
+      const maxAllowedWidth = Math.max(220, vw - margin * 2);
+      const popWidth = isNarrow ? maxAllowedWidth : Math.min(340, maxAllowedWidth);
+
+      const left = isNarrow
+        ? margin
+        : Math.min(Math.max(margin, rect.right - popWidth), vw - popWidth - margin);
+
+      const estimatedHeight = popoverBoxRef.current?.offsetHeight || 220;
+      let top = rect.bottom + 10;
+      if (top + estimatedHeight > vh - margin && rect.top - estimatedHeight - 10 > margin) {
+        top = rect.top - estimatedHeight - 10;
+      } else {
+        top = Math.min(top, Math.max(margin, vh - estimatedHeight - margin));
+      }
+
+      setPopoverCoords({ top, left, width: popWidth });
+    };
+
+    updatePosition();
+    window.addEventListener('resize', updatePosition);
+    window.addEventListener('scroll', updatePosition, true);
+    return () => {
+      window.removeEventListener('resize', updatePosition);
+      window.removeEventListener('scroll', updatePosition, true);
+    };
+  }, [showCharter, lang, fontStepIdx]);
 
   useEffect(() => {
     if (!showCharter) return;
     const handleOutside = (e) => {
-      if (popoverRef.current && !popoverRef.current.contains(e.target)) {
+      const clickedBtn = charterBtnRef.current?.contains(e.target);
+      const clickedBox = popoverBoxRef.current?.contains(e.target);
+      if (!clickedBtn && !clickedBox) {
         setShowCharter(false);
       }
     };
+    const handleKey = (e) => {
+      if (e.key === 'Escape') setShowCharter(false);
+    };
     document.addEventListener('mousedown', handleOutside);
-    return () => document.removeEventListener('mousedown', handleOutside);
+    document.addEventListener('keydown', handleKey);
+    return () => {
+      document.removeEventListener('mousedown', handleOutside);
+      document.removeEventListener('keydown', handleKey);
+    };
   }, [showCharter]);
 
   const userInitials = getUserInitials(userProfile.firstName, userProfile.lastName);
@@ -44,11 +99,22 @@ export default function TopControlBar({ onOpenProfile }) {
       role="region"
       aria-label="Accessibility, theme, language, and user profile controls"
     >
-      {/* 1) Language Toggle Pill: TH | EN */}
-      <div className="lang-toggle" role="group" aria-label={t('controls.switchLang')}>
+      {/* 1) Language Toggle Pill: TH | EN (Liquid Glass Horizontal Glide) */}
+      <div
+        className="lang-toggle liquid-track"
+        ref={langSlider.containerRef}
+        role="group"
+        aria-label={t('controls.switchLang')}
+      >
+        <span
+          className="liquid-glass-pill liquid-pill-compact"
+          style={langSlider.indicatorStyle}
+          aria-hidden="true"
+        />
         <button
           id="lang-btn-th"
           type="button"
+          data-liquid-active={lang === 'TH' ? 'true' : undefined}
           className={`lang-btn ${lang === 'TH' ? 'active' : ''}`}
           aria-pressed={lang === 'TH'}
           onClick={() => setLang('TH')}
@@ -58,6 +124,7 @@ export default function TopControlBar({ onOpenProfile }) {
         <button
           id="lang-btn-en"
           type="button"
+          data-liquid-active={lang === 'EN' ? 'true' : undefined}
           className={`lang-btn ${lang === 'EN' ? 'active' : ''}`}
           aria-pressed={lang === 'EN'}
           onClick={() => setLang('EN')}
@@ -134,8 +201,9 @@ export default function TopControlBar({ onOpenProfile }) {
       </button>
 
       {/* 5) Neutral Badge: ไม่ขายประกัน / No Sales */}
-      <div className="neutral-badge-wrap" ref={popoverRef}>
+      <div className="neutral-badge-wrap">
         <button
+          ref={charterBtnRef}
           id="neutral-charter-btn"
           type="button"
           className="neutral-badge"
@@ -147,11 +215,31 @@ export default function TopControlBar({ onOpenProfile }) {
         </button>
 
         {showCharter && (
-          <div className="neutral-popover" role="tooltip">
-            <h4>
-              <ShieldCheck size={16} color="var(--teal)" />
-              {t('brand.noSalesTitle')}
-            </h4>
+          <div
+            ref={popoverBoxRef}
+            className="neutral-popover neutral-popover-fixed"
+            role="dialog"
+            aria-label={t('brand.noSalesTitle')}
+            style={{
+              top: `${popoverCoords.top}px`,
+              left: `${popoverCoords.left}px`,
+              width: `${popoverCoords.width}px`,
+            }}
+          >
+            <div className="neutral-popover-head">
+              <h4>
+                <ShieldCheck size={16} color="var(--teal)" style={{ flexShrink: 0 }} />
+                <span>{t('brand.noSalesTitle')}</span>
+              </h4>
+              <button
+                type="button"
+                className="neutral-popover-close"
+                onClick={() => setShowCharter(false)}
+                aria-label="Close"
+              >
+                <X size={14} />
+              </button>
+            </div>
             <p>{t('brand.noSalesDesc')}</p>
             <div className="neutral-popover-foot">{t('brand.oicNote')}</div>
           </div>

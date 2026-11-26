@@ -12,6 +12,7 @@ import {
   X,
 } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
+import { useLiquidSlider } from '../hooks/useLiquidSlider';
 
 export const NAV_ITEMS = [
   { id: 'overview', labelKey: 'nav.overview', icon: LayoutGrid },
@@ -24,10 +25,15 @@ export const NAV_ITEMS = [
 ];
 
 export default function SidebarNav({ activePage, onNavigate }) {
-  const { t } = useLanguage();
+  const { lang, fontStepIdx, t } = useLanguage();
   const [drawerOpen, setDrawerOpen] = useState(false);
 
   const mobilePrimary = NAV_ITEMS.slice(0, 4);
+  const isMoreActive = ['game', 'learning', 'about'].includes(activePage);
+  const mobileActiveKey = isMoreActive ? 'more' : activePage;
+
+  const desktopSlider = useLiquidSlider(activePage, [lang, fontStepIdx]);
+  const mobileSlider = useLiquidSlider(mobileActiveKey, [lang, fontStepIdx]);
 
   const handleSelect = (id) => {
     onNavigate(id);
@@ -36,7 +42,7 @@ export default function SidebarNav({ activePage, onNavigate }) {
 
   return (
     <>
-      {/* Desktop Slim Floating Vertical Navigation Rail */}
+      {/* Desktop Slim Floating Vertical Navigation Rail (Liquid Glass Vertical Glide) */}
       <aside className="sidebar-rail" aria-label={t('nav.menuLabel')}>
         <button
           type="button"
@@ -51,7 +57,12 @@ export default function SidebarNav({ activePage, onNavigate }) {
           <span className="rail-brand-text">P360</span>
         </button>
 
-        <nav className="rail-nav-list">
+        <nav className="rail-nav-list liquid-track" ref={desktopSlider.containerRef}>
+          <span
+            className="liquid-glass-pill liquid-pill-rail"
+            style={desktopSlider.indicatorStyle}
+            aria-hidden="true"
+          />
           {NAV_ITEMS.map((item) => {
             const Icon = item.icon;
             const isActive = activePage === item.id;
@@ -60,12 +71,13 @@ export default function SidebarNav({ activePage, onNavigate }) {
                 key={item.id}
                 id={`nav-desktop-${item.id}`}
                 type="button"
+                data-liquid-active={isActive ? 'true' : undefined}
                 className={`rail-nav-item ${isActive ? 'active' : ''}`}
                 aria-current={isActive ? 'page' : undefined}
                 onClick={() => handleSelect(item.id)}
               >
                 <span className="rail-nav-icon" aria-hidden="true">
-                  <Icon size={20} strokeWidth={isActive ? 2.2 : 1.9} />
+                  <Icon size={20} strokeWidth={isActive ? 2.3 : 1.9} />
                 </span>
                 <span className="rail-nav-label">{t(item.labelKey)}</span>
               </button>
@@ -78,8 +90,18 @@ export default function SidebarNav({ activePage, onNavigate }) {
         </div>
       </aside>
 
-      {/* Mobile Bottom Navigation Bar */}
-      <nav className="mobile-bottom-nav" aria-label={t('nav.menuLabel')}>
+      {/* Mobile Bottom Navigation Bar (Liquid Glass Horizontal Glide) */}
+      <nav
+        className="mobile-bottom-nav liquid-track"
+        ref={mobileSlider.containerRef}
+        aria-label={t('nav.menuLabel')}
+      >
+        <span
+          className="liquid-glass-pill liquid-pill-dock"
+          style={mobileSlider.indicatorStyle}
+          aria-hidden="true"
+        />
+
         {mobilePrimary.map((item) => {
           const Icon = item.icon;
           const isActive = activePage === item.id;
@@ -88,10 +110,12 @@ export default function SidebarNav({ activePage, onNavigate }) {
               key={item.id}
               id={`nav-mobile-${item.id}`}
               type="button"
+              data-liquid-active={isActive ? 'true' : undefined}
               className={`mobile-nav-btn ${isActive ? 'active' : ''}`}
+              aria-current={isActive ? 'page' : undefined}
               onClick={() => handleSelect(item.id)}
             >
-              <Icon size={18} strokeWidth={2} />
+              <Icon size={18} strokeWidth={isActive ? 2.3 : 2} />
               <span>{t(item.labelKey)}</span>
             </button>
           );
@@ -100,12 +124,12 @@ export default function SidebarNav({ activePage, onNavigate }) {
         <button
           id="nav-mobile-more"
           type="button"
-          className={`mobile-nav-btn ${
-            ['game', 'learning', 'about'].includes(activePage) ? 'active' : ''
-          }`}
+          data-liquid-active={isMoreActive ? 'true' : undefined}
+          className={`mobile-nav-btn ${isMoreActive ? 'active' : ''}`}
+          aria-expanded={drawerOpen}
           onClick={() => setDrawerOpen(true)}
         >
-          <Menu size={18} strokeWidth={2} />
+          <Menu size={18} strokeWidth={isMoreActive ? 2.3 : 2} />
           <span>{t('nav.moreLabel')}</span>
         </button>
       </nav>

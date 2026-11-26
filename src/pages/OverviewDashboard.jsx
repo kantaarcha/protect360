@@ -3,8 +3,8 @@ import {
   ArrowDownLeft,
   ArrowUpRight,
   Building2,
+  ChevronRight,
   Coffee,
-  CreditCard,
   Pencil,
   PiggyBank,
   Plus,
@@ -17,6 +17,7 @@ import {
 } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import { formatTHB, useFinance } from '../context/FinanceContext';
+import { useLiquidSlider } from '../hooks/useLiquidSlider';
 import { getCardHolderDisplay } from '../utils/userHelpers';
 import ProtectionGapChart from '../components/ProtectionGapChart';
 import CoverageModal from '../components/CoverageModal';
@@ -30,7 +31,7 @@ const TX_ICON_MAP = {
 };
 
 export default function OverviewDashboard({ onNavigate, onOpenProfile }) {
-  const { lang, t } = useLanguage();
+  const { lang, fontStepIdx, t } = useLanguage();
   const {
     userProfile,
     profile,
@@ -48,6 +49,8 @@ export default function OverviewDashboard({ onNavigate, onOpenProfile }) {
   const [txFilter, setTxFilter] = useState('all');
   const [modalOpen, setModalOpen] = useState(false);
   const [editingCoverage, setEditingCoverage] = useState(null);
+
+  const filterSlider = useLiquidSlider(txFilter, [lang, fontStepIdx]);
 
   const filteredTransactions = useMemo(() => {
     const q = searchQuery.trim().toLowerCase();
@@ -378,8 +381,12 @@ export default function OverviewDashboard({ onNavigate, onOpenProfile }) {
                         </button>
 
                         <span className="vcard-action-hint">
-                          <CreditCard size={13} />
-                          {isUnknown ? t('overview.tapToUpdate') : t('overview.activeStatus')}
+                          <span>
+                            {isUnknown
+                              ? t('overview.editLimitAction')
+                              : t('overview.viewDetails')}
+                          </span>
+                          <ChevronRight size={14} strokeWidth={2.4} className="cta-chevron" aria-hidden="true" />
                         </span>
                       </div>
                     </div>
@@ -399,7 +406,7 @@ export default function OverviewDashboard({ onNavigate, onOpenProfile }) {
             </section>
           </div>
 
-          {/* CARD 6: 3 Compact Risk Status Mini-Cards */}
+          {/* CARD 6: 3 Compact Risk Status Mini-Cards (Clickable -> Risk Analysis) */}
           <section className="risk-status-strip" aria-label={t('overview.riskSectionTitle')}>
             {riskStatuses.map((risk) => (
               <button
@@ -422,6 +429,12 @@ export default function OverviewDashboard({ onNavigate, onOpenProfile }) {
                 <p className="risk-mini-desc">
                   {risk.descObj ? t(risk.descObj) : t(risk.descKey)}
                 </p>
+                <div className="risk-mini-footer">
+                  <span className="card-details-link">
+                    <span>{t('overview.viewDetails')}</span>
+                    <ChevronRight size={13} strokeWidth={2.4} className="cta-chevron" aria-hidden="true" />
+                  </span>
+                </div>
               </button>
             ))}
           </section>
@@ -449,7 +462,17 @@ export default function OverviewDashboard({ onNavigate, onOpenProfile }) {
                   />
                 </div>
 
-                <div className="filter-pills" role="group" aria-label="Filter activities">
+                <div
+                  className="filter-pills liquid-track"
+                  ref={filterSlider.containerRef}
+                  role="group"
+                  aria-label="Filter activities"
+                >
+                  <span
+                    className="liquid-glass-pill liquid-pill-compact"
+                    style={filterSlider.indicatorStyle}
+                    aria-hidden="true"
+                  />
                   {[
                     { id: 'all', labelKey: 'overview.filterAll' },
                     { id: 'income', labelKey: 'overview.filterIncome' },
@@ -460,6 +483,7 @@ export default function OverviewDashboard({ onNavigate, onOpenProfile }) {
                       key={f.id}
                       id={`filter-tx-${f.id}`}
                       type="button"
+                      data-liquid-active={txFilter === f.id ? 'true' : undefined}
                       className={`filter-pill-btn ${txFilter === f.id ? 'active' : ''}`}
                       onClick={() => setTxFilter(f.id)}
                     >

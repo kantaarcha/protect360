@@ -13,6 +13,7 @@ import {
 } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import { formatTHB, useFinance } from '../context/FinanceContext';
+import { useLiquidSlider } from '../hooks/useLiquidSlider';
 import {
   OCCUPATION_OPTIONS,
   TITLE_OPTIONS,
@@ -29,7 +30,7 @@ const DEPENDENT_STEPS = [
 ];
 
 export default function UserProfileModal({ initialTab = 'profile', onClose }) {
-  const { lang, t } = useLanguage();
+  const { lang, fontStepIdx, t } = useLanguage();
   const {
     userProfile,
     monthlyExpenses,
@@ -51,6 +52,11 @@ export default function UserProfileModal({ initialTab = 'profile', onClose }) {
   const [emergencyTargetMonths, setEmergencyTargetMonths] = useState(
     userProfile.emergencyTargetMonths === 6 ? 6 : 3
   );
+
+  // Liquid Glass sliding indicators
+  const tabSlider = useLiquidSlider(activeTab, [lang, fontStepIdx]);
+  const titleSlider = useLiquidSlider(title || 'unspecified', [activeTab, lang, fontStepIdx]);
+  const depSlider = useLiquidSlider(String(dependents), [activeTab, lang, fontStepIdx]);
 
   // Privacy tab states
   const [confirmReset, setConfirmReset] = useState(false);
@@ -187,12 +193,23 @@ export default function UserProfileModal({ initialTab = 'profile', onClose }) {
           </button>
         </div>
 
-        {/* Two Clear Bento Tabs */}
-        <div className="profile-tabs" role="tablist" aria-label={t('profileModal.title')}>
+        {/* Two Clear Bento Tabs (Liquid Crystal Glass Glide) */}
+        <div
+          className="profile-tabs liquid-track"
+          ref={tabSlider.containerRef}
+          role="tablist"
+          aria-label={t('profileModal.title')}
+        >
+          <span
+            className="liquid-glass-pill liquid-pill-surface"
+            style={tabSlider.indicatorStyle}
+            aria-hidden="true"
+          />
           <button
             id="profile-tab-personal"
             type="button"
             role="tab"
+            data-liquid-active={activeTab === 'profile' ? 'true' : undefined}
             aria-selected={activeTab === 'profile'}
             className={`profile-tab-btn ${activeTab === 'profile' ? 'active' : ''}`}
             onClick={() => setActiveTab('profile')}
@@ -204,6 +221,7 @@ export default function UserProfileModal({ initialTab = 'profile', onClose }) {
             id="profile-tab-privacy"
             type="button"
             role="tab"
+            data-liquid-active={activeTab === 'privacy' ? 'true' : undefined}
             aria-selected={activeTab === 'privacy'}
             className={`profile-tab-btn ${activeTab === 'privacy' ? 'active' : ''}`}
             onClick={() => setActiveTab('privacy')}
@@ -256,12 +274,23 @@ export default function UserProfileModal({ initialTab = 'profile', onClose }) {
             {/* Title / Prefix Selector: นาย / นาง / นางสาว / ไม่ระบุ */}
             <div className="form-field">
               <span className="form-label">{t('profileModal.titlePrefix')}</span>
-              <div className="stepper-choice-4" role="group" aria-label={t('profileModal.titlePrefix')}>
+              <div
+                className="stepper-choice-4 liquid-track liquid-segmented-shell"
+                ref={titleSlider.containerRef}
+                role="group"
+                aria-label={t('profileModal.titlePrefix')}
+              >
+                <span
+                  className="liquid-glass-pill liquid-pill-choice"
+                  style={titleSlider.indicatorStyle}
+                  aria-hidden="true"
+                />
                 {TITLE_OPTIONS.map((opt) => (
                   <button
                     key={opt.value || 'unspecified'}
                     id={`title-prefix-${opt.value || 'unspecified'}`}
                     type="button"
+                    data-liquid-active={title === opt.value ? 'true' : undefined}
                     className={`choice-btn ${title === opt.value ? 'active' : ''}`}
                     aria-pressed={title === opt.value}
                     onClick={() => setTitle(opt.value)}
@@ -352,12 +381,23 @@ export default function UserProfileModal({ initialTab = 'profile', onClose }) {
                   {dependents === 3 ? '3+' : dependents} {t('profileModal.dependentsUnit')}
                 </span>
               </div>
-              <div className="stepper-choice-4" role="group" aria-label={t('profileModal.dependents')}>
+              <div
+                className="stepper-choice-4 liquid-track liquid-segmented-shell"
+                ref={depSlider.containerRef}
+                role="group"
+                aria-label={t('profileModal.dependents')}
+              >
+                <span
+                  className="liquid-glass-pill liquid-pill-choice"
+                  style={depSlider.indicatorStyle}
+                  aria-hidden="true"
+                />
                 {DEPENDENT_STEPS.map((step) => (
                   <button
                     key={step.value}
                     id={`dependents-step-${step.value}`}
                     type="button"
+                    data-liquid-active={dependents === step.value ? 'true' : undefined}
                     className={`choice-btn tabular-nums ${dependents === step.value ? 'active' : ''}`}
                     aria-pressed={dependents === step.value}
                     onClick={() => setDependents(step.value)}

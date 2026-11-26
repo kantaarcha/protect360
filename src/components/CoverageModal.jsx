@@ -2,10 +2,11 @@ import { useState } from 'react';
 import { ShieldCheck, X } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import { useFinance } from '../context/FinanceContext';
+import { useLiquidSlider } from '../hooks/useLiquidSlider';
 import { getCardHolderDisplay } from '../utils/userHelpers';
 
 export default function CoverageModal({ editingCoverage, onClose }) {
-  const { lang, t } = useLanguage();
+  const { lang, fontStepIdx, t } = useLanguage();
   const { userProfile, addCoverage, updateCoverage } = useFinance();
 
   const isEditing = Boolean(editingCoverage);
@@ -17,6 +18,7 @@ export default function CoverageModal({ editingCoverage, onClose }) {
   const [limitKnown, setLimitKnown] = useState(
     isEditing ? editingCoverage.limitKnown : true
   );
+  const limitSlider = useLiquidSlider(limitKnown ? 'known' : 'unknown', [lang, fontStepIdx]);
   const [medical, setMedical] = useState(
     isEditing ? String(editingCoverage.benefits?.medical || 200000) : '300000'
   );
@@ -202,9 +204,18 @@ export default function CoverageModal({ editingCoverage, onClose }) {
 
           <div className="form-field">
             <span className="form-label">{t('modal.limitKnownLabel')}</span>
-            <div className="segmented-choice">
+            <div
+              className="segmented-choice liquid-track liquid-segmented-shell"
+              ref={limitSlider.containerRef}
+            >
+              <span
+                className="liquid-glass-pill liquid-pill-choice"
+                style={limitSlider.indicatorStyle}
+                aria-hidden="true"
+              />
               <button
                 type="button"
+                data-liquid-active={limitKnown ? 'true' : undefined}
                 className={`choice-btn ${limitKnown ? 'active' : ''}`}
                 onClick={() => setLimitKnown(true)}
               >
@@ -212,6 +223,7 @@ export default function CoverageModal({ editingCoverage, onClose }) {
               </button>
               <button
                 type="button"
+                data-liquid-active={!limitKnown ? 'true' : undefined}
                 className={`choice-btn ${!limitKnown ? 'active' : ''}`}
                 onClick={() => setLimitKnown(false)}
               >
