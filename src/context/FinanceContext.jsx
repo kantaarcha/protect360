@@ -1,9 +1,10 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
-import { DEFAULT_OCCUPATION_TH, normalizeOccupation } from '../utils/userHelpers';
+import { DEFAULT_OCCUPATION_TH, normalizeOccupation, normalizeTitle } from '../utils/userHelpers';
 
 const STORAGE_KEY = 'protect360_data_v1';
 
 const INITIAL_USER_PROFILE = {
+  title: '',
   firstName: '',
   lastName: '',
   age: 25,
@@ -198,6 +199,16 @@ const BASE_RISK_BENCHMARKS = [
 ];
 
 // Strictly whitelist non-sensitive PDPA-safe userProfile fields (never accept email/phone/ID/password)
+function sanitizeNameText(value) {
+  if (typeof value !== 'string') return '';
+  // Accept both Thai and English letters plus spaces, periods, hyphens, and apostrophes
+  return value
+    .replace(/[^\u0E00-\u0E7FA-Za-z\s.'-]/g, '')
+    .replace(/\s+/g, ' ')
+    .trim()
+    .slice(0, 60);
+}
+
 function sanitizeUserProfile(raw) {
   if (!raw || typeof raw !== 'object') return { ...INITIAL_USER_PROFILE };
   const rawAge = Number(raw.age);
@@ -205,8 +216,9 @@ function sanitizeUserProfile(raw) {
   const rawTarget = Number(raw.emergencyTargetMonths);
 
   return {
-    firstName: typeof raw.firstName === 'string' ? raw.firstName.trim().slice(0, 60) : '',
-    lastName: typeof raw.lastName === 'string' ? raw.lastName.trim().slice(0, 60) : '',
+    title: normalizeTitle(raw.title),
+    firstName: sanitizeNameText(raw.firstName),
+    lastName: sanitizeNameText(raw.lastName),
     age: Number.isFinite(rawAge) ? Math.min(99, Math.max(15, Math.round(rawAge))) : 25,
     occupation: normalizeOccupation(raw.occupation),
     dependents: Number.isFinite(rawDeps) ? Math.min(10, Math.max(0, Math.round(rawDeps))) : 0,

@@ -15,6 +15,7 @@ import { useLanguage } from '../context/LanguageContext';
 import { formatTHB, useFinance } from '../context/FinanceContext';
 import {
   OCCUPATION_OPTIONS,
+  TITLE_OPTIONS,
   getCardHolderDisplay,
   getOccupationLabel,
   getUserInitials,
@@ -39,6 +40,7 @@ export default function UserProfileModal({ initialTab = 'profile', onClose }) {
   } = useFinance();
 
   const [activeTab, setActiveTab] = useState(initialTab);
+  const [title, setTitle] = useState(userProfile.title || '');
   const [firstName, setFirstName] = useState(userProfile.firstName || '');
   const [lastName, setLastName] = useState(userProfile.lastName || '');
   const [age, setAge] = useState(String(userProfile.age ?? 25));
@@ -77,6 +79,7 @@ export default function UserProfileModal({ initialTab = 'profile', onClose }) {
   }, [confirmReset]);
 
   const applyProfileToDraft = (next) => {
+    setTitle(next.title || '');
     setFirstName(next.firstName || '');
     setLastName(next.lastName || '');
     setAge(String(next.age ?? 25));
@@ -86,6 +89,7 @@ export default function UserProfileModal({ initialTab = 'profile', onClose }) {
   };
 
   const draftProfile = {
+    title,
     firstName,
     lastName,
     age: Number(age) || 25,
@@ -104,6 +108,7 @@ export default function UserProfileModal({ initialTab = 'profile', onClose }) {
     e.preventDefault();
     const parsedAge = Number(age);
     updateUserProfile({
+      title,
       firstName: firstName.trim(),
       lastName: lastName.trim(),
       age: Number.isFinite(parsedAge) ? Math.min(99, Math.max(15, Math.round(parsedAge))) : 25,
@@ -138,6 +143,7 @@ export default function UserProfileModal({ initialTab = 'profile', onClose }) {
     }
     resetDemoData();
     applyProfileToDraft({
+      title: '',
       firstName: '',
       lastName: '',
       age: 25,
@@ -247,7 +253,26 @@ export default function UserProfileModal({ initialTab = 'profile', onClose }) {
               </div>
             </div>
 
-            {/* Name Inputs */}
+            {/* Title / Prefix Selector: นาย / นาง / นางสาว / ไม่ระบุ */}
+            <div className="form-field">
+              <span className="form-label">{t('profileModal.titlePrefix')}</span>
+              <div className="stepper-choice-4" role="group" aria-label={t('profileModal.titlePrefix')}>
+                {TITLE_OPTIONS.map((opt) => (
+                  <button
+                    key={opt.value || 'unspecified'}
+                    id={`title-prefix-${opt.value || 'unspecified'}`}
+                    type="button"
+                    className={`choice-btn ${title === opt.value ? 'active' : ''}`}
+                    aria-pressed={title === opt.value}
+                    onClick={() => setTitle(opt.value)}
+                  >
+                    {lang === 'EN' ? opt.en : opt.th}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Name Inputs (Accepts Thai & English, blank without example placeholders) */}
             <div className="form-grid-2">
               <div className="form-field">
                 <label htmlFor="profile-firstname-input" className="form-label">
@@ -261,7 +286,6 @@ export default function UserProfileModal({ initialTab = 'profile', onClose }) {
                   className="form-input"
                   value={firstName}
                   onChange={(e) => setFirstName(e.target.value)}
-                  placeholder={t('profileModal.firstNamePlaceholder')}
                 />
               </div>
 
@@ -277,7 +301,6 @@ export default function UserProfileModal({ initialTab = 'profile', onClose }) {
                   className="form-input"
                   value={lastName}
                   onChange={(e) => setLastName(e.target.value)}
-                  placeholder={t('profileModal.lastNamePlaceholder')}
                 />
               </div>
             </div>

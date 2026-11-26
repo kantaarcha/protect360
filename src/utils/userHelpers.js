@@ -1,3 +1,10 @@
+export const TITLE_OPTIONS = [
+  { value: 'นาย', th: 'นาย', en: 'Mr.' },
+  { value: 'นาง', th: 'นาง', en: 'Mrs.' },
+  { value: 'นางสาว', th: 'นางสาว', en: 'Ms.' },
+  { value: '', th: 'ไม่ระบุ', en: 'Unspecified' },
+];
+
 export const OCCUPATION_OPTIONS = [
   { id: 'office_worker', th: 'พนักงานออฟฟิศ', en: 'Office Worker' },
   { id: 'freelancer', th: 'ฟรีแลนซ์', en: 'Freelancer' },
@@ -6,6 +13,27 @@ export const OCCUPATION_OPTIONS = [
 ];
 
 export const DEFAULT_OCCUPATION_TH = 'พนักงานออฟฟิศ';
+
+export function normalizeTitle(value) {
+  if (typeof value !== 'string') return '';
+  const trimmed = value.trim();
+  if (!trimmed) return '';
+  const match = TITLE_OPTIONS.find(
+    (opt) =>
+      opt.value === trimmed ||
+      opt.th === trimmed ||
+      opt.en.toLowerCase() === trimmed.toLowerCase()
+  );
+  return match ? match.value : '';
+}
+
+export function getTitleLabel(title, lang = 'TH') {
+  const normalized = normalizeTitle(title);
+  if (!normalized) return '';
+  const match = TITLE_OPTIONS.find((opt) => opt.value === normalized);
+  if (!match) return '';
+  return lang === 'EN' ? match.en : match.th;
+}
 
 export function normalizeOccupation(value) {
   if (typeof value !== 'string') return DEFAULT_OCCUPATION_TH;
@@ -24,6 +52,10 @@ export function getOccupationLabel(occupation, lang = 'TH') {
   const match = OCCUPATION_OPTIONS.find((opt) => opt.th === normalized);
   if (!match) return lang === 'EN' ? 'Office Worker' : DEFAULT_OCCUPATION_TH;
   return lang === 'EN' ? match.en : match.th;
+}
+
+function isLatinName(text) {
+  return /^[A-Za-z0-9\s.'-]+$/.test(String(text || '').trim());
 }
 
 function extractLeadingInitial(text) {
@@ -63,26 +95,67 @@ export function getFullName(userProfile) {
   return [first, last].filter(Boolean).join(' ');
 }
 
+export function formatNameWithTitle(userProfile, lang = 'TH') {
+  const fullName = getFullName(userProfile);
+  if (!fullName) return '';
+
+  const normalizedTitle = normalizeTitle(userProfile?.title);
+  if (!normalizedTitle) return fullName;
+
+  // Match prefix script naturally to language / name script
+  const useEnglishPrefix = lang === 'EN' || isLatinName(fullName);
+  const prefix = getTitleLabel(normalizedTitle, useEnglishPrefix ? 'EN' : 'TH');
+  if (!prefix) return fullName;
+
+  // Thai prefixes attach directly to Thai names (e.g. นายกันต์ อาชา); English prefixes use a space (e.g. Mr. Kant Archa)
+  return useEnglishPrefix ? `${prefix} ${fullName}` : `${prefix}${fullName}`;
+}
+
 export function getGreetingText(userProfile, lang = 'TH') {
   const fullName = getFullName(userProfile);
   if (!fullName) {
     return lang === 'TH' ? 'สวัสดี, First Jobber' : 'Hello, First Jobber';
   }
-  return lang === 'TH' ? `สวัสดี, คุณ${fullName}` : `Hello, ${fullName}`;
+
+  const normalizedTitle = normalizeTitle(userProfile?.title);
+  if (normalizedTitle) {
+    const withTitle = formatNameWithTitle(userProfile, lang);
+    return lang === 'TH' ? `สวัสดี, ${withTitle}` : `Hello, ${withTitle}`;
+  }
+
+  if (lang === 'TH') {
+    return isLatinName(fullName) ? `สวัสดี, คุณ ${fullName}` : `สวัสดี, คุณ${fullName}`;
+  }
+  return `Hello, ${fullName}`;
 }
 
 export function getProfilePillLabel(userProfile, lang = 'TH') {
   const first = String(userProfile?.firstName || '').trim();
   if (!first) return 'First Jobber';
-  return lang === 'TH' ? `คุณ${first}` : first;
+
+  const normalizedTitle = normalizeTitle(userProfile?.title);
+  if (normalizedTitle) {
+    const useEnglishPrefix = lang === 'EN' || isLatinName(first);
+    const prefix = getTitleLabel(normalizedTitle, useEnglishPrefix ? 'EN' : 'TH');
+    return useEnglishPrefix ? `${prefix} ${first}` : `${prefix}${first}`;
+  }
+
+  if (lang === 'TH') {
+    return isLatinName(first) ? `คุณ ${first}` : `คุณ${first}`;
+  }
+  return first;
 }
 
 export function getCardHolderDisplay(userProfile) {
   const fullName = getFullName(userProfile);
   if (!fullName) return 'FIRST JOBBER';
-  // Uppercase Latin names like a bank/insurance card; keep Thai script crisp as entered
-  if (/^[A-Za-z0-9\s.'-]+$/.test(fullName)) {
-    return fullName.toUpperCase();
+
+  const normalizedTitle = normalizeTitle(userProfile?.title);
+  if (isLatinName(fullName)) {
+    const enPrefix = getTitleLabel(normalizedTitle, 'EN');
+    return (enPrefix ? `${enPrefix} ${fullName}` : fullName).toUpperCase();
   }
-  return fullName;
+
+  const thPrefix = getTitleLabel(normalizedTitle, 'TH');
+  return thPrefix ? `${thPrefix}${fullName}` : fullName;
 }
