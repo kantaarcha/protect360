@@ -6,7 +6,6 @@ import {
   LayoutGrid,
   Menu,
   ShieldAlert,
-  ShieldCheck,
   Sparkles,
   TrendingUp,
   X,
@@ -52,7 +51,7 @@ export default function SidebarNav({ activePage, onNavigate }) {
           title="PROTECT360"
         >
           <span className="rail-brand-mark" aria-hidden="true">
-            <ShieldCheck size={24} strokeWidth={2.2} />
+            <img src="/logo.png" alt="PROTECT360" className="brand-logo-img" />
           </span>
           <span className="rail-brand-text">P360</span>
         </button>
@@ -145,9 +144,14 @@ export default function SidebarNav({ activePage, onNavigate }) {
         >
           <div className="mobile-drawer" onClick={(e) => e.stopPropagation()}>
             <div className="modal-head" style={{ marginBottom: 4 }}>
-              <div>
-                <h3 className="card-title">PROTECT360</h3>
-                <p className="card-subtitle">{t('brand.tagline')}</p>
+              <div className="drawer-brand-head">
+                <span className="mobile-brand-mark" aria-hidden="true">
+                  <img src="/logo.png" alt="PROTECT360" className="brand-logo-img" />
+                </span>
+                <div>
+                  <h3 className="card-title">PROTECT360</h3>
+                  <p className="card-subtitle">{t('brand.tagline')}</p>
+                </div>
               </div>
               <button
                 type="button"

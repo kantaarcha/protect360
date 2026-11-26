@@ -6,7 +6,6 @@ import {
   Info,
   Pencil,
   PlusCircle,
-  ShieldCheck,
   X,
 } from 'lucide-react';
 import { ThemeProvider } from './context/ThemeContext';
@@ -111,7 +110,7 @@ function AppShellContent() {
             onClick={() => handleNavigate('overview')}
           >
             <span className="mobile-brand-mark" aria-hidden="true">
-              <ShieldCheck size={17} strokeWidth={2.3} />
+              <img src="/logo.png" alt="PROTECT360" className="brand-logo-img" />
             </span>
             <span className="mobile-brand-name">PROTECT360</span>
             <span className="oic-mini-chip">OIC</span>

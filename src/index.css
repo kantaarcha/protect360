@@ -5674,3 +5674,56 @@ p {
     padding: 6px 8px;
   }
 }
+
+/* ==========================================================================
+   Round 2.1: Custom PROTECT360 Brand Logo Container (Light & Dark Mode)
+   ========================================================================== */
+
+.rail-brand-mark {
+  width: 48px;
+  height: 48px;
+  padding: 5px;
+  border-radius: 16px;
+  background: #ffffff;
+  border: 1px solid var(--border-subtle);
+  box-shadow: 0 6px 16px -6px rgba(20, 43, 74, 0.16);
+}
+
+.rail-brand-mark::after {
+  display: none;
+}
+
+[data-theme='dark'] .rail-brand-mark {
+  background: rgba(255, 255, 255, 0.95);
+  border-color: rgba(255, 255, 255, 0.2);
+  box-shadow: 0 8px 20px -6px rgba(0, 0, 0, 0.55);
+}
+
+.mobile-brand-mark {
+  width: 34px;
+  height: 34px;
+  padding: 4px;
+  border-radius: 11px;
+  background: #ffffff;
+  border: 1px solid var(--border-subtle);
+  box-shadow: 0 4px 10px -4px rgba(20, 43, 74, 0.16);
+  flex-shrink: 0;
+}
+
+[data-theme='dark'] .mobile-brand-mark {
+  background: rgba(255, 255, 255, 0.95);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.brand-logo-img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+}
+
+.drawer-brand-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
