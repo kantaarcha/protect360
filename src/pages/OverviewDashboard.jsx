@@ -5,6 +5,7 @@ import {
   Building2,
   Coffee,
   CreditCard,
+  Pencil,
   PiggyBank,
   Plus,
   Search,
@@ -16,6 +17,7 @@ import {
 } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import { formatTHB, useFinance } from '../context/FinanceContext';
+import { getCardHolderDisplay } from '../utils/userHelpers';
 import ProtectionGapChart from '../components/ProtectionGapChart';
 import CoverageModal from '../components/CoverageModal';
 
@@ -27,9 +29,10 @@ const TX_ICON_MAP = {
   saving: PiggyBank,
 };
 
-export default function OverviewDashboard({ onNavigate }) {
+export default function OverviewDashboard({ onNavigate, onOpenProfile }) {
   const { lang, t } = useLanguage();
   const {
+    userProfile,
     profile,
     coverages,
     transactions,
@@ -75,6 +78,20 @@ export default function OverviewDashboard({ onNavigate }) {
     setModalOpen(true);
   };
 
+  const targetMonths = userProfile.emergencyTargetMonths || 3;
+  const cardHolderName = getCardHolderDisplay(userProfile);
+
+  const dynamicGoalTitle =
+    lang === 'TH'
+      ? `เป้าหมายเงินสำรอง ${targetMonths} เดือน`
+      : `${targetMonths}-Month Emergency Goal`;
+  const dynamicGoalTargetLabel =
+    lang === 'TH' ? `เป้าหมาย ${targetMonths} เดือน` : `${targetMonths}-Month Target`;
+  const dynamicGoalFormula =
+    lang === 'TH'
+      ? `อ้างอิงจากรายจ่าย ${formatTHB(profile.monthlyExpenses)} × ${targetMonths} เดือน`
+      : `Based on ${formatTHB(profile.monthlyExpenses)} expenses × ${targetMonths} months`;
+
   const runwayDisplay =
     lang === 'TH'
       ? `${t('overview.runwayPrefix')} ${emergencyRunway.toFixed(2)} ${t('overview.runwayUnit')}`
@@ -112,11 +129,11 @@ export default function OverviewDashboard({ onNavigate }) {
               </div>
               <span
                 className={`warning-pill tabular-nums ${
-                  emergencyRunway >= 3 ? 'safe' : ''
+                  emergencyRunway >= targetMonths ? 'safe' : ''
                 }`}
               >
                 <span
-                  className={`status-dot ${emergencyRunway >= 3 ? 'green' : 'amber'}`}
+                  className={`status-dot ${emergencyRunway >= targetMonths ? 'green' : 'amber'}`}
                   aria-hidden="true"
                 />
                 {runwayDisplay}
@@ -222,14 +239,14 @@ export default function OverviewDashboard({ onNavigate }) {
             </article>
           </section>
 
-          {/* CARD 3: 3-Month Emergency Goal Progress */}
+          {/* CARD 3: Dynamic Emergency Goal Progress (3 or 6 Months) */}
           <section className="bento-card goal-card" aria-labelledby="emergency-goal-title">
             <div className="goal-header-row">
               <div>
                 <h2 id="emergency-goal-title" className="card-title">
-                  {t('overview.goalTitle')}
+                  {dynamicGoalTitle}
                 </h2>
-                <p className="card-subtitle">{t('overview.goalFormula')}</p>
+                <p className="card-subtitle">{dynamicGoalFormula}</p>
               </div>
               <span className="goal-pct-badge tabular-nums">{emergencyProgress}%</span>
             </div>
@@ -240,7 +257,7 @@ export default function OverviewDashboard({ onNavigate }) {
               aria-valuenow={emergencyProgress}
               aria-valuemin={0}
               aria-valuemax={100}
-              aria-label={t('overview.goalTitle')}
+              aria-label={dynamicGoalTitle}
             >
               <div
                 className="progress-fill"
@@ -253,7 +270,7 @@ export default function OverviewDashboard({ onNavigate }) {
                 {formatTHB(profile.liquidEmergencyFund)}
               </span>
               <span className="goal-limit-text">
-                {t('overview.goalTargetLabel')}: {formatTHB(emergencyTarget)}
+                {dynamicGoalTargetLabel}: {formatTHB(emergencyTarget)}
               </span>
             </div>
 
@@ -303,15 +320,28 @@ export default function OverviewDashboard({ onNavigate }) {
                 {coverages.map((cov) => {
                   const isUnknown = !cov.limitKnown;
                   return (
-                    <button
+                    <div
                       key={cov.id}
                       id={`coverage-card-${cov.id}`}
-                      type="button"
+                      role="button"
+                      tabIndex={0}
                       className={`virtual-policy-card ${cov.theme || 'navy'}`}
                       onClick={() => openEditCoverage(cov)}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                          e.preventDefault();
+                          openEditCoverage(cov);
+                        }
+                      }}
                     >
                       <div className="vcard-top">
-                        <span className="vcard-provider">{t(cov.providerTag)}</span>
+                        <span className="vcard-provider">
+                          {t(cov.providerTag)}
+                          <span className="vcard-mask-inline tabular-nums">
+                            {' • '}
+                            {cov.cardNumberMask}
+                          </span>
+                        </span>
                         <span className={`vcard-status-pill ${isUnknown ? 'warn' : ''}`}>
                           <span
                             className={`status-dot ${isUnknown ? 'amber' : 'green'}`}
@@ -329,13 +359,30 @@ export default function OverviewDashboard({ onNavigate }) {
                       </div>
 
                       <div className="vcard-footer">
-                        <span className="tabular-nums">{cov.cardNumberMask}</span>
+                        <button
+                          type="button"
+                          className="vcard-holder-btn"
+                          title={t('overview.editCardHolderHint')}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            onOpenProfile?.('profile');
+                          }}
+                        >
+                          <span className="vcard-holder-label">
+                            {t('overview.cardHolderLabel')}
+                          </span>
+                          <span className="vcard-holder-name-row">
+                            <span className="vcard-holder-name">{cardHolderName}</span>
+                            <Pencil size={11} strokeWidth={2.3} className="vcard-holder-edit" aria-hidden="true" />
+                          </span>
+                        </button>
+
                         <span className="vcard-action-hint">
                           <CreditCard size={13} />
                           {isUnknown ? t('overview.tapToUpdate') : t('overview.activeStatus')}
                         </span>
                       </div>
-                    </button>
+                    </div>
                   );
                 })}
               </div>
@@ -372,7 +419,9 @@ export default function OverviewDashboard({ onNavigate }) {
                     {getRiskBadgeText(risk.level)}
                   </span>
                 </div>
-                <p className="risk-mini-desc">{t(risk.descKey)}</p>
+                <p className="risk-mini-desc">
+                  {risk.descObj ? t(risk.descObj) : t(risk.descKey)}
+                </p>
               </button>
             ))}
           </section>

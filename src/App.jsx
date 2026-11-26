@@ -1,10 +1,11 @@
 import { useState } from 'react';
-import { ShieldCheck } from 'lucide-react';
+import { AlertCircle, CheckCircle2, Info, ShieldCheck, X } from 'lucide-react';
 import { ThemeProvider } from './context/ThemeContext';
 import { LanguageProvider, useLanguage } from './context/LanguageContext';
-import { FinanceProvider } from './context/FinanceContext';
+import { FinanceProvider, useFinance } from './context/FinanceContext';
 import SidebarNav from './components/SidebarNav';
 import TopControlBar from './components/TopControlBar';
+import UserProfileModal from './components/UserProfileModal';
 import OverviewDashboard from './pages/OverviewDashboard';
 import AutoKey from './pages/AutoKey';
 import RiskAnalysis from './pages/RiskAnalysis';
@@ -12,6 +13,7 @@ import Invest from './pages/Invest';
 import Game from './pages/Game';
 import LearningCenter from './pages/LearningCenter';
 import LandingAbout from './pages/LandingAbout';
+import { getGreetingText } from './utils/userHelpers';
 
 const PAGE_TITLES = {
   overview: null,
@@ -25,11 +27,21 @@ const PAGE_TITLES = {
 
 function AppShellContent() {
   const [activePage, setActivePage] = useState('overview');
-  const { t } = useLanguage();
+  const [profileModal, setProfileModal] = useState({ open: false, tab: 'profile' });
+  const { lang, t } = useLanguage();
+  const { userProfile, toast, dismissToast } = useFinance();
 
   const handleNavigate = (pageId) => {
     setActivePage(pageId);
     window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleOpenProfile = (tab = 'profile') => {
+    setProfileModal({ open: true, tab });
+  };
+
+  const handleCloseProfile = () => {
+    setProfileModal((prev) => ({ ...prev, open: false }));
   };
 
   const renderActivePage = () => {
@@ -48,13 +60,18 @@ function AppShellContent() {
         return <LandingAbout onNavigate={handleNavigate} />;
       case 'overview':
       default:
-        return <OverviewDashboard onNavigate={handleNavigate} />;
+        return (
+          <OverviewDashboard
+            onNavigate={handleNavigate}
+            onOpenProfile={handleOpenProfile}
+          />
+        );
     }
   };
 
   const pageHeading =
     activePage === 'overview'
-      ? t('header.greeting')
+      ? getGreetingText(userProfile, lang)
       : t(PAGE_TITLES[activePage] || { th: 'PROTECT360', en: 'PROTECT360' });
 
   return (
@@ -83,11 +100,45 @@ function AppShellContent() {
             <p className="header-philosophy">{t('header.philosophy')}</p>
           </div>
 
-          <TopControlBar />
+          <TopControlBar onOpenProfile={handleOpenProfile} />
         </header>
 
         {renderActivePage()}
       </main>
+
+      {profileModal.open && (
+        <UserProfileModal
+          initialTab={profileModal.tab}
+          onClose={handleCloseProfile}
+        />
+      )}
+
+      {toast && (
+        <div
+          className={`app-toast ${toast.type || 'info'}`}
+          role="status"
+          aria-live="polite"
+        >
+          <span className="app-toast-icon" aria-hidden="true">
+            {toast.type === 'success' ? (
+              <CheckCircle2 size={17} strokeWidth={2.3} />
+            ) : toast.type === 'error' ? (
+              <AlertCircle size={17} strokeWidth={2.3} />
+            ) : (
+              <Info size={17} strokeWidth={2.3} />
+            )}
+          </span>
+          <span className="app-toast-msg">{t(toast.message)}</span>
+          <button
+            type="button"
+            className="app-toast-close"
+            onClick={dismissToast}
+            aria-label="Dismiss notification"
+          >
+            <X size={14} />
+          </button>
+        </div>
+      )}
     </div>
   );
 }

@@ -1,9 +1,11 @@
 import { useEffect, useRef, useState } from 'react';
-import { Moon, ShieldCheck, Sun } from 'lucide-react';
+import { CheckCircle2, Moon, Pencil, ShieldCheck, Sun } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import { useTheme } from '../context/ThemeContext';
+import { useFinance } from '../context/FinanceContext';
+import { getProfilePillLabel, getUserInitials } from '../utils/userHelpers';
 
-export default function TopControlBar() {
+export default function TopControlBar({ onOpenProfile }) {
   const {
     lang,
     setLang,
@@ -17,6 +19,7 @@ export default function TopControlBar() {
   } = useLanguage();
 
   const { isDark, toggleTheme } = useTheme();
+  const { userProfile } = useFinance();
 
   const [showCharter, setShowCharter] = useState(false);
   const popoverRef = useRef(null);
@@ -32,8 +35,15 @@ export default function TopControlBar() {
     return () => document.removeEventListener('mousedown', handleOutside);
   }, [showCharter]);
 
+  const userInitials = getUserInitials(userProfile.firstName, userProfile.lastName);
+  const userPillLabel = getProfilePillLabel(userProfile, lang);
+
   return (
-    <div className="top-pill-bar" role="region" aria-label="Accessibility, theme, and language controls">
+    <div
+      className="top-pill-bar"
+      role="region"
+      aria-label="Accessibility, theme, language, and user profile controls"
+    >
       {/* 1) Language Toggle Pill: TH | EN */}
       <div className="lang-toggle" role="group" aria-label={t('controls.switchLang')}>
         <button
@@ -111,7 +121,19 @@ export default function TopControlBar() {
         </span>
       </button>
 
-      {/* 4) Neutral Badge: ไม่ขายประกัน / No Sales */}
+      {/* 4) Subtle Green/Teal Saved Locally Status Pill */}
+      <button
+        id="saved-locally-pill"
+        type="button"
+        className="saved-locally-pill"
+        onClick={() => onOpenProfile?.('privacy')}
+        title={t('header.savedLocallyTitle')}
+      >
+        <CheckCircle2 size={14} strokeWidth={2.3} className="saved-locally-icon" />
+        <span>{t('header.savedLocally')}</span>
+      </button>
+
+      {/* 5) Neutral Badge: ไม่ขายประกัน / No Sales */}
       <div className="neutral-badge-wrap" ref={popoverRef}>
         <button
           id="neutral-charter-btn"
@@ -135,6 +157,22 @@ export default function TopControlBar() {
           </div>
         )}
       </div>
+
+      {/* 6) Top-Right User Profile Pill */}
+      <button
+        id="user-profile-pill-btn"
+        type="button"
+        className="user-profile-pill"
+        onClick={() => onOpenProfile?.('profile')}
+        title={t('header.editProfile')}
+        aria-label={`${userPillLabel} — ${t('header.editProfile')}`}
+      >
+        <span className="user-avatar-circle" aria-hidden="true">
+          {userInitials}
+        </span>
+        <span className="user-pill-name">{userPillLabel}</span>
+        <Pencil size={12} strokeWidth={2.3} className="user-pill-edit-icon" aria-hidden="true" />
+      </button>
     </div>
   );
 }

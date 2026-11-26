@@ -1,11 +1,12 @@
 import { useState } from 'react';
-import { X } from 'lucide-react';
+import { ShieldCheck, X } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import { useFinance } from '../context/FinanceContext';
+import { getCardHolderDisplay } from '../utils/userHelpers';
 
 export default function CoverageModal({ editingCoverage, onClose }) {
   const { lang, t } = useLanguage();
-  const { addCoverage, updateCoverage } = useFinance();
+  const { userProfile, addCoverage, updateCoverage } = useFinance();
 
   const isEditing = Boolean(editingCoverage);
 
@@ -28,6 +29,22 @@ export default function CoverageModal({ editingCoverage, onClose }) {
   const [monthlyPremium, setMonthlyPremium] = useState(
     isEditing ? String(editingCoverage.monthlyPremium || 0) : '1200'
   );
+
+  const cardHolderName = getCardHolderDisplay(userProfile);
+  const previewPolicyTitle =
+    name.trim() ||
+    (isEditing
+      ? t(editingCoverage.name)
+      : lang === 'TH'
+        ? 'กรมธรรม์ความคุ้มครองใหม่'
+        : 'New Coverage Policy');
+  const previewTheme = isEditing
+    ? editingCoverage.theme || 'royal'
+    : type === 'personal'
+      ? 'teal'
+      : type === 'employer'
+        ? 'royal'
+        : 'navy';
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -120,6 +137,29 @@ export default function CoverageModal({ editingCoverage, onClose }) {
           >
             <X size={18} />
           </button>
+        </div>
+
+        {/* Dynamic Card Holder Preview Banner */}
+        <div className={`coverage-modal-vcard ${previewTheme}`}>
+          <div className="coverage-modal-vcard-top">
+            <span className="coverage-modal-vcard-brand">
+              <ShieldCheck size={13} strokeWidth={2.3} />
+              PROTECT360
+            </span>
+            <span className="coverage-modal-vcard-status">
+              {limitKnown ? t('overview.activeStatus') : t('overview.unknownLimitStatus')}
+            </span>
+          </div>
+          <div className="coverage-modal-vcard-name">{previewPolicyTitle}</div>
+          <div className="coverage-modal-vcard-foot">
+            <div className="coverage-modal-holder">
+              <span className="coverage-modal-holder-label">{t('modal.cardHolderPreview')}</span>
+              <span className="coverage-modal-holder-val">{cardHolderName}</span>
+            </div>
+            <span className="tabular-nums coverage-modal-mask">
+              {isEditing ? editingCoverage.cardNumberMask : 'POL •••• NEW'}
+            </span>
+          </div>
         </div>
 
         <div className="modal-info-box">{t('modal.subtitle')}</div>

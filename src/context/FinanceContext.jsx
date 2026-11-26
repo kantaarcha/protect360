@@ -1,12 +1,29 @@
-import { createContext, useContext, useMemo, useState } from 'react';
+import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
+import { DEFAULT_OCCUPATION_TH, normalizeOccupation } from '../utils/userHelpers';
 
-const INITIAL_PROFILE = {
+const STORAGE_KEY = 'protect360_data_v1';
+
+const INITIAL_USER_PROFILE = {
+  firstName: '',
+  lastName: '',
+  age: 25,
+  occupation: DEFAULT_OCCUPATION_TH,
+  dependents: 0,
+  emergencyTargetMonths: 3,
+};
+
+const INITIAL_FINANCIALS = {
   personaName: { th: 'First Jobber', en: 'First Jobber' },
   monthlyIncome: 25000,
   monthlyExpenses: 20000,
   monthlySavings: 5000,
   liquidEmergencyFund: 15000,
-  emergencyTargetMonths: 3,
+};
+
+const INITIAL_RISK_PROFILE = {
+  riskTolerance: 'moderate',
+  assessmentCompleted: false,
+  lastAssessedAt: null,
 };
 
 const INITIAL_COVERAGES = [
@@ -117,7 +134,7 @@ const INITIAL_TRANSACTIONS = [
 ];
 
 // Needed coverage benchmarks for a First Jobber (transparent actuarial assumptions)
-const RISK_BENCHMARKS = [
+const BASE_RISK_BENCHMARKS = [
   {
     id: 'medical',
     label: { th: 'ค่ารักษาพยาบาล', en: 'Medical' },
@@ -180,12 +197,179 @@ const RISK_BENCHMARKS = [
   },
 ];
 
+// Strictly whitelist non-sensitive PDPA-safe userProfile fields (never accept email/phone/ID/password)
+function sanitizeUserProfile(raw) {
+  if (!raw || typeof raw !== 'object') return { ...INITIAL_USER_PROFILE };
+  const rawAge = Number(raw.age);
+  const rawDeps = Number(raw.dependents);
+  const rawTarget = Number(raw.emergencyTargetMonths);
+
+  return {
+    firstName: typeof raw.firstName === 'string' ? raw.firstName.trim().slice(0, 60) : '',
+    lastName: typeof raw.lastName === 'string' ? raw.lastName.trim().slice(0, 60) : '',
+    age: Number.isFinite(rawAge) ? Math.min(99, Math.max(15, Math.round(rawAge))) : 25,
+    occupation: normalizeOccupation(raw.occupation),
+    dependents: Number.isFinite(rawDeps) ? Math.min(10, Math.max(0, Math.round(rawDeps))) : 0,
+    emergencyTargetMonths: rawTarget === 6 ? 6 : 3,
+  };
+}
+
+function sanitizeNumber(value, fallback) {
+  const num = Number(value);
+  return Number.isFinite(num) && num >= 0 ? num : fallback;
+}
+
+function sanitizeCoverages(raw) {
+  if (!Array.isArray(raw)) return INITIAL_COVERAGES;
+  const valid = raw.filter(
+    (item) =>
+      item &&
+      typeof item === 'object' &&
+      typeof item.id === 'string' &&
+      item.name &&
+      typeof item.benefits === 'object'
+  );
+  return valid.length > 0 ? valid : INITIAL_COVERAGES;
+}
+
+function sanitizeTransactions(raw) {
+  if (!Array.isArray(raw)) return INITIAL_TRANSACTIONS;
+  const valid = raw.filter(
+    (item) =>
+      item &&
+      typeof item === 'object' &&
+      typeof item.id === 'string' &&
+      item.title &&
+      Number.isFinite(Number(item.amount))
+  );
+  return valid;
+}
+
+function sanitizeRiskProfile(raw) {
+  if (!raw || typeof raw !== 'object') return { ...INITIAL_RISK_PROFILE };
+  const allowedTolerance = ['low', 'moderate', 'high'];
+  return {
+    riskTolerance: allowedTolerance.includes(raw.riskTolerance) ? raw.riskTolerance : 'moderate',
+    assessmentCompleted: Boolean(raw.assessmentCompleted),
+    lastAssessedAt: typeof raw.lastAssessedAt === 'string' ? raw.lastAssessedAt : null,
+  };
+}
+
+function loadInitialState() {
+  try {
+    const raw = window.localStorage.getItem(STORAGE_KEY);
+    if (!raw) {
+      return {
+        userProfile: { ...INITIAL_USER_PROFILE },
+        financials: { ...INITIAL_FINANCIALS },
+        coverages: INITIAL_COVERAGES,
+        transactions: INITIAL_TRANSACTIONS,
+        riskProfile: { ...INITIAL_RISK_PROFILE },
+      };
+    }
+    const parsed = JSON.parse(raw);
+    if (!parsed || typeof parsed !== 'object') {
+      throw new Error('Invalid stored structure');
+    }
+
+    const userProfile = sanitizeUserProfile(parsed.userProfile);
+    const monthlyIncome = sanitizeNumber(parsed.monthlyIncome, INITIAL_FINANCIALS.monthlyIncome);
+    const monthlyExpenses = sanitizeNumber(parsed.monthlyExpenses, INITIAL_FINANCIALS.monthlyExpenses);
+    const monthlySavings = sanitizeNumber(
+      parsed.monthlySavings,
+      Math.max(0, monthlyIncome - monthlyExpenses)
+    );
+    const liquidEmergencyFund = sanitizeNumber(
+      parsed.emergencyFund ?? parsed.liquidEmergencyFund,
+      INITIAL_FINANCIALS.liquidEmergencyFund
+    );
+
+    return {
+      userProfile,
+      financials: {
+        ...INITIAL_FINANCIALS,
+        monthlyIncome,
+        monthlyExpenses,
+        monthlySavings,
+        liquidEmergencyFund,
+      },
+      coverages: sanitizeCoverages(parsed.coverageItems ?? parsed.coverages),
+      transactions: sanitizeTransactions(parsed.transactions),
+      riskProfile: sanitizeRiskProfile(parsed.riskProfile),
+    };
+  } catch {
+    return {
+      userProfile: { ...INITIAL_USER_PROFILE },
+      financials: { ...INITIAL_FINANCIALS },
+      coverages: INITIAL_COVERAGES,
+      transactions: INITIAL_TRANSACTIONS,
+      riskProfile: { ...INITIAL_RISK_PROFILE },
+    };
+  }
+}
+
 const FinanceContext = createContext(null);
 
 export function FinanceProvider({ children }) {
-  const [profile, setProfile] = useState(INITIAL_PROFILE);
-  const [coverages, setCoverages] = useState(INITIAL_COVERAGES);
-  const [transactions, setTransactions] = useState(INITIAL_TRANSACTIONS);
+  const [store, setStore] = useState(loadInitialState);
+  const { userProfile, financials, coverages, transactions, riskProfile } = store;
+  const [toast, setToast] = useState(null);
+  const toastTimerRef = useRef(null);
+
+  const showToast = useCallback((type, messageObj) => {
+    if (toastTimerRef.current) {
+      window.clearTimeout(toastTimerRef.current);
+    }
+    setToast({ id: Date.now(), type, message: messageObj });
+    toastTimerRef.current = window.setTimeout(() => {
+      setToast(null);
+    }, 3600);
+  }, []);
+
+  const dismissToast = useCallback(() => {
+    if (toastTimerRef.current) {
+      window.clearTimeout(toastTimerRef.current);
+    }
+    setToast(null);
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      if (toastTimerRef.current) {
+        window.clearTimeout(toastTimerRef.current);
+      }
+    };
+  }, []);
+
+  // Automatically persist all state to localStorage under 'protect360_data_v1'
+  useEffect(() => {
+    const payload = {
+      schemaVersion: 1,
+      updatedAt: new Date().toISOString(),
+      userProfile,
+      monthlyIncome: financials.monthlyIncome,
+      monthlyExpenses: financials.monthlyExpenses,
+      monthlySavings: financials.monthlySavings,
+      emergencyFund: financials.liquidEmergencyFund,
+      coverageItems: coverages,
+      transactions,
+      riskProfile,
+    };
+    try {
+      window.localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
+    } catch {
+      // Ignore storage quota or private browsing errors
+    }
+  }, [userProfile, financials, coverages, transactions, riskProfile]);
+
+  // Backward-compatible merged profile object for Round 1 & future modules
+  const profile = useMemo(
+    () => ({
+      ...financials,
+      emergencyTargetMonths: userProfile.emergencyTargetMonths,
+    }),
+    [financials, userProfile.emergencyTargetMonths]
+  );
 
   const derived = useMemo(() => {
     const savingsRatio =
@@ -193,7 +377,8 @@ export function FinanceProvider({ children }) {
         ? Math.round((profile.monthlySavings / profile.monthlyIncome) * 100)
         : 0;
 
-    const emergencyTarget = profile.monthlyExpenses * profile.emergencyTargetMonths;
+    const targetMonths = userProfile.emergencyTargetMonths || 3;
+    const emergencyTarget = profile.monthlyExpenses * targetMonths;
     const emergencyRunway =
       profile.monthlyExpenses > 0
         ? Number((profile.liquidEmergencyFund / profile.monthlyExpenses).toFixed(2))
@@ -211,8 +396,24 @@ export function FinanceProvider({ children }) {
     const personalPoliciesCount = coverages.filter((c) => c.type === 'personal').length;
     const hasUnknownCoverage = coverages.some((c) => !c.limitKnown);
 
+    // Adjust family benchmark smoothly if user has dependents (+200,000 THB per dependent)
+    const dependentsCount = Number(userProfile.dependents) || 0;
+    const activeBenchmarks = BASE_RISK_BENCHMARKS.map((cat) => {
+      if (cat.id === 'family' && dependentsCount > 0) {
+        return {
+          ...cat,
+          needed: cat.needed + dependentsCount * 200000,
+          rationale: {
+            th: `เงินสำรองดูแลคนในความดูแล ${dependentsCount} คน และค่าใช้จ่ายฉุกเฉินครอบครัว`,
+            en: `Family reserve tailored for ${dependentsCount} dependent${dependentsCount > 1 ? 's' : ''} & final expenses`,
+          },
+        };
+      }
+      return cat;
+    });
+
     // Conservative Estimation: any coverage with limitKnown === false contributes 0 THB
-    const protectionComparison = RISK_BENCHMARKS.map((cat) => {
+    const protectionComparison = activeBenchmarks.map((cat) => {
       const fromPolicies = coverages.reduce((sum, cov) => {
         if (!cov.limitKnown) return sum;
         return sum + (Number(cov.benefits?.[cat.id]) || 0);
@@ -255,7 +456,11 @@ export function FinanceProvider({ children }) {
           : 'low';
 
     const incomeLevel =
-      emergencyRunway < 1.5 ? 'high' : emergencyRunway < 3 ? 'moderate' : 'low';
+      emergencyRunway < targetMonths * 0.5
+        ? 'high'
+        : emergencyRunway < targetMonths
+          ? 'moderate'
+          : 'low';
 
     const assetsLevel = 'moderate';
 
@@ -271,7 +476,16 @@ export function FinanceProvider({ children }) {
         id: 'income-emergency',
         level: incomeLevel,
         titleKey: 'overview.riskIncomeTitle',
-        descKey: 'overview.riskIncomeDesc',
+        descObj:
+          emergencyRunway >= targetMonths
+            ? {
+                th: `เงินสำรองครบเกณฑ์ ${targetMonths} เดือนแล้ว (${emergencyRunway.toFixed(2)} เดือน)`,
+                en: `Emergency runway meets ${targetMonths}-month target (${emergencyRunway.toFixed(2)} mo.)`,
+              }
+            : {
+                th: `เงินสำรองต่ำกว่าเกณฑ์ ${targetMonths} เดือน (${emergencyRunway.toFixed(2)} เดือน)`,
+                en: `Runway below ${targetMonths}-month benchmark (${emergencyRunway.toFixed(2)} mo.)`,
+              },
         metric: `${emergencyRunway.toFixed(2)} mo`,
       },
       {
@@ -297,48 +511,244 @@ export function FinanceProvider({ children }) {
       totalProtectionGap,
       riskStatuses,
     };
-  }, [profile, coverages]);
+  }, [profile, coverages, userProfile.emergencyTargetMonths, userProfile.dependents]);
 
-  const updateProfile = (patch) => {
-    setProfile((prev) => ({ ...prev, ...patch }));
-  };
+  const updateUserProfile = useCallback(
+    (patch, { silent = false } = {}) => {
+      setStore((prev) => ({
+        ...prev,
+        userProfile: sanitizeUserProfile({ ...prev.userProfile, ...patch }),
+      }));
+      if (!silent) {
+        showToast('success', {
+          th: 'บันทึกข้อมูลส่วนตัวในอุปกรณ์เรียบร้อยแล้ว',
+          en: 'Profile saved locally on your device',
+        });
+      }
+    },
+    [showToast]
+  );
 
-  const addTransaction = (tx) => {
-    setTransactions((prev) => [{ ...tx, id: `tx-${Date.now()}` }, ...prev]);
-  };
+  const updateProfile = useCallback((patch) => {
+    if (!patch || typeof patch !== 'object') return;
+    setStore((prev) => {
+      const nextUserProfile =
+        'emergencyTargetMonths' in patch
+          ? {
+              ...prev.userProfile,
+              emergencyTargetMonths: Number(patch.emergencyTargetMonths) === 6 ? 6 : 3,
+            }
+          : prev.userProfile;
+      const { emergencyTargetMonths: _ignored, ...financialPatch } = patch;
+      const nextFinancials =
+        Object.keys(financialPatch).length > 0
+          ? { ...prev.financials, ...financialPatch }
+          : prev.financials;
+      return {
+        ...prev,
+        userProfile: nextUserProfile,
+        financials: nextFinancials,
+      };
+    });
+  }, []);
 
-  const addCoverage = (newCoverage) => {
-    setCoverages((prev) => [
+  const updateRiskProfile = useCallback((patch) => {
+    setStore((prev) => ({
       ...prev,
-      {
-        ...newCoverage,
-        id: `cov-${Date.now()}`,
-      },
-    ]);
-  };
+      riskProfile: sanitizeRiskProfile({ ...prev.riskProfile, ...patch }),
+    }));
+  }, []);
 
-  const updateCoverage = (id, patch) => {
-    setCoverages((prev) =>
-      prev.map((item) => (item.id === id ? { ...item, ...patch } : item))
-    );
-  };
+  const addTransaction = useCallback((tx) => {
+    setStore((prev) => ({
+      ...prev,
+      transactions: [{ ...tx, id: `tx-${Date.now()}` }, ...prev.transactions],
+    }));
+  }, []);
 
-  const resetDemoData = () => {
-    setProfile(INITIAL_PROFILE);
-    setCoverages(INITIAL_COVERAGES);
-    setTransactions(INITIAL_TRANSACTIONS);
-  };
+  const addCoverage = useCallback((newCoverage) => {
+    setStore((prev) => ({
+      ...prev,
+      coverages: [
+        ...prev.coverages,
+        {
+          ...newCoverage,
+          id: `cov-${Date.now()}`,
+        },
+      ],
+    }));
+  }, []);
+
+  const updateCoverage = useCallback((id, patch) => {
+    setStore((prev) => ({
+      ...prev,
+      coverages: prev.coverages.map((item) =>
+        item.id === id ? { ...item, ...patch } : item
+      ),
+    }));
+  }, []);
+
+  const exportUserData = useCallback(() => {
+    const cleanFirstName = (userProfile.firstName || '')
+      .trim()
+      .replace(/[^\w\u0E00-\u0E7F-]+/g, '-')
+      .replace(/^-+|-+$/g, '');
+    const fileName = `protect360-${cleanFirstName || 'first-jobber'}.json`;
+
+    const backupPayload = {
+      app: 'PROTECT360',
+      schemaVersion: 1,
+      privacy: 'PDPA-Safe / Zero-Login Local Backup (No PII)',
+      exportedAt: new Date().toISOString(),
+      userProfile,
+      monthlyIncome: financials.monthlyIncome,
+      monthlyExpenses: financials.monthlyExpenses,
+      monthlySavings: financials.monthlySavings,
+      emergencyFund: financials.liquidEmergencyFund,
+      coverageItems: coverages,
+      transactions,
+      riskProfile,
+    };
+
+    try {
+      const blob = new Blob([JSON.stringify(backupPayload, null, 2)], {
+        type: 'application/json;charset=utf-8',
+      });
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = fileName;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
+
+      showToast('success', {
+        th: `ดาวน์โหลดไฟล์สำรอง ${fileName} เรียบร้อยแล้ว`,
+        en: `Downloaded backup file ${fileName}`,
+      });
+      return { ok: true, fileName };
+    } catch {
+      showToast('error', {
+        th: 'ไม่สามารถสร้างไฟล์สำรองได้ กรุณาลองใหม่อีกครั้ง',
+        en: 'Could not export backup file. Please try again.',
+      });
+      return { ok: false };
+    }
+  }, [userProfile, financials, coverages, transactions, riskProfile, showToast]);
+
+  const importUserData = useCallback(
+    async (file) => {
+      if (!file) {
+        return { ok: false };
+      }
+
+      try {
+        const text = await file.text();
+        const parsed = JSON.parse(text);
+
+        if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) {
+          throw new Error('Root JSON must be an object');
+        }
+
+        const hasExpectedShape =
+          (parsed.userProfile && typeof parsed.userProfile === 'object') ||
+          Array.isArray(parsed.coverageItems) ||
+          Array.isArray(parsed.coverages) ||
+          Array.isArray(parsed.transactions) ||
+          typeof parsed.monthlyIncome === 'number';
+
+        if (!hasExpectedShape) {
+          throw new Error('Unrecognized PROTECT360 schema');
+        }
+
+        const nextUserProfile = sanitizeUserProfile(parsed.userProfile);
+        const nextIncome = sanitizeNumber(parsed.monthlyIncome, INITIAL_FINANCIALS.monthlyIncome);
+        const nextExpenses = sanitizeNumber(
+          parsed.monthlyExpenses,
+          INITIAL_FINANCIALS.monthlyExpenses
+        );
+        const nextSavings = sanitizeNumber(
+          parsed.monthlySavings,
+          Math.max(0, nextIncome - nextExpenses)
+        );
+        const nextEmergencyFund = sanitizeNumber(
+          parsed.emergencyFund ?? parsed.liquidEmergencyFund,
+          INITIAL_FINANCIALS.liquidEmergencyFund
+        );
+        const nextCoverages = sanitizeCoverages(parsed.coverageItems ?? parsed.coverages);
+        const nextTransactions = sanitizeTransactions(parsed.transactions);
+        const nextRiskProfile = sanitizeRiskProfile(parsed.riskProfile);
+
+        setStore({
+          userProfile: nextUserProfile,
+          financials: {
+            ...INITIAL_FINANCIALS,
+            monthlyIncome: nextIncome,
+            monthlyExpenses: nextExpenses,
+            monthlySavings: nextSavings,
+            liquidEmergencyFund: nextEmergencyFund,
+          },
+          coverages: nextCoverages,
+          transactions: nextTransactions,
+          riskProfile: nextRiskProfile,
+        });
+
+        const message = {
+          th: 'กู้คืนข้อมูลจากไฟล์สำรองเรียบร้อยแล้ว',
+          en: 'Backup restored successfully',
+        };
+        showToast('success', message);
+        return { ok: true, message, userProfile: nextUserProfile };
+      } catch {
+        const message = {
+          th: 'ไฟล์ไม่ถูกต้อง กรุณาเลือกไฟล์สำรองข้อมูล PROTECT360 (.json)',
+          en: 'Invalid backup file. Please upload a valid PROTECT360 .json file.',
+        };
+        showToast('error', message);
+        return { ok: false, message };
+      }
+    },
+    [showToast]
+  );
+
+  const resetDemoData = useCallback(() => {
+    setStore({
+      userProfile: { ...INITIAL_USER_PROFILE },
+      financials: { ...INITIAL_FINANCIALS },
+      coverages: INITIAL_COVERAGES,
+      transactions: INITIAL_TRANSACTIONS,
+      riskProfile: { ...INITIAL_RISK_PROFILE },
+    });
+    showToast('info', {
+      th: 'รีเซ็ตกลับเป็นโปรไฟล์ตัวอย่าง First Jobber เรียบร้อยแล้ว',
+      en: 'Reset to default First Jobber demo profile',
+    });
+  }, [showToast]);
 
   const value = {
+    userProfile,
     profile,
+    monthlyIncome: financials.monthlyIncome,
+    monthlyExpenses: financials.monthlyExpenses,
+    emergencyFund: financials.liquidEmergencyFund,
     coverages,
+    coverageItems: coverages,
     transactions,
+    riskProfile,
+    toast,
     ...derived,
+    updateUserProfile,
     updateProfile,
+    updateRiskProfile,
     addTransaction,
     addCoverage,
     updateCoverage,
+    exportUserData,
+    importUserData,
     resetDemoData,
+    showToast,
+    dismissToast,
   };
 
   return (

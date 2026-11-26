@@ -42,6 +42,9 @@ const TRANSLATIONS = {
       greeting: 'สวัสดี, First Jobber',
       philosophy: 'เข้าใจเงินของคุณ → เข้าใจความเสี่ยง → ตัดสินใจอย่างมั่นใจ',
       profileChip: 'โปรไฟล์ตัวอย่าง: วัยเริ่มทำงาน (First Jobber)',
+      savedLocally: 'บันทึกในเครื่องแล้ว',
+      savedLocallyTitle: 'ข้อมูลทั้งหมดเก็บไว้ในอุปกรณ์นี้เท่านั้น (PDPA-Safe / Zero-Login) คลิกเพื่อจัดการข้อมูล',
+      editProfile: 'ตั้งค่าโปรไฟล์และข้อมูลส่วนตัว',
     },
     overview: {
       // Card 1
@@ -87,6 +90,8 @@ const TRANSLATIONS = {
       effectiveZeroNote: 'นับเป็น ฿0 (ประเมินแบบระมัดระวัง)',
       tapToUpdate: 'คลิกเพื่อระบุวงเงิน',
       personalNoneNote: 'เบี้ยประกันส่วนตัว: ฿0 / เดือน (ยังไม่ทำเพิ่มเติม)',
+      cardHolderLabel: 'ผู้ถือสิทธิ',
+      editCardHolderHint: 'แก้ไขชื่อผู้ถือบัตร',
 
       // Card 6
       riskSectionTitle: 'สถานะความเสี่ยงรายหมวด',
@@ -135,6 +140,49 @@ const TRANSLATIONS = {
       monthlyPremium: 'เบี้ยประกันที่จ่ายเองต่อเดือน (บาท)',
       cancel: 'ยกเลิก',
       save: 'บันทึกและอัปเดตกราฟ',
+      cardHolderPreview: 'ชื่อผู้ถือสิทธิบนบัตร',
+    },
+    profileModal: {
+      title: 'โปรไฟล์และความเป็นส่วนตัว',
+      subtitle: 'ปรับข้อมูลเฉพาะบุคคลเพื่อคำนวณเป้าหมายเงินสำรองและความคุ้มครองแบบเรียลไทม์',
+      tabProfile: 'ข้อมูลส่วนตัว',
+      tabPrivacy: 'จัดการข้อมูล & ความเป็นส่วนตัว',
+      previewHeader: 'ตัวอย่างบัตรความคุ้มครอง PROTECT360',
+      previewCardTag: 'PROTECT360 • สิทธิส่วนบุคคล',
+      previewHolderLabel: 'ผู้ถือบัตร (CARD HOLDER)',
+      firstName: 'ชื่อ',
+      firstNamePlaceholder: 'เช่น กันต์ หรือ Somchai',
+      lastName: 'นามสกุล',
+      lastNamePlaceholder: 'เช่น อาชา หรือ Jaiyen',
+      age: 'อายุ (ปี)',
+      occupation: 'อาชีพ',
+      dependents: 'จำนวนคนในความดูแล',
+      dependentsHint: 'ใช้ปรับเกณฑ์ความคุ้มครองภาระครอบครัวในกราฟอัตโนมัติ (+฿200,000 ต่อคน)',
+      dependentsUnit: 'คน',
+      emergencyGoal: 'เป้าหมายเงินสำรองฉุกเฉิน',
+      goal3Months: '3 เดือน',
+      goal3Desc: 'มาตรฐานวัยเริ่มทำงาน',
+      goal6Months: '6 เดือน',
+      goal6Desc: 'อุ่นใจพิเศษ / รายได้ไม่แน่นอน',
+      saveBtn: 'บันทึกข้อมูล',
+      cancelBtn: 'ปิด',
+      pdpaTitle: 'Zero-Login & PDPA-Safe',
+      pdpaNotice:
+        'ข้อมูลทั้งหมดถูกเก็บไว้ในอุปกรณ์ของคุณเท่านั้น ไม่มีการส่งขึ้นเซิร์ฟเวอร์ (PDPA-Safe / Zero-Login)',
+      pdpaBullet1: 'ไม่เก็บอีเมล เบอร์โทรศัพท์ เลขบัตรประชาชน หรือรหัสผ่าน',
+      pdpaBullet2: 'บันทึกอัตโนมัติลงเบราว์เซอร์ (localStorage) รีเฟรชหน้าแล้วข้อมูลไม่หาย',
+      pdpaBullet3: 'ย้ายเครื่องหรือสำรองแผนการเงินได้ทันทีด้วยไฟล์ .json',
+      exportTitle: 'สำรองข้อมูล (Export .json)',
+      exportDesc: 'ดาวน์โหลดโปรไฟล์ รายการเงิน และแผนความคุ้มครองปัจจุบันเก็บไว้เป็นไฟล์สำรอง',
+      exportBtn: 'ดาวน์โหลด .json',
+      importTitle: 'กู้คืนข้อมูล (Import .json)',
+      importDesc: 'อัปโหลดไฟล์สำรอง PROTECT360 (.json) เพื่อกู้คืนข้อมูลบนเครื่องอื่นทันที',
+      importBtn: 'เลือกไฟล์ .json',
+      resetTitle: 'รีเซ็ตค่าเริ่มต้น (Reset Demo Data)',
+      resetDesc: 'ล้างค่าที่แก้ไขทั้งหมดและกลับไปเป็นโปรไฟล์ตัวอย่าง First Jobber สำหรับพรีเซนต์',
+      resetBtn: 'รีเซ็ตค่าเริ่มต้น',
+      resetConfirmBtn: 'กดยืนยันอีกครั้งเพื่อรีเซ็ต',
+      resetCancelHint: 'ยกเลิก',
     },
     placeholder: {
       readyBadge: 'พร้อมเชื่อมต่อใน Round 2–6',
@@ -180,6 +228,9 @@ const TRANSLATIONS = {
       greeting: 'Hello, First Jobber',
       philosophy: 'Understand Your Money → Understand Your Risks → Make Better Decisions',
       profileChip: 'Sample Profile: First Jobber (25k THB/mo)',
+      savedLocally: 'Saved locally',
+      savedLocallyTitle: 'All data stays 100% on your device (PDPA-Safe / Zero-Login). Click to manage data.',
+      editProfile: 'Edit personal profile & privacy settings',
     },
     overview: {
       // Card 1
@@ -225,6 +276,8 @@ const TRANSLATIONS = {
       effectiveZeroNote: 'Counted as ฿0 (Conservative Est.)',
       tapToUpdate: 'Click to enter limit',
       personalNoneNote: 'Personal Insurance: ฿0 / mo (None active)',
+      cardHolderLabel: 'Card Holder',
+      editCardHolderHint: 'Edit card holder name',
 
       // Card 6
       riskSectionTitle: 'Risk Status Overview',
@@ -273,6 +326,49 @@ const TRANSLATIONS = {
       monthlyPremium: 'Self-Paid Monthly Premium (THB)',
       cancel: 'Cancel',
       save: 'Save & Recalculate',
+      cardHolderPreview: 'Card Holder on Policy',
+    },
+    profileModal: {
+      title: 'Profile & PDPA Privacy',
+      subtitle: 'Personalize your emergency target and protection benchmarks in real time',
+      tabProfile: 'Personal Profile',
+      tabPrivacy: 'Data & PDPA Privacy',
+      previewHeader: 'Live PROTECT360 Coverage Card Preview',
+      previewCardTag: 'PROTECT360 • MEMBER CARD',
+      previewHolderLabel: 'CARD HOLDER',
+      firstName: 'First Name',
+      firstNamePlaceholder: 'e.g., Somchai or Alex',
+      lastName: 'Last Name',
+      lastNamePlaceholder: 'e.g., Jaiyen or Tan',
+      age: 'Age',
+      occupation: 'Occupation',
+      dependents: 'Dependents',
+      dependentsHint: 'Automatically adjusts your Family Support benchmark (+฿200,000 per dependent)',
+      dependentsUnit: 'dependents',
+      emergencyGoal: 'Emergency Fund Goal',
+      goal3Months: '3 Months',
+      goal3Desc: 'Standard First Jobber buffer',
+      goal6Months: '6 Months',
+      goal6Desc: 'Extra cushion / variable income',
+      saveBtn: 'Save Profile',
+      cancelBtn: 'Close',
+      pdpaTitle: 'Zero-Login & PDPA-Safe',
+      pdpaNotice:
+        'All data stays 100% on your device. No server tracking. (PDPA-Safe / Zero-Login)',
+      pdpaBullet1: 'No email, phone number, national ID, or password collected',
+      pdpaBullet2: 'Automatically saved in local browser storage (localStorage)',
+      pdpaBullet3: 'Export & restore your entire plan anytime as a portable .json file',
+      exportTitle: 'Backup Data (Export .json)',
+      exportDesc: 'Download your current profile, cashflow records, and coverage plan as a JSON file',
+      exportBtn: 'Download .json',
+      importTitle: 'Restore Data (Import .json)',
+      importDesc: 'Upload a PROTECT360 backup (.json) file to restore your plan on another device',
+      importBtn: 'Choose .json File',
+      resetTitle: 'Reset Demo Data',
+      resetDesc: 'Clear edits and restore the default First Jobber persona for live presentations',
+      resetBtn: 'Reset Demo Data',
+      resetConfirmBtn: 'Click again to confirm',
+      resetCancelHint: 'Cancel',
     },
     placeholder: {
       readyBadge: 'Ready for Round 2–6 Integration',
@@ -286,19 +382,54 @@ const TRANSLATIONS = {
   },
 };
 
+const LANG_STORAGE_KEY = 'protect360_lang';
+const FONT_STORAGE_KEY = 'protect360_font_scale';
+
 const LanguageContext = createContext(null);
 
 export function LanguageProvider({ children }) {
-  const [lang, setLang] = useState('TH');
-  const [fontStepIdx, setFontStepIdx] = useState(1); // default 100% (16px)
+  const [lang, setLang] = useState(() => {
+    try {
+      const saved = window.localStorage.getItem(LANG_STORAGE_KEY);
+      if (saved === 'TH' || saved === 'EN') return saved;
+    } catch {
+      // Ignore storage access errors
+    }
+    return 'TH';
+  });
+
+  const [fontStepIdx, setFontStepIdx] = useState(() => {
+    try {
+      const saved = window.localStorage.getItem(FONT_STORAGE_KEY);
+      if (saved !== null) {
+        const parsed = Number(saved);
+        if (Number.isInteger(parsed) && parsed >= 0 && parsed < FONT_STEPS.length) {
+          return parsed;
+        }
+      }
+    } catch {
+      // Ignore storage access errors
+    }
+    return 1; // default 100% (16px)
+  });
 
   useEffect(() => {
     document.documentElement.lang = lang === 'TH' ? 'th' : 'en';
+    try {
+      window.localStorage.setItem(LANG_STORAGE_KEY, lang);
+    } catch {
+      // Ignore storage access errors
+    }
   }, [lang]);
 
   useEffect(() => {
     const step = FONT_STEPS[fontStepIdx] || FONT_STEPS[1];
     document.documentElement.style.fontSize = `${step.px}px`;
+    try {
+      window.localStorage.setItem(FONT_STORAGE_KEY, String(fontStepIdx));
+    } catch {
+      // Ignore storage access errors
+    }
   }, [fontStepIdx]);
 
   const value = useMemo(() => {
