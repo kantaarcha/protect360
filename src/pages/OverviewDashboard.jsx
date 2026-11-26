@@ -95,6 +95,14 @@ export default function OverviewDashboard({ onNavigate, onOpenProfile }) {
       ? `อ้างอิงจากรายจ่าย ${formatTHB(profile.monthlyExpenses)} × ${targetMonths} เดือน`
       : `Based on ${formatTHB(profile.monthlyExpenses)} expenses × ${targetMonths} months`;
 
+  const remainingToGoal = Math.max(0, emergencyTarget - profile.liquidEmergencyFund);
+  const monthsToGoal =
+    remainingToGoal === 0
+      ? 0
+      : profile.monthlySavings > 0
+        ? Math.ceil(remainingToGoal / profile.monthlySavings)
+        : null;
+
   const runwayDisplay =
     lang === 'TH'
       ? `${t('overview.runwayPrefix')} ${emergencyRunway.toFixed(2)} ${t('overview.runwayUnit')}`
@@ -114,329 +122,359 @@ export default function OverviewDashboard({ onNavigate, onOpenProfile }) {
 
   return (
     <>
-      <div className="bento-grid-3col">
-        {/* ================= LEFT COLUMN (Cards 1, 2, 3) ================= */}
-        <div className="bento-col-left">
-          {/* CARD 1: Liquid Emergency Fund */}
-          <section className="bento-card emergency-card" aria-labelledby="emergency-fund-title">
-            <div>
-              <h2 id="emergency-fund-title" className="card-title">
-                {t('overview.emergencyTitle')}
-              </h2>
-              <p className="card-subtitle">{t('overview.emergencySub')}</p>
-            </div>
-
-            <div className="emergency-amount-row">
-              <div className="hero-amount tabular-nums">
-                {formatTHB(profile.liquidEmergencyFund)}
-              </div>
-              <span
-                className={`warning-pill tabular-nums ${
-                  emergencyRunway >= targetMonths ? 'safe' : ''
-                }`}
-              >
-                <span
-                  className={`status-dot ${emergencyRunway >= targetMonths ? 'green' : 'amber'}`}
-                  aria-hidden="true"
-                />
-                {runwayDisplay}
-              </span>
-            </div>
-
-            <div className="cta-button-row">
-              <button
-                id="cta-check-gap"
-                type="button"
-                className="btn-primary-gradient"
-                onClick={() => onNavigate('risk-analysis')}
-              >
-                <ShieldAlert size={16} strokeWidth={2.2} />
-                <span>{t('overview.ctaGap')}</span>
-              </button>
-              <button
-                id="cta-log-cashflow"
-                type="button"
-                className="btn-soft-gray"
-                onClick={() => onNavigate('autokey')}
-              >
-                <Sparkles size={15} strokeWidth={2.2} />
-                <span>{t('overview.ctaLog')}</span>
-              </button>
-            </div>
-          </section>
-
-          {/* CARD 2: 2x2 Summary Metric Mini-Cards */}
-          <section className="metrics-grid-2x2" aria-label="Monthly Financial Summary">
-            {/* Income */}
-            <article className="metric-mini-card">
-              <div className="metric-mini-top">
-                <span className="metric-icon-badge income" aria-hidden="true">
-                  <ArrowDownLeft size={18} strokeWidth={2.2} />
-                </span>
-                <span className="metric-pill-tag positive tabular-nums">100%</span>
-              </div>
+      <div className="bento-dashboard-stack">
+        {/* ================= ROW 1: FLUSH 3-COLUMN TOP BENTO ================= */}
+        <div className="bento-row-top">
+          {/* Col 1: Liquid Emergency Fund + 2x2 Summary Metrics */}
+          <div className="bento-left-stack">
+            {/* CARD 1: Liquid Emergency Fund */}
+            <section className="bento-card emergency-card" aria-labelledby="emergency-fund-title">
               <div>
-                <div className="metric-mini-label">{t('overview.metricIncome')}</div>
-                <div className="metric-mini-value tabular-nums">
-                  {formatTHB(profile.monthlyIncome)}
-                </div>
-              </div>
-            </article>
-
-            {/* Expenses */}
-            <article className="metric-mini-card">
-              <div className="metric-mini-top">
-                <span className="metric-icon-badge expense" aria-hidden="true">
-                  <ArrowUpRight size={18} strokeWidth={2.2} />
-                </span>
-                <span className="metric-pill-tag neutral tabular-nums">
-                  {profile.monthlyIncome > 0
-                    ? `${Math.round((profile.monthlyExpenses / profile.monthlyIncome) * 100)}%`
-                    : '0%'}
-                </span>
-              </div>
-              <div>
-                <div className="metric-mini-label">{t('overview.metricExpenses')}</div>
-                <div className="metric-mini-value tabular-nums">
-                  {formatTHB(profile.monthlyExpenses)}
-                </div>
-              </div>
-            </article>
-
-            {/* Savings */}
-            <article className="metric-mini-card">
-              <div className="metric-mini-top">
-                <span className="metric-icon-badge saving" aria-hidden="true">
-                  <PiggyBank size={18} strokeWidth={2.1} />
-                </span>
-                <span className="metric-pill-tag positive tabular-nums">
-                  +{savingsRatio}%
-                </span>
-              </div>
-              <div>
-                <div className="metric-mini-label">{t('overview.metricSavings')}</div>
-                <div className="metric-mini-value tabular-nums">
-                  {formatTHB(profile.monthlySavings)}
-                </div>
-              </div>
-            </article>
-
-            {/* Self-Paid Premium */}
-            <article className="metric-mini-card">
-              <div className="metric-mini-top">
-                <span className="metric-icon-badge premium" aria-hidden="true">
-                  <Shield size={18} strokeWidth={2.1} />
-                </span>
-                <span className="metric-pill-tag neutral tabular-nums">
-                  {profile.monthlyIncome > 0
-                    ? `${Math.round((selfPaidPremium / profile.monthlyIncome) * 100)}%`
-                    : '0%'}
-                </span>
-              </div>
-              <div>
-                <div className="metric-mini-label">{t('overview.metricPremium')}</div>
-                <div className="metric-mini-value tabular-nums">
-                  {formatTHB(selfPaidPremium)}
-                </div>
-              </div>
-            </article>
-          </section>
-
-          {/* CARD 3: Dynamic Emergency Goal Progress (3 or 6 Months) */}
-          <section className="bento-card goal-card" aria-labelledby="emergency-goal-title">
-            <div className="goal-header-row">
-              <div>
-                <h2 id="emergency-goal-title" className="card-title">
-                  {dynamicGoalTitle}
+                <h2 id="emergency-fund-title" className="card-title">
+                  {t('overview.emergencyTitle')}
                 </h2>
-                <p className="card-subtitle">{dynamicGoalFormula}</p>
+                <p className="card-subtitle">{t('overview.emergencySub')}</p>
               </div>
-              <span className="goal-pct-badge tabular-nums">{emergencyProgress}%</span>
+
+              <div className="emergency-amount-row">
+                <div className="hero-amount tabular-nums">
+                  {formatTHB(profile.liquidEmergencyFund)}
+                </div>
+                <span
+                  className={`warning-pill tabular-nums ${
+                    emergencyRunway >= targetMonths ? 'safe' : ''
+                  }`}
+                >
+                  <span
+                    className={`status-dot ${emergencyRunway >= targetMonths ? 'green' : 'amber'}`}
+                    aria-hidden="true"
+                  />
+                  {runwayDisplay}
+                </span>
+              </div>
+
+              <div className="cta-button-row">
+                <button
+                  id="cta-check-gap"
+                  type="button"
+                  className="btn-primary-gradient"
+                  onClick={() => onNavigate('risk-analysis')}
+                >
+                  <ShieldAlert size={16} strokeWidth={2.2} />
+                  <span>{t('overview.ctaGap')}</span>
+                </button>
+                <button
+                  id="cta-log-cashflow"
+                  type="button"
+                  className="btn-soft-gray"
+                  onClick={() => onNavigate('autokey')}
+                >
+                  <Sparkles size={15} strokeWidth={2.2} />
+                  <span>{t('overview.ctaLog')}</span>
+                </button>
+              </div>
+            </section>
+
+            {/* CARD 2: 2x2 Summary Metric Mini-Cards */}
+            <section className="metrics-grid-2x2" aria-label="Monthly Financial Summary">
+              {/* Income */}
+              <article className="metric-mini-card">
+                <div className="metric-mini-top">
+                  <span className="metric-icon-badge income" aria-hidden="true">
+                    <ArrowDownLeft size={18} strokeWidth={2.2} />
+                  </span>
+                  <span className="metric-pill-tag positive tabular-nums">100%</span>
+                </div>
+                <div>
+                  <div className="metric-mini-label">{t('overview.metricIncome')}</div>
+                  <div className="metric-mini-value tabular-nums">
+                    {formatTHB(profile.monthlyIncome)}
+                  </div>
+                </div>
+              </article>
+
+              {/* Expenses */}
+              <article className="metric-mini-card">
+                <div className="metric-mini-top">
+                  <span className="metric-icon-badge expense" aria-hidden="true">
+                    <ArrowUpRight size={18} strokeWidth={2.2} />
+                  </span>
+                  <span className="metric-pill-tag neutral tabular-nums">
+                    {profile.monthlyIncome > 0
+                      ? `${Math.round((profile.monthlyExpenses / profile.monthlyIncome) * 100)}%`
+                      : '0%'}
+                  </span>
+                </div>
+                <div>
+                  <div className="metric-mini-label">{t('overview.metricExpenses')}</div>
+                  <div className="metric-mini-value tabular-nums">
+                    {formatTHB(profile.monthlyExpenses)}
+                  </div>
+                </div>
+              </article>
+
+              {/* Savings */}
+              <article className="metric-mini-card">
+                <div className="metric-mini-top">
+                  <span className="metric-icon-badge saving" aria-hidden="true">
+                    <PiggyBank size={18} strokeWidth={2.1} />
+                  </span>
+                  <span className="metric-pill-tag positive tabular-nums">
+                    +{savingsRatio}%
+                  </span>
+                </div>
+                <div>
+                  <div className="metric-mini-label">{t('overview.metricSavings')}</div>
+                  <div className="metric-mini-value tabular-nums">
+                    {formatTHB(profile.monthlySavings)}
+                  </div>
+                </div>
+              </article>
+
+              {/* Self-Paid Premium */}
+              <article className="metric-mini-card">
+                <div className="metric-mini-top">
+                  <span className="metric-icon-badge premium" aria-hidden="true">
+                    <Shield size={18} strokeWidth={2.1} />
+                  </span>
+                  <span className="metric-pill-tag neutral tabular-nums">
+                    {profile.monthlyIncome > 0
+                      ? `${Math.round((selfPaidPremium / profile.monthlyIncome) * 100)}%`
+                      : '0%'}
+                  </span>
+                </div>
+                <div>
+                  <div className="metric-mini-label">{t('overview.metricPremium')}</div>
+                  <div className="metric-mini-value tabular-nums">
+                    {formatTHB(selfPaidPremium)}
+                  </div>
+                </div>
+              </article>
+            </section>
+          </div>
+
+          {/* Col 2: CARD 4 — Protection Gap Dual-Bar Comparison Chart */}
+          <ProtectionGapChart />
+
+          {/* Col 3: CARD 5 — My Coverage Cards */}
+          <section
+            className="bento-card coverage-card-panel"
+            aria-labelledby="my-coverage-title"
+          >
+            <div className="card-header" style={{ marginBottom: 4 }}>
+              <div>
+                <h2 id="my-coverage-title" className="card-title">
+                  {t('overview.cardsTitle')}
+                </h2>
+                <p className="card-subtitle">
+                  {coverages.length} {lang === 'TH' ? 'สิทธิที่บันทึกไว้' : 'active records'}
+                </p>
+              </div>
+
+              <button
+                id="add-coverage-btn"
+                type="button"
+                className="add-pill-btn"
+                onClick={openAddCoverage}
+              >
+                <Plus size={15} strokeWidth={2.5} />
+                <span>{t('overview.addCoverage')}</span>
+              </button>
             </div>
 
-            <div
-              className="progress-track"
-              role="progressbar"
-              aria-valuenow={emergencyProgress}
-              aria-valuemin={0}
-              aria-valuemax={100}
-              aria-label={dynamicGoalTitle}
-            >
-              <div
-                className="progress-fill"
-                style={{ width: `${emergencyProgress}%` }}
-              />
+            <div className="virtual-cards-stack">
+              {coverages.map((cov) => {
+                const isUnknown = !cov.limitKnown;
+                return (
+                  <div
+                    key={cov.id}
+                    id={`coverage-card-${cov.id}`}
+                    role="button"
+                    tabIndex={0}
+                    className={`virtual-policy-card ${cov.theme || 'navy'}`}
+                    onClick={() => openEditCoverage(cov)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        openEditCoverage(cov);
+                      }
+                    }}
+                  >
+                    <div className="vcard-top">
+                      <span className="vcard-provider">
+                        {t(cov.providerTag)}
+                        <span className="vcard-mask-inline tabular-nums">
+                          {' • '}
+                          {cov.cardNumberMask}
+                        </span>
+                      </span>
+                      <span className={`vcard-status-pill ${isUnknown ? 'warn' : ''}`}>
+                        <span
+                          className={`status-dot ${isUnknown ? 'amber' : 'green'}`}
+                          aria-hidden="true"
+                        />
+                        {isUnknown
+                          ? t('overview.unknownLimitStatus')
+                          : t('overview.activeStatus')}
+                      </span>
+                    </div>
+
+                    <div className="vcard-body">
+                      <div className="vcard-name">{t(cov.name)}</div>
+                      <div className="vcard-sub">{t(cov.subtitle)}</div>
+                    </div>
+
+                    <div className="vcard-footer">
+                      <button
+                        type="button"
+                        className="vcard-holder-btn"
+                        title={t('overview.editCardHolderHint')}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onOpenProfile?.('profile');
+                        }}
+                      >
+                        <span className="vcard-holder-label">
+                          {t('overview.cardHolderLabel')}
+                        </span>
+                        <span className="vcard-holder-name-row">
+                          <span className="vcard-holder-name">{cardHolderName}</span>
+                          <Pencil size={11} strokeWidth={2.3} className="vcard-holder-edit" aria-hidden="true" />
+                        </span>
+                      </button>
+
+                      <span className="vcard-action-hint">
+                        <span>
+                          {isUnknown
+                            ? t('overview.editLimitAction')
+                            : t('overview.viewDetails')}
+                        </span>
+                        <ChevronRight size={14} strokeWidth={2.4} className="cta-chevron" aria-hidden="true" />
+                      </span>
+                    </div>
+                  </div>
+                );
+              })}
             </div>
 
-            <div className="goal-numbers-row tabular-nums">
-              <span className="goal-saved-text">
-                {formatTHB(profile.liquidEmergencyFund)}
-              </span>
-              <span className="goal-limit-text">
-                {dynamicGoalTargetLabel}: {formatTHB(emergencyTarget)}
-              </span>
-            </div>
-
-            <div className="goal-footer-note">
-              <span>{t('overview.goalRemaining')}</span>
-              <span className="goal-remaining-val tabular-nums">
-                {formatTHB(Math.max(0, emergencyTarget - profile.liquidEmergencyFund))}
+            <div className="coverage-footnote">
+              <span>
+                {selfPaidPremium === 0
+                  ? t('overview.personalNoneNote')
+                  : `${t('overview.metricPremium')}: ${formatTHB(selfPaidPremium)} ${t(
+                      'overview.perMonth'
+                    )}`}
               </span>
             </div>
           </section>
         </div>
 
-        {/* ================= CENTER & RIGHT WORKSPACE (Cards 4, 5, 6, 7) ================= */}
-        <div className="bento-col-right-area">
-          {/* TOP PAIR: Card 4 (Chart) + Card 5 (Coverage Cards) */}
-          <div className="bento-top-pair">
-            {/* CARD 4: Effective Available vs Needed Coverage Dual-Bar Chart */}
-            <ProtectionGapChart />
-
-            {/* CARD 5: My Coverage Cards */}
-            <section
-              className="bento-card coverage-card-panel"
-              aria-labelledby="my-coverage-title"
+        {/* ================= ROW 2: FULL-WIDTH 3-COLUMN RISK STATUS STRIP ================= */}
+        <section className="risk-status-strip" aria-label={t('overview.riskSectionTitle')}>
+          {riskStatuses.map((risk) => (
+            <button
+              key={risk.id}
+              id={`risk-status-${risk.id}`}
+              type="button"
+              className="risk-mini-card"
+              onClick={() => onNavigate('risk-analysis')}
             >
-              <div className="card-header" style={{ marginBottom: 4 }}>
-                <div>
-                  <h2 id="my-coverage-title" className="card-title">
-                    {t('overview.cardsTitle')}
-                  </h2>
-                  <p className="card-subtitle">
-                    {coverages.length} {lang === 'TH' ? 'สิทธิที่บันทึกไว้' : 'active records'}
-                  </p>
-                </div>
-
-                <button
-                  id="add-coverage-btn"
-                  type="button"
-                  className="add-pill-btn"
-                  onClick={openAddCoverage}
-                >
-                  <Plus size={15} strokeWidth={2.5} />
-                  <span>{t('overview.addCoverage')}</span>
-                </button>
-              </div>
-
-              <div className="virtual-cards-stack">
-                {coverages.map((cov) => {
-                  const isUnknown = !cov.limitKnown;
-                  return (
-                    <div
-                      key={cov.id}
-                      id={`coverage-card-${cov.id}`}
-                      role="button"
-                      tabIndex={0}
-                      className={`virtual-policy-card ${cov.theme || 'navy'}`}
-                      onClick={() => openEditCoverage(cov)}
-                      onKeyDown={(e) => {
-                        if (e.key === 'Enter' || e.key === ' ') {
-                          e.preventDefault();
-                          openEditCoverage(cov);
-                        }
-                      }}
-                    >
-                      <div className="vcard-top">
-                        <span className="vcard-provider">
-                          {t(cov.providerTag)}
-                          <span className="vcard-mask-inline tabular-nums">
-                            {' • '}
-                            {cov.cardNumberMask}
-                          </span>
-                        </span>
-                        <span className={`vcard-status-pill ${isUnknown ? 'warn' : ''}`}>
-                          <span
-                            className={`status-dot ${isUnknown ? 'amber' : 'green'}`}
-                            aria-hidden="true"
-                          />
-                          {isUnknown
-                            ? t('overview.unknownLimitStatus')
-                            : t('overview.activeStatus')}
-                        </span>
-                      </div>
-
-                      <div className="vcard-body">
-                        <div className="vcard-name">{t(cov.name)}</div>
-                        <div className="vcard-sub">{t(cov.subtitle)}</div>
-                      </div>
-
-                      <div className="vcard-footer">
-                        <button
-                          type="button"
-                          className="vcard-holder-btn"
-                          title={t('overview.editCardHolderHint')}
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            onOpenProfile?.('profile');
-                          }}
-                        >
-                          <span className="vcard-holder-label">
-                            {t('overview.cardHolderLabel')}
-                          </span>
-                          <span className="vcard-holder-name-row">
-                            <span className="vcard-holder-name">{cardHolderName}</span>
-                            <Pencil size={11} strokeWidth={2.3} className="vcard-holder-edit" aria-hidden="true" />
-                          </span>
-                        </button>
-
-                        <span className="vcard-action-hint">
-                          <span>
-                            {isUnknown
-                              ? t('overview.editLimitAction')
-                              : t('overview.viewDetails')}
-                          </span>
-                          <ChevronRight size={14} strokeWidth={2.4} className="cta-chevron" aria-hidden="true" />
-                        </span>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-
-              <div className="coverage-footnote">
-                <span>
-                  {selfPaidPremium === 0
-                    ? t('overview.personalNoneNote')
-                    : `${t('overview.metricPremium')}: ${formatTHB(selfPaidPremium)} ${t(
-                        'overview.perMonth'
-                      )}`}
+              <div className="risk-mini-top">
+                <span className="risk-mini-title">{t(risk.titleKey)}</span>
+                <span className={`risk-badge ${risk.level}`}>
+                  <span
+                    className={`status-dot ${getRiskDotColor(risk.level)}`}
+                    aria-hidden="true"
+                  />
+                  {getRiskBadgeText(risk.level)}
                 </span>
               </div>
-            </section>
-          </div>
+              <p className="risk-mini-desc">
+                {risk.descObj ? t(risk.descObj) : t(risk.descKey)}
+              </p>
+              <div className="risk-mini-footer">
+                <span className="card-details-link">
+                  <span>{t('overview.viewDetails')}</span>
+                  <ChevronRight size={13} strokeWidth={2.4} className="cta-chevron" aria-hidden="true" />
+                </span>
+              </div>
+            </button>
+          ))}
+        </section>
 
-          {/* CARD 6: 3 Compact Risk Status Mini-Cards (Clickable -> Risk Analysis) */}
-          <section className="risk-status-strip" aria-label={t('overview.riskSectionTitle')}>
-            {riskStatuses.map((risk) => (
-              <button
-                key={risk.id}
-                id={`risk-status-${risk.id}`}
-                type="button"
-                className="risk-mini-card"
-                onClick={() => onNavigate('risk-analysis')}
+        {/* ================= ROW 3: FLUSH 2-COLUMN BOTTOM BENTO (Goal + Activities) ================= */}
+        <div className="bento-row-bottom">
+          {/* CARD 3: Dynamic Emergency Goal Progress & Saving Pace */}
+          <section className="bento-card goal-card" aria-labelledby="emergency-goal-title">
+            <div className="goal-top-section">
+              <div className="goal-header-row">
+                <div>
+                  <h2 id="emergency-goal-title" className="card-title">
+                    {dynamicGoalTitle}
+                  </h2>
+                  <p className="card-subtitle">{dynamicGoalFormula}</p>
+                </div>
+                <span className="goal-pct-badge tabular-nums">{emergencyProgress}%</span>
+              </div>
+
+              <div
+                className="progress-track"
+                role="progressbar"
+                aria-valuenow={emergencyProgress}
+                aria-valuemin={0}
+                aria-valuemax={100}
+                aria-label={dynamicGoalTitle}
               >
-                <div className="risk-mini-top">
-                  <span className="risk-mini-title">{t(risk.titleKey)}</span>
-                  <span className={`risk-badge ${risk.level}`}>
-                    <span
-                      className={`status-dot ${getRiskDotColor(risk.level)}`}
-                      aria-hidden="true"
-                    />
-                    {getRiskBadgeText(risk.level)}
-                  </span>
-                </div>
-                <p className="risk-mini-desc">
-                  {risk.descObj ? t(risk.descObj) : t(risk.descKey)}
-                </p>
-                <div className="risk-mini-footer">
-                  <span className="card-details-link">
-                    <span>{t('overview.viewDetails')}</span>
-                    <ChevronRight size={13} strokeWidth={2.4} className="cta-chevron" aria-hidden="true" />
-                  </span>
-                </div>
-              </button>
-            ))}
+                <div
+                  className="progress-fill"
+                  style={{ width: `${emergencyProgress}%` }}
+                />
+              </div>
+
+              <div className="goal-numbers-row tabular-nums">
+                <span className="goal-saved-text">
+                  {formatTHB(profile.liquidEmergencyFund)}
+                </span>
+                <span className="goal-limit-text">
+                  {dynamicGoalTargetLabel}: {formatTHB(emergencyTarget)}
+                </span>
+              </div>
+            </div>
+
+            <div className="goal-insights-grid tabular-nums">
+              <div className="goal-insight-tile">
+                <span className="goal-insight-label">
+                  {lang === 'TH' ? 'อัตราออมปัจจุบัน' : 'Monthly Saving Pace'}
+                </span>
+                <span className="goal-insight-val">
+                  {formatTHB(profile.monthlySavings)}
+                  <small>{t('overview.perMonth')}</small>
+                </span>
+              </div>
+              <div className="goal-insight-tile">
+                <span className="goal-insight-label">
+                  {lang === 'TH' ? 'คาดว่าจะครบเป้าใน' : 'Est. Time to Goal'}
+                </span>
+                <span className="goal-insight-val accent">
+                  {monthsToGoal === 0
+                    ? lang === 'TH'
+                      ? 'ครบแล้ว'
+                      : 'Reached'
+                    : monthsToGoal
+                      ? lang === 'TH'
+                        ? `~${monthsToGoal} เดือน`
+                        : `~${monthsToGoal} mo.`
+                      : '—'}
+                </span>
+              </div>
+            </div>
+
+            <div className="goal-footer-note">
+              <span>{t('overview.goalRemaining')}</span>
+              <span className="goal-remaining-val tabular-nums">
+                {formatTHB(remainingToGoal)}
+              </span>
+            </div>
           </section>
 
           {/* CARD 7: Recent Activities Table */}

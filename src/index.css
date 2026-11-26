@@ -3959,3 +3959,272 @@ p {
 .virtual-policy-card:hover .vcard-action-hint {
   background: rgba(255, 255, 255, 0.26);
 }
+
+/* ==========================================================================
+   Round 1.9.0: Flush Rectangular Desktop Bento Grid & Compact Mobile Cards
+   ========================================================================== */
+
+.bento-dashboard-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+/* Row 1: Flush 3-Column Top Bento (Equal Height Rectangle on Desktop) */
+.bento-row-top {
+  display: grid;
+  grid-template-columns: minmax(310px, 365px) minmax(0, 1.35fr) minmax(275px, 0.95fr);
+  gap: 18px;
+  align-items: stretch;
+}
+
+.bento-left-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  min-width: 0;
+  height: 100%;
+}
+
+.bento-left-stack .metrics-grid-2x2 {
+  flex: 1;
+  align-content: stretch;
+}
+
+.bento-left-stack .metric-mini-card {
+  justify-content: space-between;
+}
+
+.bento-row-top .chart-card,
+.bento-row-top .coverage-card-panel {
+  height: 100%;
+}
+
+.bento-row-top .chart-card .chart-inspector {
+  margin-top: auto;
+}
+
+.bento-row-top .coverage-card-panel .coverage-footnote {
+  margin-top: auto;
+}
+
+/* Row 2: Full-Width 3-Column Risk Status Strip */
+.bento-dashboard-stack > .risk-status-strip {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
+}
+
+/* Row 3: Flush 2-Column Bottom Bento (Aligned Vertically with Row 1 Col 1) */
+.bento-row-bottom {
+  display: grid;
+  grid-template-columns: minmax(310px, 365px) minmax(0, 1fr);
+  gap: 18px;
+  align-items: stretch;
+}
+
+.bento-row-bottom .goal-card,
+.bento-row-bottom .activities-card {
+  height: 100%;
+}
+
+/* Enhanced Card 3: Emergency Goal + Saving Pace Insights */
+.goal-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.goal-top-section {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.goal-insights-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.goal-insight-tile {
+  background: var(--bg-muted);
+  border: 1px solid var(--border-subtle);
+  border-radius: 14px;
+  padding: 11px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.goal-insight-label {
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  line-height: 1.3;
+}
+
+.goal-insight-val {
+  font-size: 0.94rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1.2;
+}
+
+.goal-insight-val small {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  margin-left: 2px;
+}
+
+.goal-insight-val.accent {
+  color: var(--accent-blue-text);
+}
+
+/* Compact Desktop / Small Laptop (<= 1320px): Keep Flush 2-Col Rectangle */
+@media (max-width: 1320px) and (min-width: 901px) {
+  .bento-row-top {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .bento-row-top .bento-left-stack {
+    order: 1;
+  }
+
+  .bento-row-top .coverage-card-panel {
+    order: 2;
+  }
+
+  .bento-row-top .chart-card {
+    grid-column: 1 / -1;
+    order: 3;
+    height: auto;
+  }
+
+  .bento-row-bottom {
+    grid-template-columns: minmax(290px, 340px) minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 1060px) and (min-width: 901px) {
+  .bento-row-bottom {
+    grid-template-columns: 1fr;
+  }
+
+  .bento-row-bottom .goal-card,
+  .bento-row-bottom .activities-card {
+    height: auto;
+  }
+}
+
+/* Tablet Portrait & Mobile (<= 900px): Eliminate Excess Card Height & Dead Whitespace */
+@media (max-width: 900px) {
+  .member-hero-main,
+  .header-greeting-group {
+    flex: none;
+    width: 100%;
+  }
+
+  .bento-dashboard-stack {
+    gap: 14px;
+  }
+
+  .bento-row-top,
+  .bento-row-bottom {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+
+  .bento-left-stack,
+  .bento-row-top .chart-card,
+  .bento-row-top .coverage-card-panel,
+  .bento-row-bottom .goal-card,
+  .bento-row-bottom .activities-card {
+    height: auto;
+  }
+
+  .bento-left-stack .metrics-grid-2x2 {
+    flex: none;
+  }
+
+  .bento-dashboard-stack > .risk-status-strip {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+}
+
+/* Mobile Phones (<= 640px): Crisp, Snug Bento Proportions with Zero Wasted Space */
+@media (max-width: 640px) {
+  .app-main {
+    gap: 14px;
+  }
+
+  .page-transition-stage {
+    gap: 14px;
+  }
+
+  .member-hero-card {
+    padding: 16px;
+    gap: 12px;
+    border-radius: 22px;
+  }
+
+  .member-hero-main {
+    gap: 4px;
+  }
+
+  .member-hero-title {
+    font-size: 1.32rem;
+  }
+
+  .member-hero-tagline {
+    font-size: 0.84rem;
+    line-height: 1.44;
+  }
+
+  .member-id-surface {
+    padding: 12px 13px;
+    gap: 8px;
+  }
+
+  .bento-card {
+    padding: 16px;
+    border-radius: 20px;
+  }
+
+  .emergency-card {
+    gap: 11px;
+  }
+
+  .metrics-grid-2x2 {
+    gap: 10px;
+  }
+
+  .metric-mini-card {
+    padding: 13px 14px;
+    gap: 8px;
+    border-radius: 18px;
+  }
+
+  .goal-card {
+    gap: 12px;
+  }
+
+  .goal-top-section {
+    gap: 10px;
+  }
+
+  .y-axis-ticks,
+  .bars-plot-area {
+    height: 155px;
+  }
+
+  .risk-mini-card {
+    padding: 14px 15px;
+    gap: 6px;
+    border-radius: 18px;
+  }
+}
