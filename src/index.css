@@ -1,0 +1,2435 @@
+/* ==========================================================================
+   PROTECT360 — Design System, Light/Dark Themes & Responsive Bento CSS
+   Typography: Google Sans (EN & Numbers) + Anuphan (TH)
+   ========================================================================== */
+
+:root {
+  /* Core Brand Tokens */
+  --navy: #142b4a;
+  --navy-soft: #1f3c64;
+  --royal: #2878c8;
+  --royal-deep: #1e56a0;
+  --teal: #22b8a7;
+
+  /* Light Theme Surface & Text Tokens */
+  --bg-canvas: #f4f6fa;
+  --bg-surface: #ffffff;
+  --bg-subtle: #eef2f7;
+  --bg-subtle-hover: #e3eaf3;
+  --bg-muted: #f7f9fc;
+  --bg-dock: rgba(255, 255, 255, 0.94);
+
+  --text-primary: #142b4a;
+  --text-secondary: #52647d;
+  --text-muted: #7688a2;
+  --border-subtle: rgba(20, 43, 74, 0.07);
+  --border-strong: rgba(20, 43, 74, 0.14);
+
+  /* Active Controls & Chart Tokens (Light) */
+  --active-pill-bg: #142b4a;
+  --active-pill-fg: #ffffff;
+  --chart-effective: #142b4a;
+  --chart-effective-zero: rgba(20, 43, 74, 0.18);
+  --chart-needed-top: #358ae0;
+  --chart-needed-bottom: #2878c8;
+  --chart-gridline: rgba(20, 43, 74, 0.09);
+  --chart-baseline: rgba(20, 43, 74, 0.16);
+  --chart-col-hover: rgba(40, 120, 200, 0.06);
+
+  /* Semantic Status Colors (Light) */
+  --warning: #f4b740;
+  --warning-bg: #fff7e6;
+  --warning-text: #9a6706;
+
+  --danger: #e76f6f;
+  --danger-bg: #fef0f0;
+  --danger-text: #b83b3b;
+
+  --success: #31a879;
+  --success-bg: #eaf8f2;
+  --success-text: #1c7c56;
+
+  --accent-blue-bg: rgba(40, 120, 200, 0.1);
+  --accent-blue-text: #1e56a0;
+  --accent-teal-bg: rgba(34, 184, 167, 0.13);
+
+  /* Radii */
+  --radius-card: 24px;
+  --radius-md: 16px;
+  --radius-sm: 12px;
+  --radius-pill: 9999px;
+
+  /* Shadows (Light) */
+  --shadow-card:
+    0 1px 2px rgba(20, 43, 74, 0.03),
+    0 10px 28px -8px rgba(20, 43, 74, 0.065);
+  --shadow-card-hover:
+    0 2px 6px rgba(20, 43, 74, 0.05),
+    0 16px 34px -10px rgba(20, 43, 74, 0.1);
+  --shadow-rail:
+    0 4px 20px -4px rgba(20, 43, 74, 0.08),
+    0 1px 3px rgba(20, 43, 74, 0.04);
+  --shadow-cta: 0 8px 18px -6px rgba(40, 120, 200, 0.45);
+  --shadow-virtual-card: 0 12px 26px -10px rgba(20, 43, 74, 0.35);
+
+  /* Transitions */
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+
+  /* Global Font Family: Google Sans + Anuphan */
+  --font-sans: 'Google Sans', 'Anuphan', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+/* ==========================================================================
+   Dark Theme Tokens (Refined Midnight Navy FinTech Palette)
+   ========================================================================== */
+
+[data-theme='dark'] {
+  --bg-canvas: #0b1320;
+  --bg-surface: #121e31;
+  --bg-subtle: #1b2b44;
+  --bg-subtle-hover: #243755;
+  --bg-muted: #16243a;
+  --bg-dock: rgba(18, 30, 49, 0.94);
+
+  --text-primary: #f0f5fc;
+  --text-secondary: #a8bdd8;
+  --text-muted: #7f97b7;
+  --border-subtle: rgba(148, 179, 219, 0.12);
+  --border-strong: rgba(148, 179, 219, 0.22);
+
+  /* Active Controls & Chart Tokens (Dark) */
+  --active-pill-bg: #2878c8;
+  --active-pill-fg: #ffffff;
+  --chart-effective: #22b8a7;
+  --chart-effective-zero: rgba(148, 179, 219, 0.25);
+  --chart-needed-top: #4ba0f2;
+  --chart-needed-bottom: #2878c8;
+  --chart-gridline: rgba(148, 179, 219, 0.12);
+  --chart-baseline: rgba(148, 179, 219, 0.22);
+  --chart-col-hover: rgba(75, 160, 242, 0.1);
+
+  /* Semantic Status Colors (Dark) */
+  --warning: #f5bf4f;
+  --warning-bg: rgba(244, 183, 64, 0.16);
+  --warning-text: #fbd075;
+
+  --danger: #ef7c7c;
+  --danger-bg: rgba(231, 111, 111, 0.17);
+  --danger-text: #ff9c9c;
+
+  --success: #3bc28c;
+  --success-bg: rgba(49, 168, 121, 0.16);
+  --success-text: #65dfb0;
+
+  --accent-blue-bg: rgba(75, 160, 242, 0.16);
+  --accent-blue-text: #7cc0ff;
+  --accent-teal-bg: rgba(34, 184, 167, 0.18);
+
+  /* Shadows (Dark) */
+  --shadow-card:
+    0 1px 2px rgba(0, 0, 0, 0.25),
+    0 12px 30px -10px rgba(0, 0, 0, 0.45);
+  --shadow-card-hover:
+    0 2px 8px rgba(0, 0, 0, 0.35),
+    0 18px 36px -10px rgba(0, 0, 0, 0.58);
+  --shadow-rail:
+    0 6px 24px -6px rgba(0, 0, 0, 0.5),
+    0 1px 3px rgba(0, 0, 0, 0.3);
+  --shadow-cta: 0 8px 20px -6px rgba(40, 120, 200, 0.55);
+  --shadow-virtual-card: 0 14px 30px -10px rgba(0, 0, 0, 0.55);
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background-color: var(--bg-canvas);
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  line-height: 1.5;
+  overflow-x: hidden;
+  transition: background-color 0.24s var(--ease), color 0.24s var(--ease);
+}
+
+button,
+input,
+select,
+textarea {
+  font-family: inherit;
+  color: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+h1,
+h2,
+h3,
+h4,
+p {
+  margin: 0;
+}
+
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: 'tnum' 1;
+}
+
+/* ==========================================================================
+   App Shell Layout
+   ========================================================================== */
+
+.app-shell {
+  display: flex;
+  min-height: 100vh;
+  max-width: 1640px;
+  margin: 0 auto;
+  padding: 20px 24px 32px;
+  gap: 22px;
+  align-items: flex-start;
+}
+
+/* Left Floating Vertical Navigation Rail (Desktop & iPad Landscape) */
+.sidebar-rail {
+  position: sticky;
+  top: 20px;
+  width: 98px;
+  flex-shrink: 0;
+  background: var(--bg-surface);
+  border-radius: 30px;
+  border: 1px solid var(--border-subtle);
+  box-shadow: var(--shadow-rail);
+  padding: 16px 8px 18px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  min-height: calc(100vh - 40px);
+  z-index: 30;
+  transition: background-color 0.24s var(--ease), border-color 0.24s var(--ease);
+}
+
+.rail-brand {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding-bottom: 12px;
+  margin-bottom: 2px;
+  width: 100%;
+  border-bottom: 1px solid var(--border-subtle);
+  background: transparent;
+  border-left: none;
+  border-right: none;
+  border-top: none;
+}
+
+.rail-brand-mark {
+  width: 46px;
+  height: 46px;
+  border-radius: 16px;
+  background: linear-gradient(145deg, var(--navy) 0%, #1d4a7c 100%);
+  display: grid;
+  place-items: center;
+  color: #ffffff;
+  box-shadow: 0 8px 16px -6px rgba(20, 43, 74, 0.38);
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.2s var(--ease);
+}
+
+.rail-brand:hover .rail-brand-mark {
+  transform: translateY(-1px) scale(1.02);
+}
+
+.rail-brand-mark::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 80% 20%, rgba(34, 184, 167, 0.38), transparent 60%);
+}
+
+.rail-brand-text {
+  font-size: 0.66rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: var(--text-primary);
+  line-height: 1.1;
+}
+
+.rail-nav-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 100%;
+  flex: 1;
+}
+
+.rail-nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  width: 100%;
+  padding: 8px 4px;
+  border: none;
+  background: transparent;
+  border-radius: 18px;
+  color: var(--text-secondary);
+  transition: background-color 0.2s var(--ease), color 0.2s var(--ease), transform 0.15s var(--ease);
+  text-align: center;
+}
+
+.rail-nav-item:hover {
+  background-color: var(--bg-muted);
+  color: var(--text-primary);
+}
+
+.rail-nav-item:focus-visible {
+  outline: 2px solid var(--royal);
+  outline-offset: 2px;
+}
+
+.rail-nav-icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 15px;
+  display: grid;
+  place-items: center;
+  transition: background-color 0.22s var(--ease), color 0.22s var(--ease), box-shadow 0.22s var(--ease);
+}
+
+.rail-nav-item.active .rail-nav-icon {
+  background: var(--active-pill-bg);
+  color: var(--active-pill-fg);
+  box-shadow: 0 8px 18px -6px rgba(20, 43, 74, 0.45);
+}
+
+[data-theme='dark'] .rail-nav-item.active .rail-nav-icon {
+  box-shadow: 0 8px 18px -6px rgba(40, 120, 200, 0.55);
+}
+
+.rail-nav-item.active {
+  color: var(--text-primary);
+}
+
+.rail-nav-label {
+  font-size: 0.68rem;
+  font-weight: 600;
+  line-height: 1.24;
+  max-width: 84px;
+  word-break: break-word;
+}
+
+.rail-nav-item.active .rail-nav-label {
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.rail-footer-badge {
+  margin-top: auto;
+  padding-top: 10px;
+  border-top: 1px solid var(--border-subtle);
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+}
+
+.oic-mini-chip {
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: var(--teal);
+  background: var(--accent-teal-bg);
+  padding: 4px 8px;
+  border-radius: var(--radius-pill);
+}
+
+/* Mobile & Portrait iPad Compact Brand Header (hidden on Desktop) */
+.mobile-brand-bar {
+  display: none;
+  align-items: center;
+  gap: 8px;
+  border: none;
+  background: transparent;
+  padding: 0;
+  margin-bottom: 6px;
+  width: fit-content;
+}
+
+.mobile-brand-mark {
+  width: 30px;
+  height: 30px;
+  border-radius: 10px;
+  background: linear-gradient(145deg, var(--navy) 0%, #2878c8 100%);
+  color: #ffffff;
+  display: grid;
+  place-items: center;
+}
+
+.mobile-brand-name {
+  font-size: 0.88rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  color: var(--text-primary);
+}
+
+/* Main Content Column */
+.app-main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* ==========================================================================
+   Top Header & Floating Pill Control Bar
+   ========================================================================== */
+
+.top-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.header-greeting-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+  flex: 1 1 280px;
+}
+
+.header-title-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.header-title {
+  font-size: clamp(1.35rem, 2.2vw, 1.7rem);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--text-primary);
+  line-height: 1.22;
+}
+
+.header-philosophy {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  line-height: 1.45;
+}
+
+/* Top-Right Floating Pill Bar */
+.top-pill-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--bg-surface);
+  padding: 6px 8px;
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--border-subtle);
+  box-shadow: var(--shadow-card);
+  flex-wrap: wrap;
+  position: relative;
+  max-width: 100%;
+  transition: background-color 0.24s var(--ease), border-color 0.24s var(--ease);
+}
+
+/* 1) Language Toggle Pill */
+.lang-toggle {
+  display: inline-flex;
+  align-items: center;
+  background: var(--bg-subtle);
+  border-radius: var(--radius-pill);
+  padding: 3px;
+  gap: 2px;
+}
+
+.lang-btn {
+  border: none;
+  background: transparent;
+  padding: 6px 12px;
+  border-radius: var(--radius-pill);
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+  transition: background-color 0.2s var(--ease), color 0.2s var(--ease), box-shadow 0.2s var(--ease);
+}
+
+.lang-btn.active {
+  background: var(--active-pill-bg);
+  color: var(--active-pill-fg);
+  box-shadow: 0 3px 8px -2px rgba(20, 43, 74, 0.35);
+}
+
+/* 2) Font Size Scaler Pill */
+.font-scaler {
+  display: inline-flex;
+  align-items: center;
+  background: var(--bg-subtle);
+  border-radius: var(--radius-pill);
+  padding: 3px;
+  gap: 2px;
+}
+
+.font-btn {
+  border: none;
+  background: transparent;
+  padding: 6px 10px;
+  border-radius: var(--radius-pill);
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  transition: background-color 0.18s var(--ease), opacity 0.18s var(--ease);
+}
+
+.font-btn:hover:not(:disabled) {
+  background: var(--bg-surface);
+}
+
+.font-btn:disabled {
+  opacity: 0.36;
+  cursor: not-allowed;
+}
+
+.font-scale-readout {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  padding: 0 4px;
+  min-width: 38px;
+  text-align: center;
+  background: transparent;
+  border: none;
+}
+
+/* 3) Light / Dark Theme Toggle Pill */
+.theme-toggle-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  border: 1px solid var(--border-subtle);
+  background: var(--bg-subtle);
+  color: var(--text-primary);
+  padding: 7px 12px;
+  border-radius: var(--radius-pill);
+  font-size: 0.76rem;
+  font-weight: 600;
+  transition: background-color 0.2s var(--ease), border-color 0.2s var(--ease), transform 0.15s var(--ease);
+  white-space: nowrap;
+}
+
+.theme-toggle-btn:hover {
+  background: var(--bg-subtle-hover);
+  border-color: var(--border-strong);
+}
+
+.theme-icon.sun {
+  color: #f5bf4f;
+}
+
+.theme-icon.moon {
+  color: var(--royal);
+}
+
+/* 4) Neutral No-Sales Badge */
+.neutral-badge-wrap {
+  position: relative;
+}
+
+.neutral-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid rgba(34, 184, 167, 0.32);
+  background: linear-gradient(135deg, rgba(34, 184, 167, 0.14), rgba(40, 120, 200, 0.1));
+  color: var(--text-primary);
+  padding: 7px 13px;
+  border-radius: var(--radius-pill);
+  font-size: 0.78rem;
+  font-weight: 700;
+  transition: background-color 0.2s var(--ease), border-color 0.2s var(--ease);
+  white-space: nowrap;
+}
+
+.neutral-badge:hover {
+  border-color: rgba(34, 184, 167, 0.6);
+}
+
+.neutral-badge-icon {
+  color: var(--teal);
+  flex-shrink: 0;
+}
+
+.neutral-popover {
+  position: absolute;
+  top: calc(100% + 10px);
+  right: 0;
+  width: min(310px, calc(100vw - 32px));
+  background: var(--bg-surface);
+  border: 1px solid var(--border-strong);
+  border-radius: 18px;
+  padding: 16px;
+  box-shadow: 0 18px 40px -12px rgba(0, 0, 0, 0.28);
+  z-index: 80;
+  animation: fadeSlideUp 0.18s var(--ease);
+}
+
+.neutral-popover h4 {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 6px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.neutral-popover p {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  margin-bottom: 10px;
+}
+
+.neutral-popover-foot {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--accent-blue-text);
+  background: var(--accent-blue-bg);
+  padding: 7px 10px;
+  border-radius: 10px;
+}
+
+/* ==========================================================================
+   Bento Card Base & 3-Column Overview Dashboard Grid
+   ========================================================================== */
+
+.bento-card {
+  background: var(--bg-surface);
+  border-radius: var(--radius-card);
+  border: 1px solid var(--border-subtle);
+  box-shadow: var(--shadow-card);
+  padding: 22px 24px;
+  min-width: 0;
+  transition:
+    background-color 0.24s var(--ease),
+    border-color 0.24s var(--ease),
+    box-shadow 0.24s var(--ease);
+}
+
+.bento-card:hover {
+  box-shadow: var(--shadow-card-hover);
+}
+
+.card-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+
+.card-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: -0.01em;
+  line-height: 1.32;
+}
+
+.card-subtitle {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  margin-top: 2px;
+  line-height: 1.4;
+}
+
+/* 3-Column Bento Dashboard Grid */
+.bento-grid-3col {
+  display: grid;
+  grid-template-columns: minmax(320px, 375px) minmax(0, 1fr);
+  gap: 20px;
+  align-items: start;
+}
+
+.bento-col-left {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  min-width: 0;
+}
+
+.bento-col-right-area {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  min-width: 0;
+}
+
+.bento-top-pair {
+  display: grid;
+  grid-template-columns: minmax(0, 1.35fr) minmax(280px, 0.95fr);
+  gap: 20px;
+  align-items: stretch;
+}
+
+/* ==========================================================================
+   Card 1: Liquid Emergency Fund (Overflow-Safe Buttons)
+   ========================================================================== */
+
+.emergency-card {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  position: relative;
+}
+
+.emergency-amount-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.hero-amount {
+  font-size: clamp(1.9rem, 2.5vw, 2.35rem);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  color: var(--text-primary);
+  line-height: 1.1;
+  overflow-wrap: anywhere;
+}
+
+.warning-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 6px 12px;
+  border-radius: var(--radius-pill);
+  background: var(--warning-bg);
+  color: var(--warning-text);
+  font-size: 0.78rem;
+  font-weight: 700;
+  width: fit-content;
+  max-width: 100%;
+}
+
+.warning-pill.safe {
+  background: var(--success-bg);
+  color: var(--success-text);
+}
+
+.status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  display: inline-block;
+}
+
+.status-dot.amber {
+  background: var(--warning);
+}
+
+.status-dot.red {
+  background: var(--danger);
+}
+
+.status-dot.green {
+  background: var(--success);
+}
+
+.status-dot.teal {
+  background: var(--teal);
+}
+
+/* Flexible Wrapping CTA Row — Never Clips When Font Scales Up! */
+.cta-button-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 4px;
+  width: 100%;
+}
+
+.cta-button-row > button {
+  flex: 1 1 142px;
+  min-width: 0;
+}
+
+.btn-primary-gradient {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  padding: 12px 15px;
+  border-radius: var(--radius-pill);
+  border: none;
+  background: linear-gradient(135deg, var(--royal) 0%, var(--royal-deep) 100%);
+  color: #ffffff;
+  font-size: 0.84rem;
+  font-weight: 600;
+  line-height: 1.3;
+  text-align: center;
+  box-shadow: var(--shadow-cta);
+  transition: transform 0.2s var(--ease), box-shadow 0.2s var(--ease), filter 0.2s var(--ease);
+}
+
+.btn-primary-gradient svg,
+.btn-soft-gray svg {
+  flex-shrink: 0;
+}
+
+.btn-primary-gradient:hover {
+  transform: translateY(-1px);
+  filter: brightness(1.06);
+  box-shadow: 0 12px 22px -6px rgba(40, 120, 200, 0.55);
+}
+
+.btn-primary-gradient:active {
+  transform: translateY(0);
+}
+
+.btn-soft-gray {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  padding: 12px 15px;
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--border-subtle);
+  background: var(--bg-subtle);
+  color: var(--text-primary);
+  font-size: 0.84rem;
+  font-weight: 600;
+  line-height: 1.3;
+  text-align: center;
+  transition: background-color 0.2s var(--ease), transform 0.2s var(--ease);
+}
+
+.btn-soft-gray:hover {
+  background: var(--bg-subtle-hover);
+  transform: translateY(-1px);
+}
+
+/* ==========================================================================
+   Card 2: 2x2 Summary Metric Mini-Cards
+   ========================================================================== */
+
+.metrics-grid-2x2 {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.metric-mini-card {
+  background: var(--bg-surface);
+  border-radius: 20px;
+  border: 1px solid var(--border-subtle);
+  box-shadow: var(--shadow-card);
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 0;
+  transition: transform 0.2s var(--ease), box-shadow 0.2s var(--ease), background-color 0.24s var(--ease);
+}
+
+.metric-mini-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-card-hover);
+}
+
+.metric-mini-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.metric-icon-badge {
+  width: 34px;
+  height: 34px;
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+}
+
+.metric-icon-badge.income {
+  background: var(--success-bg);
+  color: var(--success);
+}
+
+.metric-icon-badge.expense {
+  background: var(--bg-subtle);
+  color: var(--text-primary);
+}
+
+.metric-icon-badge.saving {
+  background: var(--accent-teal-bg);
+  color: var(--teal);
+}
+
+.metric-icon-badge.premium {
+  background: var(--accent-blue-bg);
+  color: var(--royal);
+}
+
+[data-theme='dark'] .metric-icon-badge.premium {
+  color: #6ab5ff;
+}
+
+.metric-pill-tag {
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: var(--radius-pill);
+}
+
+.metric-pill-tag.positive {
+  background: var(--success-bg);
+  color: var(--success-text);
+}
+
+.metric-pill-tag.neutral {
+  background: var(--bg-subtle);
+  color: var(--text-secondary);
+}
+
+.metric-mini-label {
+  font-size: 0.76rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  line-height: 1.32;
+}
+
+.metric-mini-value {
+  font-size: clamp(1.05rem, 1.5vw, 1.25rem);
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: -0.02em;
+  line-height: 1.18;
+  overflow-wrap: anywhere;
+}
+
+/* ==========================================================================
+   Card 3: 3-Month Emergency Goal Progress Bar
+   ========================================================================== */
+
+.goal-card {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.goal-header-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.goal-pct-badge {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--accent-blue-text);
+  background: var(--accent-blue-bg);
+  padding: 4px 11px;
+  border-radius: var(--radius-pill);
+  flex-shrink: 0;
+}
+
+.progress-track {
+  width: 100%;
+  height: 12px;
+  background: var(--bg-subtle);
+  border-radius: var(--radius-pill);
+  overflow: hidden;
+  position: relative;
+}
+
+.progress-fill {
+  height: 100%;
+  border-radius: var(--radius-pill);
+  background: linear-gradient(90deg, var(--royal) 0%, var(--teal) 100%);
+  transition: width 0.5s var(--ease);
+}
+
+.goal-numbers-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.goal-saved-text {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.goal-limit-text {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.goal-footer-note {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  flex-wrap: wrap;
+  padding-top: 10px;
+  border-top: 1px solid var(--border-subtle);
+  font-size: 0.78rem;
+  color: var(--text-muted);
+}
+
+.goal-remaining-val {
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+/* ==========================================================================
+   Card 4: Protection Gap Dual-Bar Comparison Chart
+   ========================================================================== */
+
+.chart-card {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.chart-header-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.chart-legend-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 0.76rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.legend-swatch {
+  width: 11px;
+  height: 11px;
+  border-radius: 4px;
+  flex-shrink: 0;
+}
+
+.legend-swatch.navy {
+  background: var(--chart-effective);
+}
+
+.legend-swatch.royal {
+  background: var(--chart-needed-bottom);
+}
+
+.conservative-banner {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 0.76rem;
+  font-weight: 600;
+  line-height: 1.38;
+  color: var(--warning-text);
+  background: var(--warning-bg);
+  padding: 7px 12px;
+  border-radius: 12px;
+  width: fit-content;
+  max-width: 100%;
+}
+
+.conservative-banner svg {
+  flex-shrink: 0;
+}
+
+.dual-bar-scroll {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: 4px;
+}
+
+.dual-bar-stage {
+  position: relative;
+  display: grid;
+  grid-template-columns: 46px minmax(0, 1fr);
+  gap: 10px;
+  align-items: stretch;
+  padding-top: 8px;
+  min-width: 410px;
+}
+
+.y-axis-ticks {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 185px;
+  padding-bottom: 2px;
+  text-align: right;
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.bars-plot-area {
+  position: relative;
+  height: 185px;
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 8px;
+  align-items: end;
+  padding: 0 4px;
+}
+
+.plot-gridlines {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  pointer-events: none;
+}
+
+.plot-gridline {
+  width: 100%;
+  border-top: 1px dashed var(--chart-gridline);
+}
+
+.plot-gridline:last-child {
+  border-top-style: solid;
+  border-top-color: var(--chart-baseline);
+}
+
+.bar-group-col {
+  position: relative;
+  z-index: 2;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: center;
+  cursor: pointer;
+  border-radius: 12px;
+  padding: 0 2px;
+  transition: background-color 0.18s var(--ease);
+}
+
+.bar-group-col:hover,
+.bar-group-col.selected {
+  background: var(--chart-col-hover);
+}
+
+.bar-pair {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 5px;
+  height: 100%;
+  width: 100%;
+}
+
+.bar-column {
+  width: 16px;
+  max-width: 38%;
+  border-radius: 8px 8px 3px 3px;
+  transition: height 0.5s var(--ease), filter 0.2s var(--ease);
+  position: relative;
+}
+
+.bar-column.effective {
+  background: var(--chart-effective);
+}
+
+.bar-column.effective.zero-val {
+  min-height: 4px;
+  background: var(--chart-effective-zero);
+}
+
+.bar-column.needed {
+  background: linear-gradient(180deg, var(--chart-needed-top) 0%, var(--chart-needed-bottom) 100%);
+}
+
+.bar-group-col:hover .bar-column,
+.bar-group-col.selected .bar-column {
+  filter: brightness(1.1);
+}
+
+.x-axis-labels {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 8px;
+  grid-column: 2;
+  padding: 6px 4px 0;
+}
+
+.x-axis-label {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-align: center;
+  line-height: 1.25;
+  cursor: pointer;
+}
+
+.x-axis-label.selected {
+  color: var(--text-primary);
+  font-weight: 700;
+}
+
+/* Interactive Chart Inspector Strip */
+.chart-inspector {
+  background: var(--bg-muted);
+  border: 1px solid var(--border-subtle);
+  border-radius: 16px;
+  padding: 12px 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.inspector-left {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  flex: 1 1 200px;
+}
+
+.inspector-title {
+  font-size: 0.84rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.inspector-rationale {
+  font-size: 0.74rem;
+  color: var(--text-secondary);
+  line-height: 1.4;
+}
+
+.inspector-metrics {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.inspector-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.inspector-stat-label {
+  font-size: 0.68rem;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.inspector-stat-val {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.inspector-stat-val.gap {
+  color: var(--danger-text);
+}
+
+/* ==========================================================================
+   Card 5: My Coverage Cards (Sleek Virtual Cards)
+   ========================================================================== */
+
+.coverage-card-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.add-pill-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 7px 13px;
+  border-radius: var(--radius-pill);
+  border: 1px solid rgba(40, 120, 200, 0.28);
+  background: var(--accent-blue-bg);
+  color: var(--accent-blue-text);
+  font-size: 0.78rem;
+  font-weight: 700;
+  transition: background-color 0.2s var(--ease), transform 0.15s var(--ease);
+  white-space: nowrap;
+}
+
+.add-pill-btn:hover {
+  filter: brightness(1.06);
+  transform: translateY(-1px);
+}
+
+.virtual-cards-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  flex: 1;
+}
+
+.virtual-policy-card {
+  position: relative;
+  border-radius: 20px;
+  padding: 16px 18px;
+  color: #ffffff;
+  overflow: hidden;
+  box-shadow: var(--shadow-virtual-card);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  text-align: left;
+  width: 100%;
+  transition: transform 0.22s var(--ease), box-shadow 0.22s var(--ease);
+}
+
+.virtual-policy-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 16px 30px -10px rgba(20, 43, 74, 0.5);
+}
+
+.virtual-policy-card.navy {
+  background: linear-gradient(135deg, #142b4a 0%, #1d3f6b 62%, #194d78 100%);
+}
+
+.virtual-policy-card.royal {
+  background: linear-gradient(135deg, #2878c8 0%, #1e56a0 55%, #142b4a 100%);
+}
+
+.virtual-policy-card.teal {
+  background: linear-gradient(135deg, #1a6977 0%, #1f8a88 55%, #142b4a 100%);
+}
+
+.virtual-policy-card::before {
+  content: '';
+  position: absolute;
+  top: -35%;
+  right: -12%;
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.16) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.virtual-policy-card::after {
+  content: '';
+  position: absolute;
+  bottom: -45%;
+  left: -10%;
+  width: 140px;
+  height: 140px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(34, 184, 167, 0.22) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.vcard-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  flex-wrap: wrap;
+  position: relative;
+  z-index: 1;
+}
+
+.vcard-provider {
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.vcard-status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 9px;
+  border-radius: var(--radius-pill);
+  font-size: 0.69rem;
+  font-weight: 700;
+  background: rgba(255, 255, 255, 0.16);
+  backdrop-filter: blur(6px);
+  color: #ffffff;
+}
+
+.vcard-status-pill.warn {
+  background: rgba(244, 183, 64, 0.26);
+  color: #ffe6a8;
+}
+
+.vcard-body {
+  position: relative;
+  z-index: 1;
+}
+
+.vcard-name {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #ffffff;
+  line-height: 1.28;
+}
+
+.vcard-sub {
+  font-size: 0.76rem;
+  color: rgba(255, 255, 255, 0.84);
+  margin-top: 3px;
+  line-height: 1.38;
+}
+
+.vcard-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  flex-wrap: wrap;
+  position: relative;
+  z-index: 1;
+  padding-top: 8px;
+  border-top: 1px solid rgba(255, 255, 255, 0.15);
+  font-size: 0.72rem;
+  color: rgba(255, 255, 255, 0.84);
+}
+
+.vcard-action-hint {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.coverage-footnote {
+  font-size: 0.76rem;
+  color: var(--text-secondary);
+  background: var(--bg-muted);
+  padding: 10px 12px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+/* ==========================================================================
+   Card 6: 3 Compact Risk Status Mini-Cards
+   ========================================================================== */
+
+.risk-status-strip {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 14px;
+}
+
+.risk-mini-card {
+  background: var(--bg-surface);
+  border-radius: 20px;
+  border: 1px solid var(--border-subtle);
+  box-shadow: var(--shadow-card);
+  padding: 15px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  cursor: pointer;
+  text-align: left;
+  min-width: 0;
+  transition: transform 0.2s var(--ease), box-shadow 0.2s var(--ease), background-color 0.24s var(--ease);
+}
+
+.risk-mini-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-card-hover);
+}
+
+.risk-mini-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.risk-mini-title {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.risk-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: var(--radius-pill);
+  font-size: 0.72rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.risk-badge.high {
+  background: var(--danger-bg);
+  color: var(--danger-text);
+}
+
+.risk-badge.moderate {
+  background: var(--warning-bg);
+  color: var(--warning-text);
+}
+
+.risk-badge.low {
+  background: var(--success-bg);
+  color: var(--success-text);
+}
+
+.risk-mini-desc {
+  font-size: 0.76rem;
+  color: var(--text-secondary);
+  line-height: 1.42;
+}
+
+/* ==========================================================================
+   Card 7: Recent Activities (Desktop/iPad Table + Mobile Card List)
+   ========================================================================== */
+
+.activities-card {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.activities-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.activities-controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  max-width: 100%;
+}
+
+.search-input-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  flex: 1 1 200px;
+}
+
+.search-input-icon {
+  position: absolute;
+  left: 12px;
+  color: var(--text-muted);
+  pointer-events: none;
+}
+
+.search-input {
+  height: 38px;
+  padding: 0 14px 0 36px;
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--border-strong);
+  background: var(--bg-muted);
+  font-size: 0.82rem;
+  color: var(--text-primary);
+  width: 100%;
+  min-width: 190px;
+  outline: none;
+  transition: border-color 0.2s var(--ease), background-color 0.2s var(--ease);
+}
+
+.search-input::placeholder {
+  color: var(--text-muted);
+}
+
+.search-input:focus {
+  border-color: var(--royal);
+  background: var(--bg-surface);
+}
+
+.filter-pills {
+  display: inline-flex;
+  align-items: center;
+  background: var(--bg-subtle);
+  padding: 3px;
+  border-radius: var(--radius-pill);
+  gap: 2px;
+  flex-wrap: wrap;
+}
+
+.filter-pill-btn {
+  border: none;
+  background: transparent;
+  padding: 6px 12px;
+  border-radius: var(--radius-pill);
+  font-size: 0.76rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  transition: background-color 0.18s var(--ease), color 0.18s var(--ease);
+}
+
+.filter-pill-btn.active {
+  background: var(--bg-surface);
+  color: var(--text-primary);
+  font-weight: 700;
+  box-shadow: 0 2px 6px rgba(20, 43, 74, 0.1);
+}
+
+.table-scroll {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.activities-table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 540px;
+}
+
+.activities-table th {
+  text-align: left;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--text-muted);
+  padding: 8px 10px 10px;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.activities-table th.align-right,
+.activities-table td.align-right {
+  text-align: right;
+}
+
+.activities-table td {
+  padding: 12px 10px;
+  border-bottom: 1px solid var(--border-subtle);
+  vertical-align: middle;
+  font-size: 0.84rem;
+}
+
+.activities-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.activities-table tbody tr {
+  transition: background-color 0.15s var(--ease);
+}
+
+.activities-table tbody tr:hover {
+  background-color: var(--bg-muted);
+}
+
+.tx-item-cell {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+}
+
+.tx-icon-circle {
+  width: 38px;
+  height: 38px;
+  border-radius: 13px;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+}
+
+.tx-icon-circle.salary {
+  background: var(--success-bg);
+  color: var(--success);
+}
+
+.tx-icon-circle.housing {
+  background: var(--accent-blue-bg);
+  color: var(--royal);
+}
+
+[data-theme='dark'] .tx-icon-circle.housing {
+  color: #6ab5ff;
+}
+
+.tx-icon-circle.food {
+  background: var(--warning-bg);
+  color: var(--warning-text);
+}
+
+.tx-icon-circle.transport {
+  background: var(--bg-subtle);
+  color: var(--text-primary);
+}
+
+.tx-icon-circle.saving {
+  background: var(--accent-teal-bg);
+  color: var(--teal);
+}
+
+.tx-name {
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1.28;
+}
+
+.tx-note {
+  font-size: 0.74rem;
+  color: var(--text-muted);
+}
+
+.tx-cat-badge {
+  display: inline-block;
+  font-size: 0.73rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  background: var(--bg-subtle);
+  padding: 4px 10px;
+  border-radius: var(--radius-pill);
+}
+
+.tx-date {
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+  white-space: nowrap;
+}
+
+.tx-amount {
+  font-weight: 700;
+  font-size: 0.9rem;
+  white-space: nowrap;
+}
+
+.tx-amount.income {
+  color: var(--success-text);
+}
+
+.tx-amount.saving {
+  color: var(--accent-blue-text);
+}
+
+.tx-amount.expense {
+  color: var(--text-primary);
+}
+
+.tx-status-cell {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.76rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  white-space: nowrap;
+}
+
+.empty-table-state {
+  text-align: center;
+  padding: 28px 16px;
+  color: var(--text-muted);
+  font-size: 0.85rem;
+}
+
+/* Mobile Compact Card List (hidden on Desktop & iPad) */
+.mobile-activities-list {
+  display: none;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.mobile-tx-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 12px;
+  border-radius: 16px;
+  background: var(--bg-muted);
+  border: 1px solid var(--border-subtle);
+}
+
+.mobile-tx-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  flex: 1;
+}
+
+.mobile-tx-info {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.mobile-tx-meta {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.mobile-tx-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+/* ==========================================================================
+   Modal (Add / Update Coverage)
+   ========================================================================== */
+
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(9, 18, 32, 0.58);
+  backdrop-filter: blur(5px);
+  display: grid;
+  place-items: center;
+  padding: 16px;
+  z-index: 100;
+  animation: fadeIn 0.16s var(--ease);
+}
+
+.modal-dialog {
+  width: 100%;
+  max-width: 500px;
+  background: var(--bg-surface);
+  border-radius: 26px;
+  padding: 24px 26px;
+  box-shadow: 0 28px 60px -16px rgba(0, 0, 0, 0.45);
+  border: 1px solid var(--border-strong);
+  animation: fadeSlideUp 0.2s var(--ease);
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.modal-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.modal-close-btn {
+  border: none;
+  background: var(--bg-subtle);
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  color: var(--text-primary);
+  flex-shrink: 0;
+}
+
+.modal-close-btn:hover {
+  background: var(--bg-subtle-hover);
+}
+
+.modal-info-box {
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+  background: var(--bg-muted);
+  border: 1px solid var(--border-subtle);
+  border-radius: 14px;
+  padding: 10px 13px;
+  margin-bottom: 16px;
+  line-height: 1.48;
+}
+
+.form-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.form-label {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.form-input,
+.form-select {
+  height: 42px;
+  padding: 0 14px;
+  border-radius: 13px;
+  border: 1px solid var(--border-strong);
+  background: var(--bg-muted);
+  font-size: 0.88rem;
+  color: var(--text-primary);
+  outline: none;
+}
+
+.form-input:focus,
+.form-select:focus {
+  border-color: var(--royal);
+  background: var(--bg-surface);
+  box-shadow: 0 0 0 3px rgba(40, 120, 200, 0.18);
+}
+
+.form-grid-2 {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.segmented-choice {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.choice-btn {
+  padding: 10px 12px;
+  border-radius: 13px;
+  border: 1px solid var(--border-strong);
+  background: var(--bg-muted);
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  transition: all 0.18s var(--ease);
+}
+
+.choice-btn.active {
+  border-color: var(--active-pill-bg);
+  background: var(--active-pill-bg);
+  color: var(--active-pill-fg);
+}
+
+.modal-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 8px;
+  padding-top: 14px;
+  border-top: 1px solid var(--border-subtle);
+}
+
+/* ==========================================================================
+   Modular Placeholder Pages (Rounds 2–6 Ready)
+   ========================================================================== */
+
+.placeholder-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.45fr) minmax(280px, 0.9fr);
+  gap: 20px;
+  align-items: start;
+}
+
+.placeholder-hero-card {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.round-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 6px 13px;
+  border-radius: var(--radius-pill);
+  background: var(--accent-blue-bg);
+  color: var(--accent-blue-text);
+  font-size: 0.78rem;
+  font-weight: 700;
+  width: fit-content;
+}
+
+.placeholder-module-head {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.placeholder-icon-box {
+  width: 58px;
+  height: 58px;
+  border-radius: 18px;
+  background: linear-gradient(135deg, var(--navy) 0%, var(--royal-deep) 100%);
+  color: #ffffff;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  box-shadow: 0 12px 24px -8px rgba(20, 43, 74, 0.4);
+}
+
+.placeholder-heading {
+  font-size: clamp(1.2rem, 2vw, 1.45rem);
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: -0.02em;
+}
+
+.placeholder-desc {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+.feature-checklist {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.feature-item-box {
+  background: var(--bg-muted);
+  border: 1px solid var(--border-subtle);
+  border-radius: 16px;
+  padding: 14px 16px;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.feature-item-icon {
+  color: var(--teal);
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.feature-item-text {
+  font-size: 0.84rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  line-height: 1.42;
+}
+
+.context-snapshot-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 6px;
+}
+
+.context-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+  padding: 11px 14px;
+  border-radius: 14px;
+  background: var(--bg-muted);
+  font-size: 0.84rem;
+}
+
+.context-row-label {
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.context-row-val {
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+/* ==========================================================================
+   Mobile & iPad Portrait Bottom Navigation Dock + Slide-Up Drawer
+   ========================================================================== */
+
+.mobile-bottom-nav {
+  display: none;
+}
+
+.mobile-drawer-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(9, 18, 32, 0.54);
+  backdrop-filter: blur(4px);
+  z-index: 90;
+  display: flex;
+  align-items: flex-end;
+}
+
+.mobile-drawer {
+  width: 100%;
+  max-width: 680px;
+  margin: 0 auto;
+  background: var(--bg-surface);
+  border-radius: 26px 26px 0 0;
+  border-top: 1px solid var(--border-strong);
+  padding: 18px 20px max(26px, env(safe-area-inset-bottom));
+  box-shadow: 0 -14px 40px rgba(0, 0, 0, 0.3);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  animation: slideUpDrawer 0.22s var(--ease);
+}
+
+.mobile-drawer-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.mobile-drawer-btn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 13px 14px;
+  border-radius: 16px;
+  border: 1px solid var(--border-subtle);
+  background: var(--bg-muted);
+  color: var(--text-primary);
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-align: left;
+}
+
+.mobile-drawer-btn.active {
+  background: var(--active-pill-bg);
+  color: var(--active-pill-fg);
+  border-color: var(--active-pill-bg);
+}
+
+/* ==========================================================================
+   Animations
+   ========================================================================== */
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideUpDrawer {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+/* ==========================================================================
+   Responsive Breakpoints: Desktop -> iPad Landscape -> iPad Portrait -> Phone
+   ========================================================================== */
+
+/* Compact Desktop & iPad Pro Landscape (<= 1360px) */
+@media (max-width: 1360px) {
+  .bento-grid-3col {
+    grid-template-columns: minmax(310px, 355px) minmax(0, 1fr);
+  }
+
+  .bento-top-pair {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* iPad Landscape (901px – 1120px): Keep slim left rail, clean 2-col layout */
+@media (max-width: 1120px) and (min-width: 901px) {
+  .app-shell {
+    padding: 16px 18px 28px;
+    gap: 16px;
+  }
+
+  .sidebar-rail {
+    width: 84px;
+    padding: 14px 6px 16px;
+  }
+
+  .bento-grid-3col {
+    grid-template-columns: 1fr;
+  }
+
+  .bento-col-left {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+  }
+
+  .bento-col-left .goal-card {
+    grid-column: 1 / -1;
+  }
+
+  .bento-top-pair {
+    grid-template-columns: minmax(0, 1.25fr) minmax(260px, 0.95fr);
+  }
+
+  .placeholder-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* iPad Portrait & Tablets (<= 900px) */
+@media (max-width: 900px) {
+  .app-shell {
+    padding: 16px 18px 102px;
+    gap: 0;
+  }
+
+  .sidebar-rail {
+    display: none;
+  }
+
+  .mobile-brand-bar {
+    display: inline-flex;
+  }
+
+  .top-pill-bar {
+    border-radius: 20px;
+    padding: 8px;
+  }
+
+  .bento-grid-3col {
+    grid-template-columns: 1fr;
+    gap: 18px;
+  }
+
+  /* Nice 2-column Bento arrangement on iPad Portrait */
+  .bento-col-left {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+  }
+
+  .bento-col-left .emergency-card {
+    grid-column: 1 / -1;
+  }
+
+  .bento-top-pair {
+    grid-template-columns: 1fr;
+  }
+
+  .placeholder-layout {
+    grid-template-columns: 1fr;
+  }
+
+  /* Floating Bottom Navigation Dock for iPad Portrait & Mobile */
+  .mobile-bottom-nav {
+    position: fixed;
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: max(12px, env(safe-area-inset-bottom));
+    width: calc(100% - 24px);
+    max-width: 640px;
+    background: var(--bg-dock);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border: 1px solid var(--border-strong);
+    border-radius: 22px;
+    box-shadow: 0 12px 32px -6px rgba(0, 0, 0, 0.22);
+    padding: 6px 8px;
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 4px;
+    z-index: 70;
+  }
+
+  .mobile-nav-btn {
+    border: none;
+    background: transparent;
+    border-radius: 15px;
+    padding: 8px 4px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    color: var(--text-secondary);
+    font-size: 0.67rem;
+    font-weight: 600;
+    line-height: 1.15;
+    text-align: center;
+    min-height: 48px;
+  }
+
+  .mobile-nav-btn.active {
+    background: var(--active-pill-bg);
+    color: var(--active-pill-fg);
+  }
+}
+
+/* Mobile Phones (<= 640px) */
+@media (max-width: 640px) {
+  .app-shell {
+    padding: 14px 14px 98px;
+  }
+
+  .bento-card {
+    padding: 18px 16px;
+    border-radius: 22px;
+  }
+
+  .bento-col-left {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+
+  .top-pill-bar {
+    width: 100%;
+    justify-content: space-between;
+    gap: 6px;
+  }
+
+  .theme-toggle-label {
+    display: none;
+  }
+
+  .theme-toggle-btn {
+    padding: 7px 10px;
+  }
+
+  .neutral-popover {
+    right: 0;
+    left: auto;
+  }
+
+  .cta-button-row > button {
+    flex: 1 1 100%;
+  }
+
+  .feature-checklist {
+    grid-template-columns: 1fr;
+  }
+
+  .activities-controls {
+    width: 100%;
+  }
+
+  .search-input-wrap {
+    flex: 1 1 100%;
+  }
+
+  .filter-pills {
+    width: 100%;
+    border-radius: 16px;
+    justify-content: space-between;
+  }
+
+  .filter-pill-btn {
+    flex: 1 1 auto;
+    text-align: center;
+    padding: 6px 8px;
+  }
+
+  /* Switch Recent Activities from wide table to native phone card list */
+  .desktop-activities-table {
+    display: none;
+  }
+
+  .mobile-activities-list {
+    display: flex;
+  }
+
+  .inspector-metrics {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .inspector-stat {
+    align-items: flex-start;
+  }
+
+  .form-grid-2 {
+    grid-template-columns: 1fr;
+  }
+
+  .modal-dialog {
+    padding: 20px 18px;
+  }
+
+  .modal-actions > button {
+    flex: 1 1 120px;
+  }
+}
+
+/* Very small phones (<= 360px) */
+@media (max-width: 360px) {
+  .metrics-grid-2x2 {
+    grid-template-columns: 1fr;
+  }
+
+  .mobile-drawer-grid {
+    grid-template-columns: 1fr;
+  }
+}
