@@ -32,7 +32,10 @@ import {
 
 const PAGE_TITLES = {
   overview: null,
-  autokey: { th: 'AutoKey — บันทึกรายรับ-จ่าย', en: 'AutoKey — Smart Cashflow' },
+  autokey: {
+    th: 'AutoKey — บันทึกรายรับ-รายจ่าย & เงินสำรองฉุกเฉิน',
+    en: 'AutoKey — Smart Cashflow & Emergency Tracker',
+  },
   'risk-analysis': { th: 'Risk Analysis — วิเคราะห์ความเสี่ยง', en: 'Risk Analysis' },
   invest: { th: 'Invest (IRR) — เปรียบเทียบผลตอบแทน', en: 'Invest (IRR)' },
   game: { th: 'Game — เกมจำลองการบริหารความเสี่ยง', en: 'Game — Risk Simulator' },
@@ -185,7 +188,13 @@ function AppShellContent() {
                   {t(PAGE_TITLES[activePage] || { th: 'PROTECT360', en: 'PROTECT360' })}
                 </h1>
               </div>
-              <p className="header-philosophy">{t('header.philosophy')}</p>
+              <p className="header-philosophy">
+                {activePage === 'autokey'
+                  ? lang === 'TH'
+                    ? `${userPillLabel} • ขั้นตอนที่ 1: เข้าใจกระแสเงินสดของคุณ ก่อนวางแผนจัดการความเสี่ยง`
+                    : `${userPillLabel} • Step 1: Understand Your Cashflow Before Risk Planning`
+                  : t('header.philosophy')}
+              </p>
             </div>
 
             <button

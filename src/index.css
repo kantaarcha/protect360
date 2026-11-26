@@ -4642,3 +4642,1035 @@ p {
   width: 100%;
   height: auto;
 }
+
+/* ==========================================================================
+   Round 2.0: Reusable LiquidTabs & AutoKey Smart Cashflow Module
+   ========================================================================== */
+
+/* Reusable LiquidTabs Variants (Soft Translucent Royal-to-Teal Gradient) */
+.liquid-tabs-surface {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(0, 1fr);
+  gap: 6px;
+  background: var(--bg-subtle);
+  padding: 4px;
+  border-radius: 16px;
+  border: 1px solid var(--border-subtle);
+}
+
+.liquid-tabs-compact {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  background: var(--bg-subtle);
+  padding: 3px;
+  border-radius: var(--radius-pill);
+  flex-wrap: wrap;
+}
+
+.liquid-tabs-segmented {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(0, 1fr);
+}
+
+.liquid-tab-btn {
+  border: none;
+  background: transparent;
+  padding: 9px 12px;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  white-space: nowrap;
+  transition: color 0.2s var(--ease);
+}
+
+.liquid-tabs-compact .liquid-tab-btn {
+  padding: 6px 12px;
+  border-radius: var(--radius-pill);
+  font-size: 0.76rem;
+}
+
+.liquid-tab-btn:hover:not(.active) {
+  color: var(--text-primary);
+}
+
+.liquid-tab-btn.active {
+  color: var(--navy);
+  font-weight: 700;
+}
+
+[data-theme='dark'] .liquid-tab-btn.active {
+  color: #f0f7ff;
+}
+
+.liquid-tab-badge {
+  font-size: 0.68rem;
+  font-weight: 700;
+  padding: 1px 6px;
+  border-radius: var(--radius-pill);
+  background: rgba(20, 43, 74, 0.08);
+  color: var(--text-secondary);
+}
+
+.liquid-tab-btn.active .liquid-tab-badge {
+  background: rgba(40, 120, 200, 0.16);
+  color: var(--accent-blue-text);
+}
+
+[data-theme='dark'] .liquid-tab-badge {
+  background: rgba(255, 255, 255, 0.09);
+}
+
+/* Lifestyle Transaction Icon Circle */
+.tx-icon-circle.lifestyle {
+  background: rgba(99, 136, 198, 0.16);
+  color: var(--royal-deep);
+}
+
+[data-theme='dark'] .tx-icon-circle.lifestyle {
+  background: rgba(124, 176, 245, 0.18);
+  color: #8cc4ff;
+}
+
+/* AutoKey Page Layout */
+.autokey-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+/* Top 4 Symmetrical Bento KPI Cards */
+.autokey-kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+  align-items: stretch;
+}
+
+.ak-kpi-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 18px 20px;
+}
+
+.ak-kpi-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.ak-kpi-pill {
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: var(--radius-pill);
+  white-space: nowrap;
+}
+
+.ak-kpi-pill.green,
+.ak-kpi-pill.positive {
+  background: var(--success-bg);
+  color: var(--success-text);
+}
+
+.ak-kpi-pill.red,
+.ak-kpi-pill.danger {
+  background: var(--danger-bg);
+  color: var(--danger-text);
+}
+
+.ak-kpi-pill.warn {
+  background: var(--warning-bg);
+  color: var(--warning-text);
+}
+
+.ak-kpi-body {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.ak-kpi-label {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.ak-kpi-value {
+  font-size: clamp(1.3rem, 1.8vw, 1.62rem);
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  color: var(--text-primary);
+  line-height: 1.18;
+}
+
+.ak-kpi-value.negative {
+  color: var(--danger-text);
+}
+
+.ak-kpi-progress {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.ak-kpi-progress-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+/* Main 2-Column Workspace (Input Studio + Analytics/Coach) */
+.autokey-main-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.12fr) minmax(0, 0.96fr);
+  gap: 18px;
+  align-items: stretch;
+}
+
+.ak-input-card {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.ak-card-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+/* Smart Slip Reader Panel */
+.ak-slip-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  flex: 1;
+}
+
+.ak-dropzone {
+  position: relative;
+  border-radius: 20px;
+  border: 1.5px dashed rgba(40, 120, 200, 0.34);
+  background: linear-gradient(135deg, var(--bg-muted) 0%, rgba(40, 120, 200, 0.04) 100%);
+  padding: 22px 18px;
+  text-align: center;
+  cursor: pointer;
+  transition: border-color 0.2s var(--ease), background-color 0.2s var(--ease), transform 0.16s var(--ease);
+}
+
+.ak-dropzone:hover,
+.ak-dropzone.dragging {
+  border-color: var(--royal);
+  background: var(--accent-blue-bg);
+}
+
+.ak-dropzone.scanning {
+  border-style: solid;
+  border-color: var(--teal);
+  cursor: wait;
+}
+
+.ak-dropzone-idle {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.ak-dropzone-icon {
+  width: 46px;
+  height: 46px;
+  border-radius: 15px;
+  background: var(--bg-surface);
+  color: var(--royal);
+  border: 1px solid var(--border-subtle);
+  box-shadow: var(--shadow-card);
+  display: grid;
+  place-items: center;
+  margin-bottom: 4px;
+}
+
+.ak-dropzone-title {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.ak-dropzone-sub {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  max-width: 380px;
+  line-height: 1.42;
+}
+
+/* AI Slip Scan Animation */
+@keyframes scanSweep {
+  0% {
+    top: 12%;
+    opacity: 0.4;
+  }
+  50% {
+    top: 84%;
+    opacity: 1;
+  }
+  100% {
+    top: 12%;
+    opacity: 0.4;
+  }
+}
+
+.ak-scan-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 0;
+}
+
+.ak-scan-laser-box {
+  position: relative;
+  width: 58px;
+  height: 58px;
+  border-radius: 18px;
+  background: var(--bg-surface);
+  border: 1.5px solid rgba(34, 184, 167, 0.45);
+  display: grid;
+  place-items: center;
+  color: var(--teal);
+  overflow: hidden;
+  box-shadow: 0 8px 20px -8px rgba(34, 184, 167, 0.4);
+}
+
+.ak-scan-beam {
+  position: absolute;
+  left: 6px;
+  right: 6px;
+  height: 3px;
+  border-radius: 99px;
+  background: linear-gradient(90deg, transparent, var(--teal), var(--royal), transparent);
+  animation: scanSweep 0.9s ease-in-out infinite;
+}
+
+.ak-scan-title {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.ak-scan-sub {
+  font-size: 0.76rem;
+  color: var(--text-secondary);
+}
+
+/* 4 One-Click Realistic Thai Slip Presets */
+.ak-presets-block {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+}
+
+.ak-section-micro-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.74rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+}
+
+.ak-section-micro-label svg {
+  color: var(--royal);
+}
+
+.ak-presets-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.ak-preset-btn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 11px 12px;
+  border-radius: 16px;
+  border: 1px solid var(--border-subtle);
+  background: var(--bg-muted);
+  text-align: left;
+  transition: border-color 0.18s var(--ease), background-color 0.18s var(--ease), transform 0.15s var(--ease);
+}
+
+.ak-preset-btn:hover:not(:disabled) {
+  border-color: rgba(40, 120, 200, 0.36);
+  background: var(--bg-surface);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-card);
+}
+
+.ak-preset-btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.ak-preset-icon {
+  width: 34px;
+  height: 34px;
+  border-radius: 11px;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+}
+
+.ak-preset-icon.income {
+  background: var(--success-bg);
+  color: var(--success);
+}
+
+.ak-preset-icon.saving {
+  background: var(--accent-teal-bg);
+  color: var(--teal);
+}
+
+.ak-preset-icon.expense {
+  background: var(--danger-bg);
+  color: var(--danger);
+}
+
+.ak-preset-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.ak-preset-title {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ak-preset-meta {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+}
+
+.ak-preset-amt.income {
+  color: var(--success-text);
+}
+
+.ak-preset-amt.saving {
+  color: var(--teal);
+}
+
+.ak-preset-amt.expense {
+  color: var(--danger-text);
+}
+
+/* Extracted Slip Preview Card */
+.ak-extracted-card {
+  border-radius: 20px;
+  padding: 16px;
+  background: var(--bg-muted);
+  border: 1.5px solid rgba(34, 184, 167, 0.38);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  animation: fadeSlideUp 0.2s var(--ease);
+}
+
+.ak-extracted-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.ak-extracted-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--success-text);
+}
+
+.ak-extracted-head-right {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.ak-bank-chip {
+  font-size: 0.68rem;
+  font-weight: 700;
+  padding: 3px 9px;
+  border-radius: var(--radius-pill);
+  background: var(--bg-surface);
+  color: var(--text-secondary);
+  border: 1px solid var(--border-subtle);
+}
+
+.ak-icon-close {
+  border: none;
+  background: var(--bg-subtle);
+  color: var(--text-secondary);
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+}
+
+.ak-extracted-body {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.ak-slip-thumb {
+  width: 68px;
+  height: 88px;
+  object-fit: cover;
+  border-radius: 12px;
+  border: 1px solid var(--border-strong);
+  flex-shrink: 0;
+}
+
+.ak-extracted-fields {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.ak-extracted-meta-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  flex-wrap: wrap;
+  font-size: 0.74rem;
+}
+
+.ak-detected-cat {
+  padding: 4px 10px;
+  border-radius: var(--radius-pill);
+  background: var(--accent-blue-bg);
+  color: var(--accent-blue-text);
+}
+
+.ak-detected-cat.income {
+  background: var(--success-bg);
+  color: var(--success-text);
+}
+
+.ak-detected-cat.saving {
+  background: var(--accent-teal-bg);
+  color: var(--teal);
+}
+
+.ak-detected-date {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
+.ak-extracted-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  padding-top: 8px;
+  border-top: 1px solid var(--border-subtle);
+}
+
+/* Quick Manual Entry Form */
+.ak-manual-form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  flex: 1;
+}
+
+.ak-cat-pills-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.ak-cat-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 9px 10px;
+  border-radius: 13px;
+  border: 1px solid var(--border-strong);
+  background: var(--bg-muted);
+  color: var(--text-secondary);
+  font-size: 0.76rem;
+  font-weight: 600;
+  text-align: center;
+  transition: all 0.18s var(--ease);
+}
+
+.ak-cat-pill:hover {
+  border-color: var(--royal);
+  color: var(--text-primary);
+}
+
+.ak-cat-pill.active {
+  border-color: rgba(40, 120, 200, 0.42);
+  background: linear-gradient(135deg, rgba(40, 120, 200, 0.15) 0%, rgba(34, 184, 167, 0.16) 100%);
+  color: var(--navy);
+  font-weight: 700;
+}
+
+[data-theme='dark'] .ak-cat-pill.active {
+  color: #f0f7ff;
+  border-color: rgba(124, 192, 255, 0.45);
+}
+
+.ak-quick-amt-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 2px;
+}
+
+.ak-quick-amt-chip {
+  border: 1px solid var(--border-subtle);
+  background: var(--bg-subtle);
+  color: var(--text-secondary);
+  padding: 3px 9px;
+  border-radius: var(--radius-pill);
+  font-size: 0.7rem;
+  font-weight: 700;
+  transition: background-color 0.15s var(--ease), color 0.15s var(--ease);
+}
+
+.ak-quick-amt-chip:hover {
+  background: var(--accent-blue-bg);
+  color: var(--accent-blue-text);
+}
+
+.ak-manual-actions {
+  margin-top: auto;
+  padding-top: 4px;
+}
+
+.ak-submit-full {
+  width: 100%;
+  justify-content: center;
+}
+
+/* Right Column: Analytics & Safe Protection Budget Coach */
+.autokey-analytics-col {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  min-width: 0;
+}
+
+.ak-breakdown-card {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.ak-cashflow-bars {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.ak-cf-row {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.ak-cf-label-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 0.78rem;
+}
+
+.ak-cf-name {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.ak-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.ak-dot.teal {
+  background: var(--teal);
+}
+
+.ak-dot.navy {
+  background: var(--navy);
+}
+
+[data-theme='dark'] .ak-dot.navy {
+  background: var(--royal);
+}
+
+.ak-cf-val {
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.ak-bar-track {
+  width: 100%;
+  height: 10px;
+  border-radius: var(--radius-pill);
+  background: var(--bg-subtle);
+  overflow: hidden;
+}
+
+.ak-bar-track.sm {
+  height: 8px;
+}
+
+.ak-bar-fill {
+  height: 100%;
+  border-radius: var(--radius-pill);
+  transition: width 0.36s var(--ease);
+}
+
+.ak-bar-fill.income {
+  background: linear-gradient(90deg, var(--teal) 0%, #31a879 100%);
+}
+
+.ak-bar-fill.expense {
+  background: linear-gradient(90deg, var(--navy) 0%, var(--royal) 100%);
+}
+
+[data-theme='dark'] .ak-bar-fill.expense {
+  background: linear-gradient(90deg, #2878c8 0%, #5ca8f5 100%);
+}
+
+.ak-divider {
+  height: 1px;
+  background: var(--border-subtle);
+}
+
+.ak-cat-breakdown-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.ak-cat-bar-item {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.ak-cat-bar-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 0.76rem;
+}
+
+.ak-cat-bar-name {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.ak-cat-bar-name svg {
+  color: var(--text-muted);
+}
+
+.ak-cat-bar-val {
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.ak-cat-bar-pct {
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.ak-empty-mini {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  text-align: center;
+  padding: 12px 0;
+}
+
+/* Safe Protection Budget Coach Card */
+.ak-coach-card {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  flex: 1;
+}
+
+.ak-coach-head {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.ak-coach-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 14px;
+  background: var(--accent-blue-bg);
+  color: var(--royal);
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+}
+
+.ak-budget-cap-box {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding: 13px 15px;
+  border-radius: 16px;
+  background: var(--bg-muted);
+  border: 1px solid var(--border-subtle);
+}
+
+.ak-budget-cap-col {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.ak-budget-cap-col.right {
+  text-align: right;
+}
+
+.ak-budget-cap-label {
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.ak-budget-cap-val {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--accent-blue-text);
+}
+
+.ak-budget-cap-val small {
+  font-size: 0.74rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.ak-budget-cap-sub {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.ak-coach-insight {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+  padding: 12px 14px;
+  border-radius: 16px;
+  font-size: 0.8rem;
+  line-height: 1.5;
+  font-weight: 500;
+}
+
+.ak-coach-insight .status-dot {
+  margin-top: 6px;
+}
+
+.ak-coach-insight.caution {
+  background: var(--warning-bg);
+  color: var(--warning-text);
+  border: 1px solid rgba(244, 183, 64, 0.28);
+}
+
+.ak-coach-insight.ready {
+  background: var(--success-bg);
+  color: var(--success-text);
+  border: 1px solid rgba(49, 168, 121, 0.28);
+}
+
+.ak-bridge-cta {
+  width: 100%;
+  justify-content: center;
+  margin-top: auto;
+}
+
+.ak-bridge-cta:hover .cta-chevron {
+  transform: translateX(3px);
+}
+
+/* Interactive Transaction Ledger */
+.ak-ledger-card {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.ak-ledger-scroll {
+  max-height: 420px;
+}
+
+.ak-ledger-cat-cell {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.ak-tx-delete-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  border: 1px solid var(--border-subtle);
+  background: var(--bg-muted);
+  color: var(--text-secondary);
+  padding: 5px 10px;
+  border-radius: var(--radius-pill);
+  font-size: 0.72rem;
+  font-weight: 600;
+  transition: background-color 0.18s var(--ease), color 0.18s var(--ease), border-color 0.18s var(--ease);
+}
+
+.ak-tx-delete-btn:hover {
+  background: var(--danger-bg);
+  border-color: rgba(231, 111, 111, 0.38);
+  color: var(--danger-text);
+}
+
+.ak-tx-delete-icon-only {
+  border: 1px solid var(--border-subtle);
+  background: var(--bg-muted);
+  color: var(--text-secondary);
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+}
+
+.ak-tx-delete-icon-only:hover {
+  background: var(--danger-bg);
+  color: var(--danger-text);
+}
+
+.ak-tx-confirm-group {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.ak-tx-cancel-btn {
+  border: 1px solid var(--border-strong);
+  background: var(--bg-surface);
+  color: var(--text-secondary);
+  padding: 4px 9px;
+  border-radius: var(--radius-pill);
+  font-size: 0.7rem;
+  font-weight: 600;
+}
+
+.ak-tx-delete-confirm {
+  border: none;
+  background: var(--danger);
+  color: #ffffff;
+  padding: 4px 10px;
+  border-radius: var(--radius-pill);
+  font-size: 0.7rem;
+  font-weight: 700;
+}
+
+/* Responsive Breakpoints for AutoKey */
+@media (max-width: 1180px) {
+  .autokey-kpi-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .autokey-main-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .autokey-kpi-grid {
+    gap: 10px;
+  }
+
+  .ak-kpi-card {
+    padding: 14px;
+    gap: 9px;
+  }
+
+  .ak-presets-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .ak-cat-pills-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .ak-extracted-body {
+    flex-direction: column;
+  }
+
+  .ak-budget-cap-col.right {
+    text-align: left;
+  }
+
+  .liquid-tabs-compact {
+    width: 100%;
+    border-radius: 16px;
+    justify-content: space-between;
+  }
+
+  .liquid-tabs-compact .liquid-tab-btn {
+    flex: 1 1 auto;
+    padding: 6px 8px;
+  }
+}

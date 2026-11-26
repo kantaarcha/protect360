@@ -12,6 +12,7 @@ import {
   Search,
   Shield,
   ShieldAlert,
+  ShoppingBag,
   TrainFront,
   Trash2,
   Wallet,
@@ -29,6 +30,7 @@ const TX_ICON_MAP = {
   food: Coffee,
   transport: TrainFront,
   saving: PiggyBank,
+  lifestyle: ShoppingBag,
 };
 
 export default function OverviewDashboard({ onNavigate, onOpenProfile }) {

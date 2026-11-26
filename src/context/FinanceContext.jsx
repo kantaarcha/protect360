@@ -129,6 +129,19 @@ const INITIAL_TRANSACTIONS = [
     categoryLabel: { th: 'เงินออมฉุกเฉิน', en: 'Emergency Fund' },
     iconKey: 'saving',
     date: { th: '26 พ.ย. 2569', en: '26 Nov 2026' },
+    isoDate: '2026-11-26',
+    amount: 5000,
+    status: 'completed',
+  },
+  {
+    id: 'tx-6',
+    title: { th: 'ค่าโทรศัพท์ เน็ต & ไลฟ์สไตล์', en: 'Mobile, Internet & Lifestyle' },
+    note: { th: 'แพ็กเกจเน็ตมือถือ + ของใช้ส่วนตัว', en: 'Mobile plan, streaming & personal care' },
+    category: 'expense',
+    categoryLabel: { th: 'ไลฟ์สไตล์', en: 'Lifestyle' },
+    iconKey: 'lifestyle',
+    date: { th: '26 พ.ย. 2569', en: '26 Nov 2026' },
+    isoDate: '2026-11-26',
     amount: -5000,
     status: 'completed',
   },
@@ -570,12 +583,107 @@ export function FinanceProvider({ children }) {
     }));
   }, []);
 
-  const addTransaction = useCallback((tx) => {
-    setStore((prev) => ({
-      ...prev,
-      transactions: [{ ...tx, id: `tx-${Date.now()}` }, ...prev.transactions],
-    }));
-  }, []);
+  const applyTransactionDelta = (prevFinancials, tx, direction) => {
+    const absAmount = Math.abs(Number(tx?.amount) || 0);
+    if (absAmount === 0) return prevFinancials;
+
+    let nextIncome = prevFinancials.monthlyIncome;
+    let nextExpenses = prevFinancials.monthlyExpenses;
+    let nextEmergency = prevFinancials.liquidEmergencyFund;
+
+    if (tx.category === 'income') {
+      nextIncome = Math.max(0, nextIncome + direction * absAmount);
+    } else if (tx.category === 'expense') {
+      nextExpenses = Math.max(0, nextExpenses + direction * absAmount);
+    } else if (tx.category === 'saving') {
+      nextEmergency = Math.max(0, nextEmergency + direction * absAmount);
+    }
+
+    const nextSavings = Math.max(0, nextIncome - nextExpenses);
+
+    return {
+      ...prevFinancials,
+      monthlyIncome: nextIncome,
+      monthlyExpenses: nextExpenses,
+      monthlySavings: nextSavings,
+      liquidEmergencyFund: nextEmergency,
+    };
+  };
+
+  const addTransaction = useCallback(
+    (tx, { silent = false } = {}) => {
+      const normalizedAmount =
+        tx.category === 'expense'
+          ? -Math.abs(Number(tx.amount) || 0)
+          : Math.abs(Number(tx.amount) || 0);
+      const newTx = {
+        ...tx,
+        amount: normalizedAmount,
+        status: tx.status || 'completed',
+        id: `tx-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
+      };
+      setStore((prev) => ({
+        ...prev,
+        financials: applyTransactionDelta(prev.financials, newTx, 1),
+        transactions: [newTx, ...prev.transactions],
+      }));
+      if (!silent) {
+        showToast('success', {
+          th: 'บันทึกรายการและอัปเดตภาพรวมการเงินเรียบร้อยแล้ว',
+          en: 'Transaction saved and financial dashboard updated',
+        });
+      }
+      return newTx;
+    },
+    [showToast]
+  );
+
+  const updateTransaction = useCallback(
+    (id, patch) => {
+      setStore((prev) => {
+        const existing = prev.transactions.find((t) => t.id === id);
+        if (!existing) return prev;
+        const reverted = applyTransactionDelta(prev.financials, existing, -1);
+        const nextCategory = patch.category || existing.category;
+        const rawAmount = patch.amount !== undefined ? patch.amount : existing.amount;
+        const normalizedAmount =
+          nextCategory === 'expense'
+            ? -Math.abs(Number(rawAmount) || 0)
+            : Math.abs(Number(rawAmount) || 0);
+        const updatedTx = { ...existing, ...patch, category: nextCategory, amount: normalizedAmount };
+        const applied = applyTransactionDelta(reverted, updatedTx, 1);
+        return {
+          ...prev,
+          financials: applied,
+          transactions: prev.transactions.map((t) => (t.id === id ? updatedTx : t)),
+        };
+      });
+      showToast('success', {
+        th: 'อัปเดตรายการเรียบร้อยแล้ว',
+        en: 'Transaction updated',
+      });
+    },
+    [showToast]
+  );
+
+  const removeTransaction = useCallback(
+    (id) => {
+      setStore((prev) => {
+        const target = prev.transactions.find((t) => t.id === id);
+        if (!target) return prev;
+        return {
+          ...prev,
+          financials: applyTransactionDelta(prev.financials, target, -1),
+          transactions: prev.transactions.filter((t) => t.id !== id),
+        };
+      });
+      showToast('info', {
+        th: 'ลบรายการและคำนวณยอดใหม่เรียบร้อยแล้ว',
+        en: 'Transaction deleted and totals recalculated',
+      });
+    },
+    [showToast]
+  );
 
   const addCoverage = useCallback((newCoverage) => {
     setStore((prev) => ({
@@ -767,6 +875,8 @@ export function FinanceProvider({ children }) {
     updateProfile,
     updateRiskProfile,
     addTransaction,
+    updateTransaction,
+    removeTransaction,
     addCoverage,
     updateCoverage,
     removeCoverage,
