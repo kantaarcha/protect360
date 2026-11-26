@@ -233,6 +233,7 @@ export default function AutoKey({ onNavigate }) {
   const [uploadedPreviewUrl, setUploadedPreviewUrl] = useState(null);
   const slipFileInputRef = useRef(null);
   const scanTimerRef = useRef(null);
+  const previewUrlRef = useRef(null);
 
   // Manual Entry state
   const [manualType, setManualType] = useState('expense');
@@ -246,13 +247,13 @@ export default function AutoKey({ onNavigate }) {
   const [ledgerFilter, setLedgerFilter] = useState('all');
   const [confirmDeleteTxId, setConfirmDeleteTxId] = useState(null);
 
-  // Clean up scan timer and uploaded preview URL on unmount
+  // Clean up scan timer and preview object URL ONLY on unmount (never cancel active scan on state update!)
   useEffect(() => {
     return () => {
       if (scanTimerRef.current) window.clearTimeout(scanTimerRef.current);
-      if (uploadedPreviewUrl) window.URL.revokeObjectURL(uploadedPreviewUrl);
+      if (previewUrlRef.current) window.URL.revokeObjectURL(previewUrlRef.current);
     };
-  }, [uploadedPreviewUrl]);
+  }, []);
 
   // Derived KPI metrics
   const targetMonths = userProfile.emergencyTargetMonths || 3;
@@ -334,20 +335,22 @@ export default function AutoKey({ onNavigate }) {
     return { all: transactions.length, income, expense, saving };
   }, [transactions]);
 
-  // Trigger simulated 1-second AI slip scan
+  // Trigger simulated AI slip scan (snappy ~800ms)
   const startSlipScan = (preset, previewUrl = null, sourceLabel = '') => {
     if (scanTimerRef.current) window.clearTimeout(scanTimerRef.current);
-    if (uploadedPreviewUrl && uploadedPreviewUrl !== previewUrl) {
-      window.URL.revokeObjectURL(uploadedPreviewUrl);
+    if (previewUrlRef.current && previewUrlRef.current !== previewUrl) {
+      window.URL.revokeObjectURL(previewUrlRef.current);
     }
+    previewUrlRef.current = previewUrl;
 
     setUploadedPreviewUrl(previewUrl);
     setScanLabel(sourceLabel);
     setExtractedSlip(null);
     setIsScanning(true);
 
-    const delayMs = previewUrl ? 1000 : 700;
+    const delayMs = previewUrl ? 850 : 650;
     scanTimerRef.current = window.setTimeout(() => {
+      scanTimerRef.current = null;
       const todayIso = getTodayIso();
       setIsScanning(false);
       setExtractedSlip({
@@ -365,7 +368,11 @@ export default function AutoKey({ onNavigate }) {
   };
 
   const handleSlipFile = (file) => {
-    if (!file || !file.type.startsWith('image/')) return;
+    if (!file) return;
+    const isImage =
+      (file.type && file.type.startsWith('image/')) ||
+      /\.(png|jpe?g|webp|gif|heic|heif)$/i.test(file.name || '');
+    if (!isImage) return;
     const objectUrl = window.URL.createObjectURL(file);
     const matchedPreset = extractSlipFromFilename(file.name);
     startSlipScan(matchedPreset, objectUrl, file.name);
@@ -411,20 +418,25 @@ export default function AutoKey({ onNavigate }) {
     });
 
     setExtractedSlip(null);
-    if (uploadedPreviewUrl) {
-      window.URL.revokeObjectURL(uploadedPreviewUrl);
-      setUploadedPreviewUrl(null);
+    if (previewUrlRef.current) {
+      window.URL.revokeObjectURL(previewUrlRef.current);
+      previewUrlRef.current = null;
     }
+    setUploadedPreviewUrl(null);
   };
 
   const handleClearSlip = () => {
-    if (scanTimerRef.current) window.clearTimeout(scanTimerRef.current);
+    if (scanTimerRef.current) {
+      window.clearTimeout(scanTimerRef.current);
+      scanTimerRef.current = null;
+    }
     setIsScanning(false);
     setExtractedSlip(null);
-    if (uploadedPreviewUrl) {
-      window.URL.revokeObjectURL(uploadedPreviewUrl);
-      setUploadedPreviewUrl(null);
+    if (previewUrlRef.current) {
+      window.URL.revokeObjectURL(previewUrlRef.current);
+      previewUrlRef.current = null;
     }
+    setUploadedPreviewUrl(null);
   };
 
   // Manual Entry helpers
