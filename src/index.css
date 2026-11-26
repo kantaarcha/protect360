@@ -889,13 +889,17 @@ p {
 }
 
 .metric-icon-badge.expense {
-  background: var(--bg-subtle);
-  color: var(--text-primary);
+  background: var(--danger-bg);
+  color: var(--danger-text);
 }
 
 .metric-icon-badge.saving {
-  background: var(--accent-teal-bg);
-  color: var(--teal);
+  background: var(--accent-blue-bg);
+  color: #2563eb;
+}
+
+[data-theme='dark'] .metric-icon-badge.saving {
+  color: #60a5fa;
 }
 
 .metric-icon-badge.premium {
@@ -919,6 +923,20 @@ p {
   color: var(--success-text);
 }
 
+.metric-pill-tag.danger {
+  background: var(--danger-bg);
+  color: var(--danger-text);
+}
+
+.metric-pill-tag.blue {
+  background: var(--accent-blue-bg);
+  color: var(--accent-blue-text);
+}
+
+[data-theme='dark'] .metric-pill-tag.blue {
+  color: #7cc0ff;
+}
+
 .metric-pill-tag.neutral {
   background: var(--bg-subtle);
   color: var(--text-secondary);
@@ -938,6 +956,22 @@ p {
   letter-spacing: -0.02em;
   line-height: 1.18;
   overflow-wrap: anywhere;
+}
+
+.metric-mini-value.income {
+  color: var(--success-text);
+}
+
+.metric-mini-value.expense {
+  color: var(--danger-text);
+}
+
+.metric-mini-value.saving {
+  color: #1d63d8;
+}
+
+[data-theme='dark'] .metric-mini-value.saving {
+  color: #6ab5ff;
 }
 
 /* ==========================================================================
@@ -6522,4 +6556,434 @@ p {
     height: 40px;
   }
 }
+
+/* ==========================================================================
+   Round 2.7: Strict 3-Color Semantic System (Green=Income, Red=Expense,
+   Blue=Savings/Reserve), Clickable KPI Drill-Down & Larger Overview Heading
+   ========================================================================== */
+
+/* Strict 3-Color Transaction Icon Circles */
+.tx-icon-circle.type-income {
+  background: rgba(31, 168, 107, 0.14);
+  color: #168755;
+}
+
+[data-theme='dark'] .tx-icon-circle.type-income {
+  background: rgba(52, 211, 153, 0.18);
+  color: #4ade9a;
+}
+
+.tx-icon-circle.type-expense {
+  background: rgba(224, 82, 82, 0.13);
+  color: #c63636;
+}
+
+[data-theme='dark'] .tx-icon-circle.type-expense {
+  background: rgba(242, 109, 109, 0.18);
+  color: #ff9c9c;
+}
+
+.tx-icon-circle.type-saving {
+  background: rgba(37, 99, 235, 0.13);
+  color: #1d63d8;
+}
+
+[data-theme='dark'] .tx-icon-circle.type-saving {
+  background: rgba(96, 165, 250, 0.18);
+  color: #7cc0ff;
+}
+
+/* Strict 3-Color Custom Category Icons & Preview Badges */
+.cc-item-icon.type-income,
+.cc-preview-icon.type-income {
+  background: rgba(31, 168, 107, 0.14);
+  color: #168755;
+}
+
+[data-theme='dark'] .cc-item-icon.type-income,
+[data-theme='dark'] .cc-preview-icon.type-income {
+  background: rgba(52, 211, 153, 0.18);
+  color: #4ade9a;
+}
+
+.cc-item-icon.type-expense,
+.cc-preview-icon.type-expense {
+  background: rgba(224, 82, 82, 0.13);
+  color: #c63636;
+}
+
+[data-theme='dark'] .cc-item-icon.type-expense,
+[data-theme='dark'] .cc-preview-icon.type-expense {
+  background: rgba(242, 109, 109, 0.18);
+  color: #ff9c9c;
+}
+
+.cc-item-icon.type-saving,
+.cc-preview-icon.type-saving {
+  background: rgba(37, 99, 235, 0.13);
+  color: #1d63d8;
+}
+
+[data-theme='dark'] .cc-item-icon.type-saving,
+[data-theme='dark'] .cc-preview-icon.type-saving {
+  background: rgba(96, 165, 250, 0.18);
+  color: #7cc0ff;
+}
+
+.cc-item-type.saving {
+  background: var(--accent-blue-bg);
+  color: var(--accent-blue-text);
+}
+
+[data-theme='dark'] .cc-item-type.saving {
+  color: #7cc0ff;
+}
+
+.cc-icon-btn.active.type-income,
+.ak-cat-pill-other.custom-active.type-income {
+  border-color: #1fa86b;
+  background: rgba(31, 168, 107, 0.14);
+  color: #168755;
+}
+
+[data-theme='dark'] .cc-icon-btn.active.type-income,
+[data-theme='dark'] .ak-cat-pill-other.custom-active.type-income {
+  border-color: #34d399;
+  background: rgba(52, 211, 153, 0.18);
+  color: #4ade9a;
+}
+
+.cc-icon-btn.active.type-expense,
+.ak-cat-pill-other.custom-active.type-expense {
+  border-color: #e05252;
+  background: rgba(224, 82, 82, 0.13);
+  color: #c63636;
+}
+
+[data-theme='dark'] .cc-icon-btn.active.type-expense,
+[data-theme='dark'] .ak-cat-pill-other.custom-active.type-expense {
+  border-color: #f87171;
+  background: rgba(242, 109, 109, 0.18);
+  color: #ff9c9c;
+}
+
+.cc-icon-btn.active.type-saving,
+.ak-cat-pill-other.custom-active.type-saving {
+  border-color: #2563eb;
+  background: rgba(37, 99, 235, 0.13);
+  color: #1d63d8;
+}
+
+[data-theme='dark'] .cc-icon-btn.active.type-saving,
+[data-theme='dark'] .ak-cat-pill-other.custom-active.type-saving {
+  border-color: #60a5fa;
+  background: rgba(96, 165, 250, 0.18);
+  color: #7cc0ff;
+}
+
+/* Blue Net Monthly Savings KPI & Macro Bar */
+.ak-kpi-pill.blue {
+  background: var(--accent-blue-bg);
+  color: var(--accent-blue-text);
+}
+
+[data-theme='dark'] .ak-kpi-pill.blue {
+  color: #7cc0ff;
+}
+
+.ak-kpi-value.saving,
+.ak-cf-val.saving,
+.ak-cat-bar-val.saving {
+  color: #1d63d8;
+}
+
+[data-theme='dark'] .ak-kpi-value.saving,
+[data-theme='dark'] .ak-cf-val.saving,
+[data-theme='dark'] .ak-cat-bar-val.saving {
+  color: #7cc0ff;
+}
+
+.ak-cat-bar-val.income {
+  color: var(--success-text);
+}
+
+.ak-dot.blue {
+  background: #2563eb;
+}
+
+[data-theme='dark'] .ak-dot.blue {
+  background: #60a5fa;
+}
+
+.ak-bar-fill.saving {
+  background: linear-gradient(90deg, #2563eb 0%, #38bdf8 100%);
+}
+
+[data-theme='dark'] .ak-bar-fill.saving {
+  background: linear-gradient(90deg, #4aa3ff 0%, #7dd3fc 100%);
+}
+
+/* Strict 3-Color Category Breakdown Bars (Green / Red / Blue) */
+.ak-cat-bar-item.type-income {
+  --cat-bar-active: #1fa86b;
+}
+
+[data-theme='dark'] .ak-cat-bar-item.type-income {
+  --cat-bar-active: #34d399;
+}
+
+.ak-cat-bar-item.type-expense {
+  --cat-bar-active: #e05252;
+}
+
+[data-theme='dark'] .ak-cat-bar-item.type-expense {
+  --cat-bar-active: #f87171;
+}
+
+.ak-cat-bar-item.type-saving {
+  --cat-bar-active: #2563eb;
+}
+
+[data-theme='dark'] .ak-cat-bar-item.type-saving {
+  --cat-bar-active: #60a5fa;
+}
+
+.ak-breakdown-filter-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+/* Clickable KPI Cards (Income / Expenses / Net Savings) */
+.ak-kpi-card.clickable {
+  cursor: pointer;
+  transition: transform 0.2s var(--ease), box-shadow 0.2s var(--ease), border-color 0.2s var(--ease);
+}
+
+.ak-kpi-card.clickable:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-card-hover);
+  border-color: var(--border-strong);
+}
+
+.ak-kpi-card.clickable:focus-visible {
+  outline: 2px solid var(--royal);
+  outline-offset: 2px;
+}
+
+.ak-kpi-drill-hint {
+  margin-top: auto;
+  padding-top: 6px;
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  transition: color 0.16s var(--ease);
+}
+
+.ak-kpi-card.clickable:hover .ak-kpi-drill-hint {
+  color: var(--accent-blue-text);
+}
+
+[data-theme='dark'] .ak-kpi-card.clickable:hover .ak-kpi-drill-hint {
+  color: #7cc0ff;
+}
+
+/* KPI Drill-Down Modal */
+.kpi-detail-modal {
+  max-width: 560px;
+  width: calc(100% - 28px);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.kpi-detail-head-left {
+  display: flex;
+  align-items: flex-start;
+  gap: 11px;
+}
+
+.kpi-detail-hero {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding: 14px 16px;
+  border-radius: 16px;
+  border: 1px solid var(--border-subtle);
+  background: var(--bg-muted);
+}
+
+.kpi-detail-hero-val {
+  font-size: clamp(1.5rem, 2.4vw, 1.95rem);
+  font-weight: 800;
+  letter-spacing: -0.025em;
+  line-height: 1.15;
+}
+
+.kpi-detail-hero.income .kpi-detail-hero-val {
+  color: var(--success-text);
+}
+
+.kpi-detail-hero.expense .kpi-detail-hero-val {
+  color: var(--danger-text);
+}
+
+.kpi-detail-hero.saving .kpi-detail-hero-val {
+  color: #1d63d8;
+}
+
+[data-theme='dark'] .kpi-detail-hero.saving .kpi-detail-hero-val {
+  color: #7cc0ff;
+}
+
+.kpi-formula-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.kpi-formula-box {
+  padding: 10px 12px;
+  border-radius: 14px;
+  border: 1px solid var(--border-subtle);
+  background: var(--bg-muted);
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.kpi-formula-lbl {
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.kpi-formula-val {
+  font-size: 0.94rem;
+  font-weight: 800;
+}
+
+.kpi-formula-val.income {
+  color: var(--success-text);
+}
+
+.kpi-formula-val.expense {
+  color: var(--danger-text);
+}
+
+.kpi-formula-val.saving {
+  color: #1d63d8;
+}
+
+[data-theme='dark'] .kpi-formula-val.saving {
+  color: #7cc0ff;
+}
+
+.kpi-detail-section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.kpi-detail-section-title {
+  font-size: 0.76rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.kpi-group-bars {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 10px 12px;
+  border-radius: 14px;
+  background: var(--bg-muted);
+  border: 1px solid var(--border-subtle);
+}
+
+.kpi-detail-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-height: 280px;
+  overflow-y: auto;
+  padding-right: 2px;
+}
+
+.kpi-detail-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 11px;
+  border-radius: 14px;
+  background: var(--bg-muted);
+  border: 1px solid var(--border-subtle);
+}
+
+.kpi-detail-row-info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.kpi-detail-row-meta {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.kpi-detail-row-right {
+  text-align: right;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+  flex-shrink: 0;
+}
+
+.kpi-detail-share {
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+@media (max-width: 560px) {
+  .kpi-formula-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Overview Dashboard: Larger, Balanced "รายการเคลื่อนไหวล่าสุด" Heading */
+.activities-card .activities-title-group {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.activities-card .activities-title-lg {
+  font-size: clamp(1.18rem, 1.55vw, 1.38rem);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1.22;
+}
+
+.activities-card .activities-subtitle {
+  font-size: 0.82rem;
+  margin: 0;
+}
+
 

@@ -33,12 +33,12 @@ import {
   CORE_CATEGORY_MAP,
   CUSTOM_ICON_MAP,
   getCategoryIconComponent,
-  getCustomColorMeta,
-  resolveTransactionBadgeStyle,
+  getTypeColorMeta,
 } from '../utils/categoryRegistry';
 import LiquidTabs from '../components/LiquidTabs';
 import MerchantCalculator from '../components/MerchantCalculator';
 import CustomCategoryModal from '../components/CustomCategoryModal';
+import KpiDetailModal from '../components/KpiDetailModal';
 
 const THAI_MONTHS_SHORT = [
   'ม.ค.',
@@ -197,6 +197,12 @@ export default function AutoKey({ onNavigate }) {
   // Custom Category Modal target: null | 'manual' | 'slip'
   const [catModalTarget, setCatModalTarget] = useState(null);
 
+  // Interactive KPI Drill-Down modal: null | 'income' | 'expense' | 'saving'
+  const [kpiDetailMode, setKpiDetailMode] = useState(null);
+
+  // Cashflow Category Breakdown filter: 'all' | 'income' | 'expense' | 'saving'
+  const [breakdownFilter, setBreakdownFilter] = useState('all');
+
   // Ledger state (search, filter, delete confirm, inline edit)
   const [ledgerSearch, setLedgerSearch] = useState('');
   const [ledgerFilter, setLedgerFilter] = useState('all');
@@ -217,10 +223,10 @@ export default function AutoKey({ onNavigate }) {
     };
   }, []);
 
-  // Build unified category lookup (6 core + user custom categories)
+  // Build unified category lookup (6 core + user custom categories, strict 3-color semantic palette)
   const allCategories = useMemo(() => {
     const mappedCustom = (customCategories || []).map((c) => {
-      const colorMeta = getCustomColorMeta(c.color);
+      const colorMeta = getTypeColorMeta(c.type);
       return {
         key: c.id,
         type: c.type,
@@ -257,53 +263,79 @@ export default function AutoKey({ onNavigate }) {
   const remainingEmergency = Math.max(0, emergencyTarget - emergencyFund);
   const isEmergencyReady = emergencyRunway >= targetMonths;
 
-  // Spending Breakdown by category (live from expense transactions — includes custom categories!)
-  const spendingBreakdown = useMemo(() => {
+  // Unified Cashflow Breakdown by category across ALL 3 streams: Income (Green), Expense (Red), Saving (Blue)
+  const cashflowBreakdown = useMemo(() => {
     const totals = new Map();
-    let totalTrackedExpenses = 0;
+    const streamTotals = { income: 0, expense: 0, saving: 0 };
 
     for (const tx of transactions) {
-      if (tx.category !== 'expense') continue;
-      const key = allCategoryMap[tx.iconKey]
-        ? tx.iconKey
-        : tx.iconKey && tx.iconKey.startsWith('ccat-')
-          ? tx.iconKey
-          : 'lifestyle';
+      const txType =
+        tx.category === 'income'
+          ? 'income'
+          : tx.category === 'saving'
+            ? 'saving'
+            : 'expense';
       const amt = Math.abs(Number(tx.amount) || 0);
       if (amt <= 0) continue;
 
-      totalTrackedExpenses += amt;
-      const existing = totals.get(key);
+      streamTotals[txType] += amt;
+
+      const rawKey = allCategoryMap[tx.iconKey]
+        ? tx.iconKey
+        : tx.iconKey && tx.iconKey.startsWith('ccat-')
+          ? tx.iconKey
+          : txType === 'income'
+            ? 'salary'
+            : txType === 'saving'
+              ? 'saving'
+              : 'lifestyle';
+      const compositeKey = `${txType}:${rawKey}`;
+
+      const existing = totals.get(compositeKey);
       if (existing) {
         existing.amount += amt;
       } else {
-        const meta = allCategoryMap[key];
-        const fallbackColor = getCustomColorMeta(tx.customColor || CORE_CATEGORY_MAP.lifestyle.barColor);
-        totals.set(key, {
-          key,
+        const meta = allCategoryMap[rawKey];
+        totals.set(compositeKey, {
+          key: compositeKey,
+          type: txType,
           label: meta?.label || tx.categoryLabel || CORE_CATEGORY_MAP.lifestyle.label,
           icon:
             meta?.icon ||
             getCategoryIconComponent(tx.iconKey, tx.customIcon, customCategories),
-          barColor: meta?.barColor || fallbackColor.hex,
-          barColorDark: meta?.barColorDark || fallbackColor.darkHex,
           amount: amt,
         });
       }
     }
 
-    const items = Array.from(totals.values())
-      .map((item) => ({
-        ...item,
-        pct:
-          totalTrackedExpenses > 0
-            ? Math.round((item.amount / totalTrackedExpenses) * 100)
-            : 0,
-      }))
-      .sort((a, b) => b.amount - a.amount);
+    const typeOrder = { income: 0, expense: 1, saving: 2 };
+    const allItems = Array.from(totals.values())
+      .map((item) => {
+        const denom =
+          breakdownFilter === 'all'
+            ? Math.max(monthlyIncome, streamTotals.income, streamTotals.expense, streamTotals.saving, 1)
+            : Math.max(streamTotals[item.type], 1);
+        const pct = Math.min(100, Math.round((item.amount / denom) * 100));
+        const shareOfStream =
+          streamTotals[item.type] > 0
+            ? Math.round((item.amount / streamTotals[item.type]) * 100)
+            : 0;
+        return {
+          ...item,
+          pct,
+          shareOfStream,
+        };
+      })
+      .filter((item) => breakdownFilter === 'all' || item.type === breakdownFilter)
+      .sort((a, b) => {
+        if (breakdownFilter === 'all' && a.type !== b.type) {
+          return typeOrder[a.type] - typeOrder[b.type];
+        }
+        return b.amount - a.amount;
+      });
 
-    return { items, totalTrackedExpenses };
-  }, [transactions, allCategoryMap, customCategories]);
+    return { items: allItems, streamTotals };
+  }, [transactions, allCategoryMap, customCategories, breakdownFilter, monthlyIncome]);
 
   // Filtered ledger transactions
   const filteredTransactions = useMemo(() => {
@@ -699,28 +731,51 @@ export default function AutoKey({ onNavigate }) {
     },
   ];
 
+  const breakdownFilterTabs = [
+    { id: 'all', label: lang === 'TH' ? 'ทั้งหมด' : 'All' },
+    { id: 'income', label: lang === 'TH' ? 'รายรับ' : 'Income' },
+    { id: 'expense', label: lang === 'TH' ? 'รายจ่าย' : 'Expense' },
+    { id: 'saving', label: lang === 'TH' ? 'เงินออม' : 'Savings' },
+  ];
+
   const todayIso = getTodayIso();
   const yesterdayIso = getIsoDateOffset(-1);
 
-  // Cashflow comparison widths
-  const cashflowBase = Math.max(monthlyIncome, monthlyExpenses, 1);
-  const expenseBarWidth = Math.min(100, Math.round((monthlyExpenses / cashflowBase) * 100));
+  // Cashflow comparison widths (Income Green, Expenses Red, Net Savings Blue)
+  const positiveNetSavings = Math.max(0, netSavings);
+  const cashflowBase = Math.max(monthlyIncome, monthlyExpenses, positiveNetSavings, 1);
   const incomeBarWidth = Math.min(100, Math.round((monthlyIncome / cashflowBase) * 100));
+  const expenseBarWidth = Math.min(100, Math.round((monthlyExpenses / cashflowBase) * 100));
+  const savingsBarWidth = Math.min(100, Math.round((positiveNetSavings / cashflowBase) * 100));
 
-  const savingsBadgeClass =
-    netSavingsRate >= 20 ? 'positive' : netSavingsRate >= 10 ? 'warn' : 'danger';
+  // Net Savings pill stays strictly in Blue family (or Red if deficit) — never Green like Income
+  const savingsBadgeClass = netSavings < 0 ? 'danger' : 'blue';
 
   const ActiveCustomIcon = activeCustomForManual?.icon || MoreHorizontal;
-  const activeCustomColorMeta = activeCustomForManual
-    ? getCustomColorMeta(activeCustomForManual.barColor)
-    : null;
+
+  const handleQuickLogFromModal = (mode) => {
+    setInputMode('manual');
+    handleManualTypeChange(mode);
+  };
 
   return (
     <div className="autokey-stack">
       {/* ================= 1) TOP 4 BENTO KPI CARDS ================= */}
       <section className="autokey-kpi-grid" aria-label="Cashflow and Emergency KPIs">
-        {/* Card 1: Monthly Income */}
-        <article className="bento-card ak-kpi-card">
+        {/* Card 1: Monthly Income (Clickable Drill-Down) */}
+        <article
+          id="kpi-card-income"
+          className="bento-card ak-kpi-card clickable"
+          role="button"
+          tabIndex={0}
+          onClick={() => setKpiDetailMode('income')}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault();
+              setKpiDetailMode('income');
+            }
+          }}
+        >
           <div className="ak-kpi-top">
             <span className="metric-icon-badge income" aria-hidden="true">
               <ArrowDownLeft size={18} strokeWidth={2.2} />
@@ -735,10 +790,26 @@ export default function AutoKey({ onNavigate }) {
             </div>
             <div className="ak-kpi-value income tabular-nums">{formatTHB(monthlyIncome)}</div>
           </div>
+          <div className="ak-kpi-drill-hint">
+            <span>{lang === 'TH' ? 'ดูที่มา & ความเคลื่อนไหว' : 'View breakdown'}</span>
+            <ChevronRight size={13} strokeWidth={2.4} aria-hidden="true" />
+          </div>
         </article>
 
-        {/* Card 2: Monthly Expenses (Red accent per Round 2.5) */}
-        <article className="bento-card ak-kpi-card">
+        {/* Card 2: Monthly Expenses (Red + Clickable Drill-Down) */}
+        <article
+          id="kpi-card-expense"
+          className="bento-card ak-kpi-card clickable"
+          role="button"
+          tabIndex={0}
+          onClick={() => setKpiDetailMode('expense')}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault();
+              setKpiDetailMode('expense');
+            }
+          }}
+        >
           <div className="ak-kpi-top">
             <span className="metric-icon-badge expense" aria-hidden="true">
               <ArrowUpRight size={18} strokeWidth={2.2} />
@@ -753,10 +824,26 @@ export default function AutoKey({ onNavigate }) {
             </div>
             <div className="ak-kpi-value expense tabular-nums">{formatTHB(monthlyExpenses)}</div>
           </div>
+          <div className="ak-kpi-drill-hint">
+            <span>{lang === 'TH' ? 'ดูที่มา & ความเคลื่อนไหว' : 'View breakdown'}</span>
+            <ChevronRight size={13} strokeWidth={2.4} aria-hidden="true" />
+          </div>
         </article>
 
-        {/* Card 3: Net Monthly Savings */}
-        <article className="bento-card ak-kpi-card">
+        {/* Card 3: Net Monthly Savings (Blue like Emergency Fund + Clickable Drill-Down) */}
+        <article
+          id="kpi-card-saving"
+          className="bento-card ak-kpi-card clickable"
+          role="button"
+          tabIndex={0}
+          onClick={() => setKpiDetailMode('saving')}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault();
+              setKpiDetailMode('saving');
+            }
+          }}
+        >
           <div className="ak-kpi-top">
             <span className="metric-icon-badge saving" aria-hidden="true">
               <PiggyBank size={18} strokeWidth={2.1} />
@@ -769,13 +856,17 @@ export default function AutoKey({ onNavigate }) {
             <div className="ak-kpi-label">
               {lang === 'TH' ? 'เงินออมสุทธิ' : 'Net Monthly Savings'}
             </div>
-            <div className={`ak-kpi-value tabular-nums ${netSavings < 0 ? 'negative' : ''}`}>
+            <div className={`ak-kpi-value tabular-nums ${netSavings < 0 ? 'negative' : 'saving'}`}>
               {formatTHB(netSavings, { showSign: netSavings < 0 })}
             </div>
           </div>
+          <div className="ak-kpi-drill-hint">
+            <span>{lang === 'TH' ? 'ดูที่มา & ความเคลื่อนไหว' : 'View breakdown'}</span>
+            <ChevronRight size={13} strokeWidth={2.4} aria-hidden="true" />
+          </div>
         </article>
 
-        {/* Card 4: Liquid Emergency Fund */}
+        {/* Card 4: Liquid Emergency Fund (Blue Family) */}
         <article className="bento-card ak-kpi-card ak-kpi-emergency">
           <div className="ak-kpi-top">
             <span className="metric-icon-badge premium" aria-hidden="true">
@@ -795,7 +886,7 @@ export default function AutoKey({ onNavigate }) {
             <div className="ak-kpi-label">
               {lang === 'TH' ? 'เงินสำรองฉุกเฉินพร้อมใช้' : 'Liquid Emergency Fund'}
             </div>
-            <div className="ak-kpi-value tabular-nums">{formatTHB(emergencyFund)}</div>
+            <div className="ak-kpi-value saving tabular-nums">{formatTHB(emergencyFund)}</div>
           </div>
           <div className="ak-kpi-progress">
             <div
@@ -1284,17 +1375,8 @@ export default function AutoKey({ onNavigate }) {
                     id="manual-cat-other-btn"
                     type="button"
                     className={`ak-cat-pill ak-cat-pill-other ${
-                      activeCustomForManual ? 'active custom-active' : ''
+                      activeCustomForManual ? `active custom-active type-${activeCustomForManual.type}` : ''
                     }`}
-                    style={
-                      activeCustomForManual && activeCustomColorMeta
-                        ? {
-                            borderColor: activeCustomColorMeta.hex,
-                            backgroundColor: activeCustomColorMeta.bg,
-                            color: activeCustomColorMeta.hex,
-                          }
-                        : undefined
-                    }
                     onClick={() => setCatModalTarget('manual')}
                   >
                     <ActiveCustomIcon size={15} strokeWidth={2.2} aria-hidden="true" />
@@ -1455,24 +1537,24 @@ export default function AutoKey({ onNavigate }) {
 
         {/* RIGHT COLUMN: Cashflow Analytics & Safe Protection Budget Coach */}
         <div className="autokey-analytics-col">
-          {/* Card A: Spending Breakdown & Cashflow Comparison */}
+          {/* Card A: Cashflow & Category Breakdown (Income Green, Expense Red, Savings Blue) */}
           <section className="bento-card ak-breakdown-card" aria-labelledby="ak-breakdown-heading">
             <div className="ak-card-head">
               <div>
                 <h2 id="ak-breakdown-heading" className="card-title">
                   {lang === 'TH'
-                    ? 'สัดส่วนรายจ่าย & เปรียบเทียบกระแสเงินสด'
-                    : 'Spending Breakdown & Cashflow'}
+                    ? 'สัดส่วนรายรับ รายจ่าย & เงินออม'
+                    : 'Income, Expenses & Savings Breakdown'}
                 </h2>
                 <p className="card-subtitle">
                   {lang === 'TH'
-                    ? 'เห็นภาพชัดว่าเงินไหลออกหมวดไหนมากที่สุด (รวมหมวดที่สร้างเอง)'
-                    : 'Track where your money goes against monthly income'}
+                    ? 'เปรียบเทียบกระแสเงินสดทั้ง 3 ด้าน (เขียว = รายรับ • แดง = รายจ่าย • ฟ้า = เงินออม)'
+                    : '3-color cashflow overview (Green = Income • Red = Expense • Blue = Savings)'}
                 </p>
               </div>
             </div>
 
-            {/* Income vs Expenses Horizontal Comparison */}
+            {/* Macro Comparison: Income (Green), Expenses (Red), Net Savings (Blue) */}
             <div className="ak-cashflow-bars">
               <div className="ak-cf-row">
                 <div className="ak-cf-label-row">
@@ -1507,27 +1589,59 @@ export default function AutoKey({ onNavigate }) {
                   />
                 </div>
               </div>
+
+              <div className="ak-cf-row">
+                <div className="ak-cf-label-row">
+                  <span className="ak-cf-name">
+                    <span className="ak-dot blue" aria-hidden="true" />
+                    {lang === 'TH' ? 'เงินออมสุทธิ' : 'Net Savings'}
+                  </span>
+                  <span
+                    className={`ak-cf-val tabular-nums ${netSavings < 0 ? 'expense' : 'saving'}`}
+                  >
+                    {formatTHB(netSavings, { showSign: netSavings < 0 })} ({netSavingsRate}%)
+                  </span>
+                </div>
+                <div className="ak-bar-track">
+                  <div
+                    className="ak-bar-fill saving"
+                    style={{ width: `${savingsBarWidth}%` }}
+                  />
+                </div>
+              </div>
             </div>
 
             <div className="ak-divider" />
 
-            {/* Category Breakdown Bars */}
+            {/* Category Breakdown Filter (All / Income / Expense / Savings) */}
+            <div className="ak-breakdown-filter-row">
+              <span className="ak-section-micro-label">
+                {lang === 'TH' ? 'แยกตามหมวดหมู่' : 'By Category'}
+              </span>
+              <LiquidTabs
+                tabs={breakdownFilterTabs}
+                activeId={breakdownFilter}
+                onChange={setBreakdownFilter}
+                variant="compact"
+                idPrefix="breakdown-filter"
+                ariaLabel={lang === 'TH' ? 'กรองสัดส่วนตามประเภท' : 'Filter breakdown'}
+              />
+            </div>
+
+            {/* Category Breakdown Bars (Income Green, Expense Red, Saving Blue) */}
             <div className="ak-cat-breakdown-list">
-              {spendingBreakdown.items.length === 0 ? (
+              {cashflowBreakdown.items.length === 0 ? (
                 <div className="ak-empty-mini">
-                  {lang === 'TH' ? 'ยังไม่มีรายการรายจ่ายในเดือนนี้' : 'No expense items logged yet'}
+                  {lang === 'TH' ? 'ยังไม่มีรายการในหมวดนี้' : 'No items logged in this stream yet'}
                 </div>
               ) : (
-                spendingBreakdown.items.map((item) => {
+                cashflowBreakdown.items.map((item) => {
                   const Icon = item.icon;
+                  const valSign = item.type === 'expense' ? '-' : '+';
                   return (
                     <div
                       key={item.key}
-                      className="ak-cat-bar-item"
-                      style={{
-                        '--cat-bar-light': item.barColor,
-                        '--cat-bar-dark': item.barColorDark,
-                      }}
+                      className={`ak-cat-bar-item type-${item.type}`}
                     >
                       <div className="ak-cat-bar-top">
                         <span className="ak-cat-bar-name">
@@ -1536,15 +1650,19 @@ export default function AutoKey({ onNavigate }) {
                           </span>
                           <span>{t(item.label)}</span>
                         </span>
-                        <span className="ak-cat-bar-val expense tabular-nums">
+                        <span className={`ak-cat-bar-val ${item.type} tabular-nums`}>
+                          {valSign}
                           {formatTHB(item.amount)}
-                          <span className="ak-cat-bar-pct"> ({item.pct}%)</span>
+                          <span className="ak-cat-bar-pct">
+                            {' '}
+                            ({breakdownFilter === 'all' ? item.pct : item.shareOfStream}%)
+                          </span>
                         </span>
                       </div>
                       <div className="ak-bar-track sm">
                         <div
                           className="ak-bar-fill ak-bar-fill-cat"
-                          style={{ width: `${item.pct}%` }}
+                          style={{ width: `${breakdownFilter === 'all' ? item.pct : item.shareOfStream}%` }}
                         />
                       </div>
                     </div>
@@ -1705,7 +1823,6 @@ export default function AutoKey({ onNavigate }) {
                     tx.customIcon,
                     customCategories
                   );
-                  const customBadgeStyle = resolveTransactionBadgeStyle(tx, customCategories);
                   const amountClass =
                     tx.category === 'income'
                       ? 'income'
@@ -1801,8 +1918,7 @@ export default function AutoKey({ onNavigate }) {
                       <td>
                         <div className="ak-ledger-cat-cell">
                           <span
-                            className={`tx-icon-circle ${tx.iconKey || 'food'}`}
-                            style={customBadgeStyle}
+                            className={`tx-icon-circle type-${amountClass}`}
                             aria-hidden="true"
                           >
                             <Icon size={16} strokeWidth={2.1} />
@@ -1881,7 +1997,6 @@ export default function AutoKey({ onNavigate }) {
                 tx.customIcon,
                 customCategories
               );
-              const customBadgeStyle = resolveTransactionBadgeStyle(tx, customCategories);
               const amountClass =
                 tx.category === 'income'
                   ? 'income'
@@ -1970,8 +2085,7 @@ export default function AutoKey({ onNavigate }) {
                 <div key={tx.id} className="mobile-tx-card ak-mobile-tx-card">
                   <div className="mobile-tx-left">
                     <span
-                      className={`tx-icon-circle ${tx.iconKey || 'food'}`}
-                      style={customBadgeStyle}
+                      className={`tx-icon-circle type-${amountClass}`}
                       aria-hidden="true"
                     >
                       <Icon size={17} strokeWidth={2.1} />
@@ -2035,6 +2149,22 @@ export default function AutoKey({ onNavigate }) {
           )}
         </div>
       </section>
+
+      {/* Interactive KPI Drill-Down Modal (Income / Expenses / Net Savings) */}
+      {kpiDetailMode && (
+        <KpiDetailModal
+          mode={kpiDetailMode}
+          monthlyIncome={monthlyIncome}
+          monthlyExpenses={monthlyExpenses}
+          netSavings={netSavings}
+          netSavingsRate={netSavingsRate}
+          expenseRatio={expenseRatio}
+          transactions={transactions}
+          customCategories={customCategories}
+          onQuickLog={handleQuickLogFromModal}
+          onClose={() => setKpiDetailMode(null)}
+        />
+      )}
 
       {/* Custom Category Modal ("อื่น ๆ / หมวดของฉัน") */}
       {catModalTarget && (

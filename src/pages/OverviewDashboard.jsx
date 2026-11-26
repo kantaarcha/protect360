@@ -16,10 +16,7 @@ import { useLanguage } from '../context/LanguageContext';
 import { formatTHB, useFinance } from '../context/FinanceContext';
 import { useLiquidSlider } from '../hooks/useLiquidSlider';
 import { getCardHolderDisplay } from '../utils/userHelpers';
-import {
-  getCategoryIconComponent,
-  resolveTransactionBadgeStyle,
-} from '../utils/categoryRegistry';
+import { getCategoryIconComponent } from '../utils/categoryRegistry';
 import ProtectionGapChart from '../components/ProtectionGapChart';
 import CoverageModal from '../components/CoverageModal';
 
@@ -232,7 +229,7 @@ export default function OverviewDashboard({ onNavigate, onOpenProfile }) {
                 </div>
                 <div>
                   <div className="metric-mini-label">{t('overview.metricIncome')}</div>
-                  <div className="metric-mini-value tabular-nums">
+                  <div className="metric-mini-value income tabular-nums">
                     {formatTHB(profile.monthlyIncome)}
                   </div>
                 </div>
@@ -244,7 +241,7 @@ export default function OverviewDashboard({ onNavigate, onOpenProfile }) {
                   <span className="metric-icon-badge expense" aria-hidden="true">
                     <ArrowUpRight size={18} strokeWidth={2.2} />
                   </span>
-                  <span className="metric-pill-tag neutral tabular-nums">
+                  <span className="metric-pill-tag danger tabular-nums">
                     {profile.monthlyIncome > 0
                       ? `${Math.round((profile.monthlyExpenses / profile.monthlyIncome) * 100)}%`
                       : '0%'}
@@ -252,7 +249,7 @@ export default function OverviewDashboard({ onNavigate, onOpenProfile }) {
                 </div>
                 <div>
                   <div className="metric-mini-label">{t('overview.metricExpenses')}</div>
-                  <div className="metric-mini-value tabular-nums">
+                  <div className="metric-mini-value expense tabular-nums">
                     {formatTHB(profile.monthlyExpenses)}
                   </div>
                 </div>
@@ -264,13 +261,13 @@ export default function OverviewDashboard({ onNavigate, onOpenProfile }) {
                   <span className="metric-icon-badge saving" aria-hidden="true">
                     <PiggyBank size={18} strokeWidth={2.1} />
                   </span>
-                  <span className="metric-pill-tag positive tabular-nums">
+                  <span className="metric-pill-tag blue tabular-nums">
                     +{savingsRatio}%
                   </span>
                 </div>
                 <div>
                   <div className="metric-mini-label">{t('overview.metricSavings')}</div>
-                  <div className="metric-mini-value tabular-nums">
+                  <div className="metric-mini-value saving tabular-nums">
                     {formatTHB(profile.monthlySavings)}
                   </div>
                 </div>
@@ -472,10 +469,15 @@ export default function OverviewDashboard({ onNavigate, onOpenProfile }) {
         {/* ================= ROW 3: FULL-WIDTH RECENT ACTIVITIES ================= */}
         <section className="bento-card activities-card" aria-labelledby="recent-activities-title">
             <div className="activities-toolbar">
-              <div>
-                <h2 id="recent-activities-title" className="card-title">
+              <div className="activities-title-group">
+                <h2 id="recent-activities-title" className="card-title activities-title-lg">
                   {t('overview.activitiesTitle')}
                 </h2>
+                <p className="card-subtitle activities-subtitle">
+                  {lang === 'TH'
+                    ? 'สรุปรายรับ รายจ่าย และเงินออมล่าสุดของคุณ'
+                    : 'Your latest income, expenses, and emergency savings movements'}
+                </p>
               </div>
 
               <div className="activities-controls">
@@ -549,7 +551,6 @@ export default function OverviewDashboard({ onNavigate, onOpenProfile }) {
                         tx.customIcon,
                         customCategories
                       );
-                      const customBadgeStyle = resolveTransactionBadgeStyle(tx, customCategories);
                       const amountClass =
                         tx.category === 'income'
                           ? 'income'
@@ -562,8 +563,7 @@ export default function OverviewDashboard({ onNavigate, onOpenProfile }) {
                           <td>
                             <div className="tx-item-cell">
                               <span
-                                className={`tx-icon-circle ${tx.iconKey}`}
-                                style={customBadgeStyle}
+                                className={`tx-icon-circle type-${amountClass}`}
                                 aria-hidden="true"
                               >
                                 <Icon size={17} strokeWidth={2.1} />
@@ -611,7 +611,6 @@ export default function OverviewDashboard({ onNavigate, onOpenProfile }) {
                     tx.customIcon,
                     customCategories
                   );
-                  const customBadgeStyle = resolveTransactionBadgeStyle(tx, customCategories);
                   const amountClass =
                     tx.category === 'income'
                       ? 'income'
@@ -623,8 +622,7 @@ export default function OverviewDashboard({ onNavigate, onOpenProfile }) {
                     <div key={tx.id} className="mobile-tx-card">
                       <div className="mobile-tx-left">
                         <span
-                          className={`tx-icon-circle ${tx.iconKey}`}
-                          style={customBadgeStyle}
+                          className={`tx-icon-circle type-${amountClass}`}
                           aria-hidden="true"
                         >
                           <Icon size={17} strokeWidth={2.1} />

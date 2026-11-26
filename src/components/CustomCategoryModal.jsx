@@ -3,10 +3,9 @@ import { Check, FolderPlus, Layers, Plus, Trash2, X } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import { useFinance } from '../context/FinanceContext';
 import {
-  CUSTOM_COLOR_OPTIONS,
   CUSTOM_ICON_MAP,
   CUSTOM_ICON_OPTIONS,
-  getCustomColorMeta,
+  getTypeColorMeta,
 } from '../utils/categoryRegistry';
 import LiquidTabs from './LiquidTabs';
 
@@ -29,7 +28,6 @@ export default function CustomCategoryModal({
   const [name, setName] = useState('');
   const [type, setType] = useState(defaultType);
   const [iconName, setIconName] = useState('utensils');
-  const [color, setColor] = useState(CUSTOM_COLOR_OPTIONS[0].hex);
   const [confirmDeleteId, setConfirmDeleteId] = useState(null);
 
   useEffect(() => {
@@ -64,11 +62,12 @@ export default function CustomCategoryModal({
     e.preventDefault();
     const trimmed = name.trim();
     if (!trimmed) return;
+    const typeColor = getTypeColorMeta(type);
     const created = addCustomCategory({
       name: trimmed,
       type,
       iconName,
-      color,
+      color: typeColor.hex,
     });
     if (created) {
       onSelectCategory(created);
@@ -77,7 +76,6 @@ export default function CustomCategoryModal({
   };
 
   const PreviewIcon = CUSTOM_ICON_MAP[iconName] || CUSTOM_ICON_OPTIONS[0].icon;
-  const previewColorMeta = getCustomColorMeta(color);
 
   return (
     <div
@@ -98,7 +96,7 @@ export default function CustomCategoryModal({
             </h2>
             <p className="card-subtitle">
               {lang === 'TH'
-                ? 'เลือกหมวดที่คุณสร้างไว้ หรือเพิ่มหมวดใหม่พร้อมไอคอนและสีตามสไตล์ของคุณ'
+                ? 'เลือกหมวดที่คุณสร้างไว้ หรือเพิ่มหมวดใหม่พร้อมไอคอน 25 แบบ (สีปรับตามประเภทรายการอัตโนมัติ)'
                 : 'Pick your custom category or create a new one with 25 curated icons'}
             </p>
           </div>
@@ -150,7 +148,6 @@ export default function CustomCategoryModal({
                 <div className="cc-list">
                   {customCategories.map((cat) => {
                     const Icon = CUSTOM_ICON_MAP[cat.iconName] || CUSTOM_ICON_OPTIONS[0].icon;
-                    const colorMeta = getCustomColorMeta(cat.color);
                     const isSelected = activeCatKey === cat.id;
                     const isConfirming = confirmDeleteId === cat.id;
 
@@ -168,8 +165,7 @@ export default function CustomCategoryModal({
                           }}
                         >
                           <span
-                            className="cc-item-icon"
-                            style={{ backgroundColor: colorMeta.bg, color: colorMeta.hex }}
+                            className={`cc-item-icon type-${cat.type || 'expense'}`}
                             aria-hidden="true"
                           >
                             <Icon size={17} strokeWidth={2.1} />
@@ -251,11 +247,7 @@ export default function CustomCategoryModal({
                 {lang === 'TH' ? 'ตัวอย่างหมวดหมู่' : 'Preview'}
               </span>
               <span className="cc-preview-chip">
-                <span
-                  className="cc-preview-icon"
-                  style={{ backgroundColor: previewColorMeta.bg, color: previewColorMeta.hex }}
-                  aria-hidden="true"
-                >
+                <span className={`cc-preview-icon type-${type}`} aria-hidden="true">
                   <PreviewIcon size={15} strokeWidth={2.2} />
                 </span>
                 <span className="cc-preview-name">
@@ -298,31 +290,6 @@ export default function CustomCategoryModal({
             </div>
 
             <div className="form-field">
-              <span className="form-label">
-                {lang === 'TH' ? 'สีประจำหมวด' : 'Accent Color'}
-              </span>
-              <div className="cc-color-row">
-                {CUSTOM_COLOR_OPTIONS.map((opt) => {
-                  const isSelected = color === opt.hex;
-                  return (
-                    <button
-                      key={opt.id}
-                      type="button"
-                      className={`cc-color-swatch ${isSelected ? 'active' : ''}`}
-                      style={{ '--swatch-color': opt.hex }}
-                      onClick={() => setColor(opt.hex)}
-                      title={t(opt.label)}
-                      aria-label={t(opt.label)}
-                      aria-pressed={isSelected}
-                    >
-                      {isSelected && <Check size={13} strokeWidth={3} color="#ffffff" />}
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-
-            <div className="form-field">
               <div className="cc-icon-label-row">
                 <span className="form-label">
                   {lang === 'TH' ? 'เลือกไอคอน (25 แบบ)' : 'Choose Icon (25 options)'}
@@ -342,16 +309,7 @@ export default function CustomCategoryModal({
                     <button
                       key={opt.id}
                       type="button"
-                      className={`cc-icon-btn ${isSelected ? 'active' : ''}`}
-                      style={
-                        isSelected
-                          ? {
-                              borderColor: previewColorMeta.hex,
-                              backgroundColor: previewColorMeta.bg,
-                              color: previewColorMeta.hex,
-                            }
-                          : undefined
-                      }
+                      className={`cc-icon-btn ${isSelected ? `active type-${type}` : ''}`}
                       onClick={() => setIconName(opt.id)}
                       title={t(opt.label)}
                       aria-label={t(opt.label)}
