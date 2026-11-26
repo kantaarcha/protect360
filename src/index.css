@@ -972,16 +972,26 @@ p {
   width: 100%;
   height: 12px;
   background: var(--bg-subtle);
+  border: 1px solid var(--border-subtle);
   border-radius: var(--radius-pill);
   overflow: hidden;
   position: relative;
 }
 
+[data-theme='dark'] .progress-track {
+  background: rgba(148, 179, 219, 0.16);
+  border-color: rgba(148, 179, 219, 0.14);
+}
+
 .progress-fill {
   height: 100%;
   border-radius: var(--radius-pill);
-  background: linear-gradient(90deg, var(--royal) 0%, var(--teal) 100%);
+  background: linear-gradient(90deg, #2563eb 0%, #38bdf8 100%);
   transition: width 0.5s var(--ease);
+}
+
+[data-theme='dark'] .progress-fill {
+  background: linear-gradient(90deg, #4aa3ff 0%, #7dd3fc 100%);
 }
 
 .goal-numbers-row {
@@ -1699,32 +1709,53 @@ p {
 }
 
 .tx-icon-circle.salary {
-  background: var(--success-bg);
-  color: var(--success);
+  background: rgba(31, 168, 107, 0.14);
+  color: #168755;
+}
+
+[data-theme='dark'] .tx-icon-circle.salary {
+  background: rgba(52, 211, 153, 0.18);
+  color: #4ade9a;
 }
 
 .tx-icon-circle.housing {
-  background: var(--accent-blue-bg);
-  color: var(--royal);
+  background: rgba(59, 108, 232, 0.13);
+  color: #3b6ce8;
 }
 
 [data-theme='dark'] .tx-icon-circle.housing {
-  color: #6ab5ff;
+  background: rgba(107, 150, 255, 0.18);
+  color: #82aaff;
 }
 
 .tx-icon-circle.food {
-  background: var(--warning-bg);
-  color: var(--warning-text);
+  background: rgba(234, 140, 30, 0.15);
+  color: #c7700e;
+}
+
+[data-theme='dark'] .tx-icon-circle.food {
+  background: rgba(255, 176, 74, 0.18);
+  color: #ffbe66;
 }
 
 .tx-icon-circle.transport {
-  background: var(--bg-subtle);
-  color: var(--text-primary);
+  background: rgba(14, 165, 160, 0.14);
+  color: #0b8581;
+}
+
+[data-theme='dark'] .tx-icon-circle.transport {
+  background: rgba(45, 212, 191, 0.18);
+  color: #45e0cc;
 }
 
 .tx-icon-circle.saving {
-  background: var(--accent-teal-bg);
-  color: var(--teal);
+  background: rgba(2, 132, 199, 0.13);
+  color: #0284c7;
+}
+
+[data-theme='dark'] .tx-icon-circle.saving {
+  background: rgba(56, 189, 248, 0.18);
+  color: #5cc8ff;
 }
 
 .tx-name {
@@ -4730,13 +4761,13 @@ p {
 
 /* Lifestyle Transaction Icon Circle */
 .tx-icon-circle.lifestyle {
-  background: rgba(99, 136, 198, 0.16);
-  color: var(--royal-deep);
+  background: rgba(139, 92, 246, 0.14);
+  color: #7c3aed;
 }
 
 [data-theme='dark'] .tx-icon-circle.lifestyle {
-  background: rgba(124, 176, 245, 0.18);
-  color: #8cc4ff;
+  background: rgba(176, 139, 255, 0.2);
+  color: #c4a6ff;
 }
 
 /* AutoKey Page Layout */
@@ -5338,16 +5369,24 @@ p {
   display: inline-block;
 }
 
+.ak-dot.green {
+  background: #1fa86b;
+}
+
+[data-theme='dark'] .ak-dot.green {
+  background: #34d399;
+}
+
 .ak-dot.teal {
-  background: var(--teal);
+  background: #0ea5a0;
 }
 
 .ak-dot.navy {
-  background: var(--navy);
+  background: #3b6ce8;
 }
 
 [data-theme='dark'] .ak-dot.navy {
-  background: var(--royal);
+  background: #6b96ff;
 }
 
 .ak-cf-val {
@@ -5360,7 +5399,13 @@ p {
   height: 10px;
   border-radius: var(--radius-pill);
   background: var(--bg-subtle);
+  border: 1px solid var(--border-subtle);
   overflow: hidden;
+}
+
+[data-theme='dark'] .ak-bar-track {
+  background: rgba(148, 179, 219, 0.16);
+  border-color: rgba(148, 179, 219, 0.14);
 }
 
 .ak-bar-track.sm {
@@ -5370,19 +5415,47 @@ p {
 .ak-bar-fill {
   height: 100%;
   border-radius: var(--radius-pill);
-  transition: width 0.36s var(--ease);
+  transition: width 0.36s var(--ease), background 0.25s var(--ease);
 }
 
 .ak-bar-fill.income {
-  background: linear-gradient(90deg, var(--teal) 0%, #31a879 100%);
+  background: linear-gradient(90deg, #1fa86b 0%, #34c785 100%);
+}
+
+[data-theme='dark'] .ak-bar-fill.income {
+  background: linear-gradient(90deg, #2ad188 0%, #56e6a5 100%);
 }
 
 .ak-bar-fill.expense {
-  background: linear-gradient(90deg, var(--navy) 0%, var(--royal) 100%);
+  background: linear-gradient(90deg, #e05252 0%, #c63636 100%);
 }
 
 [data-theme='dark'] .ak-bar-fill.expense {
-  background: linear-gradient(90deg, #2878c8 0%, #5ca8f5 100%);
+  background: linear-gradient(90deg, #f26d6d 0%, #ff8a8a 100%);
+}
+
+/* Theme-aware distinct category breakdown bar colors (never dark-on-dark in Dark Mode) */
+.ak-cat-bar-item {
+  --cat-bar-active: var(--cat-bar-light, #3b6ce8);
+}
+
+[data-theme='dark'] .ak-cat-bar-item {
+  --cat-bar-active: var(--cat-bar-dark, #6b96ff);
+}
+
+.ak-cat-bar-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--cat-bar-active);
+}
+
+.ak-bar-fill-cat {
+  background: var(--cat-bar-active);
+}
+
+[data-theme='dark'] .ak-bar-fill-cat {
+  box-shadow: 0 0 8px -2px var(--cat-bar-active);
 }
 
 .ak-divider {
@@ -5785,10 +5858,6 @@ p {
 
 .ak-cf-val.income {
   color: var(--success-text);
-}
-
-.ak-bar-fill.expense {
-  background: linear-gradient(90deg, #df6666 0%, #c94646 100%);
 }
 
 /* Semantic Amount Input Coloring */

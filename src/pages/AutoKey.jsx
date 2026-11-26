@@ -219,15 +219,19 @@ export default function AutoKey({ onNavigate }) {
 
   // Build unified category lookup (6 core + user custom categories)
   const allCategories = useMemo(() => {
-    const mappedCustom = (customCategories || []).map((c) => ({
-      key: c.id,
-      type: c.type,
-      iconName: c.iconName,
-      icon: CUSTOM_ICON_MAP[c.iconName] || CORE_CATEGORY_MAP.lifestyle.icon,
-      label: { th: c.name, en: c.name },
-      barColor: c.color || '#2878C8',
-      isCustom: true,
-    }));
+    const mappedCustom = (customCategories || []).map((c) => {
+      const colorMeta = getCustomColorMeta(c.color);
+      return {
+        key: c.id,
+        type: c.type,
+        iconName: c.iconName,
+        icon: CUSTOM_ICON_MAP[c.iconName] || CORE_CATEGORY_MAP.lifestyle.icon,
+        label: { th: c.name, en: c.name },
+        barColor: colorMeta.hex,
+        barColorDark: colorMeta.darkHex,
+        isCustom: true,
+      };
+    });
     return [...CORE_CATEGORIES, ...mappedCustom];
   }, [customCategories]);
 
@@ -274,13 +278,15 @@ export default function AutoKey({ onNavigate }) {
         existing.amount += amt;
       } else {
         const meta = allCategoryMap[key];
+        const fallbackColor = getCustomColorMeta(tx.customColor || CORE_CATEGORY_MAP.lifestyle.barColor);
         totals.set(key, {
           key,
           label: meta?.label || tx.categoryLabel || CORE_CATEGORY_MAP.lifestyle.label,
           icon:
             meta?.icon ||
             getCategoryIconComponent(tx.iconKey, tx.customIcon, customCategories),
-          barColor: meta?.barColor || tx.customColor || '#6388C6',
+          barColor: meta?.barColor || fallbackColor.hex,
+          barColorDark: meta?.barColorDark || fallbackColor.darkHex,
           amount: amt,
         });
       }
@@ -1471,7 +1477,7 @@ export default function AutoKey({ onNavigate }) {
               <div className="ak-cf-row">
                 <div className="ak-cf-label-row">
                   <span className="ak-cf-name">
-                    <span className="ak-dot teal" aria-hidden="true" />
+                    <span className="ak-dot green" aria-hidden="true" />
                     {lang === 'TH' ? 'รายรับรวม' : 'Income'}
                   </span>
                   <span className="ak-cf-val income tabular-nums">{formatTHB(monthlyIncome)}</span>
@@ -1515,10 +1521,19 @@ export default function AutoKey({ onNavigate }) {
                 spendingBreakdown.items.map((item) => {
                   const Icon = item.icon;
                   return (
-                    <div key={item.key} className="ak-cat-bar-item">
+                    <div
+                      key={item.key}
+                      className="ak-cat-bar-item"
+                      style={{
+                        '--cat-bar-light': item.barColor,
+                        '--cat-bar-dark': item.barColorDark,
+                      }}
+                    >
                       <div className="ak-cat-bar-top">
                         <span className="ak-cat-bar-name">
-                          <Icon size={14} strokeWidth={2.2} aria-hidden="true" />
+                          <span className="ak-cat-bar-icon" aria-hidden="true">
+                            <Icon size={14} strokeWidth={2.2} />
+                          </span>
                           <span>{t(item.label)}</span>
                         </span>
                         <span className="ak-cat-bar-val expense tabular-nums">
@@ -1528,11 +1543,8 @@ export default function AutoKey({ onNavigate }) {
                       </div>
                       <div className="ak-bar-track sm">
                         <div
-                          className="ak-bar-fill"
-                          style={{
-                            width: `${item.pct}%`,
-                            backgroundColor: item.barColor,
-                          }}
+                          className="ak-bar-fill ak-bar-fill-cat"
+                          style={{ width: `${item.pct}%` }}
                         />
                       </div>
                     </div>

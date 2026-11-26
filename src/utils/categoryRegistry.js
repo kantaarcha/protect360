@@ -35,7 +35,8 @@ export const CORE_CATEGORIES = [
     iconName: 'coffee',
     icon: Coffee,
     label: { th: 'อาหาร & เครื่องดื่ม', en: 'Food & Dining' },
-    barColor: '#2878C8',
+    barColor: '#EA8C1E',
+    barColorDark: '#FFB04A',
   },
   {
     key: 'housing',
@@ -43,7 +44,8 @@ export const CORE_CATEGORIES = [
     iconName: 'building',
     icon: Building2,
     label: { th: 'ที่พัก & สาธารณูปโภค', en: 'Housing & Bills' },
-    barColor: '#142B4A',
+    barColor: '#3B6CE8',
+    barColorDark: '#6B96FF',
   },
   {
     key: 'transport',
@@ -51,7 +53,8 @@ export const CORE_CATEGORIES = [
     iconName: 'train',
     icon: TrainFront,
     label: { th: 'เดินทาง / BTS', en: 'Transport / BTS' },
-    barColor: '#22B8A7',
+    barColor: '#0EA5A0',
+    barColorDark: '#2DD4BF',
   },
   {
     key: 'lifestyle',
@@ -59,7 +62,8 @@ export const CORE_CATEGORIES = [
     iconName: 'shopping-bag',
     icon: ShoppingBag,
     label: { th: 'ไลฟ์สไตล์', en: 'Lifestyle' },
-    barColor: '#6388C6',
+    barColor: '#8B5CF6',
+    barColorDark: '#B08BFF',
   },
   {
     key: 'saving',
@@ -67,7 +71,8 @@ export const CORE_CATEGORIES = [
     iconName: 'piggy-bank',
     icon: PiggyBank,
     label: { th: 'เงินออมฉุกเฉิน', en: 'Emergency Fund' },
-    barColor: '#22B8A7',
+    barColor: '#0284C7',
+    barColorDark: '#38BDF8',
   },
   {
     key: 'salary',
@@ -75,7 +80,8 @@ export const CORE_CATEGORIES = [
     iconName: 'wallet',
     icon: Wallet,
     label: { th: 'เงินเดือน / รายได้เสริม', en: 'Salary & Income' },
-    barColor: '#31A879',
+    barColor: '#1FA86B',
+    barColorDark: '#34D399',
   },
 ];
 
@@ -122,17 +128,69 @@ export const CUSTOM_ICON_MAP = {
   salary: Wallet,
 };
 
+// 6 high-contrast, dark-mode-safe accent colors with distinct hues
 export const CUSTOM_COLOR_OPTIONS = [
-  { id: 'royal', hex: '#2878C8', bg: 'rgba(40, 120, 200, 0.13)', label: { th: 'น้ำเงิน', en: 'Royal Blue' } },
-  { id: 'teal', hex: '#22B8A7', bg: 'rgba(34, 184, 167, 0.14)', label: { th: 'เขียวมิ้นต์', en: 'Teal' } },
-  { id: 'coral', hex: '#D95353', bg: 'rgba(217, 83, 83, 0.13)', label: { th: 'แดงคอรัล', en: 'Coral Red' } },
-  { id: 'amber', hex: '#D98A16', bg: 'rgba(217, 138, 22, 0.14)', label: { th: 'เหลืองอำพัน', en: 'Amber' } },
-  { id: 'violet', hex: '#7C5CE0', bg: 'rgba(124, 92, 224, 0.14)', label: { th: 'ม่วง', en: 'Violet' } },
-  { id: 'navy', hex: '#3B5984', bg: 'rgba(59, 89, 132, 0.14)', label: { th: 'กรมท่า', en: 'Slate Navy' } },
+  {
+    id: 'indigo',
+    hex: '#3B6CE8',
+    darkHex: '#6B96FF',
+    bg: 'rgba(59, 108, 232, 0.14)',
+    label: { th: 'น้ำเงินอินดิโก้', en: 'Royal Indigo' },
+  },
+  {
+    id: 'teal',
+    hex: '#0EA5A0',
+    darkHex: '#2DD4BF',
+    bg: 'rgba(14, 165, 160, 0.14)',
+    label: { th: 'เขียวมิ้นต์', en: 'Bright Teal' },
+  },
+  {
+    id: 'rose',
+    hex: '#E0487E',
+    darkHex: '#FF75A6',
+    bg: 'rgba(224, 72, 126, 0.14)',
+    label: { th: 'ชมพูโรส', en: 'Rose Pink' },
+  },
+  {
+    id: 'amber',
+    hex: '#EA8C1E',
+    darkHex: '#FFB04A',
+    bg: 'rgba(234, 140, 30, 0.15)',
+    label: { th: 'ส้มอำพัน', en: 'Warm Amber' },
+  },
+  {
+    id: 'violet',
+    hex: '#8B5CF6',
+    darkHex: '#B08BFF',
+    bg: 'rgba(139, 92, 246, 0.15)',
+    label: { th: 'ม่วงไวโอเล็ต', en: 'Vivid Violet' },
+  },
+  {
+    id: 'sky',
+    hex: '#0284C7',
+    darkHex: '#38BDF8',
+    bg: 'rgba(2, 132, 199, 0.14)',
+    label: { th: 'ฟ้าสกาย', en: 'Sky Cyan' },
+  },
 ];
 
+// Map any legacy stored hex values from earlier rounds to bright dark-mode-safe equivalents
+const LEGACY_COLOR_FALLBACKS = {
+  '#2878C8': CUSTOM_COLOR_OPTIONS[0],
+  '#3B5984': CUSTOM_COLOR_OPTIONS[5],
+  '#142B4A': CUSTOM_COLOR_OPTIONS[0],
+  '#22B8A7': CUSTOM_COLOR_OPTIONS[1],
+  '#D95353': CUSTOM_COLOR_OPTIONS[2],
+  '#D98A16': CUSTOM_COLOR_OPTIONS[3],
+  '#7C5CE0': CUSTOM_COLOR_OPTIONS[4],
+};
+
 export function getCustomColorMeta(hex) {
-  return CUSTOM_COLOR_OPTIONS.find((c) => c.hex === hex) || CUSTOM_COLOR_OPTIONS[0];
+  return (
+    CUSTOM_COLOR_OPTIONS.find((c) => c.hex.toLowerCase() === String(hex || '').toLowerCase()) ||
+    LEGACY_COLOR_FALLBACKS[String(hex || '').toUpperCase()] ||
+    CUSTOM_COLOR_OPTIONS[0]
+  );
 }
 
 export function getCategoryIconComponent(iconKey, customIcon = null, customCategories = []) {
