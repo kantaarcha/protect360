@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react';
 import {
+  AlertTriangle,
   ArrowDownLeft,
   ArrowUpRight,
   Building2,
@@ -11,8 +12,8 @@ import {
   Search,
   Shield,
   ShieldAlert,
-  Sparkles,
   TrainFront,
+  Trash2,
   Wallet,
 } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
@@ -43,12 +44,14 @@ export default function OverviewDashboard({ onNavigate, onOpenProfile }) {
     emergencyProgress,
     selfPaidPremium,
     riskStatuses,
+    removeCoverage,
   } = useFinance();
 
   const [searchQuery, setSearchQuery] = useState('');
   const [txFilter, setTxFilter] = useState('all');
   const [modalOpen, setModalOpen] = useState(false);
   const [editingCoverage, setEditingCoverage] = useState(null);
+  const [deletingCoverage, setDeletingCoverage] = useState(null);
 
   const filterSlider = useLiquidSlider(txFilter, [lang, fontStepIdx]);
 
@@ -163,15 +166,6 @@ export default function OverviewDashboard({ onNavigate, onOpenProfile }) {
                   <ShieldAlert size={16} strokeWidth={2.2} />
                   <span>{t('overview.ctaGap')}</span>
                 </button>
-                <button
-                  id="cta-log-cashflow"
-                  type="button"
-                  className="btn-soft-gray"
-                  onClick={() => onNavigate('autokey')}
-                >
-                  <Sparkles size={15} strokeWidth={2.2} />
-                  <span>{t('overview.ctaLog')}</span>
-                </button>
               </div>
             </section>
 
@@ -283,78 +277,101 @@ export default function OverviewDashboard({ onNavigate, onOpenProfile }) {
             </div>
 
             <div className="virtual-cards-stack">
-              {coverages.map((cov) => {
-                const isUnknown = !cov.limitKnown;
-                return (
-                  <div
-                    key={cov.id}
-                    id={`coverage-card-${cov.id}`}
-                    role="button"
-                    tabIndex={0}
-                    className={`virtual-policy-card ${cov.theme || 'navy'}`}
-                    onClick={() => openEditCoverage(cov)}
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter' || e.key === ' ') {
-                        e.preventDefault();
-                        openEditCoverage(cov);
-                      }
-                    }}
-                  >
-                    <div className="vcard-top">
-                      <span className="vcard-provider">
-                        {t(cov.providerTag)}
-                        <span className="vcard-mask-inline tabular-nums">
-                          {' • '}
-                          {cov.cardNumberMask}
+              {coverages.length === 0 ? (
+                <div className="coverage-empty-state">
+                  <Shield size={24} strokeWidth={1.8} className="coverage-empty-icon" aria-hidden="true" />
+                  <div className="coverage-empty-title">{t('overview.emptyCoveragesTitle')}</div>
+                  <p className="coverage-empty-sub">{t('overview.emptyCoveragesSub')}</p>
+                </div>
+              ) : (
+                coverages.map((cov) => {
+                  const isUnknown = !cov.limitKnown;
+                  return (
+                    <div
+                      key={cov.id}
+                      id={`coverage-card-${cov.id}`}
+                      role="button"
+                      tabIndex={0}
+                      className={`virtual-policy-card ${cov.theme || 'navy'}`}
+                      onClick={() => openEditCoverage(cov)}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                          e.preventDefault();
+                          openEditCoverage(cov);
+                        }
+                      }}
+                    >
+                      <div className="vcard-top">
+                        <span className="vcard-provider">
+                          {t(cov.providerTag)}
+                          <span className="vcard-mask-inline tabular-nums">
+                            {' • '}
+                            {cov.cardNumberMask}
+                          </span>
                         </span>
-                      </span>
-                      <span className={`vcard-status-pill ${isUnknown ? 'warn' : ''}`}>
-                        <span
-                          className={`status-dot ${isUnknown ? 'amber' : 'green'}`}
-                          aria-hidden="true"
-                        />
-                        {isUnknown
-                          ? t('overview.unknownLimitStatus')
-                          : t('overview.activeStatus')}
-                      </span>
-                    </div>
+                        <div className="vcard-top-actions">
+                          <span className={`vcard-status-pill ${isUnknown ? 'warn' : ''}`}>
+                            <span
+                              className={`status-dot ${isUnknown ? 'amber' : 'green'}`}
+                              aria-hidden="true"
+                            />
+                            {isUnknown
+                              ? t('overview.unknownLimitStatus')
+                              : t('overview.activeStatus')}
+                          </span>
+                          <button
+                            id={`delete-coverage-card-${cov.id}`}
+                            type="button"
+                            className="vcard-delete-btn"
+                            title={t('overview.deleteCoverageBtn')}
+                            aria-label={`${t('overview.deleteCoverageBtn')} ${t(cov.name)}`}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setDeletingCoverage(cov);
+                            }}
+                          >
+                            <Trash2 size={13} strokeWidth={2.2} />
+                          </button>
+                        </div>
+                      </div>
 
-                    <div className="vcard-body">
-                      <div className="vcard-name">{t(cov.name)}</div>
-                      <div className="vcard-sub">{t(cov.subtitle)}</div>
-                    </div>
+                      <div className="vcard-body">
+                        <div className="vcard-name">{t(cov.name)}</div>
+                        <div className="vcard-sub">{t(cov.subtitle)}</div>
+                      </div>
 
-                    <div className="vcard-footer">
-                      <button
-                        type="button"
-                        className="vcard-holder-btn"
-                        title={t('overview.editCardHolderHint')}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          onOpenProfile?.('profile');
-                        }}
-                      >
-                        <span className="vcard-holder-label">
-                          {t('overview.cardHolderLabel')}
-                        </span>
-                        <span className="vcard-holder-name-row">
-                          <span className="vcard-holder-name">{cardHolderName}</span>
-                          <Pencil size={11} strokeWidth={2.3} className="vcard-holder-edit" aria-hidden="true" />
-                        </span>
-                      </button>
+                      <div className="vcard-footer">
+                        <button
+                          type="button"
+                          className="vcard-holder-btn"
+                          title={t('overview.editCardHolderHint')}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            onOpenProfile?.('profile');
+                          }}
+                        >
+                          <span className="vcard-holder-label">
+                            {t('overview.cardHolderLabel')}
+                          </span>
+                          <span className="vcard-holder-name-row">
+                            <span className="vcard-holder-name">{cardHolderName}</span>
+                            <Pencil size={11} strokeWidth={2.3} className="vcard-holder-edit" aria-hidden="true" />
+                          </span>
+                        </button>
 
-                      <span className="vcard-action-hint">
-                        <span>
-                          {isUnknown
-                            ? t('overview.editLimitAction')
-                            : t('overview.viewDetails')}
+                        <span className="vcard-action-hint">
+                          <span>
+                            {isUnknown
+                              ? t('overview.editLimitAction')
+                              : t('overview.viewDetails')}
+                          </span>
+                          <ChevronRight size={14} strokeWidth={2.4} className="cta-chevron" aria-hidden="true" />
                         </span>
-                        <ChevronRight size={14} strokeWidth={2.4} className="cta-chevron" aria-hidden="true" />
-                      </span>
+                      </div>
                     </div>
-                  </div>
-                );
-              })}
+                  );
+                })
+              )}
             </div>
 
             <div className="coverage-footnote">
@@ -438,6 +455,23 @@ export default function OverviewDashboard({ onNavigate, onOpenProfile }) {
                 <span className="goal-limit-text">
                   {dynamicGoalTargetLabel}: {formatTHB(emergencyTarget)}
                 </span>
+              </div>
+
+              <div className="goal-milestones-row tabular-nums">
+                {[1, 3, 6].map((mo) => {
+                  const reached = emergencyRunway >= mo;
+                  const isSelectedTarget = targetMonths === mo;
+                  return (
+                    <span
+                      key={mo}
+                      className={`goal-milestone-pill ${reached ? 'reached' : ''} ${
+                        isSelectedTarget ? 'target' : ''
+                      }`}
+                    >
+                      {lang === 'TH' ? `${mo} เดือน` : `${mo} mo`}
+                    </span>
+                  );
+                })}
               </div>
             </div>
 
@@ -652,6 +686,21 @@ export default function OverviewDashboard({ onNavigate, onOpenProfile }) {
                 })
               )}
             </div>
+            <div className="activities-footer">
+              <span className="activities-count tabular-nums">
+                {lang === 'TH'
+                  ? `แสดง ${filteredTransactions.length} จาก ${transactions.length} รายการ`
+                  : `Showing ${filteredTransactions.length} of ${transactions.length} items`}
+              </span>
+              <button
+                type="button"
+                className="activities-more-btn"
+                onClick={() => onNavigate('autokey')}
+              >
+                <span>{t('overview.viewAllActivities')}</span>
+                <ChevronRight size={14} strokeWidth={2.4} className="cta-chevron" aria-hidden="true" />
+              </button>
+            </div>
           </section>
         </div>
       </div>
@@ -661,6 +710,53 @@ export default function OverviewDashboard({ onNavigate, onOpenProfile }) {
           editingCoverage={editingCoverage}
           onClose={() => setModalOpen(false)}
         />
+      )}
+
+      {deletingCoverage && (
+        <div
+          className="modal-backdrop"
+          onClick={() => setDeletingCoverage(null)}
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="delete-coverage-dialog-title"
+        >
+          <div
+            className="modal-dialog delete-dialog"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="delete-dialog-icon" aria-hidden="true">
+              <AlertTriangle size={22} strokeWidth={2.2} />
+            </div>
+            <h3 id="delete-coverage-dialog-title" className="card-title">
+              {t('modal.confirmDeleteTitle')}
+            </h3>
+            <p className="delete-dialog-target">{t(deletingCoverage.name)}</p>
+            <p className="card-subtitle" style={{ marginTop: 6 }}>
+              {t('modal.confirmDeleteDesc')}
+            </p>
+            <div className="modal-actions" style={{ marginTop: 18 }}>
+              <button
+                type="button"
+                className="btn-soft-gray"
+                onClick={() => setDeletingCoverage(null)}
+              >
+                {t('modal.cancel')}
+              </button>
+              <button
+                id="confirm-delete-dialog-btn"
+                type="button"
+                className="data-action-btn btn-danger-confirm"
+                onClick={() => {
+                  removeCoverage(deletingCoverage.id);
+                  setDeletingCoverage(null);
+                }}
+              >
+                <Trash2 size={15} strokeWidth={2.2} />
+                <span>{t('modal.confirmDeleteBtn')}</span>
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </>
   );

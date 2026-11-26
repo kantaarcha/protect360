@@ -5,6 +5,7 @@ import {
   ChevronRight,
   Info,
   Pencil,
+  PlusCircle,
   ShieldCheck,
   X,
 } from 'lucide-react';
@@ -120,12 +121,21 @@ function AppShellContent() {
         {activePage === 'overview' ? (
           <header className="member-hero-card" aria-label="Member profile overview">
             <div className="member-hero-main">
-              <div className="member-hero-badge">
-                <ShieldCheck size={14} strokeWidth={2.3} aria-hidden="true" />
-                <span>{t('header.memberBadge')}</span>
-              </div>
               <h1 className="member-hero-title">{greetingHeading}</h1>
               <p className="member-hero-tagline">{t('header.philosophy')}</p>
+
+              <div className="member-hero-actions">
+                <button
+                  id="hero-log-cashflow-btn"
+                  type="button"
+                  className="hero-log-cta"
+                  onClick={() => handleNavigate('autokey')}
+                >
+                  <PlusCircle size={18} strokeWidth={2.3} aria-hidden="true" />
+                  <span>{t('header.logCashflowCta')}</span>
+                  <ChevronRight size={16} strokeWidth={2.5} className="cta-chevron" aria-hidden="true" />
+                </button>
+              </div>
             </div>
 
             <button

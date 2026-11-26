@@ -233,7 +233,7 @@ function sanitizeNumber(value, fallback) {
 
 function sanitizeCoverages(raw) {
   if (!Array.isArray(raw)) return INITIAL_COVERAGES;
-  const valid = raw.filter(
+  return raw.filter(
     (item) =>
       item &&
       typeof item === 'object' &&
@@ -241,7 +241,6 @@ function sanitizeCoverages(raw) {
       item.name &&
       typeof item.benefits === 'object'
   );
-  return valid.length > 0 ? valid : INITIAL_COVERAGES;
 }
 
 function sanitizeTransactions(raw) {
@@ -600,6 +599,20 @@ export function FinanceProvider({ children }) {
     }));
   }, []);
 
+  const removeCoverage = useCallback(
+    (id) => {
+      setStore((prev) => ({
+        ...prev,
+        coverages: prev.coverages.filter((item) => item.id !== id),
+      }));
+      showToast('info', {
+        th: 'ลบสิทธิความคุ้มครองเรียบร้อยแล้ว',
+        en: 'Coverage item removed',
+      });
+    },
+    [showToast]
+  );
+
   const exportUserData = useCallback(() => {
     const cleanFirstName = (userProfile.firstName || '')
       .trim()
@@ -756,6 +769,7 @@ export function FinanceProvider({ children }) {
     addTransaction,
     addCoverage,
     updateCoverage,
+    removeCoverage,
     exportUserData,
     importUserData,
     resetDemoData,

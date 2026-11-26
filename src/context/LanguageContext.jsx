@@ -45,8 +45,8 @@ const TRANSLATIONS = {
       savedLocally: 'บันทึกในเครื่องแล้ว',
       savedLocallyTitle: 'ข้อมูลทั้งหมดเก็บไว้ในอุปกรณ์นี้เท่านั้น (PDPA-Safe / Zero-Login) คลิกเพื่อจัดการข้อมูล',
       editProfile: 'แก้ไขโปรไฟล์',
-      memberBadge: 'PROTECT360 MEMBER',
-      cardHolderCaption: 'บัตรสมาชิกแผนคุ้มครองส่วนบุคคล',
+      cardHolderCaption: 'โปรไฟล์ของคุณ',
+      logCashflowCta: 'บันทึกรายรับ - จ่าย',
       manageData: 'จัดการข้อมูล',
     },
     overview: {
@@ -97,6 +97,9 @@ const TRANSLATIONS = {
       editCardHolderHint: 'แก้ไขชื่อผู้ถือบัตร',
       viewDetails: 'รายละเอียด',
       editLimitAction: 'ระบุวงเงิน',
+      deleteCoverageBtn: 'ลบสิทธิ',
+      emptyCoveragesTitle: 'ยังไม่มีสิทธิหรือกรมธรรม์ที่บันทึกไว้',
+      emptyCoveragesSub: 'กด "เพิ่มสิทธิ" เพื่อเริ่มคำนวณความคุ้มครองของคุณ',
 
       // Card 6
       riskSectionTitle: 'สถานะความเสี่ยงรายหมวด',
@@ -124,10 +127,11 @@ const TRANSLATIONS = {
       colStatus: 'สถานะ',
       statusCompleted: 'สำเร็จ',
       emptySearch: 'ไม่พบรายการที่ตรงกับคำค้นหา',
+      viewAllActivities: 'ดูทั้งหมด & บันทึกเพิ่มใน AutoKey',
     },
     modal: {
       addTitle: 'เพิ่มสิทธิหรืออัปเดตวงเงินความคุ้มครอง',
-      editGroupTitle: 'อัปเดตวงเงินประกันกลุ่มบริษัท',
+      editGroupTitle: 'แก้ไขรายละเอียดสิทธิ / กรมธรรม์',
       subtitle:
         'ระบบใช้หลักการประเมินแบบระมัดระวัง (Conservative Estimation): หากไม่ทราบวงเงินจะคำนวณเป็น ฿0 เพื่อไม่ให้ประเมินความเสี่ยงต่ำเกินจริง',
       policyName: 'ชื่อสิทธิ / กรมธรรม์',
@@ -146,6 +150,10 @@ const TRANSLATIONS = {
       cancel: 'ยกเลิก',
       save: 'บันทึกและอัปเดตกราฟ',
       cardHolderPreview: 'ชื่อผู้ถือสิทธิบนบัตร',
+      deletePolicy: 'ลบสิทธินี้',
+      confirmDeleteTitle: 'แน่ใจหรือไม่ที่จะลบสิทธินี้?',
+      confirmDeleteDesc: 'เมื่อลบแล้ว ระบบจะคำนวณช่องว่างความคุ้มครอง (Protection Gap) ใหม่ทันที',
+      confirmDeleteBtn: 'ยืนยันการลบ',
     },
     profileModal: {
       title: 'โปรไฟล์และความเป็นส่วนตัว',
@@ -237,8 +245,8 @@ const TRANSLATIONS = {
       savedLocally: 'Saved locally',
       savedLocallyTitle: 'All data stays 100% on your device (PDPA-Safe / Zero-Login). Click to manage data.',
       editProfile: 'Edit Profile',
-      memberBadge: 'PROTECT360 MEMBER',
-      cardHolderCaption: 'Personal Protection Member Card',
+      cardHolderCaption: 'Your Profile',
+      logCashflowCta: 'Log Income & Expenses',
       manageData: 'Manage Data',
     },
     overview: {
@@ -289,6 +297,9 @@ const TRANSLATIONS = {
       editCardHolderHint: 'Edit card holder name',
       viewDetails: 'Details',
       editLimitAction: 'Enter limit',
+      deleteCoverageBtn: 'Delete',
+      emptyCoveragesTitle: 'No coverage records yet',
+      emptyCoveragesSub: 'Tap "Add" to start mapping your protection.',
 
       // Card 6
       riskSectionTitle: 'Risk Status Overview',
@@ -316,10 +327,11 @@ const TRANSLATIONS = {
       colStatus: 'Status',
       statusCompleted: 'Completed',
       emptySearch: 'No matching activities found',
+      viewAllActivities: 'View all & add in AutoKey',
     },
     modal: {
       addTitle: 'Add Coverage or Update Benefit Limit',
-      editGroupTitle: 'Update Employer Group Insurance Limit',
+      editGroupTitle: 'Edit Coverage Details',
       subtitle:
         'Using Conservative Estimation: any coverage with an unknown limit is valued at ฿0 so your protection gap is never underestimated.',
       policyName: 'Coverage / Policy Name',
@@ -338,6 +350,10 @@ const TRANSLATIONS = {
       cancel: 'Cancel',
       save: 'Save & Recalculate',
       cardHolderPreview: 'Card Holder on Policy',
+      deletePolicy: 'Delete Policy',
+      confirmDeleteTitle: 'Are you sure you want to delete this coverage?',
+      confirmDeleteDesc: 'Your Protection Gap chart will recalculate immediately once removed.',
+      confirmDeleteBtn: 'Confirm Delete',
     },
     profileModal: {
       title: 'Profile & PDPA Privacy',

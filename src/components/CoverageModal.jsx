@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { ShieldCheck, X } from 'lucide-react';
+import { AlertTriangle, ShieldCheck, Trash2, X } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import { useFinance } from '../context/FinanceContext';
 import { useLiquidSlider } from '../hooks/useLiquidSlider';
@@ -7,9 +7,10 @@ import { getCardHolderDisplay } from '../utils/userHelpers';
 
 export default function CoverageModal({ editingCoverage, onClose }) {
   const { lang, fontStepIdx, t } = useLanguage();
-  const { userProfile, addCoverage, updateCoverage } = useFinance();
+  const { userProfile, addCoverage, updateCoverage, removeCoverage } = useFinance();
 
   const isEditing = Boolean(editingCoverage);
+  const [confirmDelete, setConfirmDelete] = useState(false);
 
   const [name, setName] = useState(
     isEditing ? (lang === 'TH' ? editingCoverage.name.th : editingCoverage.name.en) : ''
@@ -295,13 +296,57 @@ export default function CoverageModal({ editingCoverage, onClose }) {
             </div>
           )}
 
-          <div className="modal-actions">
-            <button type="button" className="btn-soft-gray" onClick={onClose}>
-              {t('modal.cancel')}
-            </button>
-            <button type="submit" className="btn-primary-gradient">
-              {t('modal.save')}
-            </button>
+          {isEditing && confirmDelete && (
+            <div className="delete-confirm-box" role="alert">
+              <div className="delete-confirm-head">
+                <AlertTriangle size={16} strokeWidth={2.3} aria-hidden="true" />
+                <strong>{t('modal.confirmDeleteTitle')}</strong>
+              </div>
+              <p className="delete-confirm-desc">{t('modal.confirmDeleteDesc')}</p>
+              <div className="delete-confirm-actions">
+                <button
+                  type="button"
+                  className="btn-reset-cancel"
+                  onClick={() => setConfirmDelete(false)}
+                >
+                  {t('modal.cancel')}
+                </button>
+                <button
+                  id="confirm-delete-coverage-btn"
+                  type="button"
+                  className="data-action-btn btn-danger-confirm"
+                  onClick={() => {
+                    removeCoverage(editingCoverage.id);
+                    onClose();
+                  }}
+                >
+                  <Trash2 size={14} strokeWidth={2.2} />
+                  <span>{t('modal.confirmDeleteBtn')}</span>
+                </button>
+              </div>
+            </div>
+          )}
+
+          <div className={`modal-actions ${isEditing ? 'has-delete' : ''}`}>
+            {isEditing && !confirmDelete && (
+              <button
+                id="delete-coverage-modal-btn"
+                type="button"
+                className="btn-danger-outline"
+                onClick={() => setConfirmDelete(true)}
+              >
+                <Trash2 size={15} strokeWidth={2.2} />
+                <span>{t('modal.deletePolicy')}</span>
+              </button>
+            )}
+            <div className="modal-actions-right">
+              <button type="button" className="btn-soft-gray" onClick={onClose}>
+                {t('modal.cancel')}
+              </button>
+              <button type="submit" className="btn-primary-gradient">
+                {t('modal.save')}
+              </button>
+            </div>
           </div>
         </form>
       </div>
