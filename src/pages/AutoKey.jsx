@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import {
+  AlertCircle,
   ArrowDownLeft,
   ArrowUpRight,
   Building2,
@@ -24,6 +25,7 @@ import {
 } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import { formatTHB, useFinance } from '../context/FinanceContext';
+import { scanBankSlipOnDevice } from '../utils/slipOcr';
 import LiquidTabs from '../components/LiquidTabs';
 
 const THAI_MONTHS_SHORT = [
@@ -171,41 +173,6 @@ const SLIP_PRESETS = [
 
 const QUICK_AMOUNTS = [100, 500, 1000, 5000];
 
-function extractSlipFromFilename(fileName) {
-  const lower = String(fileName || '').toLowerCase();
-  if (lower.includes('salary') || lower.includes('เงินเดือน') || lower.includes('income')) {
-    return SLIP_PRESETS[0];
-  }
-  if (lower.includes('save') || lower.includes('emerg') || lower.includes('ออม')) {
-    return SLIP_PRESETS[1];
-  }
-  if (lower.includes('rent') || lower.includes('bill') || lower.includes('เช่า') || lower.includes('หอ')) {
-    return SLIP_PRESETS[3];
-  }
-  if (lower.includes('bts') || lower.includes('mrt') || lower.includes('grab') || lower.includes('รถ')) {
-    return {
-      id: 'upload-transport',
-      title: { th: 'ค่าเดินทาง BTS / Grab', en: 'BTS / Transit Slip' },
-      note: { th: 'สกัดข้อมูลจากสลิปอัปโหลดอัตโนมัติ', en: 'Extracted from uploaded slip image' },
-      bankTag: 'PromptPay QR',
-      category: 'expense',
-      iconKey: 'transport',
-      amount: 145,
-      pillLabel: { th: 'รายจ่าย', en: 'Expense' },
-    };
-  }
-  return {
-    id: 'upload-default',
-    title: { th: 'ค่าอาหาร & เครื่องดื่ม (สแกนสลิป)', en: 'Food & Coffee (Scanned Slip)' },
-    note: { th: 'สกัดข้อมูลจากสลิปอัปโหลดอัตโนมัติ', en: 'Extracted from uploaded bank slip' },
-    bankTag: 'PromptPay Slip',
-    category: 'expense',
-    iconKey: 'food',
-    amount: 240,
-    pillLabel: { th: 'รายจ่าย', en: 'Expense' },
-  };
-}
-
 export default function AutoKey({ onNavigate }) {
   const { lang, t } = useLanguage();
   const {
@@ -225,15 +192,17 @@ export default function AutoKey({ onNavigate }) {
   // Input studio tabs: 'slip' | 'manual'
   const [inputMode, setInputMode] = useState('slip');
 
-  // Smart Slip Reader state
+  // Smart Slip Reader state (Real On-Device OCR + 1-Click Presets)
   const [isDragging, setIsDragging] = useState(false);
   const [isScanning, setIsScanning] = useState(false);
+  const [scanProgress, setScanProgress] = useState(0);
   const [scanLabel, setScanLabel] = useState('');
   const [extractedSlip, setExtractedSlip] = useState(null);
   const [uploadedPreviewUrl, setUploadedPreviewUrl] = useState(null);
   const slipFileInputRef = useRef(null);
   const scanTimerRef = useRef(null);
   const previewUrlRef = useRef(null);
+  const scanRunIdRef = useRef(0);
 
   // Manual Entry state
   const [manualType, setManualType] = useState('expense');
@@ -335,23 +304,27 @@ export default function AutoKey({ onNavigate }) {
     return { all: transactions.length, income, expense, saving };
   }, [transactions]);
 
-  // Trigger simulated AI slip scan (snappy ~800ms)
-  const startSlipScan = (preset, previewUrl = null, sourceLabel = '') => {
+  // Trigger quick preset preview
+  const startSlipScan = (preset, sourceLabel = '') => {
+    scanRunIdRef.current += 1;
+    const runId = scanRunIdRef.current;
     if (scanTimerRef.current) window.clearTimeout(scanTimerRef.current);
-    if (previewUrlRef.current && previewUrlRef.current !== previewUrl) {
+    if (previewUrlRef.current) {
       window.URL.revokeObjectURL(previewUrlRef.current);
+      previewUrlRef.current = null;
     }
-    previewUrlRef.current = previewUrl;
 
-    setUploadedPreviewUrl(previewUrl);
+    setUploadedPreviewUrl(null);
     setScanLabel(sourceLabel);
+    setScanProgress(60);
     setExtractedSlip(null);
     setIsScanning(true);
 
-    const delayMs = previewUrl ? 850 : 650;
     scanTimerRef.current = window.setTimeout(() => {
+      if (scanRunIdRef.current !== runId) return;
       scanTimerRef.current = null;
       const todayIso = getTodayIso();
+      setScanProgress(100);
       setIsScanning(false);
       setExtractedSlip({
         titleText: lang === 'TH' ? preset.title.th : preset.title.en,
@@ -361,21 +334,101 @@ export default function AutoKey({ onNavigate }) {
         category: preset.category,
         iconKey: preset.iconKey,
         amount: String(preset.amount),
+        amountDetected: true,
         isoDate: todayIso,
         refCode: `REF ${String(Math.floor(1000 + Math.random() * 9000))}`,
       });
-    }, delayMs);
+    }, 520);
   };
 
-  const handleSlipFile = (file) => {
+  // Real 100% On-Device OCR for uploaded bank slip images (reads real THB amounts like 343 or 7)
+  const handleSlipFile = async (file) => {
     if (!file) return;
     const isImage =
       (file.type && file.type.startsWith('image/')) ||
       /\.(png|jpe?g|webp|gif|heic|heif)$/i.test(file.name || '');
     if (!isImage) return;
+
+    scanRunIdRef.current += 1;
+    const runId = scanRunIdRef.current;
+    if (scanTimerRef.current) {
+      window.clearTimeout(scanTimerRef.current);
+      scanTimerRef.current = null;
+    }
+
     const objectUrl = window.URL.createObjectURL(file);
-    const matchedPreset = extractSlipFromFilename(file.name);
-    startSlipScan(matchedPreset, objectUrl, file.name);
+    if (previewUrlRef.current && previewUrlRef.current !== objectUrl) {
+      window.URL.revokeObjectURL(previewUrlRef.current);
+    }
+    previewUrlRef.current = objectUrl;
+
+    setUploadedPreviewUrl(objectUrl);
+    setExtractedSlip(null);
+    setIsScanning(true);
+    setScanProgress(10);
+    setScanLabel(
+      lang === 'TH'
+        ? `กำลังประมวลผลภาพสลิป (${file.name})...`
+        : `Preprocessing slip image (${file.name})...`
+    );
+
+    try {
+      const parsed = await scanBankSlipOnDevice(file, ({ status, progress }) => {
+        if (scanRunIdRef.current !== runId) return;
+        const pct = Math.max(10, Math.min(99, progress || 15));
+        setScanProgress(pct);
+        if (status === 'loading' || status.includes('loading')) {
+          setScanLabel(
+            lang === 'TH'
+              ? `กำลังเตรียมตัวอ่านภาษาไทย/ตัวเลขในเครื่อง (${pct}%)...`
+              : `Loading on-device OCR engine (${pct}%)...`
+          );
+        } else {
+          setScanLabel(
+            lang === 'TH'
+              ? `กำลังอ่านยอดเงินจากสลิป (${pct}%)...`
+              : `Reading amount from slip (${pct}%)...`
+          );
+        }
+      });
+
+      if (scanRunIdRef.current !== runId) return;
+
+      const todayIso = getTodayIso();
+      setScanProgress(100);
+      setIsScanning(false);
+      setExtractedSlip({
+        titleText: lang === 'TH' ? parsed.title.th : parsed.title.en,
+        titleObj: parsed.title,
+        noteObj: {
+          th: `อ่านจากสลิปในเครื่อง (${parsed.bankTag})`,
+          en: `Read on-device from ${parsed.bankTag}`,
+        },
+        bankTag: parsed.bankTag,
+        category: parsed.category,
+        iconKey: parsed.iconKey,
+        amount: parsed.amount,
+        amountDetected: parsed.amountDetected,
+        isoDate: todayIso,
+        refCode: 'OCR • Local',
+      });
+    } catch {
+      if (scanRunIdRef.current !== runId) return;
+      const todayIso = getTodayIso();
+      setIsScanning(false);
+      setExtractedSlip({
+        titleText: lang === 'TH' ? 'รายการโอนเงินจากสลิป' : 'Scanned Bank Transfer',
+        titleObj: { th: 'รายการโอนเงินจากสลิป', en: 'Scanned Bank Transfer' },
+        noteObj: { th: 'กรอกยอดจากสลิปที่อัปโหลด', en: 'Entered from uploaded slip' },
+        bankTag: 'Bank Slip',
+        category: 'expense',
+        iconKey: 'lifestyle',
+        amount: '',
+        amountDetected: false,
+        isoDate: todayIso,
+        refCode: 'Manual Check',
+      });
+    }
   };
 
   const handleSlipFileInput = (e) => {
@@ -397,7 +450,7 @@ export default function AutoKey({ onNavigate }) {
     const numericAmount = Math.max(0, Number(extractedSlip.amount) || 0);
     if (numericAmount <= 0) return;
 
-    const catMeta = CATEGORY_MAP[extractedSlip.iconKey] || CATEGORY_MAP.food;
+    const catMeta = CATEGORY_MAP[extractedSlip.iconKey] || CATEGORY_MAP.lifestyle;
     const trimmedTitle = extractedSlip.titleText.trim();
     const titleObj = trimmedTitle
       ? { th: trimmedTitle, en: trimmedTitle }
@@ -426,11 +479,13 @@ export default function AutoKey({ onNavigate }) {
   };
 
   const handleClearSlip = () => {
+    scanRunIdRef.current += 1;
     if (scanTimerRef.current) {
       window.clearTimeout(scanTimerRef.current);
       scanTimerRef.current = null;
     }
     setIsScanning(false);
+    setScanProgress(0);
     setExtractedSlip(null);
     if (previewUrlRef.current) {
       window.URL.revokeObjectURL(previewUrlRef.current);
@@ -701,15 +756,21 @@ export default function AutoKey({ onNavigate }) {
                     </div>
                     <div className="ak-scan-title">
                       {lang === 'TH'
-                        ? 'กำลังอ่านข้อมูลสลิปด้วย AI...'
-                        : 'Scanning Slip with AI...'}
+                        ? 'กำลังอ่านข้อมูลสลิปในเครื่อง (OCR)...'
+                        : 'Reading Slip On-Device (OCR)...'}
                     </div>
-                    <p className="ak-scan-sub">
+                    <p className="ak-scan-sub tabular-nums">
                       {scanLabel ||
                         (lang === 'TH'
                           ? 'กำลังแยกยอดเงิน วันที่ และหมวดหมู่รายการ'
                           : 'Extracting amount, timestamp, and category')}
                     </p>
+                    <div className="ak-scan-progress-track">
+                      <div
+                        className="ak-scan-progress-fill"
+                        style={{ width: `${scanProgress}%` }}
+                      />
+                    </div>
                   </div>
                 ) : (
                   <div className="ak-dropzone-idle">
@@ -723,8 +784,8 @@ export default function AutoKey({ onNavigate }) {
                     </div>
                     <p className="ak-dropzone-sub">
                       {lang === 'TH'
-                        ? 'รองรับภาพสลิปธนาคารไทยทุกแอป (ประมวลผลจำลองในเครื่อง ไม่ส่งภาพขึ้นเซิร์ฟเวอร์)'
-                        : 'Supports any transfer slip image (processed locally on-device, PDPA-safe)'}
+                        ? 'อ่านยอดเงินจริงจากสลิปธนาคารไทยด้วย On-Device OCR (ไม่ส่งภาพขึ้นเซิร์ฟเวอร์)'
+                        : 'Reads real amounts on-device via OCR — 100% private, zero server upload'}
                     </p>
                   </div>
                 )}
@@ -736,7 +797,7 @@ export default function AutoKey({ onNavigate }) {
                   <Sparkles size={13} strokeWidth={2.2} aria-hidden="true" />
                   <span>
                     {lang === 'TH'
-                      ? 'ทดลองสแกนสลิปจำลอง 1 คลิก (Demo Presets)'
+                      ? 'ทดลองสลิปจำลอง 1 คลิก (Demo Presets)'
                       : '1-Click Realistic Thai Slip Presets'}
                   </span>
                 </div>
@@ -759,9 +820,7 @@ export default function AutoKey({ onNavigate }) {
                         type="button"
                         className="ak-preset-btn"
                         disabled={isScanning}
-                        onClick={() =>
-                          startSlipScan(preset, null, t(preset.chipTitle))
-                        }
+                        onClick={() => startSlipScan(preset, t(preset.chipTitle))}
                       >
                         <span className={`ak-preset-icon ${toneClass}`} aria-hidden="true">
                           <CatIcon size={16} strokeWidth={2.2} />
@@ -787,10 +846,24 @@ export default function AutoKey({ onNavigate }) {
               {extractedSlip && !isScanning && (
                 <form className="ak-extracted-card" onSubmit={handleConfirmSlip}>
                   <div className="ak-extracted-head">
-                    <div className="ak-extracted-badge">
-                      <CheckCircle2 size={15} strokeWidth={2.3} />
+                    <div
+                      className={`ak-extracted-badge ${
+                        extractedSlip.amountDetected === false ? 'warn' : ''
+                      }`}
+                    >
+                      {extractedSlip.amountDetected === false ? (
+                        <AlertCircle size={15} strokeWidth={2.3} />
+                      ) : (
+                        <CheckCircle2 size={15} strokeWidth={2.3} />
+                      )}
                       <span>
-                        {lang === 'TH' ? 'อ่านข้อมูลสลิปสำเร็จ' : 'Slip Data Extracted'}
+                        {extractedSlip.amountDetected === false
+                          ? lang === 'TH'
+                            ? 'กรุณาตรวจสอบและกรอกยอดเงิน'
+                            : 'Please verify & enter amount'
+                          : lang === 'TH'
+                            ? 'อ่านข้อมูลสลิปสำเร็จ'
+                            : 'Slip Data Extracted'}
                       </span>
                     </div>
                     <div className="ak-extracted-head-right">
@@ -807,6 +880,14 @@ export default function AutoKey({ onNavigate }) {
                       </button>
                     </div>
                   </div>
+
+                  {extractedSlip.amountDetected === false && (
+                    <div className="ak-ocr-warn-note" role="status">
+                      {lang === 'TH'
+                        ? 'ไม่พบตัวเลขยอดเงินชัดเจนในภาพนี้ สามารถพิมพ์ยอดเงินและเลือกหมวดหมู่ด้านล่างได้เลย'
+                        : 'Could not detect a clear amount in this image — enter the amount and choose a category below.'}
+                    </div>
+                  )}
 
                   <div className="ak-extracted-body">
                     {uploadedPreviewUrl && (
@@ -845,8 +926,8 @@ export default function AutoKey({ onNavigate }) {
                           <input
                             id="slip-amount-edit"
                             type="number"
-                            min="1"
-                            step="1"
+                            min="0.01"
+                            step="0.01"
                             className="form-input tabular-nums"
                             value={extractedSlip.amount}
                             onChange={(e) =>
@@ -860,9 +941,71 @@ export default function AutoKey({ onNavigate }) {
                         </div>
                       </div>
 
+                      <div className="form-grid-2">
+                        <div className="form-field">
+                          <label htmlFor="slip-type-select" className="form-label">
+                            {lang === 'TH' ? 'ประเภท' : 'Type'}
+                          </label>
+                          <select
+                            id="slip-type-select"
+                            className="form-select"
+                            value={extractedSlip.category}
+                            onChange={(e) => {
+                              const nextType = e.target.value;
+                              const nextIcon =
+                                nextType === 'income'
+                                  ? 'salary'
+                                  : nextType === 'saving'
+                                    ? 'saving'
+                                    : extractedSlip.iconKey === 'salary' ||
+                                        extractedSlip.iconKey === 'saving'
+                                      ? 'lifestyle'
+                                      : extractedSlip.iconKey;
+                              setExtractedSlip((prev) => ({
+                                ...prev,
+                                category: nextType,
+                                iconKey: nextIcon,
+                              }));
+                            }}
+                          >
+                            <option value="expense">{lang === 'TH' ? 'รายจ่าย' : 'Expense'}</option>
+                            <option value="income">{lang === 'TH' ? 'รายรับ' : 'Income'}</option>
+                            <option value="saving">
+                              {lang === 'TH' ? 'เติมเงินสำรองฉุกเฉิน' : 'Emergency Fund'}
+                            </option>
+                          </select>
+                        </div>
+
+                        <div className="form-field">
+                          <label htmlFor="slip-cat-select" className="form-label">
+                            {lang === 'TH' ? 'หมวดหมู่' : 'Category'}
+                          </label>
+                          <select
+                            id="slip-cat-select"
+                            className="form-select"
+                            value={extractedSlip.iconKey}
+                            onChange={(e) => {
+                              const nextKey = e.target.value;
+                              const matched = CATEGORY_MAP[nextKey];
+                              setExtractedSlip((prev) => ({
+                                ...prev,
+                                iconKey: nextKey,
+                                category: matched ? matched.type : prev.category,
+                              }));
+                            }}
+                          >
+                            {CATEGORIES.map((cat) => (
+                              <option key={cat.key} value={cat.key}>
+                                {t(cat.label)}
+                              </option>
+                            ))}
+                          </select>
+                        </div>
+                      </div>
+
                       <div className="ak-extracted-meta-row">
                         <span className={`ak-detected-cat ${extractedSlip.category}`}>
-                          {lang === 'TH' ? 'หมวดหมู่อัตโนมัติ:' : 'Auto-Detected:'}{' '}
+                          {lang === 'TH' ? 'หมวดที่เลือก:' : 'Category:'}{' '}
                           <strong>
                             {t(CATEGORY_MAP[extractedSlip.iconKey]?.label || { th: 'ทั่วไป', en: 'General' })}
                           </strong>
