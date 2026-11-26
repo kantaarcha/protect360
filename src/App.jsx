@@ -31,15 +31,15 @@ import {
 
 const PAGE_TITLES = {
   overview: null,
-  autokey: {
-    th: 'AutoKey — บันทึกรายรับ-รายจ่าย & เงินสำรองฉุกเฉิน',
-    en: 'AutoKey — Smart Cashflow & Emergency Tracker',
+  smartlog: {
+    th: 'SmartLog — บันทึกรายรับ-รายจ่าย & เงินสำรองฉุกเฉิน',
+    en: 'SmartLog — Cashflow & Emergency Tracker',
   },
-  'risk-analysis': { th: 'Risk Analysis — วิเคราะห์ความเสี่ยง', en: 'Risk Analysis' },
-  invest: { th: 'Invest (IRR) — เปรียบเทียบผลตอบแทน', en: 'Invest (IRR)' },
-  game: { th: 'Game — เกมจำลองการบริหารความเสี่ยง', en: 'Game — Risk Simulator' },
+  'risk-analysis': { th: 'วิเคราะห์ความเสี่ยง (Risk Analysis)', en: 'Risk Analysis' },
+  invest: { th: 'วางแผนลงทุน (IRR) — เปรียบเทียบผลตอบแทน', en: 'Invest (IRR)' },
+  game: { th: 'เล่นเกมจำลองความเสี่ยง (Risk Game)', en: 'Risk Simulator Game' },
   learning: { th: 'คลังความรู้', en: 'Learning Center' },
-  about: { th: 'หน้าหลัก & เกี่ยวกับเรา', en: 'Landing & About' },
+  about: { th: 'เกี่ยวกับเรา', en: 'About PROTECT360' },
 };
 
 function AppShellContent() {
@@ -63,7 +63,7 @@ function AppShellContent() {
 
   const renderActivePage = () => {
     switch (activePage) {
-      case 'autokey':
+      case 'smartlog':
         return <AutoKey onNavigate={handleNavigate} />;
       case 'risk-analysis':
         return <RiskAnalysis onNavigate={handleNavigate} />;
@@ -131,7 +131,7 @@ function AppShellContent() {
                   id="hero-log-cashflow-btn"
                   type="button"
                   className="hero-log-cta"
-                  onClick={() => handleNavigate('autokey')}
+                  onClick={() => handleNavigate('smartlog')}
                 >
                   <PlusCircle size={18} strokeWidth={2.3} aria-hidden="true" />
                   <span>{t('header.logCashflowCta')}</span>
@@ -188,7 +188,7 @@ function AppShellContent() {
                 </h1>
               </div>
               <p className="header-philosophy">
-                {activePage === 'autokey'
+                {activePage === 'smartlog'
                   ? lang === 'TH'
                     ? `${userPillLabel} • ขั้นตอนที่ 1: เข้าใจกระแสเงินสดของคุณ ก่อนวางแผนจัดการความเสี่ยง`
                     : `${userPillLabel} • Step 1: Understand Your Cashflow Before Risk Planning`

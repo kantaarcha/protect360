@@ -7,7 +7,7 @@ export default function Invest({ onNavigate }) {
       icon={TrendingUp}
       roundTag={{ th: 'Round 4', en: 'Round 4' }}
       title={{
-        th: 'Invest (IRR) — เปรียบเทียบผลตอบแทนและประกันสะสมทรัพย์',
+        th: 'วางแผนลงทุน (IRR) — เปรียบเทียบผลตอบแทนและประกันสะสมทรัพย์',
         en: 'Invest (IRR) — Transparent IRR & Wealth Comparator',
       }}
       subtitle={{

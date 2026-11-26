@@ -7,7 +7,7 @@ export default function Game({ onNavigate }) {
       icon={Gamepad2}
       roundTag={{ th: 'Round 5', en: 'Round 5' }}
       title={{
-        th: 'Game — เกมจำลองชีวิตและการตัดสินใจบริหารความเสี่ยง',
+        th: 'เล่นเกมจำลองชีวิตและการตัดสินใจบริหารความเสี่ยง',
         en: 'Game — Life-Event Risk Management Simulator',
       }}
       subtitle={{

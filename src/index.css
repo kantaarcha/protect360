@@ -1769,7 +1769,7 @@ p {
 }
 
 .tx-amount.expense {
-  color: var(--text-primary);
+  color: var(--danger-text);
 }
 
 .tx-status-cell {
@@ -5759,3 +5759,698 @@ p {
   padding: 8px 11px;
   line-height: 1.42;
 }
+
+/* ==========================================================================
+   Round 2.5: SmartLog Custom Categories, Merchant Calculator, Red Expenses,
+   +/- Quick Adjustments, 1-Tap Date Shortcuts, Inline Edit & CSV Export
+   ========================================================================== */
+
+/* Semantic KPI & Cashflow Expense/Income Numbers */
+.ak-kpi-value.expense {
+  color: var(--danger-text);
+}
+
+.ak-kpi-value.income {
+  color: var(--success-text);
+}
+
+.ak-dot.red {
+  background: var(--danger);
+}
+
+.ak-cf-val.expense,
+.ak-cat-bar-val.expense {
+  color: var(--danger-text);
+}
+
+.ak-cf-val.income {
+  color: var(--success-text);
+}
+
+.ak-bar-fill.expense {
+  background: linear-gradient(90deg, #df6666 0%, #c94646 100%);
+}
+
+/* Semantic Amount Input Coloring */
+.ak-amount-input {
+  font-weight: 700;
+}
+
+.ak-amount-input.expense {
+  color: var(--danger-text);
+}
+
+.ak-amount-input.income {
+  color: var(--success-text);
+}
+
+.ak-amount-input.saving {
+  color: var(--accent-blue-text);
+}
+
+/* Label + Mini Action Tool Row */
+.ak-label-with-tool {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.ak-date-shortcuts {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.ak-mini-tool-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 9px;
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--border-subtle);
+  background: var(--bg-subtle);
+  color: var(--text-secondary);
+  font-size: 0.72rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.18s var(--ease), color 0.18s var(--ease), border-color 0.18s var(--ease);
+}
+
+.ak-mini-tool-btn:hover {
+  background: var(--bg-subtle-hover);
+  color: var(--text-primary);
+}
+
+.ak-mini-tool-btn.active {
+  background: var(--accent-blue-bg);
+  color: var(--accent-blue-text);
+  border-color: rgba(40, 120, 200, 0.3);
+}
+
+/* "อื่น ๆ / หมวดของฉัน" Category Pill */
+.ak-cat-pill-other {
+  border-style: dashed;
+}
+
+.ak-cat-pill-other.custom-active {
+  border-style: solid;
+  font-weight: 700;
+}
+
+.ak-cat-count-dot {
+  display: inline-grid;
+  place-items: center;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  border-radius: var(--radius-pill);
+  background: var(--accent-blue-bg);
+  color: var(--accent-blue-text);
+  font-size: 0.68rem;
+  font-weight: 700;
+}
+
+/* + and - Quick Amount Adjustment Chips */
+.ak-quick-amt-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 6px;
+}
+
+.ak-quick-amt-chip.plus {
+  background: var(--accent-blue-bg);
+  color: var(--accent-blue-text);
+  border-color: rgba(40, 120, 200, 0.2);
+}
+
+.ak-quick-amt-chip.plus:hover {
+  background: rgba(40, 120, 200, 0.18);
+}
+
+.ak-quick-amt-chip.minus {
+  background: var(--danger-bg);
+  color: var(--danger-text);
+  border-color: rgba(231, 111, 111, 0.24);
+}
+
+.ak-quick-amt-chip.minus:hover:not(:disabled) {
+  background: rgba(231, 111, 111, 0.22);
+}
+
+.ak-quick-amt-chip.minus:disabled {
+  opacity: 0.42;
+  cursor: not-allowed;
+}
+
+.ak-quick-amt-chip.clear {
+  background: var(--bg-subtle);
+  color: var(--text-secondary);
+}
+
+.ak-quick-amt-chip.clear:hover {
+  background: var(--bg-subtle-hover);
+  color: var(--text-primary);
+}
+
+/* Merchant Calculator ("เครื่องคิดเลขแม่ค้า") */
+.ak-calc-panel {
+  border-radius: 18px;
+  border: 1px solid var(--border-strong);
+  background: var(--bg-muted);
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.ak-calc-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.ak-calc-title {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.ak-calc-close {
+  width: 26px;
+  height: 26px;
+  border-radius: var(--radius-pill);
+  border: none;
+  background: var(--bg-subtle);
+  color: var(--text-secondary);
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+}
+
+.ak-calc-close:hover {
+  background: var(--bg-subtle-hover);
+  color: var(--text-primary);
+}
+
+.ak-calc-screen {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: 14px;
+  padding: 10px 14px;
+  text-align: right;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.ak-calc-tape {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  min-height: 1.15em;
+  overflow-x: auto;
+  white-space: nowrap;
+}
+
+.ak-calc-live {
+  font-size: 1.32rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  line-height: 1.2;
+}
+
+.ak-calc-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 7px;
+}
+
+.ak-calc-key {
+  height: 42px;
+  border-radius: 12px;
+  border: 1px solid var(--border-subtle);
+  background: var(--bg-surface);
+  color: var(--text-primary);
+  font-size: 0.96rem;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  cursor: pointer;
+  transition: transform 0.12s var(--ease), background-color 0.16s var(--ease);
+}
+
+.ak-calc-key:hover:not(:disabled) {
+  background: var(--bg-subtle);
+}
+
+.ak-calc-key:active:not(:disabled) {
+  transform: scale(0.96);
+}
+
+.ak-calc-key.util {
+  background: var(--bg-subtle);
+  color: var(--text-secondary);
+}
+
+.ak-calc-key.op {
+  background: var(--accent-blue-bg);
+  color: var(--accent-blue-text);
+  border-color: rgba(40, 120, 200, 0.22);
+  font-size: 1.05rem;
+}
+
+.ak-calc-key.eq {
+  background: var(--navy);
+  color: #ffffff;
+  border-color: transparent;
+}
+
+[data-theme='dark'] .ak-calc-key.eq {
+  background: var(--royal);
+}
+
+.ak-calc-key.apply {
+  background: linear-gradient(135deg, var(--royal) 0%, var(--teal) 100%);
+  color: #ffffff;
+  border-color: transparent;
+  font-size: 0.8rem;
+}
+
+.ak-calc-key.apply:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+/* Custom Category Modal ("อื่น ๆ / หมวดที่สร้างเอง") */
+.custom-cat-modal {
+  max-width: 520px;
+  width: calc(100% - 28px);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.cc-browse-body {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.cc-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 8px;
+  padding: 26px 16px;
+  border-radius: 18px;
+  background: var(--bg-muted);
+  border: 1px dashed var(--border-strong);
+}
+
+.cc-empty-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 16px;
+  background: var(--accent-blue-bg);
+  color: var(--royal);
+  display: grid;
+  place-items: center;
+  margin-bottom: 4px;
+}
+
+.cc-empty-title {
+  margin: 0;
+  font-weight: 700;
+  font-size: 0.94rem;
+  color: var(--text-primary);
+}
+
+.cc-empty-sub {
+  margin: 0 0 8px;
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  max-width: 340px;
+  line-height: 1.45;
+}
+
+.cc-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 320px;
+  overflow-y: auto;
+  padding-right: 2px;
+}
+
+.cc-item-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 8px;
+  border-radius: 14px;
+  border: 1px solid var(--border-subtle);
+  background: var(--bg-muted);
+  transition: border-color 0.16s var(--ease), background-color 0.16s var(--ease);
+}
+
+.cc-item-row.active {
+  border-color: var(--royal);
+  background: var(--accent-blue-bg);
+}
+
+.cc-item-select {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border: none;
+  background: transparent;
+  padding: 4px;
+  text-align: left;
+  cursor: pointer;
+}
+
+.cc-item-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+}
+
+.cc-item-text {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.cc-item-name {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.cc-item-type {
+  display: inline-flex;
+  align-self: flex-start;
+  font-size: 0.69rem;
+  font-weight: 700;
+  padding: 1px 7px;
+  border-radius: var(--radius-pill);
+}
+
+.cc-item-type.expense {
+  background: var(--danger-bg);
+  color: var(--danger-text);
+}
+
+.cc-item-type.income {
+  background: var(--success-bg);
+  color: var(--success-text);
+}
+
+.cc-item-type.saving {
+  background: var(--accent-teal-bg);
+  color: var(--teal);
+}
+
+.cc-item-selected-mark {
+  color: var(--royal);
+  display: grid;
+  place-items: center;
+}
+
+.cc-item-delete {
+  width: 32px;
+  height: 32px;
+  border-radius: 10px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--text-muted);
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.cc-item-delete:hover {
+  background: var(--danger-bg);
+  color: var(--danger-text);
+}
+
+.cc-create-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.cc-preview-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 14px;
+  background: var(--bg-muted);
+  border: 1px solid var(--border-subtle);
+  flex-wrap: wrap;
+}
+
+.cc-preview-label {
+  font-size: 0.74rem;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.cc-preview-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-pill);
+  padding: 4px 10px 4px 5px;
+}
+
+.cc-preview-icon {
+  width: 26px;
+  height: 26px;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+}
+
+.cc-preview-name {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.cc-color-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.cc-color-swatch {
+  width: 30px;
+  height: 30px;
+  border-radius: 999px;
+  border: 2px solid transparent;
+  background: var(--swatch-color);
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  transition: transform 0.16s var(--ease), box-shadow 0.16s var(--ease);
+}
+
+.cc-color-swatch:hover {
+  transform: scale(1.08);
+}
+
+.cc-color-swatch.active {
+  box-shadow: 0 0 0 2px var(--bg-surface), 0 0 0 4px var(--swatch-color);
+}
+
+.cc-icon-label-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.cc-icon-selected-hint {
+  font-size: 0.74rem;
+  font-weight: 600;
+  color: var(--accent-blue-text);
+}
+
+.cc-icon-grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 7px;
+}
+
+.cc-icon-btn {
+  height: 42px;
+  border-radius: 12px;
+  border: 1px solid var(--border-subtle);
+  background: var(--bg-muted);
+  color: var(--text-secondary);
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  transition: transform 0.14s var(--ease), background-color 0.16s var(--ease), border-color 0.16s var(--ease);
+}
+
+.cc-icon-btn:hover {
+  background: var(--bg-subtle);
+  color: var(--text-primary);
+}
+
+.cc-icon-btn.active {
+  border-width: 1.5px;
+  transform: scale(1.03);
+}
+
+.cc-browse-footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  padding-top: 4px;
+}
+
+/* Ledger CSV Export & Inline Edit Controls */
+.ak-csv-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 13px;
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--border-strong);
+  background: var(--bg-surface);
+  color: var(--text-primary);
+  font-size: 0.78rem;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background-color 0.16s var(--ease), border-color 0.16s var(--ease);
+}
+
+.ak-csv-btn:hover:not(:disabled) {
+  background: var(--bg-subtle);
+  border-color: var(--royal);
+}
+
+.ak-csv-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.ak-tx-row-actions {
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 6px;
+}
+
+.ak-tx-edit-btn {
+  width: 30px;
+  height: 30px;
+  border-radius: 10px;
+  border: 1px solid var(--border-subtle);
+  background: var(--bg-subtle);
+  color: var(--text-secondary);
+  display: inline-grid;
+  place-items: center;
+  cursor: pointer;
+  transition: background-color 0.16s var(--ease), color 0.16s var(--ease);
+}
+
+.ak-tx-edit-btn:hover {
+  background: var(--accent-blue-bg);
+  color: var(--accent-blue-text);
+  border-color: rgba(40, 120, 200, 0.28);
+}
+
+.ak-tx-save-confirm {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 5px 10px;
+  border-radius: 10px;
+  border: none;
+  background: var(--success);
+  color: #ffffff;
+  font-size: 0.74rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.ak-tx-save-confirm:hover {
+  filter: brightness(0.95);
+}
+
+.ak-edit-row td {
+  background: var(--bg-muted);
+}
+
+.ak-inline-input,
+.ak-inline-select {
+  width: 100%;
+  padding: 6px 10px;
+  border-radius: 10px;
+  border: 1px solid var(--border-strong);
+  background: var(--bg-surface);
+  color: var(--text-primary);
+  font-size: 0.82rem;
+  font-weight: 600;
+  font-family: inherit;
+}
+
+.ak-inline-input.num {
+  text-align: right;
+  max-width: 120px;
+}
+
+.ak-mobile-edit-card {
+  display: block;
+}
+
+.ak-mobile-edit-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+@media (max-width: 520px) {
+  .ak-calc-key {
+    height: 40px;
+    font-size: 0.9rem;
+  }
+
+  .cc-icon-btn {
+    height: 40px;
+  }
+}
+

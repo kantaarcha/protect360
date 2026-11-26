@@ -279,6 +279,28 @@ function sanitizeRiskProfile(raw) {
   };
 }
 
+function sanitizeCustomCategories(raw) {
+  if (!Array.isArray(raw)) return [];
+  const allowedTypes = ['expense', 'income', 'saving'];
+  return raw
+    .filter(
+      (item) =>
+        item &&
+        typeof item === 'object' &&
+        typeof item.id === 'string' &&
+        typeof item.name === 'string' &&
+        item.name.trim().length > 0
+    )
+    .slice(0, 40)
+    .map((item) => ({
+      id: item.id,
+      name: item.name.trim().slice(0, 28),
+      type: allowedTypes.includes(item.type) ? item.type : 'expense',
+      iconName: typeof item.iconName === 'string' ? item.iconName : 'tag',
+      color: typeof item.color === 'string' ? item.color : '#2878C8',
+    }));
+}
+
 function loadInitialState() {
   try {
     const raw = window.localStorage.getItem(STORAGE_KEY);
@@ -289,6 +311,7 @@ function loadInitialState() {
         coverages: INITIAL_COVERAGES,
         transactions: INITIAL_TRANSACTIONS,
         riskProfile: { ...INITIAL_RISK_PROFILE },
+        customCategories: [],
       };
     }
     const parsed = JSON.parse(raw);
@@ -320,6 +343,7 @@ function loadInitialState() {
       coverages: sanitizeCoverages(parsed.coverageItems ?? parsed.coverages),
       transactions: sanitizeTransactions(parsed.transactions),
       riskProfile: sanitizeRiskProfile(parsed.riskProfile),
+      customCategories: sanitizeCustomCategories(parsed.customCategories),
     };
   } catch {
     return {
@@ -328,6 +352,7 @@ function loadInitialState() {
       coverages: INITIAL_COVERAGES,
       transactions: INITIAL_TRANSACTIONS,
       riskProfile: { ...INITIAL_RISK_PROFILE },
+      customCategories: [],
     };
   }
 }
@@ -336,7 +361,7 @@ const FinanceContext = createContext(null);
 
 export function FinanceProvider({ children }) {
   const [store, setStore] = useState(loadInitialState);
-  const { userProfile, financials, coverages, transactions, riskProfile } = store;
+  const { userProfile, financials, coverages, transactions, riskProfile, customCategories } = store;
   const [toast, setToast] = useState(null);
   const toastTimerRef = useRef(null);
 
@@ -378,13 +403,14 @@ export function FinanceProvider({ children }) {
       coverageItems: coverages,
       transactions,
       riskProfile,
+      customCategories,
     };
     try {
       window.localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
     } catch {
       // Ignore storage quota or private browsing errors
     }
-  }, [userProfile, financials, coverages, transactions, riskProfile]);
+  }, [userProfile, financials, coverages, transactions, riskProfile, customCategories]);
 
   // Backward-compatible merged profile object for Round 1 & future modules
   const profile = useMemo(
@@ -721,6 +747,44 @@ export function FinanceProvider({ children }) {
     [showToast]
   );
 
+  const addCustomCategory = useCallback(
+    ({ name, type = 'expense', iconName = 'tag', color = '#2878C8' }) => {
+      const trimmed = String(name || '').trim().slice(0, 28);
+      if (!trimmed) return null;
+      const newCat = {
+        id: `ccat-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
+        name: trimmed,
+        type: ['expense', 'income', 'saving'].includes(type) ? type : 'expense',
+        iconName: iconName || 'tag',
+        color: color || '#2878C8',
+      };
+      setStore((prev) => ({
+        ...prev,
+        customCategories: [newCat, ...(prev.customCategories || [])].slice(0, 40),
+      }));
+      showToast('success', {
+        th: `สร้างหมวดหมู่ "${trimmed}" เรียบร้อยแล้ว`,
+        en: `Created custom category "${trimmed}"`,
+      });
+      return newCat;
+    },
+    [showToast]
+  );
+
+  const removeCustomCategory = useCallback(
+    (id) => {
+      setStore((prev) => ({
+        ...prev,
+        customCategories: (prev.customCategories || []).filter((item) => item.id !== id),
+      }));
+      showToast('info', {
+        th: 'ลบหมวดหมู่ที่สร้างเองเรียบร้อยแล้ว',
+        en: 'Custom category deleted',
+      });
+    },
+    [showToast]
+  );
+
   const exportUserData = useCallback(() => {
     const cleanFirstName = (userProfile.firstName || '')
       .trim()
@@ -741,6 +805,7 @@ export function FinanceProvider({ children }) {
       coverageItems: coverages,
       transactions,
       riskProfile,
+      customCategories,
     };
 
     try {
@@ -768,7 +833,7 @@ export function FinanceProvider({ children }) {
       });
       return { ok: false };
     }
-  }, [userProfile, financials, coverages, transactions, riskProfile, showToast]);
+  }, [userProfile, financials, coverages, transactions, riskProfile, customCategories, showToast]);
 
   const importUserData = useCallback(
     async (file) => {
@@ -812,6 +877,7 @@ export function FinanceProvider({ children }) {
         const nextCoverages = sanitizeCoverages(parsed.coverageItems ?? parsed.coverages);
         const nextTransactions = sanitizeTransactions(parsed.transactions);
         const nextRiskProfile = sanitizeRiskProfile(parsed.riskProfile);
+        const nextCustomCategories = sanitizeCustomCategories(parsed.customCategories);
 
         setStore({
           userProfile: nextUserProfile,
@@ -825,6 +891,7 @@ export function FinanceProvider({ children }) {
           coverages: nextCoverages,
           transactions: nextTransactions,
           riskProfile: nextRiskProfile,
+          customCategories: nextCustomCategories,
         });
 
         const message = {
@@ -852,6 +919,7 @@ export function FinanceProvider({ children }) {
       coverages: INITIAL_COVERAGES,
       transactions: INITIAL_TRANSACTIONS,
       riskProfile: { ...INITIAL_RISK_PROFILE },
+      customCategories: [],
     });
     showToast('info', {
       th: 'รีเซ็ตกลับเป็นโปรไฟล์ตัวอย่าง First Jobber เรียบร้อยแล้ว',
@@ -869,6 +937,7 @@ export function FinanceProvider({ children }) {
     coverageItems: coverages,
     transactions,
     riskProfile,
+    customCategories: customCategories || [],
     toast,
     ...derived,
     updateUserProfile,
@@ -877,6 +946,8 @@ export function FinanceProvider({ children }) {
     addTransaction,
     updateTransaction,
     removeTransaction,
+    addCustomCategory,
+    removeCustomCategory,
     addCoverage,
     updateCoverage,
     removeCoverage,
@@ -903,13 +974,16 @@ export function useFinance() {
 }
 
 export function formatTHB(amount, { showSign = false } = {}) {
-  const num = Number(amount) || 0;
-  const absFormatted = Math.abs(num).toLocaleString('en-US', {
-    maximumFractionDigits: 0,
+  const raw = Number(amount) || 0;
+  const rounded = Math.round(raw * 100) / 100;
+  const hasDecimals = !Number.isInteger(rounded);
+  const absFormatted = Math.abs(rounded).toLocaleString('en-US', {
+    minimumFractionDigits: hasDecimals ? 2 : 0,
+    maximumFractionDigits: hasDecimals ? 2 : 0,
   });
   if (showSign) {
-    if (num > 0) return `+฿${absFormatted}`;
-    if (num < 0) return `-฿${absFormatted}`;
+    if (rounded > 0) return `+฿${absFormatted}`;
+    if (rounded < 0) return `-฿${absFormatted}`;
   }
-  return num < 0 ? `-฿${absFormatted}` : `฿${absFormatted}`;
+  return rounded < 0 ? `-฿${absFormatted}` : `฿${absFormatted}`;
 }

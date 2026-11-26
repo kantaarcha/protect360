@@ -7,7 +7,7 @@ export default function RiskAnalysis({ onNavigate }) {
       icon={ShieldAlert}
       roundTag={{ th: 'Round 3', en: 'Round 3' }}
       title={{
-        th: 'Risk Analysis — วิเคราะห์ช่องว่างความคุ้มครอง (Protection Gap)',
+        th: 'วิเคราะห์ความเสี่ยง (Risk Analysis) — ช่องว่างความคุ้มครอง',
         en: 'Risk Analysis — Actuarial Protection Gap Engine',
       }}
       subtitle={{

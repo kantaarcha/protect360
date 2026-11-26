@@ -3,35 +3,25 @@ import {
   AlertTriangle,
   ArrowDownLeft,
   ArrowUpRight,
-  Building2,
   ChevronRight,
-  Coffee,
   Pencil,
   PiggyBank,
   Plus,
   Search,
   Shield,
   ShieldAlert,
-  ShoppingBag,
-  TrainFront,
   Trash2,
-  Wallet,
 } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import { formatTHB, useFinance } from '../context/FinanceContext';
 import { useLiquidSlider } from '../hooks/useLiquidSlider';
 import { getCardHolderDisplay } from '../utils/userHelpers';
+import {
+  getCategoryIconComponent,
+  resolveTransactionBadgeStyle,
+} from '../utils/categoryRegistry';
 import ProtectionGapChart from '../components/ProtectionGapChart';
 import CoverageModal from '../components/CoverageModal';
-
-const TX_ICON_MAP = {
-  salary: Wallet,
-  housing: Building2,
-  food: Coffee,
-  transport: TrainFront,
-  saving: PiggyBank,
-  lifestyle: ShoppingBag,
-};
 
 export default function OverviewDashboard({ onNavigate, onOpenProfile }) {
   const { lang, fontStepIdx, t } = useLanguage();
@@ -40,6 +30,7 @@ export default function OverviewDashboard({ onNavigate, onOpenProfile }) {
     profile,
     coverages,
     transactions,
+    customCategories,
     savingsRatio,
     emergencyTarget,
     emergencyRunway,
@@ -553,7 +544,12 @@ export default function OverviewDashboard({ onNavigate, onOpenProfile }) {
                     </tr>
                   ) : (
                     filteredTransactions.map((tx) => {
-                      const Icon = TX_ICON_MAP[tx.iconKey] || Wallet;
+                      const Icon = getCategoryIconComponent(
+                        tx.iconKey,
+                        tx.customIcon,
+                        customCategories
+                      );
+                      const customBadgeStyle = resolveTransactionBadgeStyle(tx, customCategories);
                       const amountClass =
                         tx.category === 'income'
                           ? 'income'
@@ -567,6 +563,7 @@ export default function OverviewDashboard({ onNavigate, onOpenProfile }) {
                             <div className="tx-item-cell">
                               <span
                                 className={`tx-icon-circle ${tx.iconKey}`}
+                                style={customBadgeStyle}
                                 aria-hidden="true"
                               >
                                 <Icon size={17} strokeWidth={2.1} />
@@ -609,7 +606,12 @@ export default function OverviewDashboard({ onNavigate, onOpenProfile }) {
                 <div className="empty-table-state">{t('overview.emptySearch')}</div>
               ) : (
                 filteredTransactions.map((tx) => {
-                  const Icon = TX_ICON_MAP[tx.iconKey] || Wallet;
+                  const Icon = getCategoryIconComponent(
+                    tx.iconKey,
+                    tx.customIcon,
+                    customCategories
+                  );
+                  const customBadgeStyle = resolveTransactionBadgeStyle(tx, customCategories);
                   const amountClass =
                     tx.category === 'income'
                       ? 'income'
@@ -622,6 +624,7 @@ export default function OverviewDashboard({ onNavigate, onOpenProfile }) {
                       <div className="mobile-tx-left">
                         <span
                           className={`tx-icon-circle ${tx.iconKey}`}
+                          style={customBadgeStyle}
                           aria-hidden="true"
                         >
                           <Icon size={17} strokeWidth={2.1} />
@@ -662,7 +665,7 @@ export default function OverviewDashboard({ onNavigate, onOpenProfile }) {
               <button
                 type="button"
                 className="activities-more-btn"
-                onClick={() => onNavigate('autokey')}
+                onClick={() => onNavigate('smartlog')}
               >
                 <span>{t('overview.viewAllActivities')}</span>
                 <ChevronRight size={14} strokeWidth={2.4} className="cta-chevron" aria-hidden="true" />

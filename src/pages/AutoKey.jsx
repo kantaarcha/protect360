@@ -3,21 +3,23 @@ import {
   AlertCircle,
   ArrowDownLeft,
   ArrowUpRight,
-  Building2,
+  Calculator,
   Calendar,
+  Check,
   CheckCircle2,
   ChevronRight,
-  Coffee,
+  Download,
+  FolderPlus,
   ImagePlus,
+  MoreHorizontal,
   PenLine,
+  Pencil,
   PiggyBank,
   ScanLine,
   Search,
   ShieldAlert,
   ShieldCheck,
-  ShoppingBag,
   Sparkles,
-  TrainFront,
   Trash2,
   Upload,
   Wallet,
@@ -26,7 +28,17 @@ import {
 import { useLanguage } from '../context/LanguageContext';
 import { formatTHB, useFinance } from '../context/FinanceContext';
 import { scanBankSlipOnDevice } from '../utils/slipOcr';
+import {
+  CORE_CATEGORIES,
+  CORE_CATEGORY_MAP,
+  CUSTOM_ICON_MAP,
+  getCategoryIconComponent,
+  getCustomColorMeta,
+  resolveTransactionBadgeStyle,
+} from '../utils/categoryRegistry';
 import LiquidTabs from '../components/LiquidTabs';
+import MerchantCalculator from '../components/MerchantCalculator';
+import CustomCategoryModal from '../components/CustomCategoryModal';
 
 const THAI_MONTHS_SHORT = [
   'ม.ค.',
@@ -58,12 +70,17 @@ const EN_MONTHS_SHORT = [
   'Dec',
 ];
 
-function getTodayIso() {
+function getIsoDateOffset(daysOffset = 0) {
   const now = new Date();
+  now.setDate(now.getDate() + daysOffset);
   const y = now.getFullYear();
   const m = String(now.getMonth() + 1).padStart(2, '0');
   const d = String(now.getDate()).padStart(2, '0');
   return `${y}-${m}-${d}`;
+}
+
+function getTodayIso() {
+  return getIsoDateOffset(0);
 }
 
 function formatBilingualDate(isoStr) {
@@ -77,52 +94,13 @@ function formatBilingualDate(isoStr) {
   };
 }
 
-const CATEGORIES = [
-  {
-    key: 'food',
-    type: 'expense',
-    icon: Coffee,
-    label: { th: 'อาหาร & เครื่องดื่ม', en: 'Food & Dining' },
-    barColor: '#2878C8',
-  },
-  {
-    key: 'housing',
-    type: 'expense',
-    icon: Building2,
-    label: { th: 'ที่พัก & สาธารณูปโภค', en: 'Housing & Bills' },
-    barColor: '#142B4A',
-  },
-  {
-    key: 'transport',
-    type: 'expense',
-    icon: TrainFront,
-    label: { th: 'เดินทาง / BTS', en: 'Transport / BTS' },
-    barColor: '#22B8A7',
-  },
-  {
-    key: 'lifestyle',
-    type: 'expense',
-    icon: ShoppingBag,
-    label: { th: 'ไลฟ์สไตล์', en: 'Lifestyle' },
-    barColor: '#6388C6',
-  },
-  {
-    key: 'saving',
-    type: 'saving',
-    icon: PiggyBank,
-    label: { th: 'เงินออมฉุกเฉิน', en: 'Emergency Fund' },
-    barColor: '#22B8A7',
-  },
-  {
-    key: 'salary',
-    type: 'income',
-    icon: Wallet,
-    label: { th: 'เงินเดือน / รายได้เสริม', en: 'Salary & Income' },
-    barColor: '#31A879',
-  },
-];
-
-const CATEGORY_MAP = Object.fromEntries(CATEGORIES.map((c) => [c.key, c]));
+function escapeCsvCell(val) {
+  const str = String(val ?? '');
+  if (/[",\n\r]/.test(str)) {
+    return `"${str.replace(/"/g, '""')}"`;
+  }
+  return str;
+}
 
 const SLIP_PRESETS = [
   {
@@ -185,8 +163,11 @@ export default function AutoKey({ onNavigate }) {
     emergencyProgress,
     selfPaidPremium,
     transactions,
+    customCategories,
     addTransaction,
+    updateTransaction,
     removeTransaction,
+    showToast,
   } = useFinance();
 
   // Input studio tabs: 'slip' | 'manual'
@@ -199,6 +180,7 @@ export default function AutoKey({ onNavigate }) {
   const [scanLabel, setScanLabel] = useState('');
   const [extractedSlip, setExtractedSlip] = useState(null);
   const [uploadedPreviewUrl, setUploadedPreviewUrl] = useState(null);
+  const [slipCalcOpen, setSlipCalcOpen] = useState(false);
   const slipFileInputRef = useRef(null);
   const scanTimerRef = useRef(null);
   const previewUrlRef = useRef(null);
@@ -210,19 +192,53 @@ export default function AutoKey({ onNavigate }) {
   const [manualAmount, setManualAmount] = useState('');
   const [manualNote, setManualNote] = useState('');
   const [manualDate, setManualDate] = useState(getTodayIso);
+  const [manualCalcOpen, setManualCalcOpen] = useState(false);
 
-  // Ledger state
+  // Custom Category Modal target: null | 'manual' | 'slip'
+  const [catModalTarget, setCatModalTarget] = useState(null);
+
+  // Ledger state (search, filter, delete confirm, inline edit)
   const [ledgerSearch, setLedgerSearch] = useState('');
   const [ledgerFilter, setLedgerFilter] = useState('all');
   const [confirmDeleteTxId, setConfirmDeleteTxId] = useState(null);
+  const [editingTxId, setEditingTxId] = useState(null);
+  const [editDraft, setEditDraft] = useState({
+    title: '',
+    amount: '',
+    category: 'expense',
+    iconKey: 'food',
+  });
 
-  // Clean up scan timer and preview object URL ONLY on unmount (never cancel active scan on state update!)
+  // Clean up scan timer and preview object URL ONLY on unmount
   useEffect(() => {
     return () => {
       if (scanTimerRef.current) window.clearTimeout(scanTimerRef.current);
       if (previewUrlRef.current) window.URL.revokeObjectURL(previewUrlRef.current);
     };
   }, []);
+
+  // Build unified category lookup (6 core + user custom categories)
+  const allCategories = useMemo(() => {
+    const mappedCustom = (customCategories || []).map((c) => ({
+      key: c.id,
+      type: c.type,
+      iconName: c.iconName,
+      icon: CUSTOM_ICON_MAP[c.iconName] || CORE_CATEGORY_MAP.lifestyle.icon,
+      label: { th: c.name, en: c.name },
+      barColor: c.color || '#2878C8',
+      isCustom: true,
+    }));
+    return [...CORE_CATEGORIES, ...mappedCustom];
+  }, [customCategories]);
+
+  const allCategoryMap = useMemo(
+    () => Object.fromEntries(allCategories.map((c) => [c.key, c])),
+    [allCategories]
+  );
+
+  // If the currently selected manual custom category was deleted, fall back cleanly
+  const activeManualCat = allCategoryMap[manualCatKey] || CORE_CATEGORY_MAP.food;
+  const activeCustomForManual = activeManualCat.isCustom ? activeManualCat : null;
 
   // Derived KPI metrics
   const targetMonths = userProfile.emergencyTargetMonths || 3;
@@ -237,38 +253,51 @@ export default function AutoKey({ onNavigate }) {
   const remainingEmergency = Math.max(0, emergencyTarget - emergencyFund);
   const isEmergencyReady = emergencyRunway >= targetMonths;
 
-  // Spending Breakdown by category (live from expense transactions)
+  // Spending Breakdown by category (live from expense transactions — includes custom categories!)
   const spendingBreakdown = useMemo(() => {
-    const totals = {};
+    const totals = new Map();
     let totalTrackedExpenses = 0;
 
     for (const tx of transactions) {
       if (tx.category !== 'expense') continue;
-      const key = CATEGORY_MAP[tx.iconKey] ? tx.iconKey : 'lifestyle';
+      const key = allCategoryMap[tx.iconKey]
+        ? tx.iconKey
+        : tx.iconKey && tx.iconKey.startsWith('ccat-')
+          ? tx.iconKey
+          : 'lifestyle';
       const amt = Math.abs(Number(tx.amount) || 0);
-      totals[key] = (totals[key] || 0) + amt;
+      if (amt <= 0) continue;
+
       totalTrackedExpenses += amt;
+      const existing = totals.get(key);
+      if (existing) {
+        existing.amount += amt;
+      } else {
+        const meta = allCategoryMap[key];
+        totals.set(key, {
+          key,
+          label: meta?.label || tx.categoryLabel || CORE_CATEGORY_MAP.lifestyle.label,
+          icon:
+            meta?.icon ||
+            getCategoryIconComponent(tx.iconKey, tx.customIcon, customCategories),
+          barColor: meta?.barColor || tx.customColor || '#6388C6',
+          amount: amt,
+        });
+      }
     }
 
-    const expenseCategories = CATEGORIES.filter((c) => c.type === 'expense');
-    const items = expenseCategories
-      .map((cat) => {
-        const amount = totals[cat.key] || 0;
-        const pct =
+    const items = Array.from(totals.values())
+      .map((item) => ({
+        ...item,
+        pct:
           totalTrackedExpenses > 0
-            ? Math.round((amount / totalTrackedExpenses) * 100)
-            : 0;
-        return {
-          ...cat,
-          amount,
-          pct,
-        };
-      })
-      .filter((item) => item.amount > 0)
+            ? Math.round((item.amount / totalTrackedExpenses) * 100)
+            : 0,
+      }))
       .sort((a, b) => b.amount - a.amount);
 
     return { items, totalTrackedExpenses };
-  }, [transactions]);
+  }, [transactions, allCategoryMap, customCategories]);
 
   // Filtered ledger transactions
   const filteredTransactions = useMemo(() => {
@@ -318,6 +347,7 @@ export default function AutoKey({ onNavigate }) {
     setScanLabel(sourceLabel);
     setScanProgress(60);
     setExtractedSlip(null);
+    setSlipCalcOpen(false);
     setIsScanning(true);
 
     scanTimerRef.current = window.setTimeout(() => {
@@ -341,7 +371,7 @@ export default function AutoKey({ onNavigate }) {
     }, 520);
   };
 
-  // Real 100% On-Device OCR for uploaded bank slip images (reads real THB amounts like 343 or 7)
+  // Real 100% On-Device OCR for uploaded bank slip images
   const handleSlipFile = async (file) => {
     if (!file) return;
     const isImage =
@@ -364,6 +394,7 @@ export default function AutoKey({ onNavigate }) {
 
     setUploadedPreviewUrl(objectUrl);
     setExtractedSlip(null);
+    setSlipCalcOpen(false);
     setIsScanning(true);
     setScanProgress(10);
     setScanLabel(
@@ -450,7 +481,7 @@ export default function AutoKey({ onNavigate }) {
     const numericAmount = Math.max(0, Number(extractedSlip.amount) || 0);
     if (numericAmount <= 0) return;
 
-    const catMeta = CATEGORY_MAP[extractedSlip.iconKey] || CATEGORY_MAP.lifestyle;
+    const catMeta = allCategoryMap[extractedSlip.iconKey] || CORE_CATEGORY_MAP.lifestyle;
     const trimmedTitle = extractedSlip.titleText.trim();
     const titleObj = trimmedTitle
       ? { th: trimmedTitle, en: trimmedTitle }
@@ -464,13 +495,17 @@ export default function AutoKey({ onNavigate }) {
       },
       category: extractedSlip.category,
       categoryLabel: catMeta.label,
-      iconKey: extractedSlip.iconKey,
+      iconKey: catMeta.key,
+      ...(catMeta.isCustom
+        ? { customIcon: catMeta.iconName, customColor: catMeta.barColor }
+        : {}),
       date: formatBilingualDate(extractedSlip.isoDate),
       isoDate: extractedSlip.isoDate,
       amount: extractedSlip.category === 'expense' ? -numericAmount : numericAmount,
     });
 
     setExtractedSlip(null);
+    setSlipCalcOpen(false);
     if (previewUrlRef.current) {
       window.URL.revokeObjectURL(previewUrlRef.current);
       previewUrlRef.current = null;
@@ -487,6 +522,7 @@ export default function AutoKey({ onNavigate }) {
     setIsScanning(false);
     setScanProgress(0);
     setExtractedSlip(null);
+    setSlipCalcOpen(false);
     if (previewUrlRef.current) {
       window.URL.revokeObjectURL(previewUrlRef.current);
       previewUrlRef.current = null;
@@ -497,11 +533,13 @@ export default function AutoKey({ onNavigate }) {
   // Manual Entry helpers
   const handleManualTypeChange = (nextType) => {
     setManualType(nextType);
+    const currentCat = allCategoryMap[manualCatKey];
+    if (currentCat && currentCat.type === nextType) return;
     if (nextType === 'income') {
       setManualCatKey('salary');
     } else if (nextType === 'saving') {
       setManualCatKey('saving');
-    } else if (manualCatKey === 'salary' || manualCatKey === 'saving') {
+    } else {
       setManualCatKey('food');
     }
   };
@@ -511,9 +549,10 @@ export default function AutoKey({ onNavigate }) {
     setManualType(cat.type);
   };
 
-  const handleQuickAmountAdd = (delta) => {
+  const handleQuickAmountAdjust = (delta) => {
     const current = Number(manualAmount) || 0;
-    setManualAmount(String(current + delta));
+    const next = Math.max(0, Math.round((current + delta) * 100) / 100);
+    setManualAmount(next === 0 ? '' : String(next));
   };
 
   const handleManualSubmit = (e) => {
@@ -521,16 +560,14 @@ export default function AutoKey({ onNavigate }) {
     const numericAmount = Math.max(0, Number(manualAmount) || 0);
     if (numericAmount <= 0) return;
 
-    const catMeta = CATEGORY_MAP[manualCatKey] || CATEGORY_MAP.food;
+    const catMeta = activeManualCat || CORE_CATEGORY_MAP.food;
     const cleanNote = manualNote.trim();
-    const titleObj = cleanNote
-      ? { th: cleanNote, en: cleanNote }
-      : catMeta.label;
+    const titleObj = cleanNote ? { th: cleanNote, en: cleanNote } : catMeta.label;
     const noteObj =
       manualType === 'saving'
         ? { th: 'เติมเงินเข้ากองทุนสำรองฉุกเฉิน', en: 'Added to Liquid Emergency Fund' }
         : manualType === 'income'
-          ? { th: 'บันทึกรายรับผ่าน AutoKey', en: 'Logged income via AutoKey' }
+          ? { th: 'บันทึกรายรับผ่าน SmartLog', en: 'Logged income via SmartLog' }
           : { th: `รายจ่ายหมวด${catMeta.label.th}`, en: `${catMeta.label.en} expense` };
 
     addTransaction({
@@ -539,6 +576,9 @@ export default function AutoKey({ onNavigate }) {
       category: manualType,
       categoryLabel: catMeta.label,
       iconKey: catMeta.key,
+      ...(catMeta.isCustom
+        ? { customIcon: catMeta.iconName, customColor: catMeta.barColor }
+        : {}),
       date: formatBilingualDate(manualDate),
       isoDate: manualDate,
       amount: manualType === 'expense' ? -numericAmount : numericAmount,
@@ -546,6 +586,81 @@ export default function AutoKey({ onNavigate }) {
 
     setManualAmount('');
     setManualNote('');
+    setManualCalcOpen(false);
+  };
+
+  // Ledger inline edit helpers
+  const startEditTx = (tx) => {
+    setConfirmDeleteTxId(null);
+    setEditingTxId(tx.id);
+    setEditDraft({
+      title: t(tx.title),
+      amount: String(Math.abs(Number(tx.amount) || 0)),
+      category: tx.category || 'expense',
+      iconKey: tx.iconKey || 'lifestyle',
+    });
+  };
+
+  const cancelEditTx = () => {
+    setEditingTxId(null);
+  };
+
+  const saveEditTx = (tx) => {
+    const numericAmount = Math.max(0, Number(editDraft.amount) || 0);
+    if (numericAmount <= 0) return;
+    const catMeta = allCategoryMap[editDraft.iconKey];
+    const trimmedTitle = editDraft.title.trim();
+
+    updateTransaction(tx.id, {
+      title: trimmedTitle ? { th: trimmedTitle, en: trimmedTitle } : tx.title,
+      amount: editDraft.category === 'expense' ? -numericAmount : numericAmount,
+      category: editDraft.category,
+      iconKey: catMeta ? catMeta.key : tx.iconKey,
+      categoryLabel: catMeta ? catMeta.label : tx.categoryLabel,
+      customIcon: catMeta?.isCustom ? catMeta.iconName : undefined,
+      customColor: catMeta?.isCustom ? catMeta.barColor : undefined,
+    });
+    setEditingTxId(null);
+  };
+
+  // Export currently filtered ledger to UTF-8 BOM CSV (Excel/Sheets Thai-safe)
+  const handleExportCsv = () => {
+    if (filteredTransactions.length === 0) return;
+    const headers =
+      lang === 'TH'
+        ? ['วันที่', 'ประเภท', 'หมวดหมู่', 'รายการ', 'รายละเอียด', 'จำนวนเงิน (บาท)']
+        : ['Date', 'Type', 'Category', 'Title', 'Note', 'Amount (THB)'];
+
+    const typeMap = {
+      income: lang === 'TH' ? 'รายรับ' : 'Income',
+      expense: lang === 'TH' ? 'รายจ่าย' : 'Expense',
+      saving: lang === 'TH' ? 'เงินออมฉุกเฉิน' : 'Emergency Fund',
+    };
+
+    const rows = filteredTransactions.map((tx) => [
+      t(tx.date),
+      typeMap[tx.category] || tx.category,
+      t(tx.categoryLabel),
+      t(tx.title),
+      t(tx.note),
+      tx.category === 'saving' ? Math.abs(Number(tx.amount) || 0) : Number(tx.amount) || 0,
+    ]);
+
+    const csvLines = [headers, ...rows].map((row) => row.map(escapeCsvCell).join(',')).join('\r\n');
+    const blob = new Blob([`\uFEFF${csvLines}`], { type: 'text/csv;charset=utf-8;' });
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `protect360-smartlog-${getTodayIso()}.csv`;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    window.URL.revokeObjectURL(url);
+
+    showToast('success', {
+      th: `ส่งออกไฟล์ CSV (${filteredTransactions.length} รายการ) เรียบร้อยแล้ว`,
+      en: `Exported ${filteredTransactions.length} entries to CSV`,
+    });
   };
 
   const inputModeTabs = [
@@ -578,6 +693,9 @@ export default function AutoKey({ onNavigate }) {
     },
   ];
 
+  const todayIso = getTodayIso();
+  const yesterdayIso = getIsoDateOffset(-1);
+
   // Cashflow comparison widths
   const cashflowBase = Math.max(monthlyIncome, monthlyExpenses, 1);
   const expenseBarWidth = Math.min(100, Math.round((monthlyExpenses / cashflowBase) * 100));
@@ -585,6 +703,11 @@ export default function AutoKey({ onNavigate }) {
 
   const savingsBadgeClass =
     netSavingsRate >= 20 ? 'positive' : netSavingsRate >= 10 ? 'warn' : 'danger';
+
+  const ActiveCustomIcon = activeCustomForManual?.icon || MoreHorizontal;
+  const activeCustomColorMeta = activeCustomForManual
+    ? getCustomColorMeta(activeCustomForManual.barColor)
+    : null;
 
   return (
     <div className="autokey-stack">
@@ -604,11 +727,11 @@ export default function AutoKey({ onNavigate }) {
             <div className="ak-kpi-label">
               {lang === 'TH' ? 'รายรับเดือนนี้' : 'Monthly Income'}
             </div>
-            <div className="ak-kpi-value tabular-nums">{formatTHB(monthlyIncome)}</div>
+            <div className="ak-kpi-value income tabular-nums">{formatTHB(monthlyIncome)}</div>
           </div>
         </article>
 
-        {/* Card 2: Monthly Expenses */}
+        {/* Card 2: Monthly Expenses (Red accent per Round 2.5) */}
         <article className="bento-card ak-kpi-card">
           <div className="ak-kpi-top">
             <span className="metric-icon-badge expense" aria-hidden="true">
@@ -622,7 +745,7 @@ export default function AutoKey({ onNavigate }) {
             <div className="ak-kpi-label">
               {lang === 'TH' ? 'รายจ่ายเดือนนี้' : 'Monthly Expenses'}
             </div>
-            <div className="ak-kpi-value tabular-nums">{formatTHB(monthlyExpenses)}</div>
+            <div className="ak-kpi-value expense tabular-nums">{formatTHB(monthlyExpenses)}</div>
           </div>
         </article>
 
@@ -713,11 +836,11 @@ export default function AutoKey({ onNavigate }) {
             activeId={inputMode}
             onChange={setInputMode}
             variant="surface"
-            idPrefix="autokey-mode"
+            idPrefix="smartlog-mode"
             ariaLabel={lang === 'TH' ? 'โหมดการบันทึกรายการ' : 'Entry mode'}
           />
 
-          {/* ---------- TAB 1: SMART SLIP READER DEMO ---------- */}
+          {/* ---------- TAB 1: SMART SLIP READER (REAL ON-DEVICE OCR) ---------- */}
           {inputMode === 'slip' && (
             <div className="ak-slip-panel">
               {/* Drag-and-Drop / Upload Box */}
@@ -741,7 +864,7 @@ export default function AutoKey({ onNavigate }) {
               >
                 <input
                   ref={slipFileInputRef}
-                  id="autokey-slip-upload"
+                  id="smartlog-slip-upload"
                   type="file"
                   accept="image/*"
                   className="sr-only-input"
@@ -804,7 +927,7 @@ export default function AutoKey({ onNavigate }) {
 
                 <div className="ak-presets-grid">
                   {SLIP_PRESETS.map((preset) => {
-                    const CatIcon = CATEGORY_MAP[preset.iconKey]?.icon || Wallet;
+                    const CatIcon = CORE_CATEGORY_MAP[preset.iconKey]?.icon || Wallet;
                     const amountSign = preset.category === 'expense' ? '-' : '+';
                     const toneClass =
                       preset.category === 'income'
@@ -920,15 +1043,25 @@ export default function AutoKey({ onNavigate }) {
                         </div>
 
                         <div className="form-field">
-                          <label htmlFor="slip-amount-edit" className="form-label">
-                            {lang === 'TH' ? 'จำนวนเงิน (บาท)' : 'Amount (THB)'}
-                          </label>
+                          <div className="ak-label-with-tool">
+                            <label htmlFor="slip-amount-edit" className="form-label">
+                              {lang === 'TH' ? 'จำนวนเงิน (บาท)' : 'Amount (THB)'}
+                            </label>
+                            <button
+                              type="button"
+                              className={`ak-mini-tool-btn ${slipCalcOpen ? 'active' : ''}`}
+                              onClick={() => setSlipCalcOpen((v) => !v)}
+                            >
+                              <Calculator size={12} strokeWidth={2.2} aria-hidden="true" />
+                              <span>{lang === 'TH' ? 'คิดเลข' : 'Calc'}</span>
+                            </button>
+                          </div>
                           <input
                             id="slip-amount-edit"
                             type="number"
                             min="0.01"
                             step="0.01"
-                            className="form-input tabular-nums"
+                            className={`form-input tabular-nums ak-amount-input ${extractedSlip.category}`}
                             value={extractedSlip.amount}
                             onChange={(e) =>
                               setExtractedSlip((prev) => ({
@@ -940,6 +1073,19 @@ export default function AutoKey({ onNavigate }) {
                           />
                         </div>
                       </div>
+
+                      {slipCalcOpen && (
+                        <MerchantCalculator
+                          initialValue={extractedSlip.amount}
+                          onApply={(val) =>
+                            setExtractedSlip((prev) => ({
+                              ...prev,
+                              amount: val,
+                            }))
+                          }
+                          onClose={() => setSlipCalcOpen(false)}
+                        />
+                      )}
 
                       <div className="form-grid-2">
                         <div className="form-field">
@@ -977,16 +1123,26 @@ export default function AutoKey({ onNavigate }) {
                         </div>
 
                         <div className="form-field">
-                          <label htmlFor="slip-cat-select" className="form-label">
-                            {lang === 'TH' ? 'หมวดหมู่' : 'Category'}
-                          </label>
+                          <div className="ak-label-with-tool">
+                            <label htmlFor="slip-cat-select" className="form-label">
+                              {lang === 'TH' ? 'หมวดหมู่' : 'Category'}
+                            </label>
+                            <button
+                              type="button"
+                              className="ak-mini-tool-btn"
+                              onClick={() => setCatModalTarget('slip')}
+                            >
+                              <FolderPlus size={12} strokeWidth={2.2} aria-hidden="true" />
+                              <span>{lang === 'TH' ? 'อื่น ๆ / สร้างเอง' : 'Custom'}</span>
+                            </button>
+                          </div>
                           <select
                             id="slip-cat-select"
                             className="form-select"
                             value={extractedSlip.iconKey}
                             onChange={(e) => {
                               const nextKey = e.target.value;
-                              const matched = CATEGORY_MAP[nextKey];
+                              const matched = allCategoryMap[nextKey];
                               setExtractedSlip((prev) => ({
                                 ...prev,
                                 iconKey: nextKey,
@@ -994,11 +1150,26 @@ export default function AutoKey({ onNavigate }) {
                               }));
                             }}
                           >
-                            {CATEGORIES.map((cat) => (
-                              <option key={cat.key} value={cat.key}>
-                                {t(cat.label)}
-                              </option>
-                            ))}
+                            <optgroup label={lang === 'TH' ? 'หมวดหมู่หลัก' : 'Core Categories'}>
+                              {CORE_CATEGORIES.map((cat) => (
+                                <option key={cat.key} value={cat.key}>
+                                  {t(cat.label)}
+                                </option>
+                              ))}
+                            </optgroup>
+                            {customCategories.length > 0 && (
+                              <optgroup
+                                label={
+                                  lang === 'TH' ? 'หมวดหมู่ที่สร้างเอง' : 'My Custom Categories'
+                                }
+                              >
+                                {customCategories.map((cat) => (
+                                  <option key={cat.id} value={cat.id}>
+                                    {cat.name}
+                                  </option>
+                                ))}
+                              </optgroup>
+                            )}
                           </select>
                         </div>
                       </div>
@@ -1007,7 +1178,12 @@ export default function AutoKey({ onNavigate }) {
                         <span className={`ak-detected-cat ${extractedSlip.category}`}>
                           {lang === 'TH' ? 'หมวดที่เลือก:' : 'Category:'}{' '}
                           <strong>
-                            {t(CATEGORY_MAP[extractedSlip.iconKey]?.label || { th: 'ทั่วไป', en: 'General' })}
+                            {t(
+                              allCategoryMap[extractedSlip.iconKey]?.label || {
+                                th: 'ทั่วไป',
+                                en: 'General',
+                              }
+                            )}
                           </strong>
                         </span>
                         <span className="ak-detected-date tabular-nums">
@@ -1059,12 +1235,27 @@ export default function AutoKey({ onNavigate }) {
                 />
               </div>
 
+              {/* Compact 6 Core Categories + 1 "อื่น ๆ (หมวดของฉัน)" drawer button */}
               <div className="form-field">
-                <span className="form-label">
-                  {lang === 'TH' ? 'หมวดหมู่' : 'Category'}
-                </span>
+                <div className="ak-label-with-tool">
+                  <span className="form-label">
+                    {lang === 'TH' ? 'หมวดหมู่' : 'Category'}
+                  </span>
+                  <button
+                    type="button"
+                    className="ak-mini-tool-btn"
+                    onClick={() => setCatModalTarget('manual')}
+                  >
+                    <FolderPlus size={12} strokeWidth={2.2} aria-hidden="true" />
+                    <span>
+                      {lang === 'TH' ? 'จัดการหมวดของฉัน' : 'Manage Custom'}
+                      {customCategories.length > 0 ? ` (${customCategories.length})` : ''}
+                    </span>
+                  </button>
+                </div>
+
                 <div className="ak-cat-pills-grid">
-                  {CATEGORIES.map((cat) => {
+                  {CORE_CATEGORIES.map((cat) => {
                     const Icon = cat.icon;
                     const isSelected = manualCatKey === cat.key;
                     return (
@@ -1081,42 +1272,131 @@ export default function AutoKey({ onNavigate }) {
                       </button>
                     );
                   })}
+
+                  {/* 7th Pill: "อื่น ๆ / หมวดของฉัน" — keeps outer UI clean even with many custom categories */}
+                  <button
+                    id="manual-cat-other-btn"
+                    type="button"
+                    className={`ak-cat-pill ak-cat-pill-other ${
+                      activeCustomForManual ? 'active custom-active' : ''
+                    }`}
+                    style={
+                      activeCustomForManual && activeCustomColorMeta
+                        ? {
+                            borderColor: activeCustomColorMeta.hex,
+                            backgroundColor: activeCustomColorMeta.bg,
+                            color: activeCustomColorMeta.hex,
+                          }
+                        : undefined
+                    }
+                    onClick={() => setCatModalTarget('manual')}
+                  >
+                    <ActiveCustomIcon size={15} strokeWidth={2.2} aria-hidden="true" />
+                    <span>
+                      {activeCustomForManual
+                        ? t(activeCustomForManual.label)
+                        : lang === 'TH'
+                          ? 'อื่น ๆ (หมวดของฉัน)'
+                          : 'Other / Custom'}
+                    </span>
+                    {customCategories.length > 0 && !activeCustomForManual && (
+                      <span className="ak-cat-count-dot tabular-nums">
+                        {customCategories.length}
+                      </span>
+                    )}
+                  </button>
                 </div>
               </div>
 
               <div className="form-grid-2">
                 <div className="form-field">
-                  <label htmlFor="manual-amount-input" className="form-label">
-                    {lang === 'TH' ? 'จำนวนเงิน (บาท)' : 'Amount (THB)'}
-                  </label>
+                  <div className="ak-label-with-tool">
+                    <label htmlFor="manual-amount-input" className="form-label">
+                      {lang === 'TH' ? 'จำนวนเงิน (บาท)' : 'Amount (THB)'}
+                    </label>
+                    <button
+                      id="manual-calc-toggle-btn"
+                      type="button"
+                      className={`ak-mini-tool-btn ${manualCalcOpen ? 'active' : ''}`}
+                      onClick={() => setManualCalcOpen((v) => !v)}
+                    >
+                      <Calculator size={12} strokeWidth={2.2} aria-hidden="true" />
+                      <span>{lang === 'TH' ? 'เครื่องคิดเลข' : 'Calculator'}</span>
+                    </button>
+                  </div>
                   <input
                     id="manual-amount-input"
                     type="number"
-                    min="1"
-                    step="1"
-                    className="form-input tabular-nums"
+                    min="0.01"
+                    step="0.01"
+                    className={`form-input tabular-nums ak-amount-input ${manualType}`}
                     value={manualAmount}
                     onChange={(e) => setManualAmount(e.target.value)}
                     required
                   />
-                  <div className="ak-quick-amt-row">
-                    {QUICK_AMOUNTS.map((amt) => (
-                      <button
-                        key={amt}
-                        type="button"
-                        className="ak-quick-amt-chip tabular-nums"
-                        onClick={() => handleQuickAmountAdd(amt)}
-                      >
-                        +{amt.toLocaleString('en-US')}
-                      </button>
-                    ))}
+                  {/* Quick + and - adjustment chips */}
+                  <div className="ak-quick-amt-stack">
+                    <div className="ak-quick-amt-row">
+                      {QUICK_AMOUNTS.map((amt) => (
+                        <button
+                          key={`plus-${amt}`}
+                          type="button"
+                          className="ak-quick-amt-chip plus tabular-nums"
+                          onClick={() => handleQuickAmountAdjust(amt)}
+                        >
+                          +{amt.toLocaleString('en-US')}
+                        </button>
+                      ))}
+                    </div>
+                    <div className="ak-quick-amt-row">
+                      {QUICK_AMOUNTS.map((amt) => (
+                        <button
+                          key={`minus-${amt}`}
+                          type="button"
+                          className="ak-quick-amt-chip minus tabular-nums"
+                          disabled={!manualAmount || Number(manualAmount) <= 0}
+                          onClick={() => handleQuickAmountAdjust(-amt)}
+                        >
+                          -{amt.toLocaleString('en-US')}
+                        </button>
+                      ))}
+                      {manualAmount && Number(manualAmount) > 0 && (
+                        <button
+                          type="button"
+                          className="ak-quick-amt-chip clear"
+                          onClick={() => setManualAmount('')}
+                        >
+                          {lang === 'TH' ? 'ล้าง' : 'Clear'}
+                        </button>
+                      )}
+                    </div>
                   </div>
                 </div>
 
                 <div className="form-field">
-                  <label htmlFor="manual-date-input" className="form-label">
-                    {lang === 'TH' ? 'วันที่' : 'Date'}
-                  </label>
+                  <div className="ak-label-with-tool">
+                    <label htmlFor="manual-date-input" className="form-label">
+                      {lang === 'TH' ? 'วันที่' : 'Date'}
+                    </label>
+                    <div className="ak-date-shortcuts">
+                      <button
+                        type="button"
+                        className={`ak-mini-tool-btn ${manualDate === todayIso ? 'active' : ''}`}
+                        onClick={() => setManualDate(todayIso)}
+                      >
+                        {lang === 'TH' ? 'วันนี้' : 'Today'}
+                      </button>
+                      <button
+                        type="button"
+                        className={`ak-mini-tool-btn ${
+                          manualDate === yesterdayIso ? 'active' : ''
+                        }`}
+                        onClick={() => setManualDate(yesterdayIso)}
+                      >
+                        {lang === 'TH' ? 'เมื่อวาน' : 'Yesterday'}
+                      </button>
+                    </div>
+                  </div>
                   <input
                     id="manual-date-input"
                     type="date"
@@ -1127,6 +1407,15 @@ export default function AutoKey({ onNavigate }) {
                   />
                 </div>
               </div>
+
+              {/* Inline Merchant Calculator ("เครื่องคิดเลขแม่ค้า") */}
+              {manualCalcOpen && (
+                <MerchantCalculator
+                  initialValue={manualAmount}
+                  onApply={(val) => setManualAmount(val)}
+                  onClose={() => setManualCalcOpen(false)}
+                />
+              )}
 
               <div className="form-field">
                 <label htmlFor="manual-note-input" className="form-label">
@@ -1171,7 +1460,7 @@ export default function AutoKey({ onNavigate }) {
                 </h2>
                 <p className="card-subtitle">
                   {lang === 'TH'
-                    ? 'เห็นภาพชัดว่าเงินไหลออกหมวดไหนมากที่สุด'
+                    ? 'เห็นภาพชัดว่าเงินไหลออกหมวดไหนมากที่สุด (รวมหมวดที่สร้างเอง)'
                     : 'Track where your money goes against monthly income'}
                 </p>
               </div>
@@ -1185,7 +1474,7 @@ export default function AutoKey({ onNavigate }) {
                     <span className="ak-dot teal" aria-hidden="true" />
                     {lang === 'TH' ? 'รายรับรวม' : 'Income'}
                   </span>
-                  <span className="ak-cf-val tabular-nums">{formatTHB(monthlyIncome)}</span>
+                  <span className="ak-cf-val income tabular-nums">{formatTHB(monthlyIncome)}</span>
                 </div>
                 <div className="ak-bar-track">
                   <div
@@ -1198,10 +1487,10 @@ export default function AutoKey({ onNavigate }) {
               <div className="ak-cf-row">
                 <div className="ak-cf-label-row">
                   <span className="ak-cf-name">
-                    <span className="ak-dot navy" aria-hidden="true" />
+                    <span className="ak-dot red" aria-hidden="true" />
                     {lang === 'TH' ? 'รายจ่ายรวม' : 'Expenses'}
                   </span>
-                  <span className="ak-cf-val tabular-nums">
+                  <span className="ak-cf-val expense tabular-nums">
                     {formatTHB(monthlyExpenses)} ({expenseRatio}%)
                   </span>
                 </div>
@@ -1232,7 +1521,7 @@ export default function AutoKey({ onNavigate }) {
                           <Icon size={14} strokeWidth={2.2} aria-hidden="true" />
                           <span>{t(item.label)}</span>
                         </span>
-                        <span className="ak-cat-bar-val tabular-nums">
+                        <span className="ak-cat-bar-val expense tabular-nums">
                           {formatTHB(item.amount)}
                           <span className="ak-cat-bar-pct"> ({item.pct}%)</span>
                         </span>
@@ -1311,14 +1600,14 @@ export default function AutoKey({ onNavigate }) {
             </div>
 
             <button
-              id="autokey-goto-risk-btn"
+              id="smartlog-goto-risk-btn"
               type="button"
               className="btn-primary-gradient ak-bridge-cta"
               onClick={() => onNavigate('risk-analysis')}
             >
               <span>
                 {lang === 'TH'
-                  ? 'ไปประเมินความเสี่ยงต่อ (Risk Analysis)'
+                  ? 'ไปวิเคราะห์ความเสี่ยงต่อ (Risk Analysis)'
                   : 'Continue to Risk Analysis'}
               </span>
               <ChevronRight size={17} strokeWidth={2.4} className="cta-chevron" aria-hidden="true" />
@@ -1336,8 +1625,8 @@ export default function AutoKey({ onNavigate }) {
             </h2>
             <p className="card-subtitle">
               {lang === 'TH'
-                ? 'ค้นหา กรอง หรือลบรายการได้ทันที ยอดทั้งหมดจะคำนวณใหม่และบันทึกในเครื่องอัตโนมัติ'
-                : 'Search, filter, or delete entries — all KPIs recalculate and persist locally'}
+                ? 'ค้นหา กรอง แก้ไข หรือส่งออก CSV ได้ทันที ยอดทั้งหมดอัปเดตและบันทึกในเครื่องอัตโนมัติ'
+                : 'Search, filter, inline-edit, or export CSV — all KPIs recalculate locally'}
             </p>
           </div>
 
@@ -1345,7 +1634,7 @@ export default function AutoKey({ onNavigate }) {
             <div className="search-input-wrap">
               <Search size={15} className="search-input-icon" aria-hidden="true" />
               <input
-                id="autokey-ledger-search"
+                id="smartlog-ledger-search"
                 type="search"
                 className="search-input"
                 value={ledgerSearch}
@@ -1363,6 +1652,18 @@ export default function AutoKey({ onNavigate }) {
               idPrefix="ledger-filter"
               ariaLabel="Filter ledger"
             />
+
+            <button
+              id="smartlog-export-csv-btn"
+              type="button"
+              className="ak-csv-btn"
+              disabled={filteredTransactions.length === 0}
+              onClick={handleExportCsv}
+              title={lang === 'TH' ? 'ดาวน์โหลดรายการที่แสดงเป็นไฟล์ CSV' : 'Export visible rows to CSV'}
+            >
+              <Download size={14} strokeWidth={2.2} aria-hidden="true" />
+              <span>{lang === 'TH' ? 'ส่งออก CSV' : 'Export CSV'}</span>
+            </button>
           </div>
         </div>
 
@@ -1387,7 +1688,12 @@ export default function AutoKey({ onNavigate }) {
                 </tr>
               ) : (
                 filteredTransactions.map((tx) => {
-                  const Icon = CATEGORY_MAP[tx.iconKey]?.icon || Wallet;
+                  const Icon = getCategoryIconComponent(
+                    tx.iconKey,
+                    tx.customIcon,
+                    customCategories
+                  );
+                  const customBadgeStyle = resolveTransactionBadgeStyle(tx, customCategories);
                   const amountClass =
                     tx.category === 'income'
                       ? 'income'
@@ -1399,6 +1705,83 @@ export default function AutoKey({ onNavigate }) {
                       ? `+${formatTHB(Math.abs(tx.amount))}`
                       : formatTHB(tx.amount, { showSign: true });
                   const isConfirming = confirmDeleteTxId === tx.id;
+                  const isEditing = editingTxId === tx.id;
+
+                  if (isEditing) {
+                    return (
+                      <tr key={tx.id} className="ak-edit-row">
+                        <td className="tx-date tabular-nums">{t(tx.date)}</td>
+                        <td>
+                          <select
+                            className="ak-inline-select"
+                            value={editDraft.iconKey}
+                            onChange={(e) => {
+                              const nextKey = e.target.value;
+                              const matched = allCategoryMap[nextKey];
+                              setEditDraft((prev) => ({
+                                ...prev,
+                                iconKey: nextKey,
+                                category: matched ? matched.type : prev.category,
+                              }));
+                            }}
+                          >
+                            {CORE_CATEGORIES.map((c) => (
+                              <option key={c.key} value={c.key}>
+                                {t(c.label)}
+                              </option>
+                            ))}
+                            {customCategories.map((c) => (
+                              <option key={c.id} value={c.id}>
+                                {c.name}
+                              </option>
+                            ))}
+                          </select>
+                        </td>
+                        <td>
+                          <input
+                            type="text"
+                            className="ak-inline-input"
+                            value={editDraft.title}
+                            onChange={(e) =>
+                              setEditDraft((prev) => ({ ...prev, title: e.target.value }))
+                            }
+                            maxLength={80}
+                          />
+                        </td>
+                        <td className="align-right">
+                          <input
+                            type="number"
+                            min="0.01"
+                            step="0.01"
+                            className="ak-inline-input num tabular-nums"
+                            value={editDraft.amount}
+                            onChange={(e) =>
+                              setEditDraft((prev) => ({ ...prev, amount: e.target.value }))
+                            }
+                          />
+                        </td>
+                        <td className="align-right">
+                          <div className="ak-tx-confirm-group">
+                            <button
+                              type="button"
+                              className="ak-tx-cancel-btn"
+                              onClick={cancelEditTx}
+                            >
+                              {lang === 'TH' ? 'ยกเลิก' : 'Cancel'}
+                            </button>
+                            <button
+                              type="button"
+                              className="ak-tx-save-confirm"
+                              onClick={() => saveEditTx(tx)}
+                            >
+                              <Check size={13} strokeWidth={2.5} aria-hidden="true" />
+                              <span>{lang === 'TH' ? 'บันทึก' : 'Save'}</span>
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  }
 
                   return (
                     <tr key={tx.id}>
@@ -1407,6 +1790,7 @@ export default function AutoKey({ onNavigate }) {
                         <div className="ak-ledger-cat-cell">
                           <span
                             className={`tx-icon-circle ${tx.iconKey || 'food'}`}
+                            style={customBadgeStyle}
                             aria-hidden="true"
                           >
                             <Icon size={16} strokeWidth={2.1} />
@@ -1443,16 +1827,27 @@ export default function AutoKey({ onNavigate }) {
                             </button>
                           </div>
                         ) : (
-                          <button
-                            id={`delete-tx-${tx.id}`}
-                            type="button"
-                            className="ak-tx-delete-btn"
-                            onClick={() => setConfirmDeleteTxId(tx.id)}
-                            title={lang === 'TH' ? 'ลบรายการ' : 'Delete entry'}
-                          >
-                            <Trash2 size={14} strokeWidth={2.1} />
-                            <span>{lang === 'TH' ? 'ลบรายการ' : 'Delete'}</span>
-                          </button>
+                          <div className="ak-tx-row-actions">
+                            <button
+                              type="button"
+                              className="ak-tx-edit-btn"
+                              onClick={() => startEditTx(tx)}
+                              title={lang === 'TH' ? 'แก้ไขรายการ' : 'Edit entry'}
+                              aria-label={lang === 'TH' ? 'แก้ไขรายการ' : 'Edit entry'}
+                            >
+                              <Pencil size={13} strokeWidth={2.1} />
+                            </button>
+                            <button
+                              id={`delete-tx-${tx.id}`}
+                              type="button"
+                              className="ak-tx-delete-btn"
+                              onClick={() => setConfirmDeleteTxId(tx.id)}
+                              title={lang === 'TH' ? 'ลบรายการ' : 'Delete entry'}
+                            >
+                              <Trash2 size={14} strokeWidth={2.1} />
+                              <span>{lang === 'TH' ? 'ลบ' : 'Delete'}</span>
+                            </button>
+                          </div>
                         )}
                       </td>
                     </tr>
@@ -1469,7 +1864,12 @@ export default function AutoKey({ onNavigate }) {
             <div className="empty-table-state">{t('overview.emptySearch')}</div>
           ) : (
             filteredTransactions.map((tx) => {
-              const Icon = CATEGORY_MAP[tx.iconKey]?.icon || Wallet;
+              const Icon = getCategoryIconComponent(
+                tx.iconKey,
+                tx.customIcon,
+                customCategories
+              );
+              const customBadgeStyle = resolveTransactionBadgeStyle(tx, customCategories);
               const amountClass =
                 tx.category === 'income'
                   ? 'income'
@@ -1481,12 +1881,85 @@ export default function AutoKey({ onNavigate }) {
                   ? `+${formatTHB(Math.abs(tx.amount))}`
                   : formatTHB(tx.amount, { showSign: true });
               const isConfirming = confirmDeleteTxId === tx.id;
+              const isEditing = editingTxId === tx.id;
+
+              if (isEditing) {
+                return (
+                  <div key={tx.id} className="mobile-tx-card ak-mobile-edit-card">
+                    <div className="ak-mobile-edit-grid">
+                      <input
+                        type="text"
+                        className="ak-inline-input"
+                        value={editDraft.title}
+                        onChange={(e) =>
+                          setEditDraft((prev) => ({ ...prev, title: e.target.value }))
+                        }
+                        maxLength={80}
+                      />
+                      <div className="form-grid-2">
+                        <input
+                          type="number"
+                          min="0.01"
+                          step="0.01"
+                          className="ak-inline-input tabular-nums"
+                          value={editDraft.amount}
+                          onChange={(e) =>
+                            setEditDraft((prev) => ({ ...prev, amount: e.target.value }))
+                          }
+                        />
+                        <select
+                          className="ak-inline-select"
+                          value={editDraft.iconKey}
+                          onChange={(e) => {
+                            const nextKey = e.target.value;
+                            const matched = allCategoryMap[nextKey];
+                            setEditDraft((prev) => ({
+                              ...prev,
+                              iconKey: nextKey,
+                              category: matched ? matched.type : prev.category,
+                            }));
+                          }}
+                        >
+                          {CORE_CATEGORIES.map((c) => (
+                            <option key={c.key} value={c.key}>
+                              {t(c.label)}
+                            </option>
+                          ))}
+                          {customCategories.map((c) => (
+                            <option key={c.id} value={c.id}>
+                              {c.name}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                      <div className="ak-tx-confirm-group">
+                        <button
+                          type="button"
+                          className="ak-tx-cancel-btn"
+                          onClick={cancelEditTx}
+                        >
+                          {lang === 'TH' ? 'ยกเลิก' : 'Cancel'}
+                        </button>
+                        <button
+                          type="button"
+                          className="ak-tx-save-confirm"
+                          onClick={() => saveEditTx(tx)}
+                        >
+                          <Check size={13} strokeWidth={2.5} aria-hidden="true" />
+                          <span>{lang === 'TH' ? 'บันทึก' : 'Save'}</span>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                );
+              }
 
               return (
                 <div key={tx.id} className="mobile-tx-card ak-mobile-tx-card">
                   <div className="mobile-tx-left">
                     <span
                       className={`tx-icon-circle ${tx.iconKey || 'food'}`}
+                      style={customBadgeStyle}
                       aria-hidden="true"
                     >
                       <Icon size={17} strokeWidth={2.1} />
@@ -1524,14 +1997,24 @@ export default function AutoKey({ onNavigate }) {
                         </button>
                       </div>
                     ) : (
-                      <button
-                        type="button"
-                        className="ak-tx-delete-icon-only"
-                        onClick={() => setConfirmDeleteTxId(tx.id)}
-                        aria-label={lang === 'TH' ? 'ลบรายการ' : 'Delete entry'}
-                      >
-                        <Trash2 size={14} strokeWidth={2.1} />
-                      </button>
+                      <div className="ak-tx-row-actions">
+                        <button
+                          type="button"
+                          className="ak-tx-edit-btn"
+                          onClick={() => startEditTx(tx)}
+                          aria-label={lang === 'TH' ? 'แก้ไขรายการ' : 'Edit entry'}
+                        >
+                          <Pencil size={13} strokeWidth={2.1} />
+                        </button>
+                        <button
+                          type="button"
+                          className="ak-tx-delete-icon-only"
+                          onClick={() => setConfirmDeleteTxId(tx.id)}
+                          aria-label={lang === 'TH' ? 'ลบรายการ' : 'Delete entry'}
+                        >
+                          <Trash2 size={14} strokeWidth={2.1} />
+                        </button>
+                      </div>
                     )}
                   </div>
                 </div>
@@ -1540,6 +2023,37 @@ export default function AutoKey({ onNavigate }) {
           )}
         </div>
       </section>
+
+      {/* Custom Category Modal ("อื่น ๆ / หมวดของฉัน") */}
+      {catModalTarget && (
+        <CustomCategoryModal
+          activeCatKey={
+            catModalTarget === 'slip' ? extractedSlip?.iconKey : manualCatKey
+          }
+          defaultType={
+            catModalTarget === 'slip'
+              ? extractedSlip?.category || 'expense'
+              : manualType
+          }
+          onSelectCategory={(cat) => {
+            if (catModalTarget === 'slip') {
+              setExtractedSlip((prev) =>
+                prev
+                  ? {
+                      ...prev,
+                      iconKey: cat.id,
+                      category: cat.type,
+                    }
+                  : prev
+              );
+            } else {
+              setManualCatKey(cat.id);
+              setManualType(cat.type);
+            }
+          }}
+          onClose={() => setCatModalTarget(null)}
+        />
+      )}
     </div>
   );
 }
