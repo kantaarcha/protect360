@@ -40,11 +40,14 @@ const TRANSLATIONS = {
     },
     header: {
       greeting: 'สวัสดี, First Jobber',
-      philosophy: 'เข้าใจเงินของคุณ → เข้าใจความเสี่ยง → ตัดสินใจอย่างมั่นใจ',
+      philosophy: 'เห็นภาพเงินและความคุ้มครองของตัวเองชัดขึ้น เพื่อวางแผนชีวิตอย่างอุ่นใจในแบบของคุณ',
       profileChip: 'โปรไฟล์ตัวอย่าง: วัยเริ่มทำงาน (First Jobber)',
       savedLocally: 'บันทึกในเครื่องแล้ว',
       savedLocallyTitle: 'ข้อมูลทั้งหมดเก็บไว้ในอุปกรณ์นี้เท่านั้น (PDPA-Safe / Zero-Login) คลิกเพื่อจัดการข้อมูล',
-      editProfile: 'ตั้งค่าโปรไฟล์และข้อมูลส่วนตัว',
+      editProfile: 'แก้ไขโปรไฟล์',
+      memberBadge: 'PROTECT360 MEMBER',
+      cardHolderCaption: 'บัตรสมาชิกแผนคุ้มครองส่วนบุคคล',
+      manageData: 'จัดการข้อมูล',
     },
     overview: {
       // Card 1
@@ -229,11 +232,14 @@ const TRANSLATIONS = {
     },
     header: {
       greeting: 'Hello, First Jobber',
-      philosophy: 'Understand Your Money → Understand Your Risks → Make Better Decisions',
+      philosophy: 'See your money and protection clearly, so you can plan ahead with quiet confidence.',
       profileChip: 'Sample Profile: First Jobber (25k THB/mo)',
       savedLocally: 'Saved locally',
       savedLocallyTitle: 'All data stays 100% on your device (PDPA-Safe / Zero-Login). Click to manage data.',
-      editProfile: 'Edit personal profile & privacy settings',
+      editProfile: 'Edit Profile',
+      memberBadge: 'PROTECT360 MEMBER',
+      cardHolderCaption: 'Personal Protection Member Card',
+      manageData: 'Manage Data',
     },
     overview: {
       // Card 1
