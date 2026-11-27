@@ -16,8 +16,11 @@ import { useLanguage } from '../context/LanguageContext';
 import { formatTHB, useFinance } from '../context/FinanceContext';
 import { useLiquidSlider } from '../hooks/useLiquidSlider';
 import {
+  MAX_FIRST_JOBBER_AGE,
+  MIN_FIRST_JOBBER_AGE,
   OCCUPATION_OPTIONS,
   TITLE_OPTIONS,
+  clampFirstJobberAge,
   getCardHolderDisplay,
   getOccupationLabel,
   getUserInitials,
@@ -101,7 +104,7 @@ export default function UserProfileModal({ initialTab = 'profile', onClose }) {
     title,
     firstName,
     lastName,
-    age: Number(age) || 25,
+    age: clampFirstJobberAge(age, 25),
     occupation,
     dependents,
     emergencyTargetMonths,
@@ -115,12 +118,11 @@ export default function UserProfileModal({ initialTab = 'profile', onClose }) {
 
   const handleSaveProfile = (e) => {
     e.preventDefault();
-    const parsedAge = Number(age);
     updateUserProfile({
       title,
       firstName: firstName.trim(),
       lastName: lastName.trim(),
-      age: Number.isFinite(parsedAge) ? Math.min(99, Math.max(15, Math.round(parsedAge))) : 25,
+      age: clampFirstJobberAge(age, 25),
       occupation,
       dependents,
       emergencyTargetMonths,
@@ -358,20 +360,21 @@ export default function UserProfileModal({ initialTab = 'profile', onClose }) {
               </div>
             </div>
 
-            {/* Age & Occupation */}
+            {/* Age (21–30 First Jobber) & Occupation */}
             <div className="form-grid-2">
               <div className="form-field">
                 <label htmlFor="profile-age-input" className="form-label">
-                  {t('profileModal.age')}
+                  {t('profileModal.age')} (21–30)
                 </label>
                 <input
                   id="profile-age-input"
                   type="number"
-                  min={15}
-                  max={99}
+                  min={MIN_FIRST_JOBBER_AGE}
+                  max={MAX_FIRST_JOBBER_AGE}
                   className="form-input tabular-nums"
                   value={age}
-                  onChange={(e) => setAge(e.target.value)}
+                  onChange={(e) => setAge(e.target.value.replace(/[^0-9]/g, '').slice(0, 2))}
+                  onBlur={() => setAge(String(clampFirstJobberAge(age, 25)))}
                 />
               </div>
 

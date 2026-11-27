@@ -15,8 +15,11 @@ import { useTheme } from '../context/ThemeContext';
 import { useFinance } from '../context/FinanceContext';
 import WelcomeFinancialCanvas from './WelcomeFinancialCanvas';
 import {
+  MAX_FIRST_JOBBER_AGE,
+  MIN_FIRST_JOBBER_AGE,
   OCCUPATION_OPTIONS,
   TITLE_OPTIONS,
+  clampFirstJobberAge,
   getGreetingText,
   getUserInitials,
 } from '../utils/userHelpers';
@@ -43,8 +46,8 @@ const OB_COPY = {
     firstNameLabel: 'ชื่อ หรือชื่อเล่น',
     lastNameLabel: 'นามสกุล (ไม่บังคับ)',
     occupationLabel: 'อาชีพปัจจุบัน',
-    ageLabel: 'อายุ (ปี)',
-    ageHint: '15–99 ปี',
+    ageLabel: 'อายุ (21–30 ปี)',
+    ageHint: 'เกณฑ์ First Jobber: 21–30 ปี',
     editLaterNote: 'ทุกข้อมูลในหน้านี้ปรับเปลี่ยนได้ภายหลังที่เมนู “ตั้งค่า” → โปรไฟล์',
     goalLabel: 'เป้าหมายเงินสำรองฉุกเฉินเริ่มต้น',
     goal3: '3 เดือน',
@@ -76,8 +79,8 @@ const OB_COPY = {
     firstNameLabel: 'First name or nickname',
     lastNameLabel: 'Last name (optional)',
     occupationLabel: 'Current occupation',
-    ageLabel: 'Age (years)',
-    ageHint: '15–99 years',
+    ageLabel: 'Age (21–30)',
+    ageHint: 'First Jobber range: 21–30 years',
     editLaterNote: 'Everything here can be changed later in Settings → Profile.',
     goalLabel: 'Starting emergency reserve goal',
     goal3: '3 Months',
@@ -117,7 +120,7 @@ export default function OnboardingFlow({ referenceHour, onComplete }) {
   const [lastName, setLastName] = useState(userProfile.lastName || '');
   const [occupation, setOccupation] = useState(userProfile.occupation || OCCUPATION_OPTIONS[0].th);
   const [age, setAge] = useState(() =>
-    hasSavedUserData && userProfile.age ? String(userProfile.age) : ''
+    hasSavedUserData && userProfile.age ? String(clampFirstJobberAge(userProfile.age)) : ''
   );
   const [emergencyTargetMonths, setEmergencyTargetMonths] = useState(
     userProfile.emergencyTargetMonths === 6 ? 6 : 3
@@ -136,11 +139,8 @@ export default function OnboardingFlow({ referenceHour, onComplete }) {
     return undefined;
   }, [step]);
 
-  const parsedAge = Number(age);
   const resolvedAge =
-    age.trim() !== '' && Number.isFinite(parsedAge)
-      ? Math.min(99, Math.max(15, Math.round(parsedAge)))
-      : userProfile.age;
+    age.trim() !== '' ? clampFirstJobberAge(age, userProfile.age) : clampFirstJobberAge(userProfile.age);
 
   const draftProfile = {
     ...userProfile,
@@ -313,7 +313,7 @@ export default function OnboardingFlow({ referenceHour, onComplete }) {
               </div>
             </div>
 
-            <form className="ob-form" onSubmit={handleFinish}>
+            <form className="ob-form" onSubmit={handleFinish} noValidate>
               {/* Title Prefix */}
               <div className="form-field">
                 <span className="form-label">{copy.titleLabel}</span>
@@ -377,13 +377,18 @@ export default function OnboardingFlow({ referenceHour, onComplete }) {
                     id="onboarding-age"
                     type="number"
                     inputMode="numeric"
-                    min={15}
-                    max={99}
+                    min={MIN_FIRST_JOBBER_AGE}
+                    max={MAX_FIRST_JOBBER_AGE}
                     step={1}
                     className="form-input tabular-nums"
                     value={age}
                     aria-describedby="onboarding-age-hint"
                     onChange={(e) => setAge(e.target.value.replace(/[^0-9]/g, '').slice(0, 2))}
+                    onBlur={() => {
+                      if (age.trim() !== '') {
+                        setAge(String(clampFirstJobberAge(age)));
+                      }
+                    }}
                   />
                   <span id="onboarding-age-hint" className="ob-field-hint">
                     {copy.ageHint}

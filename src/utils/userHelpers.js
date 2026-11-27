@@ -13,6 +13,15 @@ export const OCCUPATION_OPTIONS = [
 ];
 
 export const DEFAULT_OCCUPATION_TH = 'พนักงานออฟฟิศ';
+export const MIN_FIRST_JOBBER_AGE = 21;
+export const MAX_FIRST_JOBBER_AGE = 30;
+export const DEFAULT_FIRST_JOBBER_AGE = 25;
+
+export function clampFirstJobberAge(value, fallback = DEFAULT_FIRST_JOBBER_AGE) {
+  const num = Number(value);
+  if (!Number.isFinite(num)) return fallback;
+  return Math.min(MAX_FIRST_JOBBER_AGE, Math.max(MIN_FIRST_JOBBER_AGE, Math.round(num)));
+}
 
 export function normalizeTitle(value) {
   if (typeof value !== 'string') return '';

@@ -17656,5 +17656,92 @@ p {
   }
 }
 
+/* ========================================================================== */
+/* PATCH 8.8 — MAC CUSTOM CATEGORY TABS ANTI-SQUEEZE & SETTINGS SOUND CHIPS   */
+/* ========================================================================== */
+
+/* Prevent WebKit/macOS flex-column modal shrinking on "หมวดของฉัน | สร้างใหม่" tabs */
+.custom-cat-modal > * {
+  flex-shrink: 0;
+}
+
+.custom-cat-modal .liquid-tabs-surface {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: stretch;
+  min-height: 48px;
+  padding: 5px;
+  gap: 6px;
+}
+
+.custom-cat-modal .liquid-tab-btn {
+  min-height: 36px;
+  padding: 8px 14px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.custom-cat-modal .liquid-tab-btn > span:not(.liquid-tab-badge) {
+  white-space: nowrap;
+}
+
+.ak-label-with-tool {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.ak-mini-tool-btn {
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+/* Sound Preview Chips in Settings */
+.st-sound-preview-row {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  margin-top: 2px;
+}
+
+.st-sound-chip {
+  height: 34px;
+  padding: 0 10px;
+  border-radius: 10px;
+  border: 1px solid var(--border-subtle);
+  background: var(--bg-canvas);
+  color: var(--text-secondary);
+  font-size: 0.76rem;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: border-color 0.15s ease, color 0.15s ease, transform 0.1s ease;
+}
+
+.st-sound-chip:hover {
+  border-color: var(--royal);
+  color: var(--royal-deep);
+}
+
+.st-sound-chip:active {
+  transform: scale(0.97);
+}
+
+[data-theme='dark'] .st-sound-chip:hover {
+  border-color: #60a5fa;
+  color: #93c5fd;
+}
+
+@media (max-width: 520px) {
+  .st-sound-preview-row {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+
 
 

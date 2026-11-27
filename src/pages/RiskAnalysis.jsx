@@ -24,7 +24,12 @@ import {
 } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import { formatTHB, useFinance } from '../context/FinanceContext';
-import { OCCUPATION_OPTIONS } from '../utils/userHelpers';
+import {
+  MAX_FIRST_JOBBER_AGE,
+  MIN_FIRST_JOBBER_AGE,
+  OCCUPATION_OPTIONS,
+  clampFirstJobberAge,
+} from '../utils/userHelpers';
 import { GOV_SCHEMES } from '../utils/riskActuarial';
 import { downloadCalendarReminderIcs } from '../utils/calendarIcs';
 import LiquidTabs from '../components/LiquidTabs';
@@ -120,6 +125,7 @@ export default function RiskAnalysis({ onNavigate }) {
 
   // Main workspace tabs: 'input' | 'results'
   const [activeTab, setActiveTab] = useState('input');
+  const [ageDraft, setAgeDraft] = useState(null);
 
   // Expandable 6 plain-language risk cards (default expand first high-risk card)
   const [expandedCardId, setExpandedCardId] = useState(() => {
@@ -326,21 +332,35 @@ export default function RiskAnalysis({ onNavigate }) {
                 <div className="form-grid-2">
                   <div className="form-field">
                     <label htmlFor="ra-age-input" className="form-label">
-                      {lang === 'TH' ? 'อายุ (ปี)' : 'Age (Years)'}
+                      {lang === 'TH' ? 'อายุ (21–30 ปี)' : 'Age (21–30)'}
                     </label>
                     <input
                       id="ra-age-input"
                       type="number"
-                      min="15"
-                      max="99"
+                      min={MIN_FIRST_JOBBER_AGE}
+                      max={MAX_FIRST_JOBBER_AGE}
                       className="form-input tabular-nums"
-                      value={userProfile.age}
-                      onChange={(e) =>
-                        updateUserProfile(
-                          { age: handleNumberInput(e.target.value) },
-                          { silent: true }
-                        )
-                      }
+                      value={ageDraft !== null ? ageDraft : String(userProfile.age)}
+                      onChange={(e) => {
+                        const raw = e.target.value.replace(/[^0-9]/g, '').slice(0, 2);
+                        setAgeDraft(raw);
+                        const parsed = Number(raw);
+                        if (
+                          raw.length === 2 &&
+                          parsed >= MIN_FIRST_JOBBER_AGE &&
+                          parsed <= MAX_FIRST_JOBBER_AGE
+                        ) {
+                          updateUserProfile({ age: parsed }, { silent: true });
+                        }
+                      }}
+                      onBlur={() => {
+                        const nextAge = clampFirstJobberAge(
+                          ageDraft !== null ? ageDraft : userProfile.age,
+                          userProfile.age
+                        );
+                        setAgeDraft(null);
+                        updateUserProfile({ age: nextAge }, { silent: true });
+                      }}
                     />
                   </div>
 

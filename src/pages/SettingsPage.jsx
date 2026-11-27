@@ -17,12 +17,19 @@ import {
   Sun,
   Type,
   Upload,
+  Volume2,
+  VolumeX,
 } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import { useTheme } from '../context/ThemeContext';
 import { useFinance } from '../context/FinanceContext';
 import LiquidTabs from '../components/LiquidTabs';
 import { buildSmartLogExcelBlob } from '../utils/excelExport';
+import {
+  isSoundEnabled,
+  playUiSound,
+  setSoundEnabled,
+} from '../utils/soundEffects';
 import {
   getGreetingText,
   getOccupationLabel,
@@ -33,13 +40,19 @@ import {
 const SETTINGS_COPY = {
   TH: {
     displayTitle: 'การแสดงผลและภาษา',
-    displaySub: 'ปรับภาษา ธีมสี และขนาดตัวอักษรให้สบายตาสำหรับทุกอุปกรณ์',
+    displaySub: 'ปรับภาษา ธีมสี ขนาดตัวอักษร และเสียงเอฟเฟกต์ให้เหมาะกับการใช้งาน',
     langLabel: 'ภาษาของระบบ (Language)',
     themeLabel: 'โหมดสีหน้าจอ (Theme)',
     themeLight: 'โหมดสว่าง',
     themeDark: 'โหมดมืด',
     fontLabel: 'ขนาดตัวอักษรทั้งเว็บไซต์',
     fontReset: 'คืนค่า 100%',
+    soundLabel: 'เสียงเอฟเฟกต์ตอนกด (3 เสียง)',
+    soundOn: 'เปิดเสียง',
+    soundOff: 'ปิดเสียง',
+    soundTap: 'แตะเมนู (Tap)',
+    soundChime: 'บันทึกสำเร็จ (Chime)',
+    soundAction: 'แอ็กชัน/เกม (Pop)',
     profileTitle: 'โปรไฟล์ & คำทักทายตามเวลาจริง',
     profileSub: 'ปรับชื่อ อาชีพ เป้าหมายเงินสำรอง และตรวจสอบเวลาที่ใช้ทักทาย',
     clockSourceInternet: 'อ้างอิงเวลาอินเทอร์เน็ต (24 ชม.)',
@@ -83,13 +96,19 @@ const SETTINGS_COPY = {
   },
   EN: {
     displayTitle: 'Display, Language & Accessibility',
-    displaySub: 'Choose language, light or dark theme, and comfortable text scale across all pages.',
+    displaySub: 'Choose language, theme, text scale, and gentle tactile click sounds.',
     langLabel: 'Interface Language',
     themeLabel: 'Color Theme',
     themeLight: 'Light Mode',
     themeDark: 'Dark Mode',
     fontLabel: 'Global Text Scale',
     fontReset: 'Reset 100%',
+    soundLabel: 'UI Sound Effects (3 Tones)',
+    soundOn: 'Sound On',
+    soundOff: 'Muted',
+    soundTap: 'Soft Tap',
+    soundChime: 'Save Chime',
+    soundAction: 'Action Pop',
     profileTitle: 'Profile & 24-Hour Time Greeting',
     profileSub: 'Personalize your name, occupation, reserve goal, and live time-of-day salutation.',
     clockSourceInternet: 'Synced with internet 24h clock',
@@ -180,6 +199,7 @@ export default function SettingsPage({
   const copy = SETTINGS_COPY[lang] || SETTINGS_COPY.TH;
   const [confirmReset, setConfirmReset] = useState(false);
   const [feedback, setFeedback] = useState(null);
+  const [soundActive, setSoundActive] = useState(() => isSoundEnabled());
   const fileInputRef = useRef(null);
   const resetTimerRef = useRef(null);
 
@@ -208,6 +228,23 @@ export default function SettingsPage({
     ],
     [copy.themeLight, copy.themeDark]
   );
+
+  const soundTabs = useMemo(
+    () => [
+      { id: 'on', label: copy.soundOn, icon: Volume2 },
+      { id: 'off', label: copy.soundOff, icon: VolumeX },
+    ],
+    [copy.soundOn, copy.soundOff]
+  );
+
+  const handleSoundModeChange = (mode) => {
+    const next = mode === 'on';
+    setSoundEnabled(next);
+    setSoundActive(next);
+    if (next) {
+      playUiSound('chime', { force: true });
+    }
+  };
 
   const handleLoadSample = () => {
     loadDemoSample();
@@ -381,6 +418,62 @@ export default function SettingsPage({
                   ? `ขนาดปัจจุบัน: ${fontScaleLabel}`
                   : `Current scale: ${fontScaleLabel}`}
               </span>
+            </div>
+
+            {/* UI Sound Effects Toggle + 3 Tone Previews */}
+            <div className="st-control-block">
+              <div className="st-control-label-row">
+                <span className="st-control-label">
+                  {soundActive ? (
+                    <Volume2 size={14} strokeWidth={2.2} aria-hidden="true" />
+                  ) : (
+                    <VolumeX size={14} strokeWidth={2.2} aria-hidden="true" />
+                  )}
+                  <span>{copy.soundLabel}</span>
+                </span>
+                <span className="st-control-value">
+                  {soundActive ? copy.soundOn : copy.soundOff}
+                </span>
+              </div>
+
+              <LiquidTabs
+                tabs={soundTabs}
+                activeId={soundActive ? 'on' : 'off'}
+                onChange={handleSoundModeChange}
+                variant="surface"
+                idPrefix="settings-sound"
+                ariaLabel={copy.soundLabel}
+              />
+
+              <div className="st-sound-preview-row" role="group" aria-label={copy.soundLabel}>
+                <button
+                  id="settings-sound-test-tap"
+                  type="button"
+                  data-sound="none"
+                  className="st-sound-chip"
+                  onClick={() => playUiSound('tap', { force: true })}
+                >
+                  {copy.soundTap}
+                </button>
+                <button
+                  id="settings-sound-test-chime"
+                  type="button"
+                  data-sound="none"
+                  className="st-sound-chip"
+                  onClick={() => playUiSound('chime', { force: true })}
+                >
+                  {copy.soundChime}
+                </button>
+                <button
+                  id="settings-sound-test-action"
+                  type="button"
+                  data-sound="none"
+                  className="st-sound-chip"
+                  onClick={() => playUiSound('action', { force: true })}
+                >
+                  {copy.soundAction}
+                </button>
+              </div>
             </div>
           </div>
         </section>

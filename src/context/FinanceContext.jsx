@@ -1,5 +1,10 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
-import { DEFAULT_OCCUPATION_TH, normalizeOccupation, normalizeTitle } from '../utils/userHelpers';
+import {
+  DEFAULT_OCCUPATION_TH,
+  clampFirstJobberAge,
+  normalizeOccupation,
+  normalizeTitle,
+} from '../utils/userHelpers';
 import {
   buildInstantBilingualText,
   translateBilingualAsync,
@@ -193,7 +198,6 @@ function sanitizeNameText(value) {
 
 function sanitizeUserProfile(raw) {
   if (!raw || typeof raw !== 'object') return { ...INITIAL_USER_PROFILE };
-  const rawAge = Number(raw.age);
   const rawDeps = Number(raw.dependents);
   const rawTarget = Number(raw.emergencyTargetMonths);
 
@@ -201,7 +205,7 @@ function sanitizeUserProfile(raw) {
     title: normalizeTitle(raw.title),
     firstName: sanitizeNameText(raw.firstName),
     lastName: sanitizeNameText(raw.lastName),
-    age: Number.isFinite(rawAge) ? Math.min(99, Math.max(15, Math.round(rawAge))) : 25,
+    age: clampFirstJobberAge(raw.age, 25),
     occupation: normalizeOccupation(raw.occupation),
     dependents: Number.isFinite(rawDeps) ? Math.min(10, Math.max(0, Math.round(rawDeps))) : 0,
     emergencyTargetMonths: rawTarget === 6 ? 6 : 3,

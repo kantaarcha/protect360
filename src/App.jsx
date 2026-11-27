@@ -40,6 +40,7 @@ import {
   syncReferenceHour,
 } from './utils/userHelpers';
 import { calculateThaiTaxImpact } from './utils/investMath';
+import { inferButtonSoundKind, playUiSound } from './utils/soundEffects';
 
 const ONBOARDING_STORAGE_KEY = 'protect360_onboarded_v1';
 
@@ -128,6 +129,20 @@ function AppShellContent() {
       active = false;
       window.clearInterval(intervalId);
     };
+  }, []);
+
+  // Subtle interactive click sound delegation (tap / chime / action) across all views
+  useEffect(() => {
+    const handleGlobalClick = (e) => {
+      const target = e.target?.closest?.('button:not(:disabled), [role="tab"]:not([aria-disabled="true"])');
+      if (!target) return;
+      const kind = inferButtonSoundKind(target);
+      if (kind) {
+        playUiSound(kind);
+      }
+    };
+    document.addEventListener('click', handleGlobalClick, false);
+    return () => document.removeEventListener('click', handleGlobalClick, false);
   }, []);
 
   const handleCompleteOnboarding = () => {
