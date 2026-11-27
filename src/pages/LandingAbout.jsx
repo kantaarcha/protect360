@@ -4,28 +4,21 @@ import {
   ArrowRight,
   BarChart3,
   BookMarked,
-  BookOpen,
   Calculator,
   CheckCircle2,
   ExternalLink,
   FileSpreadsheet,
   FileText,
-  Gamepad2,
   Landmark,
-  LayoutGrid,
   Lock,
   Maximize2,
   MessageSquareQuote,
   Scale,
-  ShieldAlert,
   ShieldCheck,
-  TrendingUp,
-  Wallet,
   X,
 } from 'lucide-react';
-import { formatTHB, useFinance } from '../context/FinanceContext';
+import { useFinance } from '../context/FinanceContext';
 import { useLanguage } from '../context/LanguageContext';
-import { calculateThaiTaxImpact } from '../utils/investMath';
 import LiquidTabs from '../components/LiquidTabs';
 
 // =============================================================================
@@ -404,25 +397,12 @@ const CORE_PILLARS = [
 
 export default function LandingAbout({ onNavigate }) {
   const { lang, t } = useLanguage();
-  const {
-    userProfile,
-    monthlyIncome,
-    monthlyExpenses,
-    emergencyFund,
-    emergencyRunway,
-    coverageItems,
-    riskAssessment,
-  } = useFinance();
+  const { userProfile } = useFinance();
 
   const [researchFilter, setResearchFilter] = useState('all');
   const [previewDoc, setPreviewDoc] = useState(null);
 
   const displayName = (userProfile?.firstName || '').trim() || 'First Jobber';
-  const monthlySurplus = Math.max(0, (monthlyIncome || 0) - (monthlyExpenses || 0));
-  const taxInfo = useMemo(
-    () => calculateThaiTaxImpact({ annualIncome: (monthlyIncome || 0) * 12 }),
-    [monthlyIncome]
-  );
 
   const researchTabs = useMemo(
     () => [
@@ -437,112 +417,6 @@ export default function LandingAbout({ onNavigate }) {
     if (researchFilter === 'all') return WANTED_FEATURES_CHART;
     return WANTED_FEATURES_CHART.filter((item) => item.group === researchFilter);
   }, [researchFilter]);
-
-  const ecosystemModules = useMemo(
-    () => [
-      {
-        id: 'overview',
-        num: '01',
-        icon: LayoutGrid,
-        tone: 'blue',
-        title: { th: 'ภาพรวม & บัตรสิทธิ', en: 'Overview & Coverage Cards' },
-        desc: {
-          th: 'ตอบโจทย์ 52.6% ที่ต้องการรวบรวมและเช็กสวัสดิการเดิมทั้งหมดในหน้าเดียว',
-          en: 'Solves the 52.6% need to consolidate and inspect all existing benefits in one view.',
-        },
-        liveStat:
-          lang === 'TH'
-            ? `${coverageItems.length} บัตรสิทธิ • ครอบคลุม ${riskAssessment?.overallCoveragePct || 0}%`
-            : `${coverageItems.length} Cards • ${riskAssessment?.overallCoveragePct || 0}% Covered`,
-      },
-      {
-        id: 'smartlog',
-        num: '02',
-        icon: Wallet,
-        tone: 'teal',
-        title: { th: 'AutoKey บันทึกการเงิน', en: 'AutoKey Smart Cashbook' },
-        desc: {
-          th: 'ตอบโจทย์ 49.1% ด้านวางแผนงบฯ และ 42.1% ที่ต้องการคำนวณเงินสำรองฉุกเฉิน',
-          en: 'Solves the 49.1% cashflow budgeting need and 42.1% emergency reserve calculation need.',
-        },
-        liveStat:
-          lang === 'TH'
-            ? `สำรอง ${formatTHB(emergencyFund)} (${emergencyRunway.toFixed(1)} ด.)`
-            : `Reserve ${formatTHB(emergencyFund)} (${emergencyRunway.toFixed(1)} mo)`,
-      },
-      {
-        id: 'risk-analysis',
-        num: '03',
-        icon: ShieldAlert,
-        tone: 'blue',
-        title: { th: 'Risk Analysis ความเสี่ยง 6 ด้าน', en: '6-Pillar Risk Analysis' },
-        desc: {
-          th: 'ตอบโจทย์อันดับ 1 (57.9%) ประเมิน Protection Gap พร้อมเตือนต่ออายุ .ics (35.1%)',
-          en: 'Solves the #1 request (57.9%) for Protection Gap sizing plus .ics renewal alerts (35.1%).',
-        },
-        liveStat:
-          lang === 'TH'
-            ? `ช่องว่าง ${formatTHB(riskAssessment?.totalProtectionGap || 0)}`
-            : `Gap ${formatTHB(riskAssessment?.totalProtectionGap || 0)}`,
-      },
-      {
-        id: 'invest',
-        num: '04',
-        icon: TrendingUp,
-        tone: 'navy',
-        title: { th: 'Invest & IRR คำนวณความคุ้มค่า', en: 'Invest & IRR Value Lab' },
-        desc: {
-          th: 'ตอบโจทย์ 43.9% ที่ต้องการเทียบความคุ้มค่าเบี้ย พร้อมคำนวณ IRR หลังหักเงินเฟ้อ',
-          en: 'Solves the 43.9% need to compare value with inflation-adjusted IRR & Thai tax math.',
-        },
-        liveStat:
-          lang === 'TH'
-            ? `ฐานภาษี ${taxInfo.marginalRatePct}% • รายได้ ${formatTHB(monthlyIncome)}/ด.`
-            : `Tax ${taxInfo.marginalRatePct}% • ${formatTHB(monthlyIncome)}/mo`,
-      },
-      {
-        id: 'game',
-        num: '05',
-        icon: Gamepad2,
-        tone: 'teal',
-        title: { th: 'Game เอาตัวรอดทางการเงิน', en: 'Survival Lab Simulator' },
-        desc: {
-          th: 'ตอบโจทย์ 56.1% ที่ไม่มั่นใจว่าจะรับมือบิลอุบัติเหตุ ฿100,000 ได้ ให้ลองซ้อมก่อนเกิดจริง',
-          en: 'Built for the 56.1% lacking confidence facing a ฿100k shock — practice safely first.',
-        },
-        liveStat:
-          lang === 'TH'
-            ? `เหลือออม ${formatTHB(monthlySurplus)}/ด. • 30–365 วัน`
-            : `Surplus ${formatTHB(monthlySurplus)}/mo • 30–365d`,
-      },
-      {
-        id: 'learning',
-        num: '06',
-        icon: BookOpen,
-        tone: 'indigo',
-        title: { th: 'คลังความรู้ 2 นาที', en: '2-Minute Learning Library' },
-        desc: {
-          th: 'ตอบโจทย์ 59.6% ที่ยังเข้าใจเงื่อนไขไม่ครบ และ 36.8% ที่อยากให้อธิบายด้วยภาษาเข้าใจง่าย',
-          en: 'Built for the 59.6% unsure of policy details and 36.8% wanting plain-language guides.',
-        },
-        liveStat:
-          lang === 'TH'
-            ? '10 บทความ • 14 ศัพท์ • ควิซ 20 ข้อ'
-            : '10 Guides • 14 Terms • 20-Q Quiz',
-      },
-    ],
-    [
-      coverageItems.length,
-      emergencyFund,
-      emergencyRunway,
-      lang,
-      monthlyIncome,
-      monthlySurplus,
-      riskAssessment?.overallCoveragePct,
-      riskAssessment?.totalProtectionGap,
-      taxInfo.marginalRatePct,
-    ]
-  );
 
   return (
     <div className="ab-page">
@@ -956,60 +830,7 @@ export default function LandingAbout({ onNavigate }) {
       </section>
 
       {/* ===================================================================== */}
-      {/* 5. LIVE 6-MODULE ECOSYSTEM DIRECTORY (MAPPED TO RESEARCH NEEDS)       */}
-      {/* ===================================================================== */}
-      <section className="ab-eco-section" aria-label="Live 6-module PROTECT360 ecosystem">
-        <div className="ab-eco-header">
-          <div>
-            <h2 className="ab-section-title">
-              {lang === 'TH'
-                ? 'ระบบนิเวศ 6 โมดูลที่ออกแบบจากผลวิจัย (เชื่อมข้อมูลสดทั้งระบบ)'
-                : '6 Research-Driven Modules (Live Synced Across PROTECT360)'}
-            </h2>
-            <p className="ab-section-sub">
-              {lang === 'TH'
-                ? 'ทุกโมดูลเชื่อมต่อข้อมูลจริงจากโปรไฟล์ของคุณแบบเรียลไทม์ — กดที่การ์ดเพื่อเปิดดูแต่ละหน้าได้ทันที'
-                : 'Every module syncs live with your active profile — select any card to explore that module.'}
-            </p>
-          </div>
-        </div>
-
-        <div className="ab-eco-grid">
-          {ecosystemModules.map((mod) => {
-            const Icon = mod.icon;
-            return (
-              <button
-                key={mod.id}
-                id={`ab-eco-card-${mod.id}`}
-                type="button"
-                className="bento-card ab-eco-card"
-                onClick={() => onNavigate?.(mod.id)}
-              >
-                <div className="ab-eco-card-top">
-                  <span className={`ab-eco-icon tone-${mod.tone}`} aria-hidden="true">
-                    <Icon size={18} strokeWidth={2.1} />
-                  </span>
-                  <span className="ab-eco-num tabular-nums">{mod.num}</span>
-                </div>
-
-                <strong className="ab-eco-title">{t(mod.title)}</strong>
-                <p className="ab-eco-desc">{t(mod.desc)}</p>
-
-                <div className="ab-eco-footer">
-                  <span className="ab-eco-live-pill tabular-nums">
-                    <span className="ab-live-dot" aria-hidden="true" />
-                    <span>{mod.liveStat}</span>
-                  </span>
-                  <ArrowRight size={15} className="ab-eco-arrow" aria-hidden="true" />
-                </div>
-              </button>
-            );
-          })}
-        </div>
-      </section>
-
-      {/* ===================================================================== */}
-      {/* 6. EDUCATIONAL GOVERNANCE & DATA CITATION FOOTER CARD                 */}
+      {/* 5. EDUCATIONAL GOVERNANCE & DATA CITATION FOOTER CARD                 */}
       {/* ===================================================================== */}
       <section
         className="bento-card ab-governance-card"
