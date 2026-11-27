@@ -3,6 +3,7 @@ import {
   AlertCircle,
   CheckCircle2,
   Clock,
+  Compass,
   Download,
   FileSpreadsheet,
   FlaskConical,
@@ -59,6 +60,12 @@ const SETTINGS_COPY = {
     clockSourceDevice: 'อ้างอิงเวลาในเครื่อง (24 ชม.)',
     editProfileBtn: 'แก้ไขข้อมูลส่วนตัว',
     replayWelcomeBtn: 'เปิดหน้าต้อนรับเริ่มต้นใช้งานอีกครั้ง',
+    startTutorialBtn: 'เริ่มฝึกสอนใช้งาน (Tutorial)',
+    tutorialBadge: {
+      unseen: 'ยังไม่เคยเริ่ม',
+      skipped: 'ข้ามไว้ก่อนหน้านี้',
+      completed: 'ดูครบแล้ว',
+    },
     dataTitle: 'บันทึกในเครื่อง & จัดการข้อมูล (PDPA-Safe)',
     dataSub: 'ข้อมูลทั้งหมดเก็บในอุปกรณ์นี้เท่านั้น (Zero-Login) ไม่มีเซิร์ฟเวอร์ติดตามหรือส่งออกโดยไม่ได้รับอนุญาต',
     localStatusActive: 'บันทึกในเครื่องอัตโนมัติ (localStorage)',
@@ -115,6 +122,12 @@ const SETTINGS_COPY = {
     clockSourceDevice: 'Using device local 24h clock',
     editProfileBtn: 'Edit Personal Profile',
     replayWelcomeBtn: 'Replay Welcome Screen',
+    startTutorialBtn: 'Interactive Tutorial (8 Steps)',
+    tutorialBadge: {
+      unseen: 'Not started',
+      skipped: 'Skipped',
+      completed: 'Completed',
+    },
     dataTitle: 'Saved Locally & Data Portability (PDPA-Safe)',
     dataSub: 'Everything stays on your own device via localStorage with zero login and zero server tracking.',
     localStatusActive: 'Auto-saved on this device',
@@ -164,6 +177,8 @@ export default function SettingsPage({
   clockSource = 'device',
   onOpenProfile,
   onReplayOnboarding,
+  tutorialStatus = 'unseen',
+  onStartTutorial,
 }) {
   const {
     lang,
@@ -538,6 +553,20 @@ export default function SettingsPage({
             >
               <Sparkles size={15} strokeWidth={2.2} aria-hidden="true" />
               <span>{copy.replayWelcomeBtn}</span>
+            </button>
+
+            <button
+              id="settings-start-tutorial-btn"
+              type="button"
+              className="btn-soft-gray st-action-btn"
+              data-sound="action"
+              onClick={() => onStartTutorial?.('full')}
+            >
+              <Compass size={15} strokeWidth={2.2} aria-hidden="true" />
+              <span>{copy.startTutorialBtn}</span>
+              <span className="st-tutorial-status-pill">
+                {copy.tutorialBadge?.[tutorialStatus] || copy.tutorialBadge?.unseen}
+              </span>
             </button>
           </div>
         </section>

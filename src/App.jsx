@@ -23,6 +23,7 @@ import SidebarNav from './components/SidebarNav';
 import TopControlBar from './components/TopControlBar';
 import UserProfileModal from './components/UserProfileModal';
 import OnboardingFlow from './components/OnboardingFlow';
+import TutorialOverlay from './components/TutorialOverlay';
 import OverviewDashboard from './pages/OverviewDashboard';
 import AutoKey from './pages/AutoKey';
 import RiskAnalysis from './pages/RiskAnalysis';
@@ -41,6 +42,12 @@ import {
 } from './utils/userHelpers';
 import { calculateThaiTaxImpact } from './utils/investMath';
 import { inferButtonSoundKind, playUiSound } from './utils/soundEffects';
+import {
+  FULL_TUTORIAL_STEPS,
+  getPageContextualSteps,
+  getSavedTutorialStatus,
+  saveTutorialStatus,
+} from './data/tutorialSteps';
 
 const ONBOARDING_STORAGE_KEY = 'protect360_onboarded_v1';
 
@@ -83,6 +90,14 @@ function AppShellContent() {
   });
   const [activePage, setActivePage] = useState('overview');
   const [profileModal, setProfileModal] = useState({ open: false, tab: 'profile' });
+  const [tutorialStatus, setTutorialStatus] = useState(() => getSavedTutorialStatus());
+  const [tutorialPromptOpen, setTutorialPromptOpen] = useState(false);
+  const [tutorialTour, setTutorialTour] = useState({
+    active: false,
+    mode: 'full',
+    steps: FULL_TUTORIAL_STEPS,
+    index: 0,
+  });
   const [clockState, setClockState] = useState(() => ({
     hour: new Date().getHours(),
     source: 'device',
@@ -153,7 +168,49 @@ function AppShellContent() {
     }
     setHasOnboarded(true);
     setActivePage('overview');
+    if (getSavedTutorialStatus() === 'unseen') {
+      setTutorialPromptOpen(true);
+    }
     window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleStartTutorial = (mode = 'full') => {
+    const steps = mode === 'page' ? getPageContextualSteps(activePage) : FULL_TUTORIAL_STEPS;
+    setTutorialPromptOpen(false);
+    setTutorialTour({
+      active: true,
+      mode,
+      steps,
+      index: 0,
+    });
+    if (mode === 'full' && steps[0]?.page && activePage !== steps[0].page) {
+      setActivePage(steps[0].page);
+    }
+  };
+
+  const handleDeclineTutorialPrompt = () => {
+    saveTutorialStatus('skipped');
+    setTutorialStatus('skipped');
+    setTutorialPromptOpen(false);
+  };
+
+  const handleCloseTour = () => {
+    if (getSavedTutorialStatus() === 'unseen') {
+      saveTutorialStatus('skipped');
+      setTutorialStatus('skipped');
+    }
+    setTutorialTour((prev) => ({ ...prev, active: false }));
+  };
+
+  const handleCompleteTour = () => {
+    if (tutorialTour.mode === 'full') {
+      saveTutorialStatus('completed');
+      setTutorialStatus('completed');
+    } else if (getSavedTutorialStatus() === 'unseen') {
+      saveTutorialStatus('skipped');
+      setTutorialStatus('skipped');
+    }
+    setTutorialTour((prev) => ({ ...prev, active: false }));
   };
 
   const handleReplayOnboarding = () => {
@@ -204,6 +261,8 @@ function AppShellContent() {
             clockSource={clockState.source}
             onOpenProfile={handleOpenProfile}
             onReplayOnboarding={handleReplayOnboarding}
+            tutorialStatus={tutorialStatus}
+            onStartTutorial={handleStartTutorial}
           />
         );
       case 'overview':
@@ -270,7 +329,11 @@ function AppShellContent() {
             )}
           </div>
 
-          <TopControlBar activePage={activePage} onNavigate={handleNavigate} />
+          <TopControlBar
+            activePage={activePage}
+            onNavigate={handleNavigate}
+            onStartTutorial={handleStartTutorial}
+          />
         </div>
 
         {/* Active Hypothetical Sample Mode Banner — clearly labels simulated figures */}
@@ -645,6 +708,26 @@ function AppShellContent() {
           onClose={handleCloseProfile}
         />
       )}
+
+      <TutorialOverlay
+        promptOpen={tutorialPromptOpen}
+        tourActive={tutorialTour.active}
+        tourMode={tutorialTour.mode}
+        steps={tutorialTour.steps}
+        stepIndex={tutorialTour.index}
+        activePage={activePage}
+        onNavigate={handleNavigate}
+        onAcceptPrompt={() => handleStartTutorial('full')}
+        onDeclinePrompt={handleDeclineTutorialPrompt}
+        onStepChange={(nextIdx) =>
+          setTutorialTour((prev) => ({
+            ...prev,
+            index: Math.max(0, Math.min(prev.steps.length - 1, nextIdx)),
+          }))
+        }
+        onCloseTour={handleCloseTour}
+        onCompleteTour={handleCompleteTour}
+      />
 
       {toast && (
         <div

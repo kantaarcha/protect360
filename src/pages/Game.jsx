@@ -687,6 +687,7 @@ export default function Game({ onNavigate }) {
 
                 {/* Option B: Default First Jobber Challenge */}
                 <button
+                  id="gm-persona-default-btn"
                   type="button"
                   className={`gm-persona-card ${personaMode === 'default' ? 'active' : ''}`}
                   onClick={() => handleSelectPersona('default')}

@@ -1,18 +1,24 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
-import { Settings, ShieldCheck, X } from 'lucide-react';
+import { Compass, HelpCircle, Lightbulb, Settings, ShieldCheck, X } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
+import { TUTORIAL_UI_COPY } from '../data/tutorialSteps';
 
-export default function TopControlBar({ activePage, onNavigate }) {
+export default function TopControlBar({ activePage, onNavigate, onStartTutorial }) {
   const { lang, t, fontStepIdx } = useLanguage();
+  const helpCopy = TUTORIAL_UI_COPY[lang] || TUTORIAL_UI_COPY.TH;
 
   const [showCharter, setShowCharter] = useState(false);
+  const [showHelpMenu, setShowHelpMenu] = useState(false);
   const [popoverCoords, setPopoverCoords] = useState({ top: 72, left: 12, width: 310 });
+  const [helpCoords, setHelpCoords] = useState({ top: 72, left: 12, width: 248 });
   const charterBtnRef = useRef(null);
   const popoverBoxRef = useRef(null);
+  const helpBtnRef = useRef(null);
+  const helpBoxRef = useRef(null);
 
   // Viewport-clamped positioning for "ไม่ขายประกัน" popover — never clips off-screen even at 125% font scale on mobile
   useLayoutEffect(() => {
-    if (!showCharter) return;
+    if (!showCharter) return undefined;
 
     const updatePosition = () => {
       const btn = charterBtnRef.current;
@@ -50,17 +56,56 @@ export default function TopControlBar({ activePage, onNavigate }) {
     };
   }, [showCharter, lang, fontStepIdx]);
 
+  // Viewport-clamped positioning for Tutorial "?" quick menu
+  useLayoutEffect(() => {
+    if (!showHelpMenu) return undefined;
+
+    const updateHelpPosition = () => {
+      const btn = helpBtnRef.current;
+      if (!btn) return;
+      const rect = btn.getBoundingClientRect();
+      const vw = window.innerWidth;
+      const vh = window.innerHeight;
+      const margin = 12;
+      const popWidth = Math.min(265, Math.max(210, vw - margin * 2));
+      const left = Math.min(Math.max(margin, rect.right - popWidth), vw - popWidth - margin);
+      const estimatedHeight = helpBoxRef.current?.offsetHeight || 160;
+      const top = Math.min(rect.bottom + 10, Math.max(margin, vh - estimatedHeight - margin));
+      setHelpCoords({ top, left, width: popWidth });
+    };
+
+    updateHelpPosition();
+    window.addEventListener('resize', updateHelpPosition);
+    window.addEventListener('scroll', updateHelpPosition, true);
+    return () => {
+      window.removeEventListener('resize', updateHelpPosition);
+      window.removeEventListener('scroll', updateHelpPosition, true);
+    };
+  }, [showHelpMenu, lang, fontStepIdx]);
+
   useEffect(() => {
-    if (!showCharter) return;
+    if (!showCharter && !showHelpMenu) return undefined;
     const handleOutside = (e) => {
-      const clickedBtn = charterBtnRef.current?.contains(e.target);
-      const clickedBox = popoverBoxRef.current?.contains(e.target);
-      if (!clickedBtn && !clickedBox) {
+      if (
+        showCharter &&
+        !charterBtnRef.current?.contains(e.target) &&
+        !popoverBoxRef.current?.contains(e.target)
+      ) {
         setShowCharter(false);
+      }
+      if (
+        showHelpMenu &&
+        !helpBtnRef.current?.contains(e.target) &&
+        !helpBoxRef.current?.contains(e.target)
+      ) {
+        setShowHelpMenu(false);
       }
     };
     const handleKey = (e) => {
-      if (e.key === 'Escape') setShowCharter(false);
+      if (e.key === 'Escape') {
+        setShowCharter(false);
+        setShowHelpMenu(false);
+      }
     };
     document.addEventListener('mousedown', handleOutside);
     document.addEventListener('keydown', handleKey);
@@ -68,7 +113,7 @@ export default function TopControlBar({ activePage, onNavigate }) {
       document.removeEventListener('mousedown', handleOutside);
       document.removeEventListener('keydown', handleKey);
     };
-  }, [showCharter]);
+  }, [showCharter, showHelpMenu]);
 
   const isSettingsActive = activePage === 'settings';
 
@@ -76,7 +121,7 @@ export default function TopControlBar({ activePage, onNavigate }) {
     <div
       className="top-controls-groups top-controls-compact"
       role="region"
-      aria-label="Trust charter and settings shortcut"
+      aria-label="Trust charter, tutorial help, and settings shortcut"
     >
       <div className="control-pill-group control-group-compact">
         <div className="neutral-badge-wrap">
@@ -86,7 +131,10 @@ export default function TopControlBar({ activePage, onNavigate }) {
             type="button"
             className="neutral-badge"
             aria-expanded={showCharter}
-            onClick={() => setShowCharter((prev) => !prev)}
+            onClick={() => {
+              setShowHelpMenu(false);
+              setShowCharter((prev) => !prev);
+            }}
           >
             <ShieldCheck size={15} className="neutral-badge-icon" strokeWidth={2.3} />
             <span>{t('brand.noSalesBadge')}</span>
@@ -124,12 +172,90 @@ export default function TopControlBar({ activePage, onNavigate }) {
           )}
         </div>
 
+        {/* Tutorial Quick Help Button (?) */}
+        <div className="neutral-badge-wrap">
+          <button
+            ref={helpBtnRef}
+            id="top-tutorial-btn"
+            type="button"
+            className={`top-help-btn ${showHelpMenu ? 'active' : ''}`}
+            aria-expanded={showHelpMenu}
+            aria-label={helpCopy.helpMenuTitle}
+            title={helpCopy.helpMenuTitle}
+            onClick={() => {
+              setShowCharter(false);
+              setShowHelpMenu((prev) => !prev);
+            }}
+          >
+            <HelpCircle size={15} strokeWidth={2.2} aria-hidden="true" />
+          </button>
+
+          {showHelpMenu && (
+            <div
+              ref={helpBoxRef}
+              className="neutral-popover neutral-popover-fixed top-help-popover"
+              role="dialog"
+              aria-label={helpCopy.helpMenuTitle}
+              style={{
+                top: `${helpCoords.top}px`,
+                left: `${helpCoords.left}px`,
+                width: `${helpCoords.width}px`,
+              }}
+            >
+              <div className="neutral-popover-head">
+                <h4>
+                  <HelpCircle size={15} color="var(--royal)" style={{ flexShrink: 0 }} />
+                  <span>{helpCopy.helpMenuTitle}</span>
+                </h4>
+                <button
+                  type="button"
+                  className="neutral-popover-close"
+                  onClick={() => setShowHelpMenu(false)}
+                  aria-label="Close"
+                >
+                  <X size={14} />
+                </button>
+              </div>
+              <div className="top-help-actions">
+                <button
+                  id="top-help-page-btn"
+                  type="button"
+                  className="top-help-menu-item"
+                  onClick={() => {
+                    setShowHelpMenu(false);
+                    onStartTutorial?.('page');
+                  }}
+                >
+                  <Lightbulb size={15} strokeWidth={2.2} aria-hidden="true" />
+                  <span>{helpCopy.helpThisPage}</span>
+                </button>
+                <button
+                  id="top-help-full-btn"
+                  type="button"
+                  className="top-help-menu-item"
+                  onClick={() => {
+                    setShowHelpMenu(false);
+                    onStartTutorial?.('full');
+                  }}
+                >
+                  <Compass size={15} strokeWidth={2.2} aria-hidden="true" />
+                  <span>{helpCopy.helpFullTour}</span>
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+
         <button
           id="top-settings-btn"
           type="button"
           className={`top-settings-btn ${isSettingsActive ? 'active' : ''}`}
           aria-current={isSettingsActive ? 'page' : undefined}
-          onClick={() => onNavigate?.('settings')}
+          onClick={() => {
+            setShowHelpMenu(false);
+            setShowCharter(false);
+            onNavigate?.('settings');
+          }}
           title={t('nav.settings')}
         >
           <Settings size={15} strokeWidth={2.2} aria-hidden="true" />

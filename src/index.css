@@ -17742,6 +17742,488 @@ p {
   }
 }
 
+/* ===================================================================== */
+/* Patch 8.9 — Interactive Tutorial Overlay & Contextual Help            */
+/* ===================================================================== */
 
+.top-help-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 31px;
+  height: 31px;
+  border-radius: 999px;
+  border: 1px solid var(--border-subtle);
+  background: var(--bg-canvas);
+  color: var(--text-secondary);
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background-color 0.16s ease, border-color 0.16s ease, color 0.16s ease;
+}
 
+.top-help-btn:hover,
+.top-help-btn.active {
+  border-color: var(--royal);
+  color: var(--royal-deep);
+  background: rgba(40, 120, 200, 0.1);
+}
 
+[data-theme='dark'] .top-help-btn {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.12);
+  color: #cbd5e1;
+}
+
+[data-theme='dark'] .top-help-btn:hover,
+[data-theme='dark'] .top-help-btn.active {
+  background: rgba(96, 165, 250, 0.18);
+  border-color: rgba(96, 165, 250, 0.45);
+  color: #93c5fd;
+}
+
+.top-help-popover {
+  padding: 12px 14px;
+}
+
+.top-help-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.top-help-menu-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 9px 11px;
+  border-radius: 10px;
+  border: 1px solid var(--border-subtle);
+  background: var(--bg-surface);
+  color: var(--text-primary);
+  font-size: 0.82rem;
+  font-weight: 700;
+  text-align: left;
+  cursor: pointer;
+  transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+
+.top-help-menu-item:hover {
+  border-color: var(--royal);
+  background: rgba(40, 120, 200, 0.08);
+  color: var(--royal-deep);
+}
+
+[data-theme='dark'] .top-help-menu-item {
+  background: rgba(255, 255, 255, 0.04);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+[data-theme='dark'] .top-help-menu-item:hover {
+  background: rgba(96, 165, 250, 0.16);
+  border-color: rgba(96, 165, 250, 0.4);
+  color: #93c5fd;
+}
+
+.st-tutorial-status-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: rgba(40, 120, 200, 0.12);
+  color: var(--royal-deep);
+  font-size: 0.72rem;
+  font-weight: 700;
+  margin-left: 2px;
+}
+
+[data-theme='dark'] .st-tutorial-status-pill {
+  background: rgba(96, 165, 250, 0.2);
+  color: #93c5fd;
+}
+
+/* Opt-in / Opt-out Prompt Modal */
+.tutorial-prompt-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1200;
+  background: rgba(11, 22, 46, 0.56);
+  backdrop-filter: blur(5px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+
+.tutorial-prompt-card {
+  width: min(490px, 100%);
+  max-height: 92vh;
+  overflow-y: auto;
+  border-radius: 22px;
+  padding: 22px 24px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  box-shadow: 0 24px 60px rgba(10, 25, 60, 0.24);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+[data-theme='dark'] .tutorial-prompt-card {
+  background: #0f172a;
+  border-color: rgba(148, 163, 184, 0.22);
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.6);
+}
+
+.tutorial-prompt-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.tutorial-prompt-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 11px;
+  border-radius: 999px;
+  background: rgba(40, 120, 200, 0.12);
+  color: var(--royal-deep);
+  font-size: 0.76rem;
+  font-weight: 700;
+}
+
+[data-theme='dark'] .tutorial-prompt-badge {
+  background: rgba(96, 165, 250, 0.18);
+  color: #93c5fd;
+}
+
+.tutorial-prompt-hero {
+  display: flex;
+  align-items: flex-start;
+  gap: 13px;
+}
+
+.tutorial-prompt-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, rgba(40, 120, 200, 0.15), rgba(16, 185, 129, 0.16));
+  color: var(--royal-deep);
+  flex-shrink: 0;
+}
+
+[data-theme='dark'] .tutorial-prompt-icon {
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.24), rgba(16, 185, 129, 0.22));
+  color: #60a5fa;
+}
+
+.tutorial-prompt-title {
+  margin: 0;
+  font-size: 1.15rem;
+  line-height: 1.35;
+  color: var(--text-primary);
+}
+
+.tutorial-prompt-sub {
+  margin: 5px 0 0;
+  font-size: 0.87rem;
+  line-height: 1.5;
+  color: var(--text-secondary);
+}
+
+.tutorial-prompt-points {
+  margin: 0;
+  padding: 12px 14px;
+  list-style: none;
+  border-radius: 14px;
+  background: var(--bg-canvas);
+  border: 1px solid var(--border-subtle);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.tutorial-prompt-points li {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  font-size: 0.84rem;
+  line-height: 1.45;
+  color: var(--text-primary);
+}
+
+.tutorial-prompt-points li svg {
+  color: var(--teal);
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.tutorial-prompt-actions {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr);
+  gap: 10px;
+  margin-top: 2px;
+}
+
+.tutorial-opt-btn {
+  min-height: 42px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  white-space: nowrap;
+  font-size: 0.86rem;
+}
+
+/* Interactive Spotlight Overlay */
+.tutorial-tour-layer {
+  position: fixed;
+  inset: 0;
+  z-index: 1250;
+  pointer-events: auto;
+}
+
+.tutorial-full-dim,
+.tutorial-click-blocker {
+  position: fixed;
+  inset: 0;
+}
+
+.tutorial-full-dim {
+  background: rgba(9, 17, 36, 0.56);
+}
+
+.tutorial-click-blocker {
+  background: transparent;
+}
+
+.tutorial-spotlight-cutout {
+  position: fixed;
+  border-radius: 16px;
+  border: 2px solid #2dd4bf;
+  box-shadow:
+    0 0 0 9999px rgba(9, 17, 36, 0.54),
+    0 0 0 5px rgba(45, 212, 191, 0.28);
+  pointer-events: none;
+  transition:
+    top 0.24s cubic-bezier(0.22, 1, 0.36, 1),
+    left 0.24s cubic-bezier(0.22, 1, 0.36, 1),
+    width 0.24s cubic-bezier(0.22, 1, 0.36, 1),
+    height 0.24s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.tutorial-coach-card {
+  position: fixed;
+  z-index: 1260;
+  max-height: calc(100vh - 28px);
+  overflow-y: auto;
+  padding: 16px 18px;
+  border-radius: 18px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  box-shadow: 0 20px 50px rgba(8, 22, 52, 0.28);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  transition:
+    top 0.22s ease,
+    left 0.22s ease,
+    opacity 0.16s ease;
+}
+
+[data-theme='dark'] .tutorial-coach-card {
+  background: #0f172a;
+  border-color: rgba(148, 163, 184, 0.26);
+  box-shadow: 0 22px 54px rgba(0, 0, 0, 0.65);
+}
+
+.tutorial-coach-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.tutorial-coach-badges {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.tutorial-type-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 9px;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+.tutorial-type-pill.core {
+  background: rgba(40, 120, 200, 0.14);
+  color: var(--royal-deep);
+}
+
+.tutorial-type-pill.tip {
+  background: rgba(16, 185, 129, 0.14);
+  color: #047857;
+}
+
+.tutorial-type-pill.optional {
+  background: rgba(100, 116, 139, 0.14);
+  color: var(--text-secondary);
+}
+
+[data-theme='dark'] .tutorial-type-pill.core {
+  background: rgba(96, 165, 250, 0.2);
+  color: #93c5fd;
+}
+
+[data-theme='dark'] .tutorial-type-pill.tip {
+  background: rgba(16, 185, 129, 0.2);
+  color: #6ee7b7;
+}
+
+[data-theme='dark'] .tutorial-type-pill.optional {
+  background: rgba(148, 163, 184, 0.18);
+  color: #cbd5e1;
+}
+
+.tutorial-step-counter {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+}
+
+.tutorial-coach-close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 999px;
+  border: 1px solid var(--border-subtle);
+  background: var(--bg-canvas);
+  color: var(--text-secondary);
+  cursor: pointer;
+}
+
+.tutorial-progress-dots {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.tutorial-dot {
+  height: 5px;
+  width: 14px;
+  border-radius: 999px;
+  background: var(--border-subtle);
+  transition: width 0.2s ease, background-color 0.2s ease;
+}
+
+.tutorial-dot.done {
+  background: rgba(16, 185, 129, 0.55);
+}
+
+.tutorial-dot.active {
+  width: 26px;
+  background: var(--royal);
+}
+
+.tutorial-coach-title {
+  margin: 0;
+  font-size: 1rem;
+  line-height: 1.35;
+  color: var(--text-primary);
+}
+
+.tutorial-coach-body {
+  margin: 0;
+  font-size: 0.84rem;
+  line-height: 1.52;
+  color: var(--text-secondary);
+}
+
+.tutorial-plain-tip {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 9px 11px;
+  border-radius: 12px;
+  background: rgba(40, 120, 200, 0.08);
+  border: 1px solid rgba(40, 120, 200, 0.18);
+  font-size: 0.8rem;
+  line-height: 1.45;
+  color: var(--text-primary);
+}
+
+[data-theme='dark'] .tutorial-plain-tip {
+  background: rgba(59, 130, 246, 0.14);
+  border-color: rgba(96, 165, 250, 0.26);
+}
+
+.tutorial-tip-icon {
+  color: var(--royal);
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.tutorial-coach-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 2px;
+}
+
+.tutorial-text-skip {
+  border: none;
+  background: transparent;
+  padding: 6px 4px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+  cursor: pointer;
+}
+
+.tutorial-text-skip:hover {
+  color: var(--text-primary);
+  text-decoration: underline;
+}
+
+.tutorial-nav-btns {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.tutorial-nav-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 8px 13px;
+  font-size: 0.82rem;
+  white-space: nowrap;
+}
+
+@media (max-width: 560px) {
+  .tutorial-prompt-card {
+    padding: 18px 16px;
+  }
+
+  .tutorial-prompt-actions {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .tutorial-coach-card {
+    padding: 14px 15px;
+  }
+}
