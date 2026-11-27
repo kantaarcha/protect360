@@ -1,5 +1,5 @@
 // Plain-Language Financial & Risk Education Library for PROTECT360 Learning Center
-// Neutral educational content only — zero brand or product recommendations.
+// Neutral educational content with verified official Thai public references.
 
 export const LEARNING_STORAGE_KEY = 'protect360_learning_v1';
 
@@ -8,6 +8,7 @@ export const LEARNING_CATEGORIES = [
   { id: 'cash', label: { th: 'เงินสำรอง', en: 'Emergency' } },
   { id: 'policy', label: { th: 'อ่านกรมธรรม์', en: 'Policy Rules' } },
   { id: 'benefits', label: { th: 'สวัสดิการ', en: 'Benefits' } },
+  { id: 'good-to-know', label: { th: 'รู้ไว้ใช้ว่า?', en: 'Good to Know?' } },
 ];
 
 export const LEARNING_ARTICLES = [
@@ -32,21 +33,21 @@ export const LEARNING_ARTICLES = [
     },
     translations: [
       {
-        jargon: { th: 'OPD (Outpatient Department)', en: 'OPD (Outpatient Care)' },
+        jargon: { th: 'OPD (ผู้ป่วยนอก)', en: 'OPD (Outpatient Care)' },
         plain: {
           th: 'หาหมอ ตรวจ รับยา แล้วกลับบ้านในวันเดียวกัน ไม่ได้นอนค้างคืน ค่าใช้จ่ายมักอยู่ที่ ฿800–฿3,000 ต่อครั้ง',
           en: 'Doctor visit, tests, and medication without staying overnight — typically ฿800–฿3,000 per visit.',
         },
       },
       {
-        jargon: { th: 'IPD (Inpatient Department)', en: 'IPD (Inpatient Care)' },
+        jargon: { th: 'IPD (ผู้ป่วยใน)', en: 'IPD (Inpatient Care)' },
         plain: {
           th: 'แพทย์สั่งแอดมิตนอนโรงพยาบาล (มักนับตั้งแต่ 6 ชั่วโมงขึ้นไป) เช่น ไข้เลือดออก ผ่าตัดไส้ติ่ง บิลมักเริ่มที่ ฿30,000–฿150,000+',
           en: 'Doctor-ordered hospital admission (typically 6+ hours) for serious illness or surgery — bills often hit ฿30,000–฿150,000+.',
         },
       },
       {
-        jargon: { th: 'ความถี่สูง-เสียหายต่ำ vs ความถี่ต่ำ-เสียหายสูง', en: 'High-Frequency vs. High-Severity' },
+        jargon: { th: 'เหตุบ่อย-จ่ายน้อย vs เหตุนานที-จ่ายหนัก', en: 'Frequent Small vs. Rare Catastrophic' },
         plain: {
           th: 'ค่ารักษาเล็ก ๆ อย่าง OPD ใช้เงินสำรองหรือสิทธิประกันสังคม/กลุ่มจัดการได้ แต่ IPD ก้อนใหญ่คือจุดที่ควรโอนย้ายความเสี่ยง',
           en: 'Small frequent OPD bills fit your cash reserve or workplace rights, whereas rare high-cost IPD shocks are what risk transfer is designed for.',
@@ -64,6 +65,13 @@ export const LEARNING_ARTICLES = [
       th: 'หากงบจำกัด ให้จัดลำดับความสำคัญที่ความคุ้มครองผู้ป่วยใน (IPD) ก่อนเสมอ แล้วใช้เงินสำรองหรือสวัสดิการบริษัทดูแลเคสผู้ป่วยนอก (OPD)',
       en: 'On a starter budget, prioritize catastrophic Inpatient (IPD) protection first and cover routine Outpatient (OPD) costs via cash reserves or employer benefits.',
     },
+    references: [
+      {
+        source: 'คปภ. (OIC)',
+        label: { th: 'สำนักงาน คปภ. — ความรู้ประกันสุขภาพมาตรฐาน', en: 'OIC — Health Insurance Standards' },
+        url: 'https://www.oic.or.th/th',
+      },
+    ],
     bridgeAction: {
       page: 'risk-analysis',
       label: { th: 'เช็กช่องว่างค่ารักษาใน Risk Analysis', en: 'Check Medical Gap in Risk Analysis' },
@@ -122,6 +130,13 @@ export const LEARNING_ARTICLES = [
       th: 'วางแผนป้องกันความเสี่ยงตั้งแต่ตอนสุขภาพแข็งแรง และรักษาเงินสำรองฉุกเฉินไว้เสมอเพื่ออุดช่องว่างช่วงรอคอย',
       en: 'Plan protection while healthy and keep liquid emergency cash ready to bridge any waiting period.',
     },
+    references: [
+      {
+        source: 'คปภ. (OIC)',
+        label: { th: 'คปภ. — มาตรฐานสัญญาประกันสุขภาพไทย', en: 'OIC — Thai Health Policy Standards' },
+        url: 'https://www.oic.or.th/th',
+      },
+    ],
     bridgeAction: {
       page: 'game',
       label: { th: 'ทดลองรับมือเหตุฉุกเฉินใน Survival Lab', en: 'Test Emergencies in Survival Lab' },
@@ -180,6 +195,13 @@ export const LEARNING_ARTICLES = [
       th: 'แถลงประวัติสุขภาพตามความจริง 100% เสมอ และเก็บสำเนาใบคำขอไว้ตรวจสอบคู่กับเล่มกรมธรรม์ทุกครั้ง',
       en: 'Always disclose 100% of medical history honestly and keep a copy of your application alongside your policy.',
     },
+    references: [
+      {
+        source: 'คปภ. (OIC)',
+        label: { th: 'คปภ. — สิทธิและหน้าที่ผู้เอาประกันภัย', en: 'OIC — Policyholder Rights & Duties' },
+        url: 'https://www.oic.or.th/th',
+      },
+    ],
     bridgeAction: {
       page: 'risk-analysis',
       label: { th: 'ตรวจสอบความคุ้มครองที่มีใน Risk Analysis', en: 'Audit Your Coverage in Risk Analysis' },
@@ -238,6 +260,13 @@ export const LEARNING_ARTICLES = [
       th: 'เช็กวงเงินประกันกลุ่มจาก HR ก่อนเสมอ แล้วพิจารณา Deductible หากต้องการคุมงบให้อยู่ในกรอบ 10%–15% ของรายได้',
       en: 'Confirm your HR group limit first, then evaluate deductibles to keep total protection spend under 10%–15% of income.',
     },
+    references: [
+      {
+        source: 'คปภ. (OIC)',
+        label: { th: 'สำนักงาน คปภ. — ทำความเข้าใจ Deductible & Co-payment', en: 'OIC — Deductible & Co-payment Guide' },
+        url: 'https://www.oic.or.th/th',
+      },
+    ],
     bridgeAction: {
       page: 'invest',
       label: { th: 'ลองคำนวณความคุ้มค่าใน Invest & Value Lab', en: 'Simulate Value in Invest & Value Lab' },
@@ -296,6 +325,13 @@ export const LEARNING_ARTICLES = [
       th: 'อย่าประเมินความคุ้มครองจากการเดา — หากยังไม่ทราบวงเงินประกันกลุ่ม ให้ถือเป็น ฿0 ไว้ก่อนแล้วสอบถาม HR เพื่อนำตัวเลขจริงมาคำนวณ',
       en: 'Never guess coverage limits — treat unknown employer limits as ฿0 conservatively until confirmed with HR.',
     },
+    references: [
+      {
+        source: 'ประกันสังคม (SSO)',
+        label: { th: 'สำนักงานประกันสังคม — เช็กสิทธิผู้ประกันตน ม.33 (e-Self Service)', en: 'SSO — Check Sec. 33 Benefits (e-Self Service)' },
+        url: 'https://eself.sso.go.th/',
+      },
+    ],
     bridgeAction: {
       page: 'risk-analysis',
       label: { th: 'กรอกสิทธิประกันสังคม & ประกันกลุ่มของคุณ', en: 'Enter Your SSO & Group Benefits' },
@@ -355,9 +391,292 @@ export const LEARNING_ARTICLES = [
       th: 'ทำตามลำดับ 1 → 2 → 3 เสมอ จะช่วยให้คุณมีทั้งสภาพคล่องในวันนี้ และเกราะป้องกันเหตุไม่คาดฝันที่จ่ายไหวในระยะยาว',
       en: 'Following 1 → 2 → 3 keeps you liquid today and sustainably protected against large shocks over the long run.',
     },
+    references: [
+      {
+        source: 'ธปท. (BOT)',
+        label: { th: 'ธนาคารแห่งประเทศไทย — ลดเสี่ยง เพิ่มสุข ด้วยเงินออมเผื่อฉุกเฉิน', en: 'Bank of Thailand — Emergency Savings Guide' },
+        url: 'https://www.bot.or.th/th/research-and-publications/articles-and-publications/bot-magazine-issues/Phrasiam-63-2/FinancialWisdom-SustainableShopping.html',
+      },
+    ],
     bridgeAction: {
       page: 'smartlog',
       label: { th: 'กลับไปติดตามเงินสำรองใน SmartLog', en: 'Track Your Reserve in SmartLog' },
+    },
+  },
+  // ==================== NEW PURPLE CATEGORY: รู้ไว้ใช้ว่า? ====================
+  {
+    id: 'ucep-72h-rights',
+    category: 'good-to-know',
+    categoryLabel: { th: 'รู้ไว้ใช้ว่า?', en: 'Good to Know?' },
+    readMinutes: 2,
+    iconName: 'siren',
+    keywords: ['ucep', 'ฉุกเฉินวิกฤต', '72 ชั่วโมง', '1669', 'สปสช', 'รักษาฟรี', 'รู้ไว้ใช้ว่า'],
+    title: {
+      th: 'สิทธิ UCEP เจ็บป่วยฉุกเฉินวิกฤต รักษาฟรี 72 ชม. ทุก รพ. ใกล้ที่สุด',
+      en: 'UCEP 72-Hour Right: Free Critical Emergency Care Anywhere',
+    },
+    hook: {
+      th: 'สิทธิพื้นฐานที่คนไทยทุกคนมี (ทั้ง ม.33, บัตรทอง, ข้าราชการ) เข้า รพ.เอกชนใกล้สุดได้ทันทีโดยไม่ต้องสำรองจ่าย',
+      en: 'A Thai statutory right for everyone: get critical care at the nearest public or private hospital with ฿0 upfront for 72 hours.',
+    },
+    intro: {
+      th: 'หลายคนไม่รู้ว่าหากเกิดภาวะ "ฉุกเฉินวิกฤตถึงแก่ชีวิต" เราสามารถเข้าโรงพยาบาลเอกชนที่ใกล้ที่สุดได้ทันทีภายใต้สิทธิ UCEP (Universal Coverage for Emergency Patients) โดยไม่ต้องกังวลเรื่องวางมัดจำใน 72 ชั่วโมงแรก',
+      en: 'Many people do not realize that during a life-threatening emergency in Thailand, UCEP guarantees free stabilization at the nearest public or private hospital for up to 72 hours until safe transfer.',
+    },
+    translations: [
+      {
+        jargon: { th: 'สิทธิ UCEP 72 ชั่วโมงแรก', en: 'UCEP 72-Hour Coverage' },
+        plain: {
+          th: 'รักษาฟรีไม่เสียค่าใช้จ่ายใน รพ.ที่ใกล้ที่สุด (ทั้งรัฐและเอกชน) จนพ้นวิกฤตและย้ายไป รพ.ตามสิทธิได้อย่างปลอดภัย สูงสุดไม่เกิน 72 ชั่วโมง',
+          en: 'Zero-cost emergency care at the nearest hospital (public or private) until stable enough to transfer, capped at 72 hours.',
+        },
+      },
+      {
+        jargon: { th: '6 อาการเข้าเกณฑ์ฉุกเฉินวิกฤต (โทร 1669)', en: '6 Qualifying Critical Symptoms (Call 1669)' },
+        plain: {
+          th: '1) หมดสติ ไม่หายใจ 2) หอบเหนื่อยรุนแรง 3) ซึม เหงื่อแตก ตัวเย็น ชัก 4) เจ็บหน้าอกเฉียบพลัน 5) แขนขาอ่อนแรง พูดไม่ชัดฉับพลัน 6) อาการวิกฤตอื่นที่กระทบชีวิต',
+          en: '1) Unconscious/not breathing 2) Severe breathing distress 3) Seizures/cold sweat/shock 4) Sudden chest pain 5) Sudden limb weakness/slurred speech 6) Other life-threatening signs.',
+        },
+      },
+      {
+        jargon: { th: 'กรณีไม่เข้าเกณฑ์วิกฤต (สีเขียว/เหลือง)', en: 'Non-Critical Cases (Green / Yellow)' },
+        plain: {
+          th: 'หากอาการไม่เข้าเกณฑ์วิกฤต (เช่น ไข้หวัด ท้องเสียทั่วไป) จะไม่เข้า UCEP ต้องกลับไปใช้ รพ.ตามสิทธิ หรือจ่ายค่ารักษาเองหากรักษาต่อที่ รพ.เอกชน',
+          en: 'Non-life-threatening illnesses (e.g., common fever or mild diarrhea) do not qualify for UCEP and require your registered hospital or personal payment.',
+        },
+      },
+    ],
+    example: {
+      title: { th: 'รู้ไว้ใช้จริงในนาทีฉุกเฉิน', en: 'What to Do in an Actual Emergency' },
+      body: {
+        th: 'หากพบคนใกล้ตัวหมดสติหรือเจ็บหน้าอกรุนแรง ให้โทรสายด่วน 1669 หรือพาไป รพ.ใกล้ที่สุดพร้อมแจ้งขอใช้สิทธิ "UCEP" และเตรียมบัตรประชาชนเพื่อให้ รพ.ประเมินคัดกรองสิทธิได้ทันที',
+        en: 'If someone collapses or has acute chest pain, call 1669 or go straight to the nearest ER, state you are invoking "UCEP", and present their Thai ID card for immediate triage verification.',
+      },
+    },
+    takeaway: {
+      th: 'สิทธิ UCEP คุ้มครองเฉพาะ 72 ชม. แรกในภาวะวิกฤตจริงเท่านั้น จึงควรรู้ไว้เพื่อช่วยชีวิต และยังมีเงินสำรอง/แผนรับมือสำหรับเคสแอดมิตทั่วไป',
+      en: 'UCEP saves lives in the first 72 hours of true critical emergencies — know how to invoke it, while keeping reserves for standard hospital stays.',
+    },
+    references: [
+      {
+        source: 'สปสช. (NHSO)',
+        label: { th: 'สปสช. — UCEP สิทธิรักษาเจ็บป่วยฉุกเฉินวิกฤต 72 ชม.', en: 'NHSO — Official UCEP 72-Hour Guide' },
+        url: 'https://www.nhso.go.th/th/communicate-th/thnewsforperson/ucep',
+      },
+    ],
+    bridgeAction: {
+      page: 'risk-analysis',
+      label: { th: 'ประเมินสิทธิภาครัฐของคุณใน Risk Analysis', en: 'Review State Rights in Risk Analysis' },
+    },
+  },
+  {
+    id: 'oic-freelook-license',
+    category: 'good-to-know',
+    categoryLabel: { th: 'รู้ไว้ใช้ว่า?', en: 'Good to Know?' },
+    readMinutes: 2,
+    iconName: 'badge-check',
+    keywords: ['free look', '15 วัน', 'ยกเลิกกรมธรรม์', 'ใบอนุญาตตัวแทน', 'คปภ', '1186', 'รู้ไว้ใช้ว่า'],
+    title: {
+      th: 'เช็กใบอนุญาตตัวแทน & สิทธิ Free Look ยกเลิกคืนเงินใน 15 วัน',
+      en: 'Verify Agent Licenses & Your 15-Day Free-Look Right',
+    },
+    hook: {
+      th: '3 เกราะคุ้มครองผู้บริโภคจาก คปภ. ที่ควรรู้ก่อนโอนเงินสักบาท: เช็กใบอนุญาต, Free Look 15 วัน และสายด่วน 1186',
+      en: '3 OIC consumer protections to know before paying a baht: license verification, 15-day Free Look, and Hotline 1186.',
+    },
+    intro: {
+      th: 'หลายคนไม่กล้าศึกษาเรื่องประกันเพราะกลัวถูกหลอกหรือเผลอตัดสินใจเร็วเกินไป ความจริงแล้วกฎหมายไทยภายใต้ คปภ. มีกลไกคุ้มครองผู้บริโภคที่ชัดเจนและตรวจสอบได้ฟรีทางออนไลน์ภายใน 1 นาที',
+      en: 'Many people avoid risk planning out of fear of pushy sales or buyer remorse. Thai OIC regulations provide strong consumer safeguards you can verify online in under a minute.',
+    },
+    translations: [
+      {
+        jargon: { th: 'สิทธิ Free Look Period (15 วัน)', en: '15-Day Free Look Period' },
+        plain: {
+          th: 'หลังได้รับเล่มกรมธรรม์ คุณมีเวลาอ่านทบทวน 15 วัน (หรือ 30 วันกรณีซื้อทางโทรศัพท์) หากเปลี่ยนใจสามารถขอยกเลิกและรับเบี้ยคืนได้ (หักเฉพาะค่าธรรมเนียมออกเล่มตามเกณฑ์)',
+          en: 'After receiving your policy, you have 15 days (30 days for telesales) to review and cancel for a refund minus minimal issuance fees.',
+        },
+      },
+      {
+        jargon: { th: 'ตรวจสอบใบอนุญาตตัวแทน / นายหน้า', en: 'Agent & Broker License Check' },
+        plain: {
+          th: 'ก่อนให้ข้อมูลหรือโอนเงิน สามารถนำชื่อ-นามสกุล หรือเลขใบอนุญาต 10 หลักไปตรวจสอบสถานะผ่านระบบออนไลน์ OIC E-Service ได้ฟรี',
+          en: 'Before sharing personal details or paying, verify any agent/broker name or 10-digit license number for free on OIC E-Service.',
+        },
+      },
+      {
+        jargon: { th: 'สายด่วน คปภ. 1186', en: 'OIC Consumer Hotline 1186' },
+        plain: {
+          th: 'หากมีข้อสงสัยเรื่องเงื่อนไขกรมธรรม์ เคลมล่าช้า หรือพบการขายที่ไม่เป็นธรรม สามารถปรึกษาและร้องเรียนได้โดยตรงที่สายด่วน คปภ. 1186',
+          en: 'For neutral policy clarification, delayed claims, or unfair sales practices, contact the Office of Insurance Commission directly at 1186.',
+        },
+      },
+    ],
+    example: {
+      title: { th: 'เช็กลิสต์ความปลอดภัย 3 ข้อก่อนโอนเงิน', en: '3-Point Safety Check Before Any Payment' },
+      body: {
+        th: '1) โอนเงินเข้าบัญชีชื่อ "บริษัทประกันภัย" โดยตรงเท่านั้น ห้ามโอนเข้าบัญชีส่วนตัวตัวแทน 2) เช็กเลขใบอนุญาตบนเว็บ คปภ. 3) เมื่อได้เล่มกรมธรรม์ ให้รีบเช็กความถูกต้องภายในช่วง Free Look 15 วัน',
+        en: '1) Pay only to the official insurer corporate account — never an individual bank account 2) Verify license status on OIC E-Service 3) Review your delivered policy within the 15-day Free Look window.',
+      },
+    },
+    takeaway: {
+      th: 'ผู้บริโภคมีสิทธิอ่าน คิด และตรวจสอบให้มั่นใจก่อนเสมอ — อย่าเซ็นหรือโอนเงินภายใต้ความกดดัน',
+      en: 'You always have the right to verify, pause, and review calmly — never commit under high-pressure tactics.',
+    },
+    references: [
+      {
+        source: 'คปภ. E-Service',
+        label: { th: 'ระบบตรวจสอบใบอนุญาตตัวแทน / นายหน้า (OIC E-Service)', en: 'OIC E-Service — License Verification Portal' },
+        url: 'https://smart.oic.or.th/eservice/Home',
+      },
+      {
+        source: 'คปภ. (OIC)',
+        label: { th: 'สำนักงาน คปภ. — ศูนย์คุ้มครองสิทธิประโยชน์ (สายด่วน 1186)', en: 'OIC — Consumer Protection & Hotline 1186' },
+        url: 'https://www.oic.or.th/th',
+      },
+    ],
+    bridgeAction: {
+      page: 'risk-analysis',
+      label: { th: 'ตั้งแจ้งเตือนปฏิทินทบทวนสิทธิใน Risk Analysis', en: 'Set Review Reminder in Risk Analysis' },
+    },
+  },
+  {
+    id: 'copayment-2568-rules',
+    category: 'good-to-know',
+    categoryLabel: { th: 'รู้ไว้ใช้ว่า?', en: 'Good to Know?' },
+    readMinutes: 2,
+    iconName: 'shield-question',
+    keywords: ['co-payment', 'copayment', '2568', 'simple diseases', 'ป่วยเล็กน้อย', 'ร่วมจ่าย 30%', 'รู้ไว้ใช้ว่า'],
+    title: {
+      th: 'กติกาใหม่ Co-payment สุขภาพ (2568): เคลมแบบไหนไม่โดนร่วมจ่าย?',
+      en: 'New 2025 Health Co-Payment Rules: When Does It Trigger?',
+    },
+    hook: {
+      th: 'สรุปข้อเท็จจริงเกณฑ์ Co-payment ที่เริ่มใช้ตั้งแต่ มี.ค. 2568 แยกให้ชัดระหว่างโรคเล็กน้อย vs โรคร้ายแรง/ผ่าตัดใหญ่',
+      en: 'Clear facts on Thailand’s March 2025 Co-payment standard — separating minor admissions from major surgeries.',
+    },
+    intro: {
+      th: 'ข่าวเรื่องเกณฑ์ "Co-payment 30%–50%" ทำให้หลายคนตกใจว่าจะต้องร่วมจ่ายทุกครั้งที่เข้า รพ. ความจริงแล้วเกณฑ์ใหม่สำหรับกรมธรรม์ที่เริ่มตั้งแต่ มี.ค. 2568 ถูกออกแบบมาเพื่อคุมการแอดมิตโรคเล็กน้อยที่ไม่จำเป็น และ "ไม่กระทบ" การผ่าตัดใหญ่หรือโรคร้ายแรง',
+      en: 'Headlines about 30%–50% Co-payment caused widespread worry. In reality, the March 2025 rule for new policies targets repeated minor admissions and explicitly exempts major surgeries and critical illnesses.',
+    },
+    translations: [
+      {
+        jargon: { th: 'มีผลกับกรมธรรม์ใหม่ (มี.ค. 2568 เป็นต้นไป)', en: 'Applies to New Policies (March 2025+)' },
+        plain: {
+          th: 'ผู้ที่มีกรมธรรม์สุขภาพเดิมก่อน 20 มี.ค. 2568 และต่ออายุต่อเนื่อง รวมถึงประกันกลุ่มบริษัท ยังคงใช้เงื่อนไขเดิมตามสัญญา',
+          en: 'Existing policies issued before March 20, 2025 (continuously renewed) and Employer Group Insurance remain on their original terms.',
+        },
+      },
+      {
+        jargon: { th: 'กรณีที่ 1: ป่วยเล็กน้อย (Simple Diseases)', en: 'Trigger 1: Minor Illnesses (Simple Diseases)' },
+        plain: {
+          th: 'แอดมิตโรคเล็กน้อยที่ไม่รุนแรง (เช่น หวัด เวียนหัว ท้องเสีย กรดไหลย้อน) ตั้งแต่ 3 ครั้ง/ปีขึ้นไป และยอดเคลมรวม >= 200% ของเบี้ยสุขภาพ → ปีต่ออายุถัดไปอาจมีร่วมจ่าย 30%',
+          en: '3+ inpatient claims/year for minor conditions (cold, dizziness, mild diarrhea, acid reflux) totaling >= 200% of health premium → may trigger 30% co-pay at next renewal.',
+        },
+      },
+      {
+        jargon: { th: 'ข้อยกเว้น: โรคร้ายแรง & ผ่าตัดใหญ่', en: 'Exempt: Major Surgery & Critical Illness' },
+        plain: {
+          th: 'การผ่าตัดใหญ่และโรคร้ายแรงไม่ถูกนับรวมในเกณฑ์กระตุ้น Co-payment และหากปีถัดไปเคลมไม่เข้าเกณฑ์แล้ว สิทธิจะกลับคืนเป็นปกติ',
+          en: 'Major surgeries and critical illnesses are excluded from triggering co-pay, and clean claim years restore standard terms.',
+        },
+      },
+    ],
+    example: {
+      title: { th: 'ตัวอย่างจริง: ป่วยหนักผ่าตัด 1 ครั้ง ฿150,000 โดน Co-pay ไหม?', en: 'Real Example: One ฿150,000 Major Surgery' },
+      body: {
+        th: 'คำตอบคือ "ไม่โดน" เพราะเป็นเคสผ่าตัดใหญ่และเกิดขึ้นเพียง 1 ครั้ง ไม่ใช่การแอดมิตโรคเล็กน้อยซ้ำ ๆ 3 ครั้งขึ้นไป — ดังนั้นการเจ็บป่วยเล็กน้อยควรรักษาแบบ OPD หรือใช้สิทธิประกันสังคม/กลุ่มให้เหมาะสม',
+        en: 'Answer: NO. A single major surgery does not trigger co-payment — showing why routine minor illnesses belong in OPD/SSO care while IPD is reserved for genuine hospitalizations.',
+      },
+    },
+    takeaway: {
+      th: 'อย่าตื่นตระหนกกับข่าวลือ — ใช้สิทธิแอดมิต IPD เมื่อแพทย์เห็นว่าจำเป็นจริง และรักษาโรคเล็กน้อยแบบผู้ป่วยนอกเพื่อคงประวัติเคลมที่แข็งแรง',
+      en: 'Ignore social-media panic — reserve inpatient admissions for genuine medical necessity and use OPD for minor symptoms.',
+    },
+    references: [
+      {
+        source: 'สมาคมประกันชีวิตไทย',
+        label: { th: 'คำชี้แจงเงื่อนไข Co-payment ภายใต้ คปภ. (TLAA)', en: 'TLAA / OIC Official Co-Payment Clarification' },
+        url: 'https://www.tlaa.org/page_bx.php?cid=23&cname=&cno=1935',
+      },
+      {
+        source: 'สภาผู้บริโภค (TCC)',
+        label: { th: 'สภาองค์กรของผู้บริโภค — มุมมองและข้อสังเกต Co-payment', en: 'Thailand Consumers Council — Co-Payment Review' },
+        url: 'https://www.tcc.or.th/co-payment/',
+      },
+    ],
+    bridgeAction: {
+      page: 'invest',
+      label: { th: 'เปรียบเทียบต้นทุนความเสี่ยงใน Value Lab', en: 'Compare Risk Costs in Value Lab' },
+    },
+  },
+  {
+    id: 'thai-tax-deduction-facts',
+    category: 'good-to-know',
+    categoryLabel: { th: 'รู้ไว้ใช้ว่า?', en: 'Good to Know?' },
+    readMinutes: 2,
+    iconName: 'receipt',
+    keywords: ['ลดหย่อนภาษี', 'สรรพากร', '100000', '25000', '10 ปี', 'ฐานภาษี', 'irr', 'รู้ไว้ใช้ว่า'],
+    title: {
+      th: 'สิทธิลดหย่อนภาษีเบี้ยประกันชีวิต & สุขภาพ (สรรพากร): ใครคุ้มจริง?',
+      en: 'Thai Tax Deduction Rules (RD): Who Actually Benefits?',
+    },
+    hook: {
+      th: 'เช็กเพดานลดหย่อนจริง ฿100,000 (สุขภาพ ฿25,000) + กฎ 10 ปี และเหตุผลว่าทำไมฐานภาษี 0%–5% ไม่ควรซื้อเพื่อลดภาษีอย่างเดียว',
+      en: 'Exact ฿100k life / ฿25k health caps, the 10-year rule, and why 0%–5% earners should not lock cash just for tax.',
+    },
+    intro: {
+      th: 'ช่วงปลายปีมักมีคำชวนว่า "ซื้อประกันลดหย่อนภาษีสิ คุ้มมาก!" แต่ก่อนจะล็อกเงินสดไว้นาน 10 ปีขึ้นไป คุณควรรู้เพดานจริงของกรมสรรพากร และตรวจสอบก่อนว่าฐานภาษีปีนี้ของคุณเสียภาษีกี่เปอร์เซ็นต์',
+      en: 'Year-end tax promos often pitch savings plans as a must-have. Before locking cash for 10+ years, check the exact Revenue Department rules and verify your real marginal tax bracket first.',
+    },
+    translations: [
+      {
+        jargon: { th: 'เพดานเบี้ยประกันชีวิต ฿100,000 (สัญญา >= 10 ปี)', en: 'Life Cap ฿100,000 (10+ Year Contract)' },
+        plain: {
+          th: 'ลดหย่อนได้ตามจ่ายจริงสูงสุด ฿100,000/ปี โดยสัญญาต้องมีระยะเวลาคุ้มครองตั้งแต่ 10 ปีขึ้นไป และเงินคืนระหว่างทางต้องไม่เกิน 20% ของเบี้ยรายปี',
+          en: 'Deductible up to ฿100,000/yr if contract duration is at least 10 years and annual cashback does not exceed 20% of annual premium.',
+        },
+      },
+      {
+        jargon: { th: 'เพดานเบี้ยสุขภาพตนเอง ฿25,000', en: 'Health Sub-Cap ฿25,000' },
+        plain: {
+          th: 'เบี้ยประกันสุขภาพตนเองลดหย่อนได้สูงสุด ฿25,000/ปี แต่เมื่อรวมกับเบี้ยประกันชีวิตทั่วไปแล้วต้องไม่เกินเพดานรวม ฿100,000/ปี',
+          en: 'Personal health premiums qualify up to ฿25,000/yr, counted inside the combined ฿100,000/yr life + health ceiling.',
+        },
+      },
+      {
+        jargon: { th: 'ความคุ้มค่าตามฐานภาษี (0% vs 10%+)', en: 'Tax Bracket Impact (0% vs. 10%+)' },
+        plain: {
+          th: 'หากรายได้ทั้งปีไม่เกิน ~฿310,000 (ฐานภาษี 0%) คุณประหยัดภาษีได้ ฿0! การลดหย่อนภาษีจะเริ่มเห็นผลชัดตั้งแต่ฐานภาษี 10%–15% ขึ้นไป',
+          en: 'If annual income is under ~฿310,000 (0% bracket), tax savings are ฿0! Tax deductions become meaningful starting at the 10%–15%+ brackets.',
+        },
+      },
+    ],
+    example: {
+      title: { th: 'เทียบชัด ๆ: First Jobber รายได้ ฿25,000/ด. vs ฿50,000/ด.', en: 'Comparison: ฿25k/mo vs. ฿50k/mo Earner' },
+      body: {
+        th: 'รายได้ ฿25,000/ด. (฿300,000/ปี) หักค่าใช้จ่าย ฿100k + ส่วนตัว ฿60k เหลือเงินได้สุทธิ ฿140,000 → อยู่ในเกณฑ์ยกเว้นภาษี (0%) จึงประหยัดภาษี ฿0 แต่ถ้าเงินเดือน ฿50,000/ด. (ฐานภาษี 10%) เบี้ย ฿30,000 จะได้คืนภาษี ฿3,000/ปี ช่วยดัน IRR เพิ่มได้จริง',
+        en: 'At ฿25k/mo (฿300k/yr), taxable income after standard deductions is ฿140k → 0% tax bracket (฿0 saved). At ฿50k/mo (10% bracket), ฿30k saves ฿3,000/yr in taxes and meaningfully lifts effective IRR.',
+      },
+    },
+    takeaway: {
+      th: 'อย่าซื้อแผนผูกพัน 10 ปีเพราะคำว่า "ลดหย่อนภาษี" ก่อนเช็กฐานภาษีจริงและ IRR หลังหักเงินเฟ้อของตัวคุณเอง',
+      en: 'Never lock cash for 10 years for "tax deductions" without checking your actual Thai tax bracket and real IRR first.',
+    },
+    references: [
+      {
+        source: 'กรมสรรพากร (RD)',
+        label: { th: 'กรมสรรพากร — เกณฑ์ลดหย่อนเบี้ยประกันชีวิตและสุขภาพ (Clear Cut)', en: 'Revenue Department — Life & Health Tax Deduction Rules' },
+        url: 'https://www.rd.go.th/62777.html',
+      },
+      {
+        source: 'กรมสรรพากร (RD)',
+        label: { th: 'กรมสรรพากร — รายการค่าลดหย่อนภาษีบุคคลธรรมดาทั้งหมด', en: 'Revenue Department — All Personal Tax Allowances' },
+        url: 'https://www.rd.go.th/557.html',
+      },
+    ],
+    bridgeAction: {
+      page: 'invest',
+      label: { th: 'เช็กฐานภาษีและ IRR จริงใน Invest & Value Lab', en: 'Check Your Tax & IRR in Value Lab' },
     },
   },
 ];
@@ -443,144 +762,427 @@ export const JARGON_TERMS = [
   },
 ];
 
-export const LITERACY_QUIZ = [
+// =============================================================================
+// 15-QUESTION RANDOMIZED LITERACY QUIZ BANK
+// All 3 choices per question are strictly balanced in length (anti-guessing!)
+// =============================================================================
+export const LITERACY_QUIZ_BANK = [
   {
     id: 'q1-waiting',
     question: {
-      th: 'ทำแผนคุ้มครองสุขภาพอนุมัติวันนี้ พรุ่งนี้เป็นไข้เลือดออกแอดมิตทันที เคลมได้หรือไม่?',
-      en: 'Your health coverage is approved today, and tomorrow you are hospitalized for dengue. Can you claim?',
+      th: 'แผนคุ้มครองสุขภาพอนุมัติวันนี้ พรุ่งนี้เป็นไข้เลือดออกแอดมิตทันที เคลมได้หรือไม่?',
+      en: 'Your health plan is approved today, and dengue hits tomorrow. Can you claim?',
     },
     options: [
       {
         id: 'a',
-        label: { th: 'เคลมได้ทันที 100% เพราะสัญญาอนุมัติแล้ว', en: 'Yes, 100% covered since it is already approved' },
+        label: { th: 'เคลมได้เต็มวงเงินทันที เพราะสัญญาอนุมัติแล้ว', en: 'Fully covered immediately once policy is approved' },
       },
       {
         id: 'b',
-        label: {
-          th: 'ยังเคลมไม่ได้ เพราะโรคทั่วไปมีระยะเวลารอคอย (Waiting Period) 30 วัน',
-          en: 'No — general illnesses have a standard 30-day Waiting Period',
-        },
+        label: { th: 'ยังเคลมไม่ได้ เพราะมีระยะเวลารอคอย 30 วัน', en: 'Not covered yet due to the 30-day waiting period' },
       },
       {
         id: 'c',
-        label: { th: 'เคลมได้ครึ่งหนึ่งเฉพาะค่าห้อง', en: 'Half is covered for room fees only' },
+        label: { th: 'เคลมได้ครึ่งหนึ่งเฉพาะค่าห้องและค่ายาเบื้องต้น', en: 'Half covered for standard hospital room fees only' },
       },
     ],
     correctId: 'b',
     explanation: {
-      th: 'ถูกต้องครับ! การเจ็บป่วยทั่วไปมีระยะเวลารอคอยมาตรฐาน 30 วัน (และ 120 วันสำหรับ 8 โรคเฉพาะ) ส่วนอุบัติเหตุเฉียบพลันมักคุ้มครองทันที',
-      en: 'Spot on! General illnesses have a standard 30-day waiting period (120 days for 8 specific conditions), whereas sudden accidents typically start immediately.',
+      th: 'โรคทั่วไปมีระยะเวลารอคอยมาตรฐาน 30 วัน (และ 120 วันสำหรับ 8 โรคเฉพาะ) ส่วนอุบัติเหตุเฉียบพลันมักคุ้มครองทันที',
+      en: 'General illnesses carry a 30-day waiting period (120 days for 8 specific conditions), while sudden accidents usually start immediately.',
     },
   },
   {
     id: 'q2-unknown-limit',
     question: {
-      th: 'ถ้ามีประกันกลุ่มบริษัทแต่ "ไม่ทราบวงเงินจริง" ตามหลักวางแผนการเงินที่รอบคอบควรนับความคุ้มครองส่วนนี้เป็นเท่าไร?',
-      en: 'If you have Employer Group Insurance but do NOT know its coverage limit, how much should you count it as?',
+      th: 'หากมีประกันกลุ่มบริษัทแต่ "ไม่ทราบวงเงินจริง" ควรประเมินวงเงินที่มีไว้เท่าไร?',
+      en: 'If you have Employer Group Insurance with an unknown limit, how much should you count?',
     },
     options: [
       {
         id: 'a',
-        label: { th: 'นับเป็น ฿0 ไว้ก่อน แล้วรีบเช็กตัวเลขจริงกับ HR', en: 'Count it as ฿0 conservatively until confirmed with HR' },
+        label: { th: 'นับเป็น 0 บาทไว้ก่อน แล้วค่อยถามตัวเลขจาก HR', en: 'Count it as ฿0 first until confirmed with HR' },
       },
       {
         id: 'b',
-        label: { th: 'เดาไปก่อนว่าน่าจะคุ้มครอง ฿100,000', en: 'Assume it probably covers ฿100,000' },
+        label: { th: 'เดาไว้ก่อนว่าน่าจะคุ้มครองราว 100,000 บาท', en: 'Estimate it at ฿100,000 as a rough baseline' },
       },
       {
         id: 'c',
-        label: { th: 'ไม่ต้องสนใจ เพราะบริษัทน่าจะจ่ายให้หมด', en: 'Ignore it since employers usually pay everything' },
+        label: { th: 'นับว่าครอบคลุมเต็มบิลได้ทุกโรงพยาบาลเอกชน', en: 'Assume it covers 100% of private hospital bills' },
       },
     ],
     correctId: 'a',
     explanation: {
-      th: 'เยี่ยมมาก! หลัก Conservative Estimation นับวงเงินที่ไม่ทราบค่าเป็น ฿0 เพื่อไม่ให้ประเมินความเสี่ยงต่ำเกินจริง จากนั้นเช็กตัวเลขจริงจาก HR มาอัปเดต',
-      en: 'Correct! Conservative Estimation counts unknown limits as ฿0 so you never underestimate your risk gap before confirming the true limit with HR.',
+      th: 'หลักประเมินแบบรอบคอบจะนับวงเงินที่ไม่ทราบค่าเป็น ฿0 เพื่อไม่ให้ประเมินช่องว่างความเสี่ยงต่ำเกินจริง จากนั้นถาม HR เพื่อกรอกตัวเลขจริง',
+      en: 'Conservative estimation counts unknown limits as ฿0 so you never underestimate your risk gap before getting exact numbers from HR.',
     },
   },
   {
     id: 'q3-deductible',
     question: {
-      th: 'มีประกันกลุ่มบริษัทวงเงิน ฿30,000 อยู่แล้ว กลไกใดที่ช่วยลดการจ่ายเบี้ยซ้ำซ้อนเมื่อต้องปิดช่องว่างบิลหลักแสน?',
-      en: 'You already have a ฿30,000 employer group limit. Which mechanism avoids double-paying while covering ฿100,000+ bills?',
+      th: 'มีประกันกลุ่ม ฿30,000 อยู่แล้ว กลไกใดช่วยลดการจ่ายเบี้ยซ้ำซ้อนเมื่อปิดช่องว่างบิลใหญ่?',
+      en: 'With a ฿30,000 group limit already, what avoids double-paying while covering huge bills?',
     },
     options: [
       {
         id: 'a',
-        label: { th: 'ซื้อความคุ้มครอง OPD สูงสุดเพิ่มอีกฉบับ', en: 'Add maximum OPD outpatient visits' },
+        label: { th: 'เพิ่มวงเงินผู้ป่วยนอก (OPD) ให้สูงสุดทุกปี', en: 'Maximize routine OPD clinic visits each year' },
       },
       {
         id: 'b',
-        label: {
-          th: 'เลือกใช้ความรับผิดส่วนแรก (Deductible) ให้รับช่วงต่อจากประกันกลุ่ม',
-          en: 'Use a Deductible so supplemental cover kicks in above the group limit',
-        },
+        label: { th: 'เลือกใช้ความรับผิดส่วนแรก (Deductible) ต่อยอด', en: 'Use a Deductible layer above your group cap' },
       },
       {
         id: 'c',
-        label: { th: 'ยกเลิกสิทธิประกันสังคม ม.33', en: 'Cancel Social Security Section 33' },
+        label: { th: 'ยกเลิกสิทธิประกันสังคม ม.33 เพื่อลดความซ้ำ', en: 'Cancel Social Security Sec. 33 to cut overlap' },
       },
     ],
     correctId: 'b',
     explanation: {
-      th: 'ถูกต้องครับ! Deductible ช่วยให้ประกันกลุ่มรับผิดชอบยอดแรกก่อน แล้วแผนส่วนตัวค่อยจ่ายส่วนเกิน จึงช่วยประหยัดเบี้ยโดยไม่เสียเกราะป้องกันบิลใหญ่',
-      en: 'Exactly! A deductible lets your employer group plan handle the initial layer while supplemental cover absorbs excess catastrophic bills.',
+      th: 'Deductible ช่วยให้ประกันกลุ่มจ่ายก้อนแรกก่อน แล้วแผนส่วนตัวค่อยรับช่วงส่วนเกิน จึงลดเบี้ยที่ซ้ำซ้อนได้จริง',
+      en: 'A deductible lets your group plan pay the first layer while supplemental cover absorbs catastrophic excess bills.',
     },
   },
   {
     id: 'q4-budget-cap',
     question: {
-      th: 'ตามหลักวางแผนการเงินที่เป็นกลาง งบจัดการความเสี่ยงต่อเดือนควรคุมให้อยู่ในกรอบไม่เกินกี่ % ของรายได้?',
-      en: 'Under neutral personal finance guardrails, total risk-transfer spending should stay within what % of income?',
+      th: 'ตามหลักการเงินที่เป็นกลาง งบโอนย้ายความเสี่ยงควรคุมไว้ไม่เกินกี่ % ของรายได้?',
+      en: 'Under neutral finance guardrails, risk-transfer spend should stay within what % of income?',
     },
     options: [
       {
         id: 'a',
-        label: { th: 'ไม่เกิน 10%–15% ของรายได้ต่อเดือน', en: 'Within 10%–15% of monthly income' },
+        label: { th: 'ไม่เกิน 10%–15% ของรายได้ต่อเดือนตามเกณฑ์', en: 'Within 10%–15% of monthly income comfortably' },
       },
       {
         id: 'b',
-        label: { th: '30%–40% ของรายได้ เพื่อให้คุ้มครองสูงสุด', en: '30%–40% of income for maximum coverage' },
+        label: { th: 'ประมาณ 30%–40% ของรายได้เพื่อวงเงินสูงสุด', en: 'Around 30%–40% of income for maximum limits' },
       },
       {
         id: 'c',
-        label: { th: 'ใช้เงินเหลือออมทั้งหมด 100% ไปเลย', en: 'Spend 100% of all monthly surplus' },
+        label: { th: 'ใช้เงินเหลือเก็บต่อเดือนทั้งหมด 100% เต็ม', en: 'Use 100% of all leftover monthly cash surplus' },
       },
     ],
     correctId: 'a',
     explanation: {
-      th: 'แม่นยำครับ! กรอบ 10%–15% ช่วยให้คุณป้องกันความเสี่ยงหลักได้จริงโดยไม่เบียดเบียนเงินสำรองฉุกเฉินและการลงทุนเพื่ออนาคต',
-      en: 'Right on! The 10%–15% ceiling protects against major shocks without starving your emergency fund or long-term investments.',
+      th: 'กรอบ 10%–15% ช่วยป้องกันเหตุใหญ่ได้โดยไม่เบียดเบียนเงินสำรองฉุกเฉินและการลงทุนเติบโตระยะยาว',
+      en: 'The 10%–15% cap protects against major shocks without starving your emergency reserve or long-term investments.',
     },
   },
   {
     id: 'q5-disclosure',
     question: {
-      th: 'หากเคยตรวจพบโรคประจำตัวมาก่อนแต่เลือก "ไม่แถลงประวัติ" ตอนสมัคร จะเกิดผลอย่างไร?',
-      en: 'What happens if you conceal a known medical diagnosis when applying for coverage?',
+      th: 'หากเคยตรวจพบโรคประจำตัวมาก่อนแต่เลือก "ไม่แถลงประวัติ" จะเกิดผลอย่างไร?',
+      en: 'What happens if you omit a prior medical diagnosis on your health application?',
     },
     options: [
       {
         id: 'a',
-        label: { th: 'ไม่มีผลอะไร บริษัทตรวจสอบย้อนหลังไม่ได้', en: 'Nothing — prior medical records cannot be checked' },
+        label: { th: 'ไม่มีผลกระทบ เพราะตรวจสอบประวัติย้อนหลังไม่ได้', en: 'No impact because past records stay private' },
       },
       {
         id: 'b',
-        label: { th: 'ได้เบี้ยถูกลงและเคลมโรคนั้นได้ปกติ', en: 'Lower premiums and normal claims for that condition' },
+        label: { th: 'ได้เบี้ยรายปีถูกลงและเบิกโรคนั้นได้ตามปกติ', en: 'Lower premiums with normal claim approvals' },
       },
       {
         id: 'c',
-        label: {
-          th: 'เสี่ยงถูกปฏิเสธเคลมและบอกล้างสัญญาได้ตามกฎหมาย',
-          en: 'Risk of claim denial and legal policy rescission',
-        },
+        label: { th: 'เสี่ยงถูกปฏิเสธเคลมและบอกล้างสัญญาตามกฎหมาย', en: 'Risk of claim denial and contract rescission' },
       },
     ],
     correctId: 'c',
     explanation: {
-      th: 'ถูกต้องครับ! การแถลงความจริงตามประวัติสุขภาพ 100% คือเกราะป้องกันสิทธิที่ดีที่สุด เพื่อให้การเคลมในอนาคตโปร่งใสไร้ปัญหา',
-      en: 'Correct! 100% truthful disclosure is your strongest protection so future claims for covered events are paid smoothly.',
+      th: 'การแถลงความจริง 100% คือเกราะป้องกันสิทธิที่ดีที่สุด เพราะหากปกปิดประวัติสำคัญ บริษัทมีสิทธิบอกล้างสัญญาได้ภายใน 2 ปี',
+      en: '100% honest disclosure protects your valid claims; concealing material history allows legal rescission within 2 years.',
+    },
+  },
+  {
+    id: 'q6-ucep',
+    question: {
+      th: 'สิทธิ UCEP คุ้มครองผู้ป่วยฉุกเฉินวิกฤตใน รพ.ใกล้ที่สุดฟรี นานสูงสุดกี่ชั่วโมง?',
+      en: 'How long does Thailand’s UCEP free critical emergency care last at the nearest hospital?',
+    },
+    options: [
+      {
+        id: 'a',
+        label: { th: 'คุ้มครองฟรีสูงสุด 24 ชั่วโมงแรกหลังเกิดเหตุ', en: 'Free emergency care for the first 24 hours' },
+      },
+      {
+        id: 'b',
+        label: { th: 'คุ้มครองฟรีสูงสุด 72 ชั่วโมงจนพ้นภาวะวิกฤต', en: 'Free stabilization for up to 72 hours max' },
+      },
+      {
+        id: 'c',
+        label: { th: 'คุ้มครองฟรีตลอดการรักษาจนกว่าจะหายขาดดี', en: 'Free unlimited inpatient stay until fully cured' },
+      },
+    ],
+    correctId: 'b',
+    explanation: {
+      th: 'สิทธิ UCEP ครอบคลุม 6 อาการฉุกเฉินวิกฤตที่ รพ.ใกล้ที่สุด (รัฐหรือเอกชน) ฟรีไม่เกิน 72 ชั่วโมงจนพ้นวิกฤตและย้ายไป รพ.ตามสิทธิได้',
+      en: 'UCEP covers 6 qualifying life-threatening conditions at the nearest hospital for up to 72 hours until safe transfer.',
+    },
+  },
+  {
+    id: 'q7-freelook',
+    question: {
+      th: 'หลังได้รับเล่มกรมธรรม์ สิทธิ Free Look ให้เวลาทบทวนขอยกเลิกคืนเบี้ยได้กี่วัน?',
+      en: 'How many days does the standard Free Look period give you to review and cancel a policy?',
+    },
+    options: [
+      {
+        id: 'a',
+        label: { th: 'ภายใน 15 วันนับจากวันที่ได้รับเล่มกรมธรรม์', en: 'Within 15 days after receiving your policy' },
+      },
+      {
+        id: 'b',
+        label: { th: 'ภายใน 3 วันนับจากวันที่โอนเงินชำระเบี้ยแรก', en: 'Within 3 days after making your first payment' },
+      },
+      {
+        id: 'c',
+        label: { th: 'ไม่สามารถยกเลิกได้ทุกกรณีหลังอนุมัติสัญญา', en: 'Cancellation is never allowed once approved' },
+      },
+    ],
+    correctId: 'a',
+    explanation: {
+      th: 'สิทธิ Free Look ให้เวลาอ่านเงื่อนไข 15 วันหลังรับเล่ม (หรือ 30 วันกรณีซื้อทางโทรศัพท์) หากไม่ตรงใจสามารถขอยกเลิกคืนเงินได้',
+      en: 'The Free Look window gives you 15 days after delivery (30 days for telesales) to cancel for a refund minus minimal fees.',
+    },
+  },
+  {
+    id: 'q8-oic-hotline',
+    question: {
+      th: 'หากมีข้อสงสัยเรื่องกรมธรรม์หรือเคลมไม่เป็นธรรม ควรติดต่อสายด่วนหน่วยงานใด?',
+      en: 'Which neutral regulator hotline assists Thai consumers with insurance disputes?',
+    },
+    options: [
+      {
+        id: 'a',
+        label: { th: 'สายด่วนสำนักงาน คปภ. หมายเลข 1186 โดยตรง', en: 'Office of Insurance Commission Hotline 1186' },
+      },
+      {
+        id: 'b',
+        label: { th: 'สายด่วนกรมสรรพากร หมายเลข 1161 โดยตรง', en: 'Thai Revenue Department Hotline 1161 directly' },
+      },
+      {
+        id: 'c',
+        label: { th: 'สายด่วนการท่องเที่ยวแห่งประเทศไทย 1672', en: 'Tourism Authority of Thailand Hotline 1672' },
+      },
+    ],
+    correctId: 'a',
+    explanation: {
+      th: 'สายด่วน คปภ. 1186 คือช่องทางกลางสำหรับปรึกษาเงื่อนไข ตรวจสอบสิทธิ และร้องเรียนข้อพิพาทด้านประกันภัยโดยเฉพาะ',
+      en: 'OIC Hotline 1186 is Thailand’s official insurance regulator channel for neutral advice, license checks, and dispute resolution.',
+    },
+  },
+  {
+    id: 'q9-opd-ipd',
+    question: {
+      th: 'สำหรับ First Jobber ที่งบจำกัด ควรให้ความสำคัญกับค่ารักษาแบบใดก่อน?',
+      en: 'On a limited starter budget, which hospital coverage layer should come first?',
+    },
+    options: [
+      {
+        id: 'a',
+        label: { th: 'ผู้ป่วยนอก (OPD) เพื่อเบิกค่ายาหวัดได้ทุกครั้ง', en: 'Outpatient (OPD) to claim every minor clinic trip' },
+      },
+      {
+        id: 'b',
+        label: { th: 'ผู้ป่วยใน (IPD) เพื่อกันบิลแอดมิตก้อนใหญ่หลักแสน', en: 'Inpatient (IPD) to shield against ฿100k+ hospital bills' },
+      },
+      {
+        id: 'c',
+        label: { th: 'ทันตกรรมและตรวจสุขภาพประจำปีแบบพรีเมียม', en: 'Premium dental and annual wellness packages' },
+      },
+    ],
+    correctId: 'b',
+    explanation: {
+      th: 'IPD คือเหตุที่เกิดไม่บ่อยแต่ยอดบิลสูงหลักหมื่น-แสน ส่วน OPD ยอดเล็กสามารถใช้เงินสำรองหรือสวัสดิการบริษัทดูแลได้คุ้มกว่า',
+      en: 'Inpatient (IPD) stays can wipe out savings in one shock, while small OPD clinic bills are cheaper to handle via reserves or workplace benefits.',
+    },
+  },
+  {
+    id: 'q10-irr',
+    question: {
+      th: 'ข้อใดอธิบายความหมายของค่า IRR ในแผนสะสมทรัพย์ระยะยาวได้ถูกต้องที่สุด?',
+      en: 'Which statement accurately describes IRR on a long-term savings plan?',
+    },
+    options: [
+      {
+        id: 'a',
+        label: { th: 'เปอร์เซ็นต์เงินคืนเทียบกับทุนประกันในแต่ละปี', en: 'Annual headline cashback percent of sum insured' },
+      },
+      {
+        id: 'b',
+        label: { th: 'อัตราผลตอบแทนทบต้นต่อปีจริงจากกระแสเงินสด', en: 'True annualized compound return across cashflows' },
+      },
+      {
+        id: 'c',
+        label: { th: 'อัตราภาษีที่กรมสรรพากรหัก ณ ที่จ่ายทุกสิ้นปี', en: 'Annual withholding tax rate charged at year-end' },
+      },
+    ],
+    correctId: 'b',
+    explanation: {
+      th: 'IRR คืออัตราดอกเบี้ยทบต้นที่แท้จริงต่อปีจากเงินที่จ่ายออกและรับคืนจริงตลอดสัญญา ไม่ใช่ตัวเลข % เงินคืนตามทุนประกัน',
+      en: 'IRR measures your true annualized compound interest rate across actual cash outflows and inflows, unlike marketing cashback slogans.',
+    },
+  },
+  {
+    id: 'q11-tax-10yr',
+    question: {
+      th: 'เบี้ยประกันชีวิตทั่วไปต้องมีระยะเวลาคุ้มครองกี่ปีขึ้นไปจึงใช้ลดหย่อนภาษีไทยได้?',
+      en: 'What minimum policy duration is required for Thai life insurance tax deductions?',
+    },
+    options: [
+      {
+        id: 'a',
+        label: { th: 'ต้องมีระยะเวลาคุ้มครองตั้งแต่ 3 ปีขึ้นไป', en: 'Contract duration of at least 3 years or more' },
+      },
+      {
+        id: 'b',
+        label: { th: 'ต้องมีระยะเวลาคุ้มครองตั้งแต่ 5 ปีขึ้นไป', en: 'Contract duration of at least 5 years or more' },
+      },
+      {
+        id: 'c',
+        label: { th: 'ต้องมีระยะเวลาคุ้มครองตั้งแต่ 10 ปีขึ้นไป', en: 'Contract duration of at least 10 years or more' },
+      },
+    ],
+    correctId: 'c',
+    explanation: {
+      th: 'ตามเกณฑ์กรมสรรพากร กรมธรรม์ประกันชีวิตต้องมีระยะเวลาคุ้มครองตั้งแต่ 10 ปีขึ้นไป และลดหย่อนได้สูงสุด ฿100,000/ปี',
+      en: 'Thai Revenue Department rules require at least a 10-year policy term, deductible up to ฿100,000 per year.',
+    },
+  },
+  {
+    id: 'q12-tax-bracket',
+    question: {
+      th: 'พนักงานรายได้ ฿25,000/เดือน (ฐานภาษี 0%) ซื้อแผนลดหย่อนภาษี ฿30,000 จะได้ภาษีคืนกี่บาท?',
+      en: 'A ฿25,000/mo earner (0% Thai tax bracket) pays ฿30,000 into a tax plan. How much tax is saved?',
+    },
+    options: [
+      {
+        id: 'a',
+        label: { th: 'ได้ภาษีคืน 0 บาท เพราะยังไม่อยู่ในเกณฑ์เสียภาษี', en: 'Saves ฿0 since taxable income is already at 0%' },
+      },
+      {
+        id: 'b',
+        label: { th: 'ได้ภาษีคืน 3,000 บาทเท่ากันทุกคนทุกช่วงรายได้', en: 'Saves ฿3,000 flat regardless of income bracket' },
+      },
+      {
+        id: 'c',
+        label: { th: 'ได้ภาษีคืน 6,000 บาทเข้าบัญชีพร้อมเพย์ปลายปี', en: 'Saves ฿6,000 refunded via PromptPay at year-end' },
+      },
+    ],
+    correctId: 'a',
+    explanation: {
+      th: 'หากรายได้สุทธิอยู่ในเกณฑ์ยกเว้นภาษี (0%) คุณไม่เสียภาษีอยู่แล้ว จึงไม่มีภาษีให้ลดหย่อน ควรเน้นสร้างเงินสำรองฉุกเฉินก่อน',
+      en: 'When your marginal tax rate is 0%, tax deductions save ฿0 — focus on building emergency savings and liquid wealth first.',
+    },
+  },
+  {
+    id: 'q13-job-switch',
+    question: {
+      th: 'เมื่อพนักงานประจำลาออกหรือย้ายบริษัท สิทธิ "ประกันกลุ่มบริษัทเดิม" จะเป็นอย่างไร?',
+      en: 'What happens to your previous Employer Group Insurance when you resign to switch jobs?',
+    },
+    options: [
+      {
+        id: 'a',
+        label: { th: 'ติดตัวไปใช้ต่อที่บริษัทใหม่ได้โดยอัตโนมัติ', en: 'Automatically transfers over to your new employer' },
+      },
+      {
+        id: 'b',
+        label: { th: 'สิ้นสุดความคุ้มครองลงเมื่อพ้นสภาพพนักงานเดิม', en: 'Ends as soon as employment with that company ends' },
+      },
+      {
+        id: 'c',
+        label: { th: 'คุ้มครองฟรีต่ออีก 2 ปีเต็มแม้ไม่ได้ทำงานแล้ว', en: 'Stays active free for 2 full years after leaving' },
+      },
+    ],
+    correctId: 'b',
+    explanation: {
+      th: 'ประกันกลุ่มเป็นสวัสดิการผูกกับบริษัทเดิม เมื่อลาออกสิทธิจะสิ้นสุดทันที จึงควรวางแผนรับมือช่วงรอยต่อเปลี่ยนงานไว้ด้วย',
+      en: 'Group insurance belongs to the employer and terminates upon resignation, creating a transition gap during probation.',
+    },
+  },
+  {
+    id: 'q14-grace-period',
+    question: {
+      th: 'ระยะเวลาผ่อนผัน (Grace Period) ที่ขยายเวลาชำระเบี้ยหลังครบกำหนด มักอยู่ที่กี่วัน?',
+      en: 'How long is the typical Grace Period after a policy premium due date?',
+    },
+    options: [
+      {
+        id: 'a',
+        label: { th: 'ประมาณ 7 วัน และตัดความคุ้มครองทันทีในวันที่ 8', en: 'About 7 days before coverage drops on day 8' },
+      },
+      {
+        id: 'b',
+        label: { th: 'ประมาณ 31 วัน โดยความคุ้มครองยังเดินต่อตามปกติ', en: 'About 31 days while coverage remains active' },
+      },
+      {
+        id: 'c',
+        label: { th: 'ประมาณ 180 วัน โดยไม่ต้องชำระเบี้ยย้อนหลังเลย', en: 'About 180 days with no back-payments required' },
+      },
+    ],
+    correctId: 'b',
+    explanation: {
+      th: 'Grace Period มาตรฐานอยู่ที่ 31 วันหลังครบกำหนด ระหว่างนี้ความคุ้มครองยังคงอยู่ แต่ควรตั้งปฏิทินเตือนล่วงหน้าเพื่อไม่ให้ขาดอายุ',
+      en: 'Standard grace periods last 31 days with active protection, though setting a calendar reminder avoids accidental lapses.',
+    },
+  },
+  {
+    id: 'q15-copay-2568',
+    question: {
+      th: 'ตามเกณฑ์ Co-payment สุขภาพปี 2568 การผ่าตัดใหญ่หรือโรคร้ายแรง 1 ครั้งจะโดนร่วมจ่ายไหม?',
+      en: 'Under Thailand’s 2025 Co-payment rules, does a single major surgery trigger co-pay?',
+    },
+    options: [
+      {
+        id: 'a',
+        label: { th: 'โดนร่วมจ่าย 30% ทันทีตั้งแต่วันแรกที่เข้าผ่าตัด', en: 'Triggers 30% co-pay immediately on day one' },
+      },
+      {
+        id: 'b',
+        label: { th: 'ไม่โดน เพราะผ่าตัดใหญ่และโรคร้ายแรงได้รับยกเว้น', en: 'No — major surgery & critical illness are exempt' },
+      },
+      {
+        id: 'c',
+        label: { th: 'โดนยกเลิกกรมธรรม์ทันทีเมื่อยอดเคลมเกิน 50,000', en: 'Cancels the policy whenever a claim tops ฿50k' },
+      },
+    ],
+    correctId: 'b',
+    explanation: {
+      th: 'เกณฑ์ Co-payment ปี 2568 มุ่งคุมการแอดมิตโรคเล็กน้อย (Simple Diseases) ซ้ำ ๆ 3 ครั้งขึ้นไป โดยยกเว้นการผ่าตัดใหญ่และโรคร้ายแรง',
+      en: 'The 2025 co-payment standard targets repeated minor admissions (3+ times/yr) and explicitly exempts major surgeries and critical illnesses.',
     },
   },
 ];
+
+// Keep backward-compatible alias if anything references LITERACY_QUIZ
+export const LITERACY_QUIZ = LITERACY_QUIZ_BANK;
+
+function shuffleList(items) {
+  const arr = [...items];
+  for (let i = arr.length - 1; i > 0; i -= 1) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
+/**
+ * Pick 5 fresh questions from the 15-question bank (avoiding previous round IDs)
+ * and shuffle the A/B/C option order on every question.
+ */
+export function buildRandomQuizSession(count = 5, previousIds = []) {
+  const avoid = new Set(Array.isArray(previousIds) ? previousIds : []);
+  const fresh = shuffleList(LITERACY_QUIZ_BANK.filter((q) => !avoid.has(q.id)));
+  const seen = shuffleList(LITERACY_QUIZ_BANK.filter((q) => avoid.has(q.id)));
+  const picked = [...fresh, ...seen].slice(0, count);
+
+  return picked.map((q) => ({
+    ...q,
+    options: shuffleList(q.options),
+  }));
+}

@@ -3,17 +3,23 @@ import {
   ArrowLeft,
   ArrowRight,
   Award,
+  BadgeCheck,
   BookOpen,
   Building2,
   CheckCircle2,
   Clock,
+  ExternalLink,
   FileWarning,
   Gamepad2,
   Layers,
   Lightbulb,
+  ReceiptText,
   RotateCcw,
   Scale,
   Search,
+  ShieldQuestion,
+  Shuffle,
+  Siren,
   Sparkles,
   Stethoscope,
   X,
@@ -27,8 +33,11 @@ import {
   LEARNING_ARTICLES,
   LEARNING_CATEGORIES,
   LEARNING_STORAGE_KEY,
-  LITERACY_QUIZ,
+  LITERACY_QUIZ_BANK,
+  buildRandomQuizSession,
 } from '../utils/learningData';
+
+const QUIZ_ROUND_SIZE = 5;
 
 const ARTICLE_ICONS = {
   stethoscope: Stethoscope,
@@ -37,6 +46,10 @@ const ARTICLE_ICONS = {
   scale: Scale,
   building: Building2,
   layers: Layers,
+  siren: Siren,
+  'badge-check': BadgeCheck,
+  'shield-question': ShieldQuestion,
+  receipt: ReceiptText,
 };
 
 function loadLearningProgress() {
@@ -76,7 +89,11 @@ export default function LearningCenter({ onNavigate }) {
   const [glossarySearch, setGlossarySearch] = useState('');
   const [selectedJargonId, setSelectedJargonId] = useState(JARGON_TERMS[0].id);
 
-  // 5-Question Literacy Quiz state
+  // Randomized 5-Question Literacy Quiz state (drawn from 15-question bank)
+  const [quizSession, setQuizSession] = useState(() =>
+    buildRandomQuizSession(QUIZ_ROUND_SIZE, [])
+  );
+  const [quizRound, setQuizRound] = useState(1);
   const [quizIdx, setQuizIdx] = useState(0);
   const [selectedOptionId, setSelectedOptionId] = useState(null);
   const [quizScore, setQuizScore] = useState(0);
@@ -98,12 +115,12 @@ export default function LearningCenter({ onNavigate }) {
   const targetMonths = userProfile?.emergencyTargetMonths || 3;
   const emergencyGoal = Math.max(30000, Math.round((monthlyExpenses || 20000) * targetMonths));
 
-  // Main 3-tab window bar (compact iPhone-safe labels)
+  // Main 3-tab window bar (compact labels safe across 100% / 112% / 125% font scale)
   const windowTabs = useMemo(
     () => [
       {
         id: 'guides',
-        label: lang === 'TH' ? 'บทความ 2 นาที' : '2-Min Guides',
+        label: lang === 'TH' ? 'บทความ' : 'Guides',
         icon: BookOpen,
         badge: `${progress.readIds.length}/${LEARNING_ARTICLES.length}`,
       },
@@ -114,7 +131,7 @@ export default function LearningCenter({ onNavigate }) {
       },
       {
         id: 'quiz',
-        label: lang === 'TH' ? 'ควิซ 5 ข้อ' : '5-Q Quiz',
+        label: lang === 'TH' ? 'ควิซ 5 ข้อ' : 'Quiz',
         icon: Award,
         badge: progress.quizVerified ? '✓' : undefined,
       },
@@ -185,8 +202,8 @@ export default function LearningCenter({ onNavigate }) {
     filteredTerms[0] ||
     null;
 
-  // Quiz handlers
-  const currentQuestion = LITERACY_QUIZ[quizIdx];
+  // Quiz handlers (randomized 5-question round from 15-question bank)
+  const currentQuestion = quizSession[quizIdx];
   const isAnswered = selectedOptionId !== null;
   const isCorrectAnswer = isAnswered && selectedOptionId === currentQuestion?.correctId;
 
@@ -199,7 +216,7 @@ export default function LearningCenter({ onNavigate }) {
   };
 
   const handleNextQuestion = () => {
-    if (quizIdx + 1 >= LITERACY_QUIZ.length) {
+    if (quizIdx + 1 >= quizSession.length) {
       setQuizFinished(true);
       const passed = quizScore >= 4;
       setProgress((prev) => ({
@@ -214,6 +231,9 @@ export default function LearningCenter({ onNavigate }) {
   };
 
   const handleRestartQuiz = () => {
+    const prevIds = quizSession.map((q) => q.id);
+    setQuizSession(buildRandomQuizSession(QUIZ_ROUND_SIZE, prevIds));
+    setQuizRound((prev) => prev + 1);
     setQuizIdx(0);
     setSelectedOptionId(null);
     setQuizScore(0);
@@ -222,7 +242,7 @@ export default function LearningCenter({ onNavigate }) {
 
   const quizProgressPct = quizFinished
     ? 100
-    : Math.round(((quizIdx + (isAnswered ? 1 : 0)) / LITERACY_QUIZ.length) * 100);
+    : Math.round(((quizIdx + (isAnswered ? 1 : 0)) / Math.max(1, quizSession.length)) * 100);
 
   return (
     <div className="lc-page">
@@ -298,7 +318,7 @@ export default function LearningCenter({ onNavigate }) {
                     <button
                       key={cat.id}
                       type="button"
-                      className={`lc-mini-cat-btn ${activeCategory === cat.id ? 'active' : ''}`}
+                      className={`lc-mini-cat-btn cat-${cat.id} ${activeCategory === cat.id ? 'active' : ''}`}
                       onClick={() => setActiveCategory(cat.id)}
                     >
                       {t(cat.label)}
@@ -428,6 +448,35 @@ export default function LearningCenter({ onNavigate }) {
                     <Lightbulb size={17} className="lc-tip-icon" aria-hidden="true" />
                     <p>{t(activeArticle.takeaway)}</p>
                   </div>
+
+                  {/* Verified Official Reference Links */}
+                  {Array.isArray(activeArticle.references) && activeArticle.references.length > 0 && (
+                    <div className="lc-references-box">
+                      <div className="lc-references-head">
+                        <ExternalLink size={14} aria-hidden="true" />
+                        <span>
+                          {lang === 'TH'
+                            ? 'แหล่งอ้างอิง & ศึกษาต่อ (หน่วยงานทางการ)'
+                            : 'Official References & Further Reading'}
+                        </span>
+                      </div>
+                      <div className="lc-references-list">
+                        {activeArticle.references.map((ref, idx) => (
+                          <a
+                            key={idx}
+                            href={ref.url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="lc-ref-link"
+                          >
+                            <span className="lc-ref-source">{t(ref.source)}</span>
+                            <span className="lc-ref-title">{t(ref.label)}</span>
+                            <ExternalLink size={13} className="lc-ref-ext" aria-hidden="true" />
+                          </a>
+                        ))}
+                      </div>
+                    </div>
+                  )}
 
                   {/* In-Tab Prev / Next Navigation + Tool Bridge */}
                   <div className="lc-pane-footer">
@@ -566,7 +615,7 @@ export default function LearningCenter({ onNavigate }) {
         )}
 
         {/* =================================================================== */}
-        {/* TAB 3: 5-QUESTION RISK & POLICY LITERACY QUIZ WINDOW                */}
+        {/* TAB 3: RANDOMIZED 5-QUESTION RISK & POLICY LITERACY QUIZ WINDOW     */}
         {/* =================================================================== */}
         {activeTab === 'quiz' && (
           <div className="lc-quiz-workspace">
@@ -579,18 +628,29 @@ export default function LearningCenter({ onNavigate }) {
                 </h2>
                 <p className="lc-card-sub">
                   {lang === 'TH'
-                    ? 'ทดสอบกับดักจริงที่มือใหม่มักพลาด ตอบถูก 4/5 ข้อรับป้ายผ่านเกณฑ์โค้ชการเงิน'
-                    : 'Test 5 common real-world traps — score 4/5+ to earn your Literacy Verified badge.'}
+                    ? `สุ่ม 5 ข้อจากคลัง ${LITERACY_QUIZ_BANK.length} ข้อ (ชุดที่ ${quizRound} • ช้อยส์ความยาวเท่ากันทุกข้อ) ตอบถูก 4/5 ข้อรับป้ายผ่านเกณฑ์`
+                    : `Random 5 questions from a ${LITERACY_QUIZ_BANK.length}-question bank (Set #${quizRound} • balanced option length) — score 4/5+ for badge.`}
                 </p>
               </div>
 
-              <span className="lc-quiz-step-pill tabular-nums">
-                {quizFinished
-                  ? `${quizScore} / ${LITERACY_QUIZ.length}`
-                  : lang === 'TH'
-                    ? `ข้อที่ ${quizIdx + 1}/${LITERACY_QUIZ.length}`
-                    : `Q ${quizIdx + 1}/${LITERACY_QUIZ.length}`}
-              </span>
+              <div className="lc-quiz-top-actions">
+                <button
+                  type="button"
+                  className="btn-soft-gray lc-quiz-shuffle-btn"
+                  onClick={handleRestartQuiz}
+                  title={lang === 'TH' ? 'สุ่มโจทย์ชุดใหม่ 5 ข้อ' : 'Shuffle a new 5-question set'}
+                >
+                  <Shuffle size={13} aria-hidden="true" />
+                  <span>{lang === 'TH' ? 'สุ่มชุดใหม่' : 'New Set'}</span>
+                </button>
+                <span className="lc-quiz-step-pill tabular-nums">
+                  {quizFinished
+                    ? `${quizScore} / ${quizSession.length}`
+                    : lang === 'TH'
+                      ? `ข้อที่ ${quizIdx + 1}/${quizSession.length}`
+                      : `Q ${quizIdx + 1}/${quizSession.length}`}
+                </span>
+              </div>
             </div>
 
             <div className="gm-hud-bar-track">
@@ -646,7 +706,7 @@ export default function LearningCenter({ onNavigate }) {
                       onClick={handleNextQuestion}
                     >
                       <span>
-                        {quizIdx + 1 >= LITERACY_QUIZ.length
+                        {quizIdx + 1 >= quizSession.length
                           ? lang === 'TH'
                             ? 'ดูผลคะแนนควิซ'
                             : 'See Quiz Result'
@@ -667,11 +727,11 @@ export default function LearningCenter({ onNavigate }) {
                     <strong className="tabular-nums">
                       {quizScore >= 4
                         ? lang === 'TH'
-                          ? `ผ่านเกณฑ์โค้ชการเงิน! (${quizScore}/${LITERACY_QUIZ.length})`
-                          : `Literacy Verified! (${quizScore}/${LITERACY_QUIZ.length})`
+                          ? `ผ่านเกณฑ์โค้ชการเงิน! (${quizScore}/${quizSession.length})`
+                          : `Literacy Verified! (${quizScore}/${quizSession.length})`
                         : lang === 'TH'
-                          ? `ได้คะแนน ${quizScore}/${LITERACY_QUIZ.length} — ลองทบทวนอีกนิด!`
-                          : `Scored ${quizScore}/${LITERACY_QUIZ.length} — Almost There!`}
+                          ? `ได้คะแนน ${quizScore}/${quizSession.length} — ลองทบทวนอีกนิด!`
+                          : `Scored ${quizScore}/${quizSession.length} — Almost There!`}
                     </strong>
                     <p>
                       {quizScore >= 4
@@ -679,8 +739,8 @@ export default function LearningCenter({ onNavigate }) {
                           ? 'คุณเข้าใจกติกาสำคัญทั้งระยะเวลารอคอย สวัสดิการ และกรอบงบปลอดภัยพร้อมลุยสนามจำลองแล้ว'
                           : 'You mastered waiting periods, conservative benefit checks, and safe budgeting — ready for the game!'
                         : lang === 'TH'
-                          ? 'ลองสลับไปอ่านแท็บ "บทความ 2 นาที" เพิ่มเติม แล้วกลับมาทำควิซใหม่ได้ตลอดเวลา'
-                          : 'Switch to the 2-Min Guides tab to review and retake the quiz anytime.'}
+                          ? 'ลองสลับไปอ่านแท็บ "บทความ" เพิ่มเติม แล้วกดสุ่มชุดใหม่เพื่อทบทวนได้ตลอดเวลา'
+                          : 'Switch to the Guides tab to review and draw a fresh random quiz set anytime.'}
                     </p>
                   </div>
                 </div>
@@ -692,7 +752,9 @@ export default function LearningCenter({ onNavigate }) {
                     onClick={handleRestartQuiz}
                   >
                     <RotateCcw size={15} />
-                    <span>{lang === 'TH' ? 'ทำควิซใหม่' : 'Retake Quiz'}</span>
+                    <span>
+                      {lang === 'TH' ? 'ทำควิซใหม่ (สุ่มชุดใหม่)' : 'Retake (New Random Set)'}
+                    </span>
                   </button>
 
                   <button

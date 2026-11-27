@@ -12492,9 +12492,9 @@ p {
 }
 
 .lc-window-tabs {
-  flex: 0 1 500px;
+  flex: 0 1 590px;
   width: 100%;
-  max-width: 500px;
+  max-width: 590px;
   min-width: 0;
 }
 
@@ -12968,6 +12968,192 @@ p {
   font-size: 0.81rem;
   color: var(--text-secondary);
   line-height: 1.54;
+}
+
+/* ==========================================================================
+   ROUND 6.5.0 — A+ TAB SAFETY, PURPLE "รู้ไว้ใช้ว่า?", REFERENCES & QUIZ SHUFFLE
+   ========================================================================== */
+
+/* Keep Learning Center window tabs readable without truncation at 112% & 125% */
+.lc-window-tabs .liquid-tab-btn {
+  padding-left: 10px;
+  padding-right: 10px;
+  gap: 5px;
+}
+
+.lc-window-tabs .liquid-tab-badge {
+  font-size: 0.68rem;
+  padding: 2px 6px;
+}
+
+@media (max-width: 520px) {
+  .lc-window-tabs .liquid-tab-btn {
+    padding: 7px 6px;
+    gap: 4px;
+    font-size: 0.74rem;
+  }
+
+  .lc-window-tabs .liquid-tab-badge {
+    font-size: 0.64rem;
+    padding: 1px 5px;
+  }
+}
+
+/* Purple category: "รู้ไว้ใช้ว่า?" (Good to Know?) */
+.lc-cat-pill.cat-good-to-know {
+  background: rgba(124, 58, 237, 0.12);
+  color: #6d28d9;
+}
+
+[data-theme='dark'] .lc-cat-pill.cat-good-to-know {
+  background: rgba(167, 139, 250, 0.18);
+  color: #c4b5fd;
+}
+
+.lc-topic-icon.cat-good-to-know {
+  background: rgba(124, 58, 237, 0.12);
+  color: #6d28d9;
+}
+
+[data-theme='dark'] .lc-topic-icon.cat-good-to-know {
+  background: rgba(167, 139, 250, 0.18);
+  color: #c4b5fd;
+}
+
+.lc-mini-cat-btn.cat-good-to-know {
+  border-color: rgba(124, 58, 237, 0.28);
+  color: #6d28d9;
+}
+
+.lc-mini-cat-btn.cat-good-to-know:hover {
+  border-color: rgba(124, 58, 237, 0.5);
+  background: rgba(124, 58, 237, 0.08);
+  color: #5b21b6;
+}
+
+.lc-mini-cat-btn.cat-good-to-know.active {
+  background: rgba(124, 58, 237, 0.15);
+  border-color: rgba(124, 58, 237, 0.48);
+  color: #5b21b6;
+}
+
+[data-theme='dark'] .lc-mini-cat-btn.cat-good-to-know {
+  border-color: rgba(192, 132, 252, 0.3);
+  color: #c4b5fd;
+}
+
+[data-theme='dark'] .lc-mini-cat-btn.cat-good-to-know:hover,
+[data-theme='dark'] .lc-mini-cat-btn.cat-good-to-know.active {
+  background: rgba(167, 139, 250, 0.2);
+  border-color: rgba(192, 132, 252, 0.54);
+  color: #ddd6fe;
+}
+
+/* Official Reference Links Box inside Reading Pane */
+.lc-references-box {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px 14px;
+  border-radius: 14px;
+  background: var(--bg-muted);
+  border: 1px solid var(--border-subtle);
+}
+
+.lc-references-head {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.76rem;
+  font-weight: 800;
+  color: var(--text-secondary);
+}
+
+.lc-references-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.lc-ref-link {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 11px;
+  border-radius: 10px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  text-decoration: none;
+  color: var(--text-primary);
+  transition: border-color 0.15s var(--ease), background-color 0.15s var(--ease), transform 0.15s var(--ease);
+}
+
+.lc-ref-link:hover {
+  border-color: rgba(40, 120, 200, 0.45);
+  background: var(--accent-blue-bg);
+  transform: translateY(-1px);
+}
+
+.lc-ref-source {
+  flex-shrink: 0;
+  font-size: 0.69rem;
+  font-weight: 800;
+  padding: 2px 7px;
+  border-radius: var(--radius-pill);
+  background: var(--accent-blue-bg);
+  color: #1d63d8;
+}
+
+[data-theme='dark'] .lc-ref-source {
+  color: #7cc0ff;
+}
+
+.lc-ref-title {
+  flex: 1;
+  min-width: 0;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  line-height: 1.38;
+}
+
+.lc-ref-ext {
+  flex-shrink: 0;
+  color: var(--text-muted);
+}
+
+.lc-ref-link:hover .lc-ref-ext {
+  color: #1d63d8;
+}
+
+[data-theme='dark'] .lc-ref-link:hover .lc-ref-ext {
+  color: #7cc0ff;
+}
+
+/* Quiz Top Actions & Shuffle Button */
+.lc-quiz-top-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.lc-quiz-shuffle-btn {
+  padding: 6px 11px;
+  font-size: 0.75rem;
+  border-radius: var(--radius-pill);
+  gap: 5px;
+}
+
+@media (max-width: 640px) {
+  .lc-ref-link {
+    flex-wrap: wrap;
+    row-gap: 4px;
+  }
+
+  .lc-ref-title {
+    flex-basis: calc(100% - 24px);
+  }
 }
 
 

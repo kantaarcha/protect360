@@ -433,13 +433,13 @@ function AppShellContent() {
 
             <div className="smartlog-header-chips tabular-nums">
               <span className="smartlog-stat-chip blue">
-                {lang === 'TH' ? '6 บทความ 2 นาที' : '6 Micro-Guides'}
+                {lang === 'TH' ? '10 บทความ + แหล่งอ้างอิง' : '10 Guides & Sources'}
               </span>
               <span className="smartlog-stat-chip neutral">
                 {lang === 'TH' ? '6 ศัพท์กรมธรรม์' : '6 Key Terms'}
               </span>
               <span className="smartlog-stat-chip neutral">
-                {lang === 'TH' ? 'ควิซ 5 ข้อ' : '5-Q Quiz'}
+                {lang === 'TH' ? 'ควิซสุ่มคลัง 15 ข้อ' : '15-Q Random Quiz'}
               </span>
             </div>
           </header>
