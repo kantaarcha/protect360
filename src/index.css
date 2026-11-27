@@ -1990,16 +1990,31 @@ p {
   padding: 0 14px;
   border-radius: 13px;
   border: 1px solid var(--border-strong);
-  background: var(--bg-muted);
+  background-color: var(--bg-muted);
   font-size: 0.88rem;
   color: var(--text-primary);
   outline: none;
 }
 
+.form-select {
+  appearance: none;
+  -webkit-appearance: none;
+  padding-right: 38px;
+  cursor: pointer;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23526581' stroke-width='2.3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+  background-size: 15px 15px;
+}
+
+[data-theme='dark'] .form-select {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2.3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+}
+
 .form-input:focus,
 .form-select:focus {
   border-color: var(--royal);
-  background: var(--bg-surface);
+  background-color: var(--bg-surface);
   box-shadow: 0 0 0 3px rgba(40, 120, 200, 0.18);
 }
 
@@ -13248,9 +13263,9 @@ p {
 }
 
 /* ==========================================================================
-   PATCH 6.8.5 — STICKY SPLIT-PANE & INDEPENDENT SCROLLABLE SIDEBAR
-   Clicking bottom guides (#8–#10) or glossary terms (#10–#14) keeps the
-   reading panel right at eye level with zero tedious page scroll-back!
+   PATCH 6.8.5 + 6.9 — FULL-HEIGHT SIDEBAR + STICKY SCROLLABLE LIST
+   Left column background & border stretch 100% flush to bottom (zero blank gap),
+   while inner topic/glossary lists scroll independently & stay sticky at eye level.
    ========================================================================== */
 .lc-window-shell {
   overflow: clip;
@@ -13258,25 +13273,32 @@ p {
 
 .lc-guides-workspace,
 .lc-glossary-workspace {
-  align-items: start;
+  align-items: stretch;
 }
 
-.lc-sidebar-index {
+.lc-sidebar-index,
+.lc-glossary-left {
+  height: 100%;
+}
+
+.lc-topic-list {
   position: sticky;
   top: 14px;
-  max-height: min(74vh, 680px);
+  max-height: calc(100vh - 36px);
   overflow-y: auto;
   overscroll-behavior: contain;
+  padding-right: 4px;
   scrollbar-width: thin;
   scrollbar-color: rgba(100, 116, 139, 0.32) transparent;
 }
 
-.lc-glossary-left {
+.lc-glossary-list {
   position: sticky;
   top: 14px;
   max-height: min(64vh, 520px);
   overflow-y: auto;
   overscroll-behavior: contain;
+  padding-right: 4px;
   scrollbar-width: thin;
   scrollbar-color: rgba(100, 116, 139, 0.32) transparent;
 }
@@ -13288,28 +13310,35 @@ p {
 .lc-glossary-pane {
   position: sticky;
   top: 14px;
+  align-self: start;
   min-height: 360px;
   scroll-margin-top: 16px;
 }
 
-.lc-sidebar-index::-webkit-scrollbar,
-.lc-glossary-left::-webkit-scrollbar {
+.lc-topic-list::-webkit-scrollbar,
+.lc-glossary-list::-webkit-scrollbar {
   width: 6px;
 }
 
-.lc-sidebar-index::-webkit-scrollbar-thumb,
-.lc-glossary-left::-webkit-scrollbar-thumb {
+.lc-topic-list::-webkit-scrollbar-thumb,
+.lc-glossary-list::-webkit-scrollbar-thumb {
   background: rgba(100, 116, 139, 0.28);
   border-radius: 999px;
 }
 
 @media (max-width: 920px) {
   .lc-sidebar-index,
-  .lc-glossary-left,
+  .lc-glossary-left {
+    height: auto;
+  }
+
+  .lc-topic-list,
+  .lc-glossary-list,
   .lc-glossary-pane {
     position: static;
     max-height: none;
     overflow-y: visible;
+    padding-right: 0;
     min-height: auto;
   }
 }
