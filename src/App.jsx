@@ -7,6 +7,7 @@ import {
   Pencil,
   PlusCircle,
   ShieldAlert,
+  TrendingUp,
   Wallet,
   X,
 } from 'lucide-react';
@@ -30,6 +31,7 @@ import {
   getProfilePillLabel,
   getUserInitials,
 } from './utils/userHelpers';
+import { calculateThaiTaxImpact } from './utils/investMath';
 
 const PAGE_TITLES = {
   overview: null,
@@ -41,7 +43,10 @@ const PAGE_TITLES = {
     th: 'วิเคราะห์ความเสี่ยง & ช่องว่างความคุ้มครอง',
     en: 'Risk & Protection Gap Analysis',
   },
-  invest: { th: 'วางแผนลงทุน (IRR)', en: 'Invest (IRR)' },
+  invest: {
+    th: 'วางแผนลงทุน & คำนวณ IRR (Value Lab)',
+    en: 'Invest & Value Lab (True IRR)',
+  },
   game: { th: 'เล่นเกมจำลองความเสี่ยง', en: 'Risk Simulator Game' },
   learning: { th: 'คลังความรู้', en: 'Learning Center' },
   about: { th: 'เกี่ยวกับเรา', en: 'About PROTECT360' },
@@ -53,6 +58,7 @@ function AppShellContent() {
   const { lang, t } = useLanguage();
   const {
     userProfile,
+    monthlyIncome,
     transactions,
     savingsRatio,
     emergencyRunway,
@@ -307,6 +313,53 @@ function AppShellContent() {
               <span className="smartlog-stat-chip blue">
                 {lang === 'TH' ? 'ครอบคลุมแล้ว' : 'Covered'}{' '}
                 {riskAssessment?.overallCoveragePct || 0}%
+              </span>
+            </div>
+          </header>
+        ) : activePage === 'invest' ? (
+          <header
+            className="bento-card smartlog-header-card"
+            aria-label="Invest and Value Lab"
+          >
+            <div className="smartlog-header-left">
+              <span className="smartlog-header-icon" aria-hidden="true">
+                <TrendingUp size={22} strokeWidth={2.1} />
+              </span>
+              <div className="smartlog-header-copy">
+                <h1 className="smartlog-header-title">
+                  {t(PAGE_TITLES.invest)}
+                </h1>
+                <p className="smartlog-header-sub">
+                  {lang === 'TH'
+                    ? 'เครื่องคำนวณความคุ้มค่าการโอนย้ายความเสี่ยง ผลตอบแทนแท้จริง (IRR) เงินเฟ้อ และภาษี'
+                    : 'Protection value simulator & true annualized IRR calculator after inflation and Thai tax.'}
+                </p>
+              </div>
+            </div>
+
+            <div className="smartlog-header-chips tabular-nums">
+              <span className="smartlog-stat-chip neutral">
+                {lang === 'TH'
+                  ? `รายได้ทั้งปี ${formatTHB(monthlyIncome * 12)}`
+                  : `Annual Income ${formatTHB(monthlyIncome * 12)}`}
+              </span>
+              <span className="smartlog-stat-chip blue">
+                {lang === 'TH'
+                  ? `ฐานภาษี ${
+                      calculateThaiTaxImpact({ annualIncome: monthlyIncome * 12 }).marginalRatePct
+                    }%`
+                  : `Tax Bracket ${
+                      calculateThaiTaxImpact({ annualIncome: monthlyIncome * 12 }).marginalRatePct
+                    }%`}
+              </span>
+              <span className="smartlog-stat-chip neutral">
+                <span
+                  className={`status-dot ${emergencyRunway >= targetMonths ? 'green' : 'amber'}`}
+                  aria-hidden="true"
+                />
+                {lang === 'TH'
+                  ? `สำรอง ${emergencyRunway.toFixed(2)} ด.`
+                  : `Reserve ${emergencyRunway.toFixed(2)} mo.`}
               </span>
             </div>
           </header>

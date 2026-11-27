@@ -8336,6 +8336,706 @@ p {
   }
 }
 
+/* ==========================================================================
+   Round 4 (Patch 4.0): Invest & Value Lab (Risk Transfer vs. Self-Insure &
+   True IRR, Inflation & Thai Tax Deduction Calculator)
+   ========================================================================== */
+
+.inv-stack,
+.inv-stage {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.inv-switcher-card {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 16px 20px;
+}
+
+.inv-switcher-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.inv-step-note {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  min-width: 0;
+}
+
+.inv-step-tag {
+  padding: 4px 10px;
+  border-radius: var(--radius-pill);
+  background: var(--accent-blue-bg);
+  color: var(--accent-blue-text);
+  font-size: 0.72rem;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+[data-theme='dark'] .inv-step-tag {
+  color: #7cc0ff;
+}
+
+.inv-step-text {
+  margin: 0;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  line-height: 1.4;
+}
+
+/* Tab 1 Layout */
+.inv-transfer-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.25fr);
+  gap: 18px;
+  align-items: start;
+}
+
+.inv-input-card {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.inv-form-body {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.inv-slider-field {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.inv-slider-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.inv-inline-badge {
+  padding: 3px 9px;
+  border-radius: var(--radius-pill);
+  font-size: 0.71rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.inv-inline-badge.blue {
+  background: var(--accent-blue-bg);
+  color: var(--accent-blue-text);
+}
+
+[data-theme='dark'] .inv-inline-badge.blue {
+  color: #7cc0ff;
+}
+
+.inv-inline-badge.warn {
+  background: var(--warning-bg);
+  color: var(--warning-text);
+}
+
+.inv-inline-badge.red {
+  background: var(--danger-bg);
+  color: var(--danger-text);
+}
+
+.inv-input-slider-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.inv-num-box {
+  width: 136px;
+  flex-shrink: 0;
+  font-weight: 700;
+}
+
+.inv-range {
+  flex: 1;
+  min-width: 0;
+  accent-color: var(--royal);
+  cursor: pointer;
+}
+
+.inv-range.expense {
+  accent-color: #e05252;
+}
+
+.inv-field-hint {
+  font-size: 0.73rem;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.inv-preset-chips {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  flex-wrap: wrap;
+}
+
+.inv-preset-chip {
+  padding: 4px 9px;
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--border-subtle);
+  background: var(--bg-subtle);
+  color: var(--text-secondary);
+  font-size: 0.71rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background-color 0.16s var(--ease), border-color 0.16s var(--ease), color 0.16s var(--ease);
+}
+
+.inv-preset-chip:hover {
+  background: var(--bg-subtle-hover);
+  color: var(--text-primary);
+}
+
+.inv-preset-chip.active {
+  background: var(--danger-bg);
+  border-color: rgba(231, 111, 111, 0.4);
+  color: var(--danger-text);
+}
+
+/* Scenario A vs B Side-by-Side Cards */
+.inv-scenarios-col {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.inv-scenarios-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.inv-scenario-card {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  border-top: 3px solid transparent;
+}
+
+.inv-scenario-card.danger {
+  border-top-color: #e05252;
+}
+
+.inv-scenario-card.safe {
+  border-top-color: #2563eb;
+}
+
+.inv-scenario-head {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.inv-scenario-tag {
+  align-self: flex-start;
+  padding: 3px 10px;
+  border-radius: var(--radius-pill);
+  font-size: 0.7rem;
+  font-weight: 800;
+}
+
+.inv-scenario-tag.red {
+  background: var(--danger-bg);
+  color: var(--danger-text);
+}
+
+.inv-scenario-tag.blue {
+  background: var(--accent-blue-bg);
+  color: var(--accent-blue-text);
+}
+
+[data-theme='dark'] .inv-scenario-tag.blue {
+  color: #7cc0ff;
+}
+
+.inv-scenario-title {
+  margin: 0;
+  font-size: 0.96rem;
+  font-weight: 800;
+  color: var(--text-primary);
+}
+
+.inv-scenario-hero {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding: 11px 13px;
+  border-radius: 14px;
+  background: var(--bg-muted);
+  border: 1px solid var(--border-subtle);
+}
+
+.inv-scenario-hero-lbl {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.inv-scenario-hero strong {
+  font-size: clamp(1.25rem, 1.8vw, 1.55rem);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.inv-scenario-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.inv-s-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 0.79rem;
+  color: var(--text-secondary);
+}
+
+.inv-s-row strong {
+  font-weight: 800;
+  color: var(--text-primary);
+  white-space: nowrap;
+}
+
+.inv-s-row.muted {
+  padding-top: 6px;
+  border-top: 1px dashed var(--border-subtle);
+  font-size: 0.74rem;
+  color: var(--text-muted);
+}
+
+/* Comparison Bar Chart Card */
+.inv-compare-chart-card {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.inv-bar-groups {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.inv-bar-group {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.inv-bar-group-title {
+  font-size: 0.76rem;
+  font-weight: 800;
+  color: var(--text-primary);
+}
+
+.inv-actuarial-takeaway {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 13px 15px;
+  border-radius: 16px;
+  background: var(--bg-muted);
+  border: 1px solid var(--border-subtle);
+}
+
+.inv-takeaway-icon {
+  color: var(--royal);
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.inv-actuarial-takeaway strong {
+  display: block;
+  font-size: 0.82rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  margin-bottom: 3px;
+}
+
+.inv-actuarial-takeaway p {
+  margin: 0;
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+/* Tab 2: 4 Bento IRR Result KPI Cards */
+.inv-kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.inv-kpi-card {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.inv-irr-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 0.92fr) minmax(0, 1.28fr);
+  gap: 18px;
+  align-items: start;
+}
+
+.inv-plan-presets {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+
+.inv-plan-preset-btn {
+  padding: 6px 12px;
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--border-strong);
+  background: var(--bg-muted);
+  color: var(--text-primary);
+  font-size: 0.75rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background-color 0.16s var(--ease), border-color 0.16s var(--ease);
+}
+
+.inv-plan-preset-btn:hover {
+  background: var(--accent-blue-bg);
+  border-color: var(--royal);
+  color: var(--accent-blue-text);
+}
+
+[data-theme='dark'] .inv-plan-preset-btn:hover {
+  color: #7cc0ff;
+}
+
+.inv-warn-micro {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--warning-text);
+}
+
+.inv-tax-breakdown {
+  padding: 11px 13px;
+  border-radius: 14px;
+  background: var(--bg-muted);
+  border: 1px solid var(--border-subtle);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.inv-tax-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 0.76rem;
+  color: var(--text-secondary);
+}
+
+.inv-tax-row strong {
+  font-size: 0.86rem;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+/* Tab 2 Right Column: Cashflow Timeline & Verdict */
+.inv-irr-right-col {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.inv-timeline-card {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.inv-legend-row {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.inv-timeline-scroll {
+  width: 100%;
+  overflow-x: auto;
+  padding-bottom: 4px;
+  -webkit-overflow-scrolling: touch;
+}
+
+.inv-timeline-plot {
+  display: flex;
+  align-items: stretch;
+  gap: 4px;
+  min-width: 520px;
+  height: 186px;
+  padding: 8px 6px 4px;
+  border-radius: 16px;
+  background: var(--bg-muted);
+  border: 1px solid var(--border-subtle);
+}
+
+.inv-tl-col {
+  flex: 1 1 0;
+  min-width: 22px;
+  border: none;
+  background: transparent;
+  padding: 2px 1px;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+  transition: background-color 0.14s var(--ease);
+}
+
+.inv-tl-col:hover,
+.inv-tl-col.selected {
+  background: var(--accent-blue-bg);
+}
+
+.inv-tl-inflow-lane {
+  flex: 1.5;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 2px;
+  padding-bottom: 2px;
+}
+
+.inv-tl-axis-line {
+  width: 100%;
+  height: 1px;
+  background: var(--border-strong);
+  flex-shrink: 0;
+}
+
+.inv-tl-outflow-lane {
+  flex: 0.85;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  padding-top: 2px;
+}
+
+.inv-tl-bar {
+  width: 72%;
+  max-width: 16px;
+  border-radius: 4px;
+  transition: height 0.25s var(--ease);
+}
+
+.inv-tl-bar.payout {
+  background: linear-gradient(180deg, #38bdf8 0%, #2563eb 100%);
+}
+
+.inv-tl-bar.tax {
+  background: linear-gradient(180deg, #34d399 0%, #1fa86b 100%);
+}
+
+.inv-tl-bar.outflow {
+  background: linear-gradient(180deg, #e05252 0%, #f87171 100%);
+}
+
+.inv-tl-year {
+  font-size: 0.62rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  margin-top: 3px;
+}
+
+.inv-tl-col.selected .inv-tl-year {
+  color: var(--accent-blue-text);
+}
+
+[data-theme='dark'] .inv-tl-col.selected .inv-tl-year {
+  color: #7cc0ff;
+}
+
+.inv-tl-inspector {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+  padding: 10px 13px;
+  border-radius: 13px;
+  background: var(--bg-muted);
+  border: 1px solid var(--border-subtle);
+  font-size: 0.78rem;
+}
+
+.inv-tl-inspector-yr {
+  font-weight: 800;
+  color: var(--text-primary);
+}
+
+.inv-tl-inspector-stats {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  color: var(--text-secondary);
+}
+
+.inv-purchasing-box {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 12px 14px;
+  border-radius: 14px;
+  background: var(--bg-muted);
+  border: 1px solid var(--border-subtle);
+}
+
+.inv-purchasing-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+  font-size: 0.79rem;
+  color: var(--text-secondary);
+}
+
+.inv-purchasing-row.highlight {
+  padding-top: 6px;
+  border-top: 1px dashed var(--border-subtle);
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+/* Neutral Coach Verdict Card */
+.inv-verdict-card {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  border-left: 4px solid var(--royal);
+}
+
+.inv-verdict-card.caution {
+  border-left-color: #f4b740;
+}
+
+.inv-verdict-card.positive {
+  border-left-color: #1fa86b;
+}
+
+.inv-verdict-head {
+  display: flex;
+  align-items: flex-start;
+  gap: 11px;
+}
+
+.inv-verdict-icon {
+  width: 38px;
+  height: 38px;
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+}
+
+.inv-verdict-icon.caution {
+  background: var(--warning-bg);
+  color: var(--warning-text);
+}
+
+.inv-verdict-icon.positive {
+  background: var(--success-bg);
+  color: var(--success-text);
+}
+
+.inv-verdict-icon.info {
+  background: var(--accent-blue-bg);
+  color: #1d63d8;
+}
+
+[data-theme='dark'] .inv-verdict-icon.info {
+  color: #7cc0ff;
+}
+
+.inv-verdict-text {
+  margin: 0;
+  font-size: 0.83rem;
+  color: var(--text-primary);
+  line-height: 1.56;
+}
+
+.inv-verdict-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.inv-bridge-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* Responsive Breakpoints for Invest & Value Lab */
+@media (max-width: 1120px) {
+  .inv-kpi-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .inv-transfer-grid,
+  .inv-irr-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 680px) {
+  .inv-scenarios-grid,
+  .inv-bar-groups,
+  .inv-kpi-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .inv-input-slider-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .inv-num-box {
+    width: 100%;
+  }
+}
+
+
 
 
 
