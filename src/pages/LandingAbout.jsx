@@ -74,51 +74,6 @@ const ORIGIN_REFERENCES = [
     },
   },
   {
-    id: 'bot-2567-p17',
-    kind: 'image',
-    tone: 'blue',
-    sourceTag: {
-      th: 'ธนาคารแห่งประเทศไทย (ธปท.) • หน้า 17',
-      en: 'Bank of Thailand (BOT) • Page 17',
-    },
-    title: {
-      th: 'รายงานผลสำรวจทักษะทางการเงิน ปี 2567 — หัวข้อ 1.3.1 การออมเผื่อฉุกเฉิน',
-      en: 'Thailand Financial Literacy Survey 2024 — Sec. 1.3.1 Emergency Savings',
-    },
-    citation: {
-      th: 'ที่มา: ธนาคารแห่งประเทศไทย (ธปท.) ร่วมกับสำนักงานสถิติแห่งชาติ • รายงานผลสำรวจทักษะทางการเงินของไทย และระดับการเข้าถึงบริการทางการเงินภาคครัวเรือน ปี 2567 • หน้า 17',
-      en: 'Source: Bank of Thailand (BOT) & National Statistical Office • Financial Literacy & Household Financial Access Survey 2024 • Page 17.',
-    },
-    imageUrl: '/references/bot-2567-p17-emergency-savings.jpg',
-    imageCaption: {
-      th: 'เอกสารแนบหน้า 17: กราฟสัดส่วนการเก็บออมเผื่อฉุกเฉินของคนไทยปี 2563–2567 แยกตามอายุและอาชีพ',
-      en: 'Attached Page 17: Thai emergency savings ratios (2020–2024) broken down by age & occupation.',
-    },
-    whatInside: [
-      {
-        th: 'กราฟเปรียบเทียบสัดส่วนเงินสำรองฉุกเฉินของคนไทยปี 2563, 2565 และ 2567 — พบว่ากว่า 75% ของคนไทยมีเงินสำรองใช้จ่ายได้ไม่เกิน 6 เดือน',
-        en: '2020–2024 emergency savings chart showing over 75% of Thai people hold 6 months or less of emergency reserves.',
-      },
-      {
-        th: 'เจาะตัวเลขปี 2567: มีเงินสำรองน้อยกว่า 1 เดือนถึง 20.8% และไม่ทราบ/ไม่แน่ใจอีก 22.4% (มีเกิน 6 เดือนเพียง 23.7%)',
-        en: '2024 breakdown: 20.8% hold under 1 month of cash and 22.4% are unsure (only 23.7% hold more than 6 months).',
-      },
-      {
-        th: 'กราฟแยกตามมิติอายุและอาชีพชี้ชัดว่ากลุ่มวัยรุ่น–เด็กจบใหม่ (15–30 ปี), ลูกจ้างเอกชน และอาชีพอิสระ เปราะบางที่สุดเมื่อขาดรายได้กะทันหัน',
-        en: 'Age & occupation breakdown highlighting youth/new grads (15–30), private employees, and freelancers as most vulnerable.',
-      },
-    ],
-    whyLedToApp: {
-      th: 'ที่มาของเกณฑ์วัดเงินสำรองฉุกเฉิน 3–6 เดือนใน SmartLog และโหมดจำลองภาวะขาดรายได้ใน Survival Lab',
-      en: 'Directly shaped our 3–6 month Emergency Runway gauge in SmartLog and income-shock scenarios in Survival Lab.',
-    },
-    url: BOT_2567_PDF_URL,
-    ctaLabel: {
-      th: 'เปิดรายงาน ธปท. ฉบับเต็ม (PDF)',
-      en: 'Open Official BOT Report (PDF)',
-    },
-  },
-  {
     id: 'bot-2567-p05',
     kind: 'image',
     tone: 'teal',
@@ -134,7 +89,7 @@ const ORIGIN_REFERENCES = [
       th: 'ที่มา: ธนาคารแห่งประเทศไทย (ธปท.) ร่วมกับสำนักงานสถิติแห่งชาติ • รายงานผลสำรวจทักษะทางการเงินของไทย และระดับการเข้าถึงบริการทางการเงินภาคครัวเรือน ปี 2567 • หน้า 5',
       en: 'Source: Bank of Thailand (BOT) & National Statistical Office • Financial Literacy & Household Financial Access Survey 2024 • Page 5.',
     },
-    imageUrl: '/references/bot-2567-p05-deposit-credit.jpg',
+    imageUrl: '/references/bot-2567-p05-deposit-credit.png',
     imageCaption: {
       th: 'เอกสารแนบหน้า 5: อินโฟกราฟิกผลของการแยกบัญชีเพื่อออม (เพิ่มโอกาสมีเงินสำรอง ~3 เท่า) และพฤติกรรมเมื่อเงินไม่พอใช้',
       en: 'Attached Page 5: Infographic on dedicated savings accounts (~3x higher 6-mo reserves) & coping when cash falls short.',
@@ -156,6 +111,51 @@ const ORIGIN_REFERENCES = [
     whyLedToApp: {
       th: 'ที่มาของการออกแบบระบบแยก “เงินสำรองฉุกเฉิน” ออกจากเงินใช้จ่ายรายวันใน AutoKey และสอนการโอนย้ายความเสี่ยงก่อนพึ่งหนี้',
       en: 'Motivated separating liquid emergency buckets from daily cashflow in AutoKey and transferring major risks before taking debt.',
+    },
+    url: BOT_2567_PDF_URL,
+    ctaLabel: {
+      th: 'เปิดรายงาน ธปท. ฉบับเต็ม (PDF)',
+      en: 'Open Official BOT Report (PDF)',
+    },
+  },
+  {
+    id: 'bot-2567-p17',
+    kind: 'image',
+    tone: 'blue',
+    sourceTag: {
+      th: 'ธนาคารแห่งประเทศไทย (ธปท.) • หน้า 17',
+      en: 'Bank of Thailand (BOT) • Page 17',
+    },
+    title: {
+      th: 'รายงานผลสำรวจทักษะทางการเงิน ปี 2567 — หัวข้อ 1.3.1 การออมเผื่อฉุกเฉิน',
+      en: 'Thailand Financial Literacy Survey 2024 — Sec. 1.3.1 Emergency Savings',
+    },
+    citation: {
+      th: 'ที่มา: ธนาคารแห่งประเทศไทย (ธปท.) ร่วมกับสำนักงานสถิติแห่งชาติ • รายงานผลสำรวจทักษะทางการเงินของไทย และระดับการเข้าถึงบริการทางการเงินภาคครัวเรือน ปี 2567 • หน้า 17',
+      en: 'Source: Bank of Thailand (BOT) & National Statistical Office • Financial Literacy & Household Financial Access Survey 2024 • Page 17.',
+    },
+    imageUrl: '/references/bot-2567-p17-emergency-savings.png',
+    imageCaption: {
+      th: 'เอกสารแนบหน้า 17: กราฟสัดส่วนการเก็บออมเผื่อฉุกเฉินของคนไทยปี 2563–2567 แยกตามอายุและอาชีพ',
+      en: 'Attached Page 17: Thai emergency savings ratios (2020–2024) broken down by age & occupation.',
+    },
+    whatInside: [
+      {
+        th: 'กราฟเปรียบเทียบสัดส่วนเงินสำรองฉุกเฉินของคนไทยปี 2563, 2565 และ 2567 — พบว่ากว่า 75% ของคนไทยมีเงินสำรองใช้จ่ายได้ไม่เกิน 6 เดือน',
+        en: '2020–2024 emergency savings chart showing over 75% of Thai people hold 6 months or less of emergency reserves.',
+      },
+      {
+        th: 'เจาะตัวเลขปี 2567: มีเงินสำรองน้อยกว่า 1 เดือนถึง 20.8% และไม่ทราบ/ไม่แน่ใจอีก 22.4% (มีเกิน 6 เดือนเพียง 23.7%)',
+        en: '2024 breakdown: 20.8% hold under 1 month of cash and 22.4% are unsure (only 23.7% hold more than 6 months).',
+      },
+      {
+        th: 'กราฟแยกตามมิติอายุและอาชีพชี้ชัดว่ากลุ่มวัยรุ่น–เด็กจบใหม่ (15–30 ปี), ลูกจ้างเอกชน และอาชีพอิสระ เปราะบางที่สุดเมื่อขาดรายได้กะทันหัน',
+        en: 'Age & occupation breakdown highlighting youth/new grads (15–30), private employees, and freelancers as most vulnerable.',
+      },
+    ],
+    whyLedToApp: {
+      th: 'ที่มาของเกณฑ์วัดเงินสำรองฉุกเฉิน 3–6 เดือนใน SmartLog และโหมดจำลองภาวะขาดรายได้ใน Survival Lab',
+      en: 'Directly shaped our 3–6 month Emergency Runway gauge in SmartLog and income-shock scenarios in Survival Lab.',
     },
     url: BOT_2567_PDF_URL,
     ctaLabel: {
