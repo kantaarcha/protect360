@@ -1,11 +1,12 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { Compass, HelpCircle, Lightbulb, Settings, ShieldCheck, X } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
-import { TUTORIAL_UI_COPY } from '../data/tutorialSteps';
+import { getPageContextualSteps, TUTORIAL_UI_COPY } from '../data/tutorialSteps';
 
 export default function TopControlBar({ activePage, onNavigate, onStartTutorial }) {
   const { lang, t, fontStepIdx } = useLanguage();
   const helpCopy = TUTORIAL_UI_COPY[lang] || TUTORIAL_UI_COPY.TH;
+  const pageStepCount = getPageContextualSteps(activePage).length;
 
   const [showCharter, setShowCharter] = useState(false);
   const [showHelpMenu, setShowHelpMenu] = useState(false);
@@ -227,7 +228,9 @@ export default function TopControlBar({ activePage, onNavigate, onStartTutorial 
                   }}
                 >
                   <Lightbulb size={15} strokeWidth={2.2} aria-hidden="true" />
-                  <span>{helpCopy.helpThisPage}</span>
+                  <span>
+                    {helpCopy.helpThisPage} ({pageStepCount} {helpCopy.stepsUnit})
+                  </span>
                 </button>
                 <button
                   id="top-help-full-btn"

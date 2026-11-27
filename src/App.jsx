@@ -4,6 +4,7 @@ import {
   BookOpen,
   CheckCircle2,
   ChevronRight,
+  Compass,
   FlaskConical,
   Gamepad2,
   Info,
@@ -43,10 +44,15 @@ import {
 import { calculateThaiTaxImpact } from './utils/investMath';
 import { inferButtonSoundKind, playUiSound } from './utils/soundEffects';
 import {
+  clearAllTabTutorialStatuses,
   FULL_TUTORIAL_STEPS,
   getPageContextualSteps,
+  getSavedTabTutorialStatuses,
   getSavedTutorialStatus,
+  saveTabTutorialStatus,
   saveTutorialStatus,
+  TAB_BANNER_META,
+  TUTORIAL_UI_COPY,
 } from './data/tutorialSteps';
 
 const ONBOARDING_STORAGE_KEY = 'protect360_onboarded_v1';
@@ -91,10 +97,14 @@ function AppShellContent() {
   const [activePage, setActivePage] = useState('overview');
   const [profileModal, setProfileModal] = useState({ open: false, tab: 'profile' });
   const [tutorialStatus, setTutorialStatus] = useState(() => getSavedTutorialStatus());
+  const [tabTutorialStatuses, setTabTutorialStatuses] = useState(() =>
+    getSavedTabTutorialStatuses()
+  );
   const [tutorialPromptOpen, setTutorialPromptOpen] = useState(false);
   const [tutorialTour, setTutorialTour] = useState({
     active: false,
     mode: 'full',
+    targetPage: 'overview',
     steps: FULL_TUTORIAL_STEPS,
     index: 0,
   });
@@ -174,12 +184,14 @@ function AppShellContent() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  const handleStartTutorial = (mode = 'full') => {
-    const steps = mode === 'page' ? getPageContextualSteps(activePage) : FULL_TUTORIAL_STEPS;
+  const handleStartTutorial = (mode = 'full', explicitPage = null) => {
+    const targetPage = explicitPage || activePage;
+    const steps = mode === 'page' ? getPageContextualSteps(targetPage) : FULL_TUTORIAL_STEPS;
     setTutorialPromptOpen(false);
     setTutorialTour({
       active: true,
       mode,
+      targetPage,
       steps,
       index: 0,
     });
@@ -191,11 +203,23 @@ function AppShellContent() {
   const handleDeclineTutorialPrompt = () => {
     saveTutorialStatus('skipped');
     setTutorialStatus('skipped');
+    // Avoid immediately showing an overview inline banner right after declining
+    setTabTutorialStatuses(saveTabTutorialStatus('overview', 'dismissed'));
     setTutorialPromptOpen(false);
   };
 
+  const handleDismissTabBanner = (tabId) => {
+    setTabTutorialStatuses(saveTabTutorialStatus(tabId, 'dismissed'));
+  };
+
+  const handleResetTabTutorials = () => {
+    setTabTutorialStatuses(clearAllTabTutorialStatuses());
+  };
+
   const handleCloseTour = () => {
-    if (getSavedTutorialStatus() === 'unseen') {
+    if (tutorialTour.mode === 'page' && tutorialTour.targetPage) {
+      setTabTutorialStatuses(saveTabTutorialStatus(tutorialTour.targetPage, 'dismissed'));
+    } else if (getSavedTutorialStatus() === 'unseen') {
       saveTutorialStatus('skipped');
       setTutorialStatus('skipped');
     }
@@ -206,6 +230,9 @@ function AppShellContent() {
     if (tutorialTour.mode === 'full') {
       saveTutorialStatus('completed');
       setTutorialStatus('completed');
+      setTabTutorialStatuses(saveTabTutorialStatus('overview', 'seen'));
+    } else if (tutorialTour.mode === 'page' && tutorialTour.targetPage) {
+      setTabTutorialStatuses(saveTabTutorialStatus(tutorialTour.targetPage, 'seen'));
     } else if (getSavedTutorialStatus() === 'unseen') {
       saveTutorialStatus('skipped');
       setTutorialStatus('skipped');
@@ -263,6 +290,7 @@ function AppShellContent() {
             onReplayOnboarding={handleReplayOnboarding}
             tutorialStatus={tutorialStatus}
             onStartTutorial={handleStartTutorial}
+            onResetTabTutorials={handleResetTabTutorials}
           />
         );
       case 'overview':
@@ -696,6 +724,53 @@ function AppShellContent() {
             </div>
           </header>
         )}
+
+        {!tutorialPromptOpen &&
+          !tutorialTour.active &&
+          TAB_BANNER_META[activePage] &&
+          !tabTutorialStatuses[activePage] && (
+            <div
+              id="tab-tutorial-banner"
+              className="tab-tutorial-banner"
+              role="region"
+              aria-label="Tab interactive guide invite"
+            >
+              <div className="tab-tutorial-copy">
+                <span className="tab-tutorial-icon" aria-hidden="true">
+                  <Compass size={16} strokeWidth={2.2} />
+                </span>
+                <span className="tab-tutorial-text">
+                  {t(TAB_BANNER_META[activePage])}
+                </span>
+              </div>
+
+              <div className="tab-tutorial-actions">
+                <button
+                  id="tab-tutorial-start-btn"
+                  type="button"
+                  className="btn-primary-gradient tab-tutorial-start-btn"
+                  data-sound="action"
+                  onClick={() => handleStartTutorial('page', activePage)}
+                >
+                  <span>
+                    {(TUTORIAL_UI_COPY[lang] || TUTORIAL_UI_COPY.TH).bannerStartBtn} (
+                    {getPageContextualSteps(activePage).length}{' '}
+                    {(TUTORIAL_UI_COPY[lang] || TUTORIAL_UI_COPY.TH).stepsUnit})
+                  </span>
+                </button>
+                <button
+                  id="tab-tutorial-dismiss-btn"
+                  type="button"
+                  className="btn-soft-gray tab-tutorial-dismiss-btn"
+                  onClick={() => handleDismissTabBanner(activePage)}
+                >
+                  <span>
+                    {(TUTORIAL_UI_COPY[lang] || TUTORIAL_UI_COPY.TH).bannerDismissBtn}
+                  </span>
+                </button>
+              </div>
+            </div>
+          )}
 
         <div key={activePage} className="page-transition-stage">
           {renderActivePage()}

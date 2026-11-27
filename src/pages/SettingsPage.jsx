@@ -61,6 +61,7 @@ const SETTINGS_COPY = {
     editProfileBtn: 'แก้ไขข้อมูลส่วนตัว',
     replayWelcomeBtn: 'เปิดหน้าต้อนรับเริ่มต้นใช้งานอีกครั้ง',
     startTutorialBtn: 'เริ่มฝึกสอนใช้งาน (Tutorial)',
+    resetTabTutorialsBtn: 'รีเซ็ตแถบแนะนำเฉพาะหน้า',
     tutorialBadge: {
       unseen: 'ยังไม่เคยเริ่ม',
       skipped: 'ข้ามไว้ก่อนหน้านี้',
@@ -123,6 +124,7 @@ const SETTINGS_COPY = {
     editProfileBtn: 'Edit Personal Profile',
     replayWelcomeBtn: 'Replay Welcome Screen',
     startTutorialBtn: 'Interactive Tutorial (8 Steps)',
+    resetTabTutorialsBtn: 'Reset Per-Tab Guides',
     tutorialBadge: {
       unseen: 'Not started',
       skipped: 'Skipped',
@@ -179,6 +181,7 @@ export default function SettingsPage({
   onReplayOnboarding,
   tutorialStatus = 'unseen',
   onStartTutorial,
+  onResetTabTutorials,
 }) {
   const {
     lang,
@@ -567,6 +570,17 @@ export default function SettingsPage({
               <span className="st-tutorial-status-pill">
                 {copy.tutorialBadge?.[tutorialStatus] || copy.tutorialBadge?.unseen}
               </span>
+            </button>
+
+            <button
+              id="settings-reset-tab-tutorials-btn"
+              type="button"
+              className="btn-soft-gray st-action-btn"
+              data-sound="chime"
+              onClick={onResetTabTutorials}
+            >
+              <RotateCcw size={14} strokeWidth={2.2} aria-hidden="true" />
+              <span>{copy.resetTabTutorialsBtn}</span>
             </button>
           </div>
         </section>

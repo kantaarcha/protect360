@@ -18031,10 +18031,7 @@ p {
   display: flex;
   flex-direction: column;
   gap: 10px;
-  transition:
-    top 0.22s ease,
-    left 0.22s ease,
-    opacity 0.16s ease;
+  transition: opacity 0.16s ease;
 }
 
 [data-theme='dark'] .tutorial-coach-card {
@@ -18227,3 +18224,82 @@ p {
     padding: 14px 15px;
   }
 }
+
+/* Option A + B Integration: First-Visit Inline Per-Tab Invite Banner */
+.tab-tutorial-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 14px;
+  padding: 11px 15px;
+  border-radius: 14px;
+  border: 1px solid rgba(40, 120, 200, 0.22);
+  background: linear-gradient(135deg, rgba(40, 120, 200, 0.08), rgba(16, 185, 129, 0.08));
+}
+
+[data-theme='dark'] .tab-tutorial-banner {
+  border-color: rgba(96, 165, 250, 0.28);
+  background: linear-gradient(135deg, rgba(30, 58, 138, 0.28), rgba(6, 78, 59, 0.22));
+}
+
+.tab-tutorial-copy {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.tab-tutorial-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 10px;
+  background: rgba(40, 120, 200, 0.14);
+  color: var(--royal-deep);
+  flex-shrink: 0;
+}
+
+[data-theme='dark'] .tab-tutorial-icon {
+  background: rgba(96, 165, 250, 0.22);
+  color: #93c5fd;
+}
+
+.tab-tutorial-text {
+  font-size: 0.84rem;
+  font-weight: 600;
+  line-height: 1.42;
+  color: var(--text-primary);
+}
+
+.tab-tutorial-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.tab-tutorial-start-btn,
+.tab-tutorial-dismiss-btn {
+  padding: 7px 12px;
+  font-size: 0.79rem;
+  white-space: nowrap;
+}
+
+@media (max-width: 780px) {
+  .tab-tutorial-banner {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+    padding: 12px 13px;
+  }
+
+  .tab-tutorial-actions {
+    width: 100%;
+    display: grid;
+    grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr);
+  }
+}
+

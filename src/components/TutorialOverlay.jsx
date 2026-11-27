@@ -195,14 +195,19 @@ export default function TutorialOverlay({
 
     const followTimer = window.setTimeout(measureAndPosition, 340);
 
+    const handleScroll = (e) => {
+      if (e?.target && cardRef.current?.contains(e.target)) return;
+      measureAndPosition();
+    };
+
     window.addEventListener('resize', measureAndPosition);
-    window.addEventListener('scroll', measureAndPosition, true);
+    window.addEventListener('scroll', handleScroll, true);
 
     return () => {
       window.clearTimeout(scrollTimer);
       window.clearTimeout(followTimer);
       window.removeEventListener('resize', measureAndPosition);
-      window.removeEventListener('scroll', measureAndPosition, true);
+      window.removeEventListener('scroll', handleScroll, true);
     };
   }, [tourActive, currentStep, activePage, stepIndex, lang, measureAndPosition]);
 
