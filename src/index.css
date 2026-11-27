@@ -16205,15 +16205,30 @@ p {
 
 /* 3) First-Visit Onboarding Flow (Welcome Splash -> Name Setup) */
 .ob-screen {
+  position: relative;
+  isolation: isolate;
+  overflow-x: hidden;
   min-height: 100dvh;
-  background: var(--bg-canvas);
+  background: transparent;
   color: var(--text-primary);
   display: flex;
   flex-direction: column;
   padding: 20px clamp(16px, 4vw, 40px) 36px;
 }
 
+.ob-bg-canvas {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  pointer-events: none;
+  display: block;
+}
+
 .ob-topbar {
+  position: relative;
+  z-index: 2;
   width: 100%;
   max-width: 960px;
   margin: 0 auto 24px;
@@ -16302,6 +16317,8 @@ p {
 }
 
 .ob-stage {
+  position: relative;
+  z-index: 2;
   flex: 1;
   width: 100%;
   max-width: 960px;
@@ -16313,11 +16330,24 @@ p {
 
 .ob-card {
   width: 100%;
-  background: var(--bg-surface);
-  border: 1px solid var(--border-subtle);
+  background: rgba(255, 255, 255, 0.86);
+  backdrop-filter: blur(18px) saturate(150%);
+  -webkit-backdrop-filter: blur(18px) saturate(150%);
+  border: 1px solid rgba(255, 255, 255, 0.88);
   border-radius: 26px;
   padding: clamp(24px, 4.5vw, 44px);
-  box-shadow: var(--shadow-soft);
+  box-shadow:
+    0 24px 60px rgba(2, 84, 152, 0.1),
+    0 4px 18px rgba(101, 163, 13, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.95);
+}
+
+[data-theme='dark'] .ob-card {
+  background: rgba(12, 26, 48, 0.82);
+  border-color: rgba(148, 197, 255, 0.22);
+  box-shadow:
+    0 24px 64px rgba(0, 0, 0, 0.48),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
 }
 
 .ob-welcome-card {

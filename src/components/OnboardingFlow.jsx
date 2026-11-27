@@ -13,6 +13,7 @@ import {
 import { useLanguage } from '../context/LanguageContext';
 import { useTheme } from '../context/ThemeContext';
 import { useFinance } from '../context/FinanceContext';
+import WelcomeFinancialCanvas from './WelcomeFinancialCanvas';
 import {
   OCCUPATION_OPTIONS,
   TITLE_OPTIONS,
@@ -150,6 +151,8 @@ export default function OnboardingFlow({ referenceHour, onComplete }) {
 
   return (
     <div className="ob-screen" role="main" aria-label="PROTECT360 Welcome">
+      <WelcomeFinancialCanvas />
+
       {/* Subtle Top Utility Bar: Brand + Quick Language (TH/EN) + Theme */}
       <header className="ob-topbar">
         <div className="ob-topbar-brand">
