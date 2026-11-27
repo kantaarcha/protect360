@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import {
   ArrowLeft,
   ArrowRight,
@@ -168,6 +168,17 @@ export default function LearningCenter({ onNavigate }) {
     });
   }, [activeCategory, searchQuery]);
 
+  const readingPaneRef = useRef(null);
+  const glossaryPaneRef = useRef(null);
+
+  const scrollPaneIntoViewIfNeeded = (paneRef) => {
+    if (typeof window === 'undefined' || !paneRef?.current) return;
+    const rect = paneRef.current.getBoundingClientRect();
+    if (rect.top < 12 || rect.top > window.innerHeight - 160) {
+      paneRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  };
+
   // Active article shown right inside the Reading Pane
   const activeArticle =
     filteredArticles.find((a) => a.id === selectedArticleId) ||
@@ -184,6 +195,7 @@ export default function LearningCenter({ onNavigate }) {
       if (prev.readIds.includes(articleId)) return prev;
       return { ...prev, readIds: [...prev.readIds, articleId] };
     });
+    scrollPaneIntoViewIfNeeded(readingPaneRef);
   };
 
   // Filtered glossary terms
@@ -201,6 +213,11 @@ export default function LearningCenter({ onNavigate }) {
     filteredTerms.find((item) => item.id === selectedJargonId) ||
     filteredTerms[0] ||
     null;
+
+  const handleSelectJargon = (jargonId) => {
+    setSelectedJargonId(jargonId);
+    scrollPaneIntoViewIfNeeded(glossaryPaneRef);
+  };
 
   // Quiz handlers (randomized 5-question round from 20-question bank)
   const currentQuestion = quizSession[quizIdx];
@@ -403,7 +420,7 @@ export default function LearningCenter({ onNavigate }) {
             </aside>
 
             {/* Right Active Reading Pane (Full Content Directly Inside Tab!) */}
-            <article className="lc-reading-pane" role="tabpanel">
+            <article ref={readingPaneRef} className="lc-reading-pane" role="tabpanel">
               {activeArticle ? (
                 <>
                   <div className="lc-pane-top">
@@ -572,7 +589,7 @@ export default function LearningCenter({ onNavigate }) {
                         role="tab"
                         aria-selected={isSelected}
                         className={`lc-glossary-item ${isSelected ? 'active' : ''}`}
-                        onClick={() => setSelectedJargonId(item.id)}
+                        onClick={() => handleSelectJargon(item.id)}
                       >
                         <strong>{t(item.term)}</strong>
                         <span>{t(item.shortTag)}</span>
@@ -583,7 +600,7 @@ export default function LearningCenter({ onNavigate }) {
               </div>
             </div>
 
-            <div className="lc-glossary-pane" role="tabpanel">
+            <div ref={glossaryPaneRef} className="lc-glossary-pane" role="tabpanel">
               {activeJargon ? (
                 <>
                   <div className="lc-jargon-out-head">

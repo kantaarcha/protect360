@@ -159,7 +159,7 @@ body {
   color: var(--text-primary);
   font-family: var(--font-sans);
   line-height: 1.5;
-  overflow-x: hidden;
+  overflow-x: clip;
   transition: background-color 0.24s var(--ease), color 0.24s var(--ease);
 }
 
@@ -13245,6 +13245,73 @@ p {
   display: flex;
   justify-content: flex-end;
   padding-top: 2px;
+}
+
+/* ==========================================================================
+   PATCH 6.8.5 — STICKY SPLIT-PANE & INDEPENDENT SCROLLABLE SIDEBAR
+   Clicking bottom guides (#8–#10) or glossary terms (#10–#14) keeps the
+   reading panel right at eye level with zero tedious page scroll-back!
+   ========================================================================== */
+.lc-window-shell {
+  overflow: clip;
+}
+
+.lc-guides-workspace,
+.lc-glossary-workspace {
+  align-items: start;
+}
+
+.lc-sidebar-index {
+  position: sticky;
+  top: 14px;
+  max-height: min(74vh, 680px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(100, 116, 139, 0.32) transparent;
+}
+
+.lc-glossary-left {
+  position: sticky;
+  top: 14px;
+  max-height: min(64vh, 520px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(100, 116, 139, 0.32) transparent;
+}
+
+.lc-reading-pane {
+  scroll-margin-top: 16px;
+}
+
+.lc-glossary-pane {
+  position: sticky;
+  top: 14px;
+  min-height: 360px;
+  scroll-margin-top: 16px;
+}
+
+.lc-sidebar-index::-webkit-scrollbar,
+.lc-glossary-left::-webkit-scrollbar {
+  width: 6px;
+}
+
+.lc-sidebar-index::-webkit-scrollbar-thumb,
+.lc-glossary-left::-webkit-scrollbar-thumb {
+  background: rgba(100, 116, 139, 0.28);
+  border-radius: 999px;
+}
+
+@media (max-width: 920px) {
+  .lc-sidebar-index,
+  .lc-glossary-left,
+  .lc-glossary-pane {
+    position: static;
+    max-height: none;
+    overflow-y: visible;
+    min-height: auto;
+  }
 }
 
 
