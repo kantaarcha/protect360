@@ -3,6 +3,7 @@ import {
   AlertCircle,
   CheckCircle2,
   ChevronRight,
+  Gamepad2,
   Info,
   Pencil,
   PlusCircle,
@@ -47,7 +48,10 @@ const PAGE_TITLES = {
     th: 'วางแผนลงทุน & คำนวณ IRR (Value Lab)',
     en: 'Invest & Value Lab (True IRR)',
   },
-  game: { th: 'เล่นเกมจำลองความเสี่ยง', en: 'Risk Simulator Game' },
+  game: {
+    th: 'PROTECT360 Survival Lab — เกมจำลองเอาตัวรอดทางการเงิน',
+    en: 'PROTECT360 Survival Lab — Financial Resilience Simulator',
+  },
   learning: { th: 'คลังความรู้', en: 'Learning Center' },
   about: { th: 'เกี่ยวกับเรา', en: 'About PROTECT360' },
 };
@@ -59,6 +63,8 @@ function AppShellContent() {
   const {
     userProfile,
     monthlyIncome,
+    monthlyExpenses,
+    emergencyFund,
     transactions,
     savingsRatio,
     emergencyRunway,
@@ -360,6 +366,43 @@ function AppShellContent() {
                 {lang === 'TH'
                   ? `สำรอง ${emergencyRunway.toFixed(2)} ด.`
                   : `Reserve ${emergencyRunway.toFixed(2)} mo.`}
+              </span>
+            </div>
+          </header>
+        ) : activePage === 'game' ? (
+          <header
+            className="bento-card smartlog-header-card"
+            aria-label="PROTECT360 Survival Lab"
+          >
+            <div className="smartlog-header-left">
+              <span className="smartlog-header-icon" aria-hidden="true">
+                <Gamepad2 size={22} strokeWidth={2.1} />
+              </span>
+              <div className="smartlog-header-copy">
+                <h1 className="smartlog-header-title">
+                  {t(PAGE_TITLES.game)}
+                </h1>
+                <p className="smartlog-header-sub">
+                  {lang === 'TH'
+                    ? 'จำลองรับมือเหตุไม่คาดฝันตั้งแต่โหมดด่วน 30 วัน จนถึงเต็มปี 365 วัน เพื่อฝึกวางแผนความเสี่ยงอย่างเป็นกลาง'
+                    : 'Test your financial resilience from a 30-day express demo to a full 365-day year with zero sales bias.'}
+                </p>
+              </div>
+            </div>
+
+            <div className="smartlog-header-chips tabular-nums">
+              <span className="smartlog-stat-chip blue">
+                {lang === 'TH'
+                  ? `เงินสำรองจริง ${formatTHB(emergencyFund)}`
+                  : `Live Reserve ${formatTHB(emergencyFund)}`}
+              </span>
+              <span className="smartlog-stat-chip neutral">
+                {lang === 'TH'
+                  ? `เงินเหลือออม ${formatTHB(Math.max(0, monthlyIncome - monthlyExpenses))}/ด.`
+                  : `Surplus ${formatTHB(Math.max(0, monthlyIncome - monthlyExpenses))}/mo`}
+              </span>
+              <span className="smartlog-stat-chip neutral">
+                {lang === 'TH' ? 'โหมด 30–365 วัน' : '30–365 Day Modes'}
               </span>
             </div>
           </header>
