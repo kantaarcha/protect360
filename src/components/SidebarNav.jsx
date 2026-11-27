@@ -83,10 +83,6 @@ export default function SidebarNav({ activePage, onNavigate }) {
             );
           })}
         </nav>
-
-        <div className="rail-footer-badge">
-          <span className="oic-mini-chip">OIC</span>
-        </div>
       </aside>
 
       {/* Mobile Bottom Navigation Bar (Liquid Glass Horizontal Glide) */}

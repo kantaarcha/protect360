@@ -147,7 +147,6 @@ function AppShellContent() {
                 <img src="/logo.png" alt="PROTECT360" className="brand-logo-img" />
               </span>
               <span className="mobile-brand-name">PROTECT360</span>
-              <span className="oic-mini-chip">OIC</span>
             </button>
 
             {activePage !== 'overview' && (

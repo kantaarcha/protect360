@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { ArrowUpRight, Maximize2, X } from 'lucide-react';
+import { ArrowLeft, ArrowRight, ArrowUpRight, Maximize2, X } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import LiquidTabs from '../components/LiquidTabs';
 
@@ -138,14 +138,14 @@ const BOT_PLATES = [
 ];
 
 // =============================================================================
-// PRIMARY SURVEY FINDINGS — FIRST JOBBER QUESTIONNAIRE (n = 57, PDPA-Safe)
+// PRIMARY SURVEY FINDINGS — FIRST JOBBER QUESTIONNAIRE (PDPA-Safe)
 // =============================================================================
 
 const KEY_RESEARCH_FINDINGS = [
   {
     id: 'never-assessed',
     stat: '61.4%',
-    count: { th: '35 จาก 57 คน', en: '35 of 57' },
+    count: { th: '35 คน', en: '35 respondents' },
     title: {
       th: 'ไม่เคยประเมินความเพียงพอของประกันและสวัสดิการเลย',
       en: 'Never evaluated their coverage sufficiency',
@@ -158,7 +158,7 @@ const KEY_RESEARCH_FINDINGS = [
   {
     id: 'shock-100k',
     stat: '59.6%',
-    count: { th: '34 จาก 57 คน', en: '34 of 57' },
+    count: { th: '34 คน', en: '34 respondents' },
     title: {
       th: 'ต้องพึ่งบัตรเครดิต/สินเชื่อ หรือครอบครัว เมื่อเจอบิล ฿100,000',
       en: 'Rely on debt or family for a sudden ฿100k bill',
@@ -171,7 +171,7 @@ const KEY_RESEARCH_FINDINGS = [
   {
     id: 'runway-gap',
     stat: '59.6%',
-    count: { th: '34 จาก 57 คน', en: '34 of 57' },
+    count: { th: '34 คน', en: '34 respondents' },
     title: {
       th: 'เงินสำรองต่ำกว่า 3 เดือน และกระทบหนักหากขาดรายได้ 3 เดือน',
       en: 'Hold under 3 months of cash reserve',
@@ -184,7 +184,7 @@ const KEY_RESEARCH_FINDINGS = [
   {
     id: 'tool-demand',
     stat: '63.2%',
-    count: { th: '36 จาก 57 คน', en: '36 of 57' },
+    count: { th: '36 คน', en: '36 respondents' },
     title: {
       th: 'สนใจใช้เครื่องมือกลางช่วยประเมินความคุ้มครอง',
       en: 'Want a neutral protection assessment tool',
@@ -196,7 +196,7 @@ const KEY_RESEARCH_FINDINGS = [
   },
 ];
 
-// Question [AV]: 8 Features requested by n = 57 — distinct muted editorial colors
+// Question [AV]: 8 Features requested — distinct muted editorial colors
 const WANTED_FEATURES_CHART = [
   {
     id: 'protection-gap',
@@ -353,11 +353,24 @@ const CORE_PRINCIPLES = [
   },
 ];
 
+const CHAPTER_ORDER = ['01', '02', '03', '04'];
+
 export default function LandingAbout({ onNavigate }) {
   const { lang, t } = useLanguage();
 
+  const [activeChapter, setActiveChapter] = useState('01');
   const [researchFilter, setResearchFilter] = useState('all');
   const [previewDoc, setPreviewDoc] = useState(null);
+
+  const chapterTabs = useMemo(
+    () => [
+      { id: '01', label: lang === 'TH' ? '01 เอกสาร' : '01 Origins' },
+      { id: '02', label: lang === 'TH' ? '02 ผลสำรวจ' : '02 Survey' },
+      { id: '03', label: lang === 'TH' ? '03 ฟีเจอร์' : '03 Features' },
+      { id: '04', label: lang === 'TH' ? '04 หลักการ' : '04 Principles' },
+    ],
+    [lang]
+  );
 
   const researchTabs = useMemo(
     () => [
@@ -373,10 +386,17 @@ export default function LandingAbout({ onNavigate }) {
     return WANTED_FEATURES_CHART.filter((item) => item.group === researchFilter);
   }, [researchFilter]);
 
+  const currentChapterIdx = CHAPTER_ORDER.indexOf(activeChapter);
+  const prevChapterId = currentChapterIdx > 0 ? CHAPTER_ORDER[currentChapterIdx - 1] : null;
+  const nextChapterId =
+    currentChapterIdx < CHAPTER_ORDER.length - 1 ? CHAPTER_ORDER[currentChapterIdx + 1] : null;
+
+  const getChapterLabel = (id) => chapterTabs.find((c) => c.id === id)?.label || id;
+
   return (
     <article className="ab-editorial-sheet" aria-label="About PROTECT360 and Research Basis">
       {/* ===================================================================== */}
-      {/* MASTHEAD — CLEAN PUBLICATION OPENING (NO DARK GRADIENT OR PILL CLUTTER) */}
+      {/* MASTHEAD — CLEAN PUBLICATION OPENING (MENTIONS n = 57 ONCE ONLY)      */}
       {/* ===================================================================== */}
       <header className="ab-ed-masthead">
         <div className="ab-ed-topbar">
@@ -426,7 +446,7 @@ export default function LandingAbout({ onNavigate }) {
                     ? 'ไม่เคยประเมินความเพียงพอของประกันและสวัสดิการ'
                     : 'Have never assessed whether their coverage is enough'}
                 </span>
-                <small>{lang === 'TH' ? 'แบบสำรวจวัยเริ่มต้นทำงาน (n = 57)' : 'First Jobber survey (n = 57)'}</small>
+                <small>{lang === 'TH' ? 'แบบสำรวจวัยเริ่มต้นทำงาน' : 'First Jobber survey'}</small>
               </div>
             </div>
 
@@ -438,389 +458,418 @@ export default function LandingAbout({ onNavigate }) {
                     ? 'ต้องการเครื่องมือกลางช่วยประเมินโดยไม่เร่งขาย'
                     : 'Want a neutral tool to evaluate protection gaps'}
                 </span>
-                <small>{lang === 'TH' ? 'แบบสำรวจวัยเริ่มต้นทำงาน (n = 57)' : 'First Jobber survey (n = 57)'}</small>
+                <small>{lang === 'TH' ? 'แบบสำรวจวัยเริ่มต้นทำงาน' : 'First Jobber survey'}</small>
               </div>
             </div>
           </aside>
         </div>
-
-        {/* Quiet Editorial Chapter Index — jump straight to any chapter */}
-        <nav className="ab-ed-toc" aria-label={lang === 'TH' ? 'สารบัญหัวข้อ' : 'Section contents'}>
-          {[
-            { id: 'ab-block-origins', num: '01', th: 'รายงานอ้างอิงและเอกสารแนบ', en: 'National Reports & Scans' },
-            { id: 'ab-block-survey', num: '02', th: 'ผลสำรวจจริง (n = 57)', en: 'Primary Survey (n = 57)' },
-            { id: 'ab-block-features', num: '03', th: 'ฟีเจอร์ที่กลุ่มตัวอย่างต้องการ', en: 'Requested Features' },
-            { id: 'ab-block-principles', num: '04', th: 'หลักการ 3 ข้อของเรา', en: 'Three Core Principles' },
-          ].map((ch) => (
-            <button
-              key={ch.id}
-              type="button"
-              className="ab-ed-toc-item"
-              onClick={() => {
-                document.getElementById(ch.id)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-              }}
-            >
-              <span className="ab-ed-toc-num tabular-nums">{ch.num}</span>
-              <span className="ab-ed-toc-label">{lang === 'TH' ? ch.th : ch.en}</span>
-            </button>
-          ))}
-        </nav>
       </header>
+
+      {/* ===================================================================== */}
+      {/* CHAPTER SLIDER BAR (01–04 LIQUID TABS — CONCISE & OVERFLOW-SAFE)      */}
+      {/* ===================================================================== */}
+      <nav className="ab-ed-slider-block" aria-label={lang === 'TH' ? 'เลือกอ่านหัวข้อ 01 ถึง 04' : 'Browse chapters 01 to 04'}>
+        <LiquidTabs
+          tabs={chapterTabs}
+          activeId={activeChapter}
+          onChange={setActiveChapter}
+          variant="surface"
+          className="ab-ed-chapter-tabs"
+          idPrefix="about-chapter"
+          ariaLabel={lang === 'TH' ? 'หัวข้อเกี่ยวกับเรา 01 ถึง 04' : 'About PROTECT360 chapters'}
+        />
+      </nav>
 
       {/* ===================================================================== */}
       {/* 01. NATIONAL RESEARCH SOURCES & ATTACHED BOT PAGES (PAGE 5 -> PAGE 17) */}
       {/* ===================================================================== */}
-      <section id="ab-block-origins" className="ab-ed-section" aria-labelledby="ab-sec-origins">
-        <div className="ab-ed-section-head">
-          <span className="ab-ed-sec-num tabular-nums">01</span>
-          <div className="ab-ed-sec-title-wrap">
-            <h2 id="ab-sec-origins" className="ab-ed-sec-title">
-              {lang === 'TH'
-                ? 'รายงานและเอกสารอ้างอิงที่ทำให้เกิดเว็บไซต์นี้'
-                : 'National Reports & Attached Reference Documents'}
-            </h2>
-            <p className="ab-ed-sec-sub">
-              {lang === 'TH'
-                ? 'ระบุที่มาครบถ้วนพร้อมสรุปเนื้อหาสำคัญในแต่ละเอกสาร และกดขยายดูภาพสแกนต้นฉบับหรือเปิดรายงานฉบับเต็มได้โดยตรง'
-                : 'Full citations with concise summaries of what each source contains — click any attached plate to inspect full resolution.'}
-            </p>
-          </div>
-        </div>
-
-        {/* Lead Horizontal Reference: Krungsri Research Gen Z 2025 */}
-        <div className="ab-ed-lead-doc">
-          <div className="ab-ed-lead-doc-left">
-            <div className="ab-ed-doc-meta tabular-nums">
-              <span>{t(KRUNGSRI_ORIGIN.sourceTag)}</span>
-              <span>·</span>
-              <span>{t(KRUNGSRI_ORIGIN.dateLabel)}</span>
-            </div>
-            <h3 className="ab-ed-doc-title">{t(KRUNGSRI_ORIGIN.title)}</h3>
-            <p className="ab-ed-doc-citation">{t(KRUNGSRI_ORIGIN.citation)}</p>
-            <a
-              href={KRUNGSRI_ORIGIN.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="ab-ed-text-link"
-            >
-              <span>{t(KRUNGSRI_ORIGIN.ctaLabel)}</span>
-              <ArrowUpRight size={15} aria-hidden="true" />
-            </a>
-          </div>
-
-          <div className="ab-ed-lead-doc-right">
-            <h4 className="ab-ed-subhead">
-              {lang === 'TH' ? 'ในบทความนี้พาไปดูอะไร' : 'What this article covers'}
-            </h4>
-            <ul className="ab-ed-list">
-              {KRUNGSRI_ORIGIN.whatInside.map((pt, i) => (
-                <li key={i}>{t(pt)}</li>
-              ))}
-            </ul>
-            <p className="ab-ed-note">{t(KRUNGSRI_ORIGIN.whyLedToApp)}</p>
-          </div>
-        </div>
-
-        {/* Attached BOT 2567 Plates: Page 5 first, then Page 17 */}
-        <div className="ab-ed-plates-grid">
-          {BOT_PLATES.map((doc) => (
-            <div key={doc.id} className="ab-ed-plate">
-              <div className="ab-ed-plate-head">
-                <span className="ab-ed-plate-label">{t(doc.pageLabel)}</span>
-                <span className="ab-ed-plate-source">{t(doc.sourceTag)}</span>
-              </div>
-
-              <button
-                type="button"
-                id={`ab-preview-${doc.id}`}
-                className="ab-ed-plate-frame"
-                onClick={() => setPreviewDoc(doc)}
-                aria-label={
-                  lang === 'TH'
-                    ? `ขยายดูภาพเอกสาร ${t(doc.title)}`
-                    : `Zoom attached scan: ${t(doc.title)}`
-                }
-              >
-                <img
-                  src={doc.imageUrl}
-                  alt={t(doc.imageCaption)}
-                  className="ab-ed-plate-img"
-                  loading="lazy"
-                />
-                <span className="ab-ed-plate-zoom">
-                  <Maximize2 size={13} aria-hidden="true" />
-                  <span>{lang === 'TH' ? 'ขยายดูเต็มจอ' : 'Inspect full page'}</span>
-                </span>
-              </button>
-
-              <div className="ab-ed-plate-body">
-                <h3 className="ab-ed-plate-title">{t(doc.title)}</h3>
-                <p className="ab-ed-doc-citation">{t(doc.citation)}</p>
-
-                <h4 className="ab-ed-subhead">
-                  {lang === 'TH' ? 'ในเอกสารหน้านี้พาไปดูอะไร' : 'What this page shows'}
-                </h4>
-                <ul className="ab-ed-list">
-                  {doc.whatInside.map((pt, i) => (
-                    <li key={i}>{t(pt)}</li>
-                  ))}
-                </ul>
-
-                <p className="ab-ed-note">{t(doc.whyLedToApp)}</p>
-
-                <div className="ab-ed-plate-links">
-                  <button
-                    type="button"
-                    className="ab-ed-inline-btn"
-                    onClick={() => setPreviewDoc(doc)}
-                  >
-                    <Maximize2 size={13} aria-hidden="true" />
-                    <span>{lang === 'TH' ? 'ดูภาพเอกสารแนบ' : 'View scan'}</span>
-                  </button>
-                  <a
-                    href={doc.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="ab-ed-text-link"
-                  >
-                    <span>{t(doc.ctaLabel)}</span>
-                    <ArrowUpRight size={14} aria-hidden="true" />
-                  </a>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* ===================================================================== */}
-      {/* 02. PRIMARY SURVEY FINDINGS (n = 57) — SPLIT INTO BREATHABLE BLOCKS   */}
-      {/* ===================================================================== */}
-      <section id="ab-block-survey" className="ab-ed-section" aria-labelledby="ab-sec-survey">
-        <div className="ab-ed-section-head">
-          <span className="ab-ed-sec-num tabular-nums">02</span>
-          <div className="ab-ed-sec-title-wrap">
-            <h2 id="ab-sec-survey" className="ab-ed-sec-title">
-              {lang === 'TH'
-                ? 'ภาพจริงจากแบบสำรวจวัยเริ่มต้นทำงาน (n = 57 คน)'
-                : 'Primary Survey Findings Among First Jobbers (n = 57)'}
-            </h2>
-            <p className="ab-ed-sec-sub">
-              {lang === 'TH'
-                ? 'ตัวเลขจริงจากแบบสอบถามความมั่นคงทางการเงินและความคุ้มครอง (ไม่เก็บข้อมูลระบุตัวตน)'
-                : 'Direct results from our anonymous early-career financial security and protection survey.'}
-            </p>
-          </div>
-        </div>
-
-        {/* 4-Column Ruled Typographic Stat Strip */}
-        <div className="ab-ed-stat-strip tabular-nums">
-          {KEY_RESEARCH_FINDINGS.map((item) => (
-            <div key={item.id} className="ab-ed-stat-col">
-              <div className="ab-ed-stat-top">
-                <strong className="ab-ed-stat-num">{item.stat}</strong>
-                <span className="ab-ed-stat-count">{t(item.count)}</span>
-              </div>
-              <h3 className="ab-ed-stat-title">{t(item.title)}</h3>
-              <p className="ab-ed-stat-desc">{t(item.detail)}</p>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* Companion Block 02B: 2-Column Data Charts (Separated for Easy Reading) */}
-      <section className="ab-ed-subblock" aria-label="Survey breakdown charts">
-        <div className="ab-ed-data-split">
-          <div className="ab-ed-chart-block">
-            <h3 className="ab-ed-chart-title">
-              {lang === 'TH'
-                ? 'หากเจอบิลฉุกเฉิน ฿100,000 ทันที กลุ่มตัวอย่างรับมืออย่างไร?'
-                : 'How respondents handle an instant ฿100,000 bill'}
-            </h3>
-            <p className="ab-ed-chart-sub">
-              {lang === 'TH'
-                ? 'เกือบ 60% ต้องก่อหนี้บัตรเครดิต/สินเชื่อ หรือขอความช่วยเหลือจากครอบครัว'
-                : 'Nearly 60% rely on credit/loans or family help; only 8.8% use insurance.'}
-            </p>
-            <div className="ab-ed-bars">
-              {SHOCK_100K_COPING.map((row) => (
-                <div key={row.id} className="ab-ed-bar-item">
-                  <div className="ab-ed-bar-meta tabular-nums">
-                    <span className="ab-ed-bar-label">{t(row.label)}</span>
-                    <span className="ab-ed-bar-val">
-                      <strong>{row.pct.toFixed(1)}%</strong>
-                      <small>({row.count})</small>
-                    </span>
-                  </div>
-                  <div className="ab-ed-track" aria-hidden="true">
-                    <div
-                      className={`ab-ed-fill tone-${row.colorKey}`}
-                      style={{ width: `${Math.min(100, (row.pct / 38) * 100)}%` }}
-                    />
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          <div className="ab-ed-chart-block">
-            <h3 className="ab-ed-chart-title">
-              {lang === 'TH'
-                ? '5 ความเสี่ยงทางการเงินที่วัยเริ่มทำงานกังวลมากที่สุด'
-                : 'Top 5 financial & life risks feared most (top 3 multi-select)'}
-            </h3>
-            <p className="ab-ed-chart-sub">
-              {lang === 'TH'
-                ? 'ค่าครองชีพ การขาดรายได้ และอุบัติเหตุฉุกเฉิน ครองอันดับ 1–3 ใกล้เคียงกัน'
-                : 'Living costs, income disruption, and sudden accidents lead nearly tied.'}
-            </p>
-            <div className="ab-ed-bars">
-              {TOP_FEARED_RISKS.map((row) => (
-                <div key={row.id} className="ab-ed-bar-item">
-                  <div className="ab-ed-bar-meta tabular-nums">
-                    <span className="ab-ed-bar-label">{t(row.label)}</span>
-                    <span className="ab-ed-bar-val">
-                      <strong>{row.pct.toFixed(1)}%</strong>
-                      <small>({row.count})</small>
-                    </span>
-                  </div>
-                  <div className="ab-ed-track" aria-hidden="true">
-                    <div
-                      className={`ab-ed-fill tone-${row.colorKey}`}
-                      style={{ width: `${Math.min(100, (row.pct / 50) * 100)}%` }}
-                    />
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Companion Block 02C: Editorial Pull-Quotes Band */}
-      <section className="ab-ed-subblock ab-ed-quotes-section" aria-label="Verbatim survey voices">
-        <div className="ab-ed-quotes-kicker">
-          {lang === 'TH'
-            ? 'เสียงสะท้อนตรงจากผู้ตอบแบบสอบถาม (ไม่ระบุตัวตน)'
-            : 'Selected verbatim responses (anonymized)'}
-        </div>
-        <div className="ab-ed-quotes-grid">
-          {VERBATIM_VOICES.map((voice) => (
-            <blockquote key={voice.id} className="ab-ed-quote">
-              <p>{t(voice.quote)}</p>
-              <footer>{t(voice.mappedTo)}</footer>
-            </blockquote>
-          ))}
-        </div>
-      </section>
-
-      {/* ===================================================================== */}
-      {/* 03. WHAT n = 57 WANT IN PROTECT360 — INTERACTIVE MULTI-COLOR CHART    */}
-      {/* ===================================================================== */}
-      <section id="ab-block-features" className="ab-ed-section" aria-labelledby="ab-sec-features">
-        <div className="ab-ed-section-head split">
-          <div className="ab-ed-section-head-left">
-            <span className="ab-ed-sec-num tabular-nums">03</span>
+      {activeChapter === '01' && (
+        <section id="ab-block-origins" className="ab-ed-section" aria-labelledby="ab-sec-origins">
+          <div className="ab-ed-section-head">
+            <span className="ab-ed-sec-num tabular-nums">01</span>
             <div className="ab-ed-sec-title-wrap">
-              <h2 id="ab-sec-features" className="ab-ed-sec-title">
+              <h2 id="ab-sec-origins" className="ab-ed-sec-title">
                 {lang === 'TH'
-                  ? 'กลุ่มตัวอย่าง (n = 57 คน) อยากให้แอปมีฟีเจอร์อะไรบ้าง?'
-                  : 'What features did respondents (n = 57) ask for?'}
+                  ? 'รายงานและเอกสารอ้างอิงที่ทำให้เกิดเว็บไซต์นี้'
+                  : 'National Reports & Attached Reference Documents'}
               </h2>
               <p className="ab-ed-sec-sub">
                 {lang === 'TH'
-                  ? 'แยกโทนสีตามแต่ละความต้องการ (เลือกได้มากกว่า 1 ข้อ) — กดที่แถวใดก็ได้เพื่อเปิดดูหน้าเครื่องมือจริง'
-                  : 'Color-coded demand ranking (multi-select) — click any row to jump directly to the live feature.'}
+                  ? 'ระบุที่มาครบถ้วนพร้อมสรุปเนื้อหาสำคัญในแต่ละเอกสาร และกดขยายดูภาพสแกนต้นฉบับหรือเปิดรายงานฉบับเต็มได้โดยตรง'
+                  : 'Full citations with concise summaries of what each source contains — click any attached plate to inspect full resolution.'}
               </p>
             </div>
           </div>
 
-          <div className="ab-ed-tabs-wrap">
-            <LiquidTabs
-              tabs={researchTabs}
-              activeId={researchFilter}
-              onChange={setResearchFilter}
-              variant="surface"
-              idPrefix="about-research"
-              ariaLabel={lang === 'TH' ? 'กรองผลสำรวจ' : 'Filter survey findings'}
-            />
-          </div>
-        </div>
-
-        <div className="ab-ed-demand-list">
-          {visibleFindings.map((item, idx) => (
-            <button
-              key={item.id}
-              id={`ab-survey-bar-${item.id}`}
-              type="button"
-              className="ab-ed-demand-row"
-              onClick={() => onNavigate?.(item.targetPage)}
-            >
-              <div className="ab-ed-demand-top">
-                <div className="ab-ed-demand-left">
-                  <span className="ab-ed-demand-rank tabular-nums">
-                    {String(idx + 1).padStart(2, '0')}
-                  </span>
-                  <span className={`ab-ed-swatch tone-${item.colorKey}`} aria-hidden="true" />
-                  <strong className="ab-ed-demand-label">{t(item.label)}</strong>
-                </div>
-
-                <div className="ab-ed-demand-right tabular-nums">
-                  <span className="ab-ed-demand-link">
-                    <span>{t(item.solution)}</span>
-                    <ArrowUpRight size={13} aria-hidden="true" />
-                  </span>
-                  <span className="ab-ed-demand-count">
-                    {lang === 'TH' ? `${item.count}/57 คน` : `${item.count}/57`}
-                  </span>
-                  <strong className="ab-ed-demand-pct">{item.pct.toFixed(1)}%</strong>
-                </div>
+          {/* Lead Horizontal Reference: Krungsri Research Gen Z 2025 */}
+          <div className="ab-ed-lead-doc">
+            <div className="ab-ed-lead-doc-left">
+              <div className="ab-ed-doc-meta tabular-nums">
+                <span>{t(KRUNGSRI_ORIGIN.sourceTag)}</span>
+                <span>·</span>
+                <span>{t(KRUNGSRI_ORIGIN.dateLabel)}</span>
               </div>
-
-              <div className="ab-ed-demand-track" aria-hidden="true">
-                <div
-                  className={`ab-ed-fill tone-${item.colorKey}`}
-                  style={{ width: `${Math.min(100, (item.pct / 62) * 100)}%` }}
-                />
-              </div>
-            </button>
-          ))}
-        </div>
-      </section>
-
-      {/* ===================================================================== */}
-      {/* 04. THREE DESIGN PRINCIPLES — RULED EDITORIAL INDEX (NO ICON BOXES)   */}
-      {/* ===================================================================== */}
-      <section id="ab-block-principles" className="ab-ed-section" aria-labelledby="ab-sec-principles">
-        <div className="ab-ed-section-head">
-          <span className="ab-ed-sec-num tabular-nums">04</span>
-          <div className="ab-ed-sec-title-wrap">
-            <h2 id="ab-sec-principles" className="ab-ed-sec-title">
-              {lang === 'TH'
-                ? 'หลักการ 3 ข้อที่ PROTECT360 ยึดถือ'
-                : 'Three Principles PROTECT360 Follows'}
-            </h2>
-            <p className="ab-ed-sec-sub">
-              {lang === 'TH'
-                ? 'กรอบการทำงานที่เป็นกลาง โปร่งใส และเคารพความเป็นส่วนตัวของผู้ใช้ตั้งแต่บรรทัดแรก'
-                : 'Our non-negotiable standards for neutrality, local privacy, and honest math.'}
-            </p>
-          </div>
-        </div>
-
-        <div className="ab-ed-principles-grid">
-          {CORE_PRINCIPLES.map((item) => (
-            <div key={item.id} className="ab-ed-principle">
-              <span className="ab-ed-principle-num tabular-nums">{item.num}</span>
-              <h3 className="ab-ed-principle-title">{t(item.title)}</h3>
-              <p className="ab-ed-principle-desc">{t(item.desc)}</p>
+              <h3 className="ab-ed-doc-title">{t(KRUNGSRI_ORIGIN.title)}</h3>
+              <p className="ab-ed-doc-citation">{t(KRUNGSRI_ORIGIN.citation)}</p>
+              <a
+                href={KRUNGSRI_ORIGIN.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="ab-ed-text-link"
+              >
+                <span>{t(KRUNGSRI_ORIGIN.ctaLabel)}</span>
+                <ArrowUpRight size={15} aria-hidden="true" />
+              </a>
             </div>
-          ))}
-        </div>
-      </section>
+
+            <div className="ab-ed-lead-doc-right">
+              <h4 className="ab-ed-subhead">
+                {lang === 'TH' ? 'ในบทความนี้พาไปดูอะไร' : 'What this article covers'}
+              </h4>
+              <ul className="ab-ed-list">
+                {KRUNGSRI_ORIGIN.whatInside.map((pt, i) => (
+                  <li key={i}>{t(pt)}</li>
+                ))}
+              </ul>
+              <p className="ab-ed-note">{t(KRUNGSRI_ORIGIN.whyLedToApp)}</p>
+            </div>
+          </div>
+
+          {/* Attached BOT 2567 Plates: Page 5 first, then Page 17 */}
+          <div className="ab-ed-plates-grid">
+            {BOT_PLATES.map((doc) => (
+              <div key={doc.id} className="ab-ed-plate">
+                <div className="ab-ed-plate-head">
+                  <span className="ab-ed-plate-label">{t(doc.pageLabel)}</span>
+                  <span className="ab-ed-plate-source">{t(doc.sourceTag)}</span>
+                </div>
+
+                <button
+                  type="button"
+                  id={`ab-preview-${doc.id}`}
+                  className="ab-ed-plate-frame"
+                  onClick={() => setPreviewDoc(doc)}
+                  aria-label={
+                    lang === 'TH'
+                      ? `ขยายดูภาพเอกสาร ${t(doc.title)}`
+                      : `Zoom attached scan: ${t(doc.title)}`
+                  }
+                >
+                  <img
+                    src={doc.imageUrl}
+                    alt={t(doc.imageCaption)}
+                    className="ab-ed-plate-img"
+                    loading="lazy"
+                  />
+                  <span className="ab-ed-plate-zoom">
+                    <Maximize2 size={13} aria-hidden="true" />
+                    <span>{lang === 'TH' ? 'ขยายดูเต็มจอ' : 'Inspect full page'}</span>
+                  </span>
+                </button>
+
+                <div className="ab-ed-plate-body">
+                  <h3 className="ab-ed-plate-title">{t(doc.title)}</h3>
+                  <p className="ab-ed-doc-citation">{t(doc.citation)}</p>
+
+                  <h4 className="ab-ed-subhead">
+                    {lang === 'TH' ? 'ในเอกสารหน้านี้พาไปดูอะไร' : 'What this page shows'}
+                  </h4>
+                  <ul className="ab-ed-list">
+                    {doc.whatInside.map((pt, i) => (
+                      <li key={i}>{t(pt)}</li>
+                    ))}
+                  </ul>
+
+                  <p className="ab-ed-note">{t(doc.whyLedToApp)}</p>
+
+                  <div className="ab-ed-plate-links">
+                    <button
+                      type="button"
+                      className="ab-ed-inline-btn"
+                      onClick={() => setPreviewDoc(doc)}
+                    >
+                      <Maximize2 size={13} aria-hidden="true" />
+                      <span>{lang === 'TH' ? 'ดูภาพเอกสารแนบ' : 'View scan'}</span>
+                    </button>
+                    <a
+                      href={doc.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="ab-ed-text-link"
+                    >
+                      <span>{t(doc.ctaLabel)}</span>
+                      <ArrowUpRight size={14} aria-hidden="true" />
+                    </a>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
 
       {/* ===================================================================== */}
-      {/* 05. PUBLICATION COLOPHON & GOVERNANCE NOTE                            */}
+      {/* 02. PRIMARY SURVEY FINDINGS — SPLIT INTO BREATHABLE BLOCKS            */}
+      {/* ===================================================================== */}
+      {activeChapter === '02' && (
+        <>
+          <section id="ab-block-survey" className="ab-ed-section" aria-labelledby="ab-sec-survey">
+            <div className="ab-ed-section-head">
+              <span className="ab-ed-sec-num tabular-nums">02</span>
+              <div className="ab-ed-sec-title-wrap">
+                <h2 id="ab-sec-survey" className="ab-ed-sec-title">
+                  {lang === 'TH'
+                    ? 'ภาพจริงจากแบบสำรวจวัยเริ่มต้นทำงาน'
+                    : 'Primary Survey Findings Among First Jobbers'}
+                </h2>
+                <p className="ab-ed-sec-sub">
+                  {lang === 'TH'
+                    ? 'ตัวเลขจริงจากแบบสอบถามความมั่นคงทางการเงินและความคุ้มครอง (ไม่เก็บข้อมูลระบุตัวตน)'
+                    : 'Direct results from our anonymous early-career financial security and protection survey.'}
+                </p>
+              </div>
+            </div>
+
+            {/* 4-Column Ruled Typographic Stat Strip */}
+            <div className="ab-ed-stat-strip tabular-nums">
+              {KEY_RESEARCH_FINDINGS.map((item) => (
+                <div key={item.id} className="ab-ed-stat-col">
+                  <div className="ab-ed-stat-top">
+                    <strong className="ab-ed-stat-num">{item.stat}</strong>
+                    <span className="ab-ed-stat-count">{t(item.count)}</span>
+                  </div>
+                  <h3 className="ab-ed-stat-title">{t(item.title)}</h3>
+                  <p className="ab-ed-stat-desc">{t(item.detail)}</p>
+                </div>
+              ))}
+            </div>
+          </section>
+
+          {/* Companion Block 02B: 2-Column Data Charts */}
+          <section className="ab-ed-subblock" aria-label="Survey breakdown charts">
+            <div className="ab-ed-data-split">
+              <div className="ab-ed-chart-block">
+                <h3 className="ab-ed-chart-title">
+                  {lang === 'TH'
+                    ? 'หากเจอบิลฉุกเฉิน ฿100,000 ทันที กลุ่มตัวอย่างรับมืออย่างไร?'
+                    : 'How respondents handle an instant ฿100,000 bill'}
+                </h3>
+                <p className="ab-ed-chart-sub">
+                  {lang === 'TH'
+                    ? 'เกือบ 60% ต้องก่อหนี้บัตรเครดิต/สินเชื่อ หรือขอความช่วยเหลือจากครอบครัว'
+                    : 'Nearly 60% rely on credit/loans or family help; only 8.8% use insurance.'}
+                </p>
+                <div className="ab-ed-bars">
+                  {SHOCK_100K_COPING.map((row) => (
+                    <div key={row.id} className="ab-ed-bar-item">
+                      <div className="ab-ed-bar-meta tabular-nums">
+                        <span className="ab-ed-bar-label">{t(row.label)}</span>
+                        <span className="ab-ed-bar-val">
+                          <strong>{row.pct.toFixed(1)}%</strong>
+                          <small>({row.count})</small>
+                        </span>
+                      </div>
+                      <div className="ab-ed-track" aria-hidden="true">
+                        <div
+                          className={`ab-ed-fill tone-${row.colorKey}`}
+                          style={{ width: `${Math.min(100, (row.pct / 38) * 100)}%` }}
+                        />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div className="ab-ed-chart-block">
+                <h3 className="ab-ed-chart-title">
+                  {lang === 'TH'
+                    ? '5 ความเสี่ยงทางการเงินที่วัยเริ่มทำงานกังวลมากที่สุด'
+                    : 'Top 5 financial & life risks feared most (top 3 multi-select)'}
+                </h3>
+                <p className="ab-ed-chart-sub">
+                  {lang === 'TH'
+                    ? 'ค่าครองชีพ การขาดรายได้ และอุบัติเหตุฉุกเฉิน ครองอันดับ 1–3 ใกล้เคียงกัน'
+                    : 'Living costs, income disruption, and sudden accidents lead nearly tied.'}
+                </p>
+                <div className="ab-ed-bars">
+                  {TOP_FEARED_RISKS.map((row) => (
+                    <div key={row.id} className="ab-ed-bar-item">
+                      <div className="ab-ed-bar-meta tabular-nums">
+                        <span className="ab-ed-bar-label">{t(row.label)}</span>
+                        <span className="ab-ed-bar-val">
+                          <strong>{row.pct.toFixed(1)}%</strong>
+                          <small>({row.count})</small>
+                        </span>
+                      </div>
+                      <div className="ab-ed-track" aria-hidden="true">
+                        <div
+                          className={`ab-ed-fill tone-${row.colorKey}`}
+                          style={{ width: `${Math.min(100, (row.pct / 50) * 100)}%` }}
+                        />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </section>
+
+          {/* Companion Block 02C: Editorial Pull-Quotes Band */}
+          <section className="ab-ed-subblock ab-ed-quotes-section" aria-label="Verbatim survey voices">
+            <div className="ab-ed-quotes-kicker">
+              {lang === 'TH'
+                ? 'เสียงสะท้อนตรงจากผู้ตอบแบบสอบถาม (ไม่ระบุตัวตน)'
+                : 'Selected verbatim responses (anonymized)'}
+            </div>
+            <div className="ab-ed-quotes-grid">
+              {VERBATIM_VOICES.map((voice) => (
+                <blockquote key={voice.id} className="ab-ed-quote">
+                  <p>{t(voice.quote)}</p>
+                  <footer>{t(voice.mappedTo)}</footer>
+                </blockquote>
+              ))}
+            </div>
+          </section>
+        </>
+      )}
+
+      {/* ===================================================================== */}
+      {/* 03. FEATURE DEMAND — INTERACTIVE MULTI-COLOR CHART                    */}
+      {/* ===================================================================== */}
+      {activeChapter === '03' && (
+        <section id="ab-block-features" className="ab-ed-section" aria-labelledby="ab-sec-features">
+          <div className="ab-ed-section-head split">
+            <div className="ab-ed-section-head-left">
+              <span className="ab-ed-sec-num tabular-nums">03</span>
+              <div className="ab-ed-sec-title-wrap">
+                <h2 id="ab-sec-features" className="ab-ed-sec-title">
+                  {lang === 'TH'
+                    ? 'ฟีเจอร์ที่กลุ่มตัวอย่างอยากให้มีในแอป'
+                    : 'What features did respondents ask for?'}
+                </h2>
+                <p className="ab-ed-sec-sub">
+                  {lang === 'TH'
+                    ? 'แยกโทนสีตามแต่ละความต้องการ (เลือกได้มากกว่า 1 ข้อ) — กดที่แถวใดก็ได้เพื่อเปิดดูหน้าเครื่องมือจริง'
+                    : 'Color-coded demand ranking (multi-select) — click any row to jump directly to the live feature.'}
+                </p>
+              </div>
+            </div>
+
+            <div className="ab-ed-tabs-wrap">
+              <LiquidTabs
+                tabs={researchTabs}
+                activeId={researchFilter}
+                onChange={setResearchFilter}
+                variant="surface"
+                idPrefix="about-research"
+                ariaLabel={lang === 'TH' ? 'กรองผลสำรวจ' : 'Filter survey findings'}
+              />
+            </div>
+          </div>
+
+          <div className="ab-ed-demand-list">
+            {visibleFindings.map((item, idx) => (
+              <button
+                key={item.id}
+                id={`ab-survey-bar-${item.id}`}
+                type="button"
+                className="ab-ed-demand-row"
+                onClick={() => onNavigate?.(item.targetPage)}
+              >
+                <div className="ab-ed-demand-top">
+                  <div className="ab-ed-demand-left">
+                    <span className="ab-ed-demand-rank tabular-nums">
+                      {String(idx + 1).padStart(2, '0')}
+                    </span>
+                    <span className={`ab-ed-swatch tone-${item.colorKey}`} aria-hidden="true" />
+                    <strong className="ab-ed-demand-label">{t(item.label)}</strong>
+                  </div>
+
+                  <div className="ab-ed-demand-right tabular-nums">
+                    <span className="ab-ed-demand-link">
+                      <span>{t(item.solution)}</span>
+                      <ArrowUpRight size={13} aria-hidden="true" />
+                    </span>
+                    <span className="ab-ed-demand-count">
+                      {lang === 'TH' ? `${item.count} คน` : `${item.count}`}
+                    </span>
+                    <strong className="ab-ed-demand-pct">{item.pct.toFixed(1)}%</strong>
+                  </div>
+                </div>
+
+                <div className="ab-ed-demand-track" aria-hidden="true">
+                  <div
+                    className={`ab-ed-fill tone-${item.colorKey}`}
+                    style={{ width: `${Math.min(100, (item.pct / 62) * 100)}%` }}
+                  />
+                </div>
+              </button>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* ===================================================================== */}
+      {/* 04. THREE DESIGN PRINCIPLES — RULED EDITORIAL INDEX                   */}
+      {/* ===================================================================== */}
+      {activeChapter === '04' && (
+        <section id="ab-block-principles" className="ab-ed-section" aria-labelledby="ab-sec-principles">
+          <div className="ab-ed-section-head">
+            <span className="ab-ed-sec-num tabular-nums">04</span>
+            <div className="ab-ed-sec-title-wrap">
+              <h2 id="ab-sec-principles" className="ab-ed-sec-title">
+                {lang === 'TH'
+                  ? 'หลักการ 3 ข้อที่ PROTECT360 ยึดถือ'
+                  : 'Three Principles PROTECT360 Follows'}
+              </h2>
+              <p className="ab-ed-sec-sub">
+                {lang === 'TH'
+                  ? 'กรอบการทำงานที่เป็นกลาง โปร่งใส และเคารพความเป็นส่วนตัวของผู้ใช้ตั้งแต่บรรทัดแรก'
+                  : 'Our non-negotiable standards for neutrality, local privacy, and honest math.'}
+              </p>
+            </div>
+          </div>
+
+          <div className="ab-ed-principles-grid">
+            {CORE_PRINCIPLES.map((item) => (
+              <div key={item.id} className="ab-ed-principle">
+                <span className="ab-ed-principle-num tabular-nums">{item.num}</span>
+                <h3 className="ab-ed-principle-title">{t(item.title)}</h3>
+                <p className="ab-ed-principle-desc">{t(item.desc)}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* Chapter Prev / Next Pager */}
+      <div className="ab-ed-chapter-pager">
+        {prevChapterId ? (
+          <button
+            type="button"
+            className="ab-ed-pager-btn"
+            onClick={() => setActiveChapter(prevChapterId)}
+          >
+            <ArrowLeft size={15} aria-hidden="true" />
+            <span>{getChapterLabel(prevChapterId)}</span>
+          </button>
+        ) : (
+          <span />
+        )}
+        {nextChapterId && (
+          <button
+            type="button"
+            className="ab-ed-pager-btn next"
+            onClick={() => setActiveChapter(nextChapterId)}
+          >
+            <span>{getChapterLabel(nextChapterId)}</span>
+            <ArrowRight size={15} aria-hidden="true" />
+          </button>
+        )}
+      </div>
+
+      {/* ===================================================================== */}
+      {/* COLOPHON & GOVERNANCE NOTE                                            */}
       {/* ===================================================================== */}
       <footer className="ab-ed-colophon" aria-label="Governance and citations">
         <div className="ab-ed-colophon-copy">
@@ -831,8 +880,8 @@ export default function LandingAbout({ onNavigate }) {
           </strong>
           <p>
             {lang === 'TH'
-              ? 'PROTECT360 เป็นต้นแบบแพลตฟอร์มเพื่อเสริมสร้างความรู้ทางการเงินและการจัดการความเสี่ยงเท่านั้น ไม่มีการเสนอขายกรมธรรม์หรือรับค่านายหน้า อ้างอิงหลักฐานจาก (1) วิจัยกรุงศรี: Gen Z Finance Survey 2025, (2) รายงานผลสำรวจทักษะทางการเงินของไทย ปี 2567 โดยธนาคารแห่งประเทศไทยและสำนักงานสถิติแห่งชาติ (หน้า 5 และ 17) และ (3) แบบสอบถามวัยเริ่มต้นทำงาน (n = 57 คน) ข้อมูลการเงินของผู้ใช้เก็บในเครื่อง 100% ตามหลัก PDPA'
-              : 'PROTECT360 is an educational decision-support prototype with zero brokerage or policy sales. Grounded in (1) Krungsri Research Gen Z Finance Survey 2025, (2) Bank of Thailand & NSO 2024 Financial Literacy Survey (pp. 5 & 17), and (3) our anonymous First Jobber survey (n = 57). All user inputs stay 100% local on device.'}
+              ? 'PROTECT360 เป็นต้นแบบแพลตฟอร์มเพื่อเสริมสร้างความรู้ทางการเงินและการจัดการความเสี่ยงเท่านั้น ไม่มีการเสนอขายกรมธรรม์หรือรับค่านายหน้า อ้างอิงหลักฐานจาก (1) วิจัยกรุงศรี: Gen Z Finance Survey 2025, (2) รายงานผลสำรวจทักษะทางการเงินของไทย ปี 2567 โดยธนาคารแห่งประเทศไทยและสำนักงานสถิติแห่งชาติ (หน้า 5 และ 17) และ (3) แบบสอบถามวัยเริ่มต้นทำงาน ข้อมูลการเงินของผู้ใช้เก็บในเครื่อง 100% ตามหลัก PDPA'
+              : 'PROTECT360 is an educational decision-support prototype with zero brokerage or policy sales. Grounded in (1) Krungsri Research Gen Z Finance Survey 2025, (2) Bank of Thailand & NSO 2024 Financial Literacy Survey (pp. 5 & 17), and (3) our anonymous First Jobber survey. All user inputs stay 100% local on device.'}
           </p>
         </div>
 

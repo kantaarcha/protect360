@@ -8361,6 +8361,9 @@ p {
   display: flex;
   flex-direction: column;
   gap: 18px;
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
 }
 
 .inv-switcher-card {
@@ -8702,12 +8705,16 @@ p {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 14px;
+  width: 100%;
+  min-width: 0;
 }
 
 .inv-kpi-card {
   display: flex;
   flex-direction: column;
   gap: 10px;
+  min-width: 0;
+  max-width: 100%;
 }
 
 .inv-irr-grid {
@@ -8715,6 +8722,13 @@ p {
   grid-template-columns: minmax(0, 0.92fr) minmax(0, 1.28fr);
   gap: 18px;
   align-items: start;
+  width: 100%;
+  min-width: 0;
+}
+
+.inv-irr-grid > * {
+  min-width: 0;
+  max-width: 100%;
 }
 
 .inv-plan-presets {
@@ -8781,12 +8795,19 @@ p {
   display: flex;
   flex-direction: column;
   gap: 16px;
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
 }
 
 .inv-timeline-card {
   display: flex;
   flex-direction: column;
   gap: 14px;
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  overflow: hidden;
 }
 
 .inv-legend-row {
@@ -8801,8 +8822,11 @@ p {
 
 .inv-timeline-scroll {
   width: 100%;
+  max-width: 100%;
+  min-width: 0;
   overflow-x: auto;
-  padding-bottom: 4px;
+  overscroll-behavior-x: contain;
+  padding-bottom: 6px;
   -webkit-overflow-scrolling: touch;
 }
 
@@ -9029,7 +9053,7 @@ p {
 
   .inv-transfer-grid,
   .inv-irr-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
   }
 }
 
@@ -9037,7 +9061,7 @@ p {
   .inv-scenarios-grid,
   .inv-bar-groups,
   .inv-kpi-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
   }
 
   .inv-input-slider-row {
@@ -15901,3 +15925,90 @@ p {
     gap: 10px;
   }
 }
+
+/* ==========================================================================
+   PATCH 7.8 — ABOUT CHAPTER SLIDER (01–04) & PREV/NEXT PAGER
+   ========================================================================== */
+
+.ab-ed-slider-block {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: 18px;
+  padding: 10px;
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+}
+
+.ab-ed-chapter-tabs.liquid-track {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  width: 100%;
+  max-width: 100%;
+  gap: 4px;
+  padding: 4px;
+}
+
+.ab-ed-chapter-tabs .liquid-tab-btn {
+  width: 100%;
+  min-width: 0;
+  justify-content: center;
+  text-align: center;
+  padding: 10px 8px;
+  font-size: 0.86rem;
+  font-weight: 700;
+  white-space: normal;
+  line-height: 1.25;
+  overflow-wrap: break-word;
+}
+
+.ab-ed-chapter-pager {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.ab-ed-pager-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 10px 16px;
+  border-radius: 12px;
+  border: 1px solid var(--border-subtle);
+  background: var(--bg-surface);
+  color: var(--text-primary);
+  font-size: 0.84rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: border-color 0.16s ease, color 0.16s ease;
+}
+
+.ab-ed-pager-btn:hover {
+  border-color: var(--royal-deep);
+  color: var(--royal-deep);
+}
+
+[data-theme='dark'] .ab-ed-pager-btn:hover {
+  border-color: #60a5fa;
+  color: #60a5fa;
+}
+
+@media (max-width: 720px) {
+  .ab-ed-slider-block {
+    padding: 8px;
+    border-radius: 16px;
+  }
+
+  .ab-ed-chapter-tabs.liquid-track {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 4px;
+  }
+
+  .ab-ed-chapter-tabs .liquid-tab-btn {
+    padding: 9px 6px;
+    font-size: 0.82rem;
+  }
+}
+

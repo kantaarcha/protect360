@@ -304,412 +304,446 @@ function shuffleArray(items) {
  */
 export function buildEventDeck(totalTurns, persona, previousEventIds = []) {
   const monthlyIncome = Math.max(10000, Number(persona?.monthlyIncome) || 25000);
-  const incomeDropAmount = Math.round(monthlyIncome * 0.2);
+  const incomeDrop15 = Math.round(monthlyIncome * 0.15);
+  const incomeDrop10 = Math.round(monthlyIncome * 0.1);
 
+  // 1) Critical Catastrophic Shocks (~฿85k–฿100k) — max 1 per run (tests Risk Transfer!)
   const CRITICAL_POOL = [
     {
       id: 'accident-100k',
       category: 'accident',
       severity: 'critical',
-      billAmount: 100000,
+      billAmount: 95000,
       badge: { th: 'วิกฤตอุบัติเหตุใหญ่', en: 'Major Accident Shock' },
       title: {
         th: 'อุบัติเหตุรถเฉี่ยวชน / กระดูกหัก ต้องผ่าตัดและพักฟื้น',
         en: 'Road Traffic Accident / Fracture Requiring Surgery',
       },
       story: {
-        th: 'เหตุไม่คาดฝันระหว่างเดินทางกลับบ้านทำให้กระดูกข้อมือและไหปลาร้าหัก ต้องผ่าตัดเร่งด่วน บิลค่ารักษาและค่าผ่าตัดรวม ฿100,000',
-        en: 'An unexpected commute collision causes a fracture requiring urgent surgery and recovery care. The total hospital bill is ฿100,000.',
+        th: 'เหตุไม่คาดฝันระหว่างเดินทางกลับบ้านทำให้กระดูกข้อมือและไหปลาร้าหัก ต้องผ่าตัดเร่งด่วน บิลค่ารักษาและค่าผ่าตัดรวม ฿95,000',
+        en: 'An unexpected commute collision causes a fracture requiring urgent surgery and recovery care. The total hospital bill is ฿95,000.',
       },
     },
     {
       id: 'appendicitis-95k',
       category: 'medical',
       severity: 'critical',
-      billAmount: 95000,
+      billAmount: 88000,
       badge: { th: 'ผ่าตัดฉุกเฉิน', en: 'Emergency Surgery' },
       title: {
         th: 'ไส้ติ่งอักเสบเฉียบพลัน ต้องผ่าตัดส่องกล้องกลางดึก',
         en: 'Acute Appendicitis — Late-Night Emergency Surgery',
       },
       story: {
-        th: 'ปวดท้องรุนแรงกะทันหันกลางดึก แพทย์วินิจฉัยไส้ติ่งอักเสบใกล้แตกต้องผ่าตัดส่องกล้องทันที ค่ารักษาและห้องพักฟื้นรวม ฿95,000',
-        en: 'Sudden severe abdominal pain at midnight turns out to be acute appendicitis needing immediate surgery. Total bill: ฿95,000.',
+        th: 'ปวดท้องรุนแรงกะทันหันกลางดึก แพทย์วินิจฉัยไส้ติ่งอักเสบใกล้แตกต้องผ่าตัดส่องกล้องทันที ค่ารักษาและห้องพักฟื้นรวม ฿88,000',
+        en: 'Sudden severe abdominal pain at midnight turns out to be acute appendicitis needing immediate surgery. Total bill: ฿88,000.',
       },
     },
     {
-      id: 'slip-fracture-110k',
+      id: 'slip-fracture-100k',
       category: 'accident',
       severity: 'critical',
-      billAmount: 110000,
+      billAmount: 100000,
       badge: { th: 'อุบัติเหตุหนัก', en: 'Severe Injury Shock' },
       title: {
         th: 'ลื่นล้มรุนแรง / เอ็นหัวเข่าฉีกขาด ต้องผ่าตัดและกายภาพ',
         en: 'Severe Fall / Torn Knee Ligament Surgery & Rehab',
       },
       story: {
-        th: 'พื้นเปียกช่วงฝนตกทำให้ลื่นล้มเข่าบิดรุนแรง เอ็นไขว้หน้าขาดต้องผ่าตัดส่องกล้องและทำกายภาพต่อ รวมค่ารักษา ฿110,000',
-        en: 'A bad slip on wet pavement tears your knee ligament, requiring surgical reconstruction and follow-up rehab totaling ฿110,000.',
+        th: 'พื้นเปียกช่วงฝนตกทำให้ลื่นล้มเข่าบิดรุนแรง เอ็นไขว้หน้าขาดต้องผ่าตัดส่องกล้องและทำกายภาพต่อ รวมค่ารักษา ฿100,000',
+        en: 'A bad slip on wet pavement tears your knee ligament, requiring surgical reconstruction and follow-up rehab totaling ฿100,000.',
       },
     },
   ];
 
-  const MEDICAL_POOL = [
+  // 2) Inpatient Hospitalization (฿22k–฿38k) — realistic 0–2 times per year
+  const INPATIENT_POOL = [
     {
-      id: 'medical-45k',
-      category: 'medical',
-      severity: 'high',
-      billAmount: 45000,
-      badge: { th: 'เหตุฉุกเฉินสุขภาพ', en: 'Medical Shock' },
-      title: {
-        th: 'อาหารเป็นพิษรุนแรง / ไข้เลือดออก ต้องแอดมิตด่วน',
-        en: 'Severe Food Poisoning / Dengue — Urgent Hospital Admission',
-      },
-      story: {
-        th: 'คุณไข้สูงเฉียบพลันตอนตี 2 ต้องเข้าโรงพยาบาลเอกชนใกล้บ้านและนอนพักรักษาตัว 3 คืน บิลค่ารักษาและค่าห้องรวมทั้งสิ้น ฿45,000',
-        en: 'A sudden high fever at 2 AM sends you to the nearest private hospital for 3 nights. Total medical and room charges come to ฿45,000.',
-      },
-    },
-    {
-      id: 'flu-pneumonia-38k',
+      id: 'medical-38k',
       category: 'medical',
       severity: 'high',
       billAmount: 38000,
-      badge: { th: 'เจ็บป่วยเฉียบพลัน', en: 'Acute Illness' },
+      badge: { th: 'เหตุฉุกเฉินสุขภาพ (IPD)', en: 'Inpatient Medical Shock' },
+      title: {
+        th: 'ไข้เลือดออก / อาหารเป็นพิษรุนแรง ต้องแอดมิต 3 คืน',
+        en: 'Dengue / Severe Food Poisoning — 3-Night Hospital Stay',
+      },
+      story: {
+        th: 'ไข้สูงเฉียบพลันตอนตี 2 ต้องเข้าโรงพยาบาลเอกชนใกล้บ้านและนอนพักรักษาตัว 3 คืน บิลค่ารักษาและค่าห้องรวม ฿38,000',
+        en: 'A sudden high fever at 2 AM sends you to a private hospital for 3 nights. Total medical and room charges come to ฿38,000.',
+      },
+    },
+    {
+      id: 'flu-pneumonia-30k',
+      category: 'medical',
+      severity: 'high',
+      billAmount: 30000,
+      badge: { th: 'เจ็บป่วยเฉียบพลัน (IPD)', en: 'Acute Illness Stay' },
       title: {
         th: 'ไข้หวัดใหญ่สายพันธุ์ใหม่แทรกซ้อน นอน รพ. 2 คืน',
         en: 'Severe Influenza Complication — 2-Night Hospital Stay',
       },
       story: {
-        th: 'พักผ่อนน้อยสะสมจนติดไข้หวัดใหญ่และมีภาวะหลอดลมอักเสบ ต้องพ่นยาและให้น้ำเกลือที่ รพ. 2 คืน ค่าใช้จ่ายรวม ฿38,000',
-        en: 'Exhaustion leads to severe influenza with bronchitis requiring IV fluids and 2 nights of inpatient care totaling ฿38,000.',
+        th: 'พักผ่อนน้อยสะสมจนติดไข้หวัดใหญ่และหลอดลมอักเสบ ต้องพ่นยาและให้น้ำเกลือที่ รพ. 2 คืน ค่าใช้จ่ายรวม ฿30,000',
+        en: 'Exhaustion leads to severe influenza with bronchitis requiring IV fluids and 2 nights of inpatient care totaling ฿30,000.',
       },
     },
     {
-      id: 'allergy-er-32k',
+      id: 'allergy-er-22k',
       category: 'medical',
       severity: 'high',
-      billAmount: 32000,
-      badge: { th: 'เข้าห้องฉุกเฉิน', en: 'ER Admission' },
-      title: {
-        th: 'แพ้อาหารเฉียบพลัน หายใจติดขัด ต้องเข้าห้องฉุกเฉิน',
-        en: 'Severe Allergic Reaction — Emergency Room Overnight',
-      },
-      story: {
-        th: 'เกิดอาการแพ้รุนแรงหลังมื้อเย็นจนผื่นขึ้นและหายใจติดขัด ต้องรีบเข้าห้องฉุกเฉินฉีดยาและนอนดูอาการ 1 คืน บิลรวม ฿32,000',
-        en: 'An unexpected allergic reaction triggers breathing difficulty, requiring urgent ER treatment and overnight monitoring for ฿32,000.',
-      },
-    },
-    {
-      id: 'seasonal-22k',
-      category: 'medical',
-      severity: 'medium',
       billAmount: 22000,
-      badge: { th: 'เจ็บป่วยตามฤดูกาล', en: 'Seasonal Illness' },
+      badge: { th: 'เข้าห้องฉุกเฉิน', en: 'ER Overnight' },
       title: {
-        th: 'ติดเชื้อทางเดินอาหาร / ให้น้ำเกลือพักฟื้น (฿22,000)',
-        en: 'Acute Gastroenteritis — Short Hospital Recovery (฿22,000)',
+        th: 'แพ้อาหารเฉียบพลัน หายใจติดขัด นอนดูอาการ 1 คืน',
+        en: 'Severe Allergic Reaction — Overnight ER Observation',
       },
       story: {
-        th: 'อาการปวดท้องและขาดน้ำรุนแรงทำให้ต้องแอดมิตให้น้ำเกลือและยาฆ่าเชื้อ 1 คืน รวมค่ารักษา ฿22,000',
-        en: 'Severe dehydration from gastroenteritis requires an overnight IV drip and medication totaling ฿22,000.',
-      },
-    },
-    {
-      id: 'opd-clinic-4500',
-      category: 'medical',
-      severity: 'medium',
-      billAmount: 4500,
-      badge: { th: 'ค่ารักษาผู้ป่วยนอก (OPD)', en: 'Outpatient Clinic (OPD)' },
-      title: {
-        th: 'ออฟฟิศซินโดรม & ไมเกรนกำเริบ ต้องพบแพทย์เฉพาะทาง (฿4,500)',
-        en: 'Severe Migraine & Office Syndrome Specialist Visit (฿4,500)',
-      },
-      story: {
-        th: 'ทำงานหนักติดกันหลายสัปดาห์จนปวดหัวไมเกรนและคอบ่าไหล่รุนแรง ต้องตรวจและรับยาจากแผนกผู้ป่วยนอก รวมค่าใช้จ่าย ฿4,500',
-        en: 'Weeks of overtime trigger severe migraine and neck strain, requiring an outpatient specialist visit and medication for ฿4,500.',
-      },
-    },
-    {
-      id: 'dental-wisdom-8500',
-      category: 'medical',
-      severity: 'medium',
-      billAmount: 8500,
-      badge: { th: 'ทันตกรรมฉุกเฉิน', en: 'Urgent Dental Care' },
-      title: {
-        th: 'ฟันคุดอักเสบเฉียบพลัน ต้องผ่าฟันคุดด่วน (฿8,500)',
-        en: 'Impacted Wisdom Tooth — Urgent Dental Surgery (฿8,500)',
-      },
-      story: {
-        th: 'ปวดฟันกรามรุนแรงจนแก้มบวม เอกซเรย์พบฟันคุดแนวนอนต้องผ่าออกทันที เกินวงเงินประกันสังคม 900 บาท เหลือจ่ายเอง ฿8,500',
-        en: 'A swollen jaw turns out to be an impacted wisdom tooth needing immediate surgery — beyond basic dental allowance, costing ฿8,500.',
-      },
-    },
-    {
-      id: 'minor-sprain-6500',
-      category: 'accident',
-      severity: 'medium',
-      billAmount: 6500,
-      badge: { th: 'อุบัติเหตุเล็กน้อย', en: 'Minor Accident' },
-      title: {
-        th: 'ข้อเท้าพลิกตกบันได BTS ต้องเอกซเรย์และใส่เฝือกอ่อน (฿6,500)',
-        en: 'Sprained Ankle on Commute Stairs — X-Ray & Brace (฿6,500)',
-      },
-      story: {
-        th: 'รีบวิ่งต่อรถไฟฟ้าช่วงเช้าจนข้อเท้าพลิกบวมแดง ต้องเข้าห้องฉุกเฉินเอกซเรย์ตรวจกระดูกและรับเฝือกอ่อน บิลรวม ฿6,500',
-        en: 'Rushing down commute stairs leads to a nasty ankle sprain needing an urgent X-ray and support brace costing ฿6,500.',
+        th: 'เกิดอาการแพ้รุนแรงหลังมื้อเย็นจนผื่นขึ้นและหายใจติดขัด ต้องเข้าห้องฉุกเฉินฉีดยาและนอนดูอาการ 1 คืน บิลรวม ฿22,000',
+        en: 'An unexpected allergic reaction triggers breathing difficulty, requiring urgent ER treatment and overnight monitoring for ฿22,000.',
       },
     },
   ];
 
+  // 3) Everyday / Minor Outpatient & Dental Health (฿1,200–฿4,500)
+  const MINOR_MEDICAL_POOL = [
+    {
+      id: 'opd-flu-1500',
+      category: 'medical',
+      severity: 'medium',
+      billAmount: 1500,
+      badge: { th: 'ค่ารักษาผู้ป่วยนอก (OPD)', en: 'Outpatient Clinic (OPD)' },
+      title: {
+        th: 'ไข้หวัดและไมเกรนกำเริบ ตรวจคลินิกและรับยา (฿1,500)',
+        en: 'Fever & Migraine — Outpatient Clinic Visit (฿1,500)',
+      },
+      story: {
+        th: 'ทำงานหนักพักผ่อนน้อยจนเป็นไข้และปวดศีรษะไมเกรน ต้องพบแพทย์แผนกผู้ป่วยนอกและรับยา รวมค่าใช้จ่าย ฿1,500',
+        en: 'Overwork triggers fever and migraine, requiring an outpatient doctor visit and prescription totaling ฿1,500.',
+      },
+    },
+    {
+      id: 'dental-care-1800',
+      category: 'medical',
+      severity: 'medium',
+      billAmount: 1800,
+      badge: { th: 'ทันตกรรมส่วนเกินสิทธิ', en: 'Dental Care Co-Pay' },
+      title: {
+        th: 'อุดฟันและขูดหินปูนส่วนเกินวงเงินประกันสังคม (฿1,800)',
+        en: 'Dental Filling & Scaling Beyond SSO Cap (฿1,800)',
+      },
+      story: {
+        th: 'ตรวจฟันประจำปีพบฟันผุต้องอุดหลายซี่ มีส่วนต่างเกินวงเงินทันตกรรมประกันสังคม 900 บาท เหลือจ่ายเอง ฿1,800',
+        en: 'A routine dental check reveals cavities needing fillings beyond the ฿900 SSO cap, leaving ฿1,800 out of pocket.',
+      },
+    },
+    {
+      id: 'minor-sprain-2800',
+      category: 'accident',
+      severity: 'medium',
+      billAmount: 2800,
+      badge: { th: 'อุบัติเหตุเล็กน้อย', en: 'Minor Accident' },
+      title: {
+        th: 'ข้อเท้าพลิกตกบันไดรถไฟฟ้า ต้องเอกซเรย์และรับยา (฿2,800)',
+        en: 'Sprained Ankle on Commute Stairs — X-Ray & Brace (฿2,800)',
+      },
+      story: {
+        th: 'รีบวิ่งต่อรถไฟฟ้าช่วงเช้าจนข้อเท้าพลิกบวมแดง ต้องตรวจเอกซเรย์และรับเฝือกอ่อนพยุงข้อเท้า บิลรวม ฿2,800',
+        en: 'Rushing down commute stairs leads to an ankle sprain needing an X-ray and support brace costing ฿2,800.',
+      },
+    },
+    {
+      id: 'dental-wisdom-4500',
+      category: 'medical',
+      severity: 'medium',
+      billAmount: 4500,
+      badge: { th: 'ทันตกรรมฉุกเฉิน', en: 'Urgent Dental Care' },
+      title: {
+        th: 'ฟันคุดอักเสบเฉียบพลัน ต้องผ่าฟันคุดด่วน (฿4,500)',
+        en: 'Impacted Wisdom Tooth — Urgent Extraction (฿4,500)',
+      },
+      story: {
+        th: 'ปวดฟันกรามรุนแรงจนแก้มบวม ต้องผ่าฟันคุดด่วนที่คลินิกทันตกรรม หักสิทธิพื้นฐานแล้วเหลือจ่าย ฿4,500',
+        en: 'A swollen jaw turns out to be an impacted wisdom tooth needing urgent extraction — ฿4,500 after statutory benefit.',
+      },
+    },
+  ];
+
+  // 4) Temporary Income Dips (10%–15%, realistic 1–3 times per year)
   const INCOME_POOL = [
     {
       id: 'income-drop',
       category: 'income',
       severity: 'medium',
-      billAmount: incomeDropAmount,
-      badge: { th: 'รายได้ผันผวน', en: 'Income Disruption' },
+      billAmount: incomeDrop15,
+      badge: { th: 'รายได้ผันผวน', en: 'Income Dip' },
       title: {
-        th: 'บริษัทปรับลดโอที / รายได้หดหาย 20% ชั่วคราว',
-        en: 'Overtime Cut — Temporary 20% Income Drop',
+        th: 'บริษัทปรับลดโอทีชั่วคราว รายได้ลดลง 15%',
+        en: 'Temporary Overtime Cut (-15% Income)',
       },
       story: {
-        th: `เศรษฐกิจชะลอตัวทำให้บริษัทงดโอทีและปรับลดเบี้ยขยันชั่วคราว กระแสเงินสดรับของคุณหายไป ฿${incomeDropAmount.toLocaleString('en-US')} ในช่วงนี้`,
-        en: `A temporary slowdown cuts overtime and shift allowances, reducing your cash inflow by ฿${incomeDropAmount.toLocaleString('en-US')} this period.`,
+        th: `เศรษฐกิจชะลอตัวทำให้บริษัทงดโอทีชั่วคราว กระแสเงินสดรับของคุณเดือนนี้ลดลง ฿${incomeDrop15.toLocaleString('en-US')}`,
+        en: `A temporary slowdown cuts overtime allowances, reducing your cash inflow by ฿${incomeDrop15.toLocaleString('en-US')} this month.`,
       },
     },
     {
       id: 'commission-delay',
       category: 'income',
       severity: 'medium',
-      billAmount: incomeDropAmount,
+      billAmount: incomeDrop10,
       badge: { th: 'รายได้สะดุด', en: 'Cashflow Delay' },
       title: {
-        th: 'ค่าคอมมิชชัน / งานเสริมถูกเลื่อนจ่ายออกไป 20%',
-        en: 'Bonus / Side-Income Payout Delayed (-20% Cashflow)',
+        th: 'เบี้ยขยัน / งานเสริมถูกเลื่อนจ่ายออกไป 10%',
+        en: 'Side-Income / Allowance Delayed (-10%)',
       },
       story: {
-        th: `โปรเจกต์ของทีมถูกเลื่อนปิดงบ ทำให้เงินส่วนเพิ่มที่คาดว่าจะได้รับช่วงนี้หายไป ฿${incomeDropAmount.toLocaleString('en-US')}`,
-        en: `A delayed project sign-off pushes back your expected payout, creating a ฿${incomeDropAmount.toLocaleString('en-US')} cashflow gap this period.`,
-      },
-    },
-    {
-      id: 'unpaid-leave-gap',
-      category: 'income',
-      severity: 'medium',
-      billAmount: Math.round(incomeDropAmount * 0.65),
-      badge: { th: 'ลางานไม่รับค่าจ้าง', en: 'Unpaid Leave Gap' },
-      title: {
-        th: 'ต้องลากิจด่วนดูแลครอบครัว ถูกหักรายได้บางส่วน',
-        en: 'Urgent Family Leave — Partial Income Deduction',
-      },
-      story: {
-        th: `มีธุระด่วนที่บ้านทำให้ต้องลางานเกินโควตาวันลา กระแสเงินสดเดือนนี้ลดลง ฿${Math.round(incomeDropAmount * 0.65).toLocaleString('en-US')}`,
-        en: `An unexpected family errand exceeds your paid leave quota, trimming your cash inflow by ฿${Math.round(incomeDropAmount * 0.65).toLocaleString('en-US')}.`,
+        th: `โปรเจกต์ของทีมเลื่อนปิดรอบบัญชี ทำให้เงินส่วนเพิ่มช่วงนี้ช้าออกไป ฿${incomeDrop10.toLocaleString('en-US')}`,
+        en: `A delayed project billing pushes back your expected extra payout, creating a ฿${incomeDrop10.toLocaleString('en-US')} gap.`,
       },
     },
   ];
 
+  // 5) Lifestyle Temptations — with TRUE realistic frugalCost (฿0 for skipping impulse buys!)
   const LIFESTYLE_POOL = [
     {
-      id: 'lifestyle-18k',
+      id: 'flash-sale-4500',
       category: 'lifestyle',
       severity: 'medium',
-      billAmount: 18000,
-      badge: { th: 'บททดสอบไลฟ์สไตล์', en: 'Lifestyle Temptation' },
+      billAmount: 4500,
+      frugalCost: 0,
+      badge: { th: 'โปรแรงกลางเดือน', en: 'Mid-Month Flash Sale' },
       title: {
-        th: 'มือถือจอแตกใช้งานไม่ได้ / ทริปเที่ยวแก๊งเพื่อน (฿18,000)',
-        en: 'Cracked Phone Screen or Friends Getaway Trip (฿18,000)',
+        th: 'มหกรรมลดราคา 11.11 / รองเท้าและแก็ดเจ็ตในตะกร้า (฿4,500)',
+        en: 'Mega Flash Sale — Shoes & Desk Wishlist (฿4,500)',
       },
       story: {
-        th: 'มือถือเครื่องหลักหน้าจอแตกพร้อมกับกลุ่มเพื่อนชวนทริปพักใจพอดี ค่าใช้จ่ายรวมอยู่ที่ ฿18,000 คุณจะจัดการเงินก้อนนี้อย่างไร?',
-        en: 'Your main smartphone screen shatters right as friends invite you on a recharge trip. Total cost is ฿18,000 — how do you handle it?',
+        th: 'โค้ดส่วนลดวันสุดท้ายและโปรผ่อน 0% ล่อใจให้กดของในตะกร้ารวม ฿4,500 คุณจะอดใจข้ามไปหรือจัดเต็ม?',
+        en: 'Limited-time vouchers tempt you to clear your ฿4,500 shopping cart today. Skip cleanly or buy now?',
       },
     },
     {
-      id: 'concert-gadget-15k',
+      id: 'concert-6500',
       category: 'lifestyle',
       severity: 'medium',
-      billAmount: 15000,
+      billAmount: 6500,
+      frugalCost: 0,
       badge: { th: 'สิ่งล่อใจรายทาง', en: 'Impulse Temptation' },
       title: {
-        th: 'บัตรคอนเสิร์ตวงโปรด + โปรลดแรงแก็ดเจ็ต (฿15,000)',
-        en: 'Dream Concert Tickets + Flash Gadget Sale (฿15,000)',
+        th: 'บัตรคอนเสิร์ตวงโปรด + ปาร์ตี้หลังคอนเสิร์ต (฿6,500)',
+        en: 'Favorite Artist Concert Ticket & Afterparty (฿6,500)',
       },
       story: {
-        th: 'ศิลปินที่ชอบมาไทยรอบพิเศษ แถมโปรลดราคาหูฟัง/แท็บเล็ตวันสุดท้ายพอดี รวมงบ ฿15,000 คุณจะตัดสินใจอย่างไร?',
-        en: 'Your favorite artist announces a one-night Bangkok show alongside a flash gadget deal totaling ฿15,000. What is your move?',
+        th: 'ศิลปินที่ชอบมาจัดคอนเสิร์ตในไทยรอบพิเศษ รวมค่าบัตรและเดินทางอยู่ที่ ฿6,500 คุณจะตัดสินใจอย่างไร?',
+        en: 'Your favorite artist announces a one-night Bangkok show totaling ฿6,500 with travel. What is your move?',
       },
     },
     {
-      id: 'social-wedding-6k',
+      id: 'social-wedding-3200',
       category: 'lifestyle',
       severity: 'medium',
-      billAmount: 6000,
+      billAmount: 3200,
+      frugalCost: 800,
       badge: { th: 'ค่าสังคมรายเดือน', en: 'Social Commitments' },
       title: {
-        th: 'ซองงานแต่งเพื่อนสนิท 2 งาน + เลี้ยงส่งทีม (฿6,000)',
-        en: 'Two Friends’ Weddings & Team Farewell Dinner (฿6,000)',
+        th: 'ซองงานแต่งเพื่อน + ชุดและงานเลี้ยงรุ่น (฿3,200)',
+        en: 'Friend’s Wedding Envelope, Outfit & Reunion (฿3,200)',
       },
       story: {
-        th: 'เดือนนี้มีทั้งงานแต่งเพื่อนสมัยเรียน ชุดไปงาน และงานเลี้ยงส่งรุ่นพี่ในแผนก รวมงบประมาณ ฿6,000 คุณจะจัดสรรอย่างไร?',
-        en: 'Two college weddings, outfit costs, and a team farewell dinner collide in the same month for ฿6,000. How do you manage it?',
+        th: 'เดือนนี้มีงานแต่งเพื่อนและนัดเลี้ยงรุ่น ค่าซอง ค่าชุด และค่าเดินทางรวม ฿3,200 (หรือใส่ซองฝากเพื่อนแบบประหยัด ฿800)',
+        en: 'A wedding and reunion dinner add up to ฿3,200 with outfit and travel (or send a modest ฿800 gift instead).',
       },
     },
     {
-      id: 'flash-sale-9k',
+      id: 'phone-trip-9500',
       category: 'lifestyle',
       severity: 'medium',
-      billAmount: 9000,
-      badge: { th: 'โปรแรงกลางเดือน', en: 'Mid-Month Mega Sale' },
+      billAmount: 9500,
+      frugalCost: 1500,
+      badge: { th: 'บททดสอบไลฟ์สไตล์', en: 'Lifestyle Temptation' },
       title: {
-        th: 'มหกรรมลดราคา 11.11 / รองเท้าและอุปกรณ์ทำงาน (฿9,000)',
-        en: 'Mega Flash Sale — Shoes & Desk Upgrade Bundle (฿9,000)',
+        th: 'อัปเกรดมือถือใหม่ / ทริปเที่ยวทะเลกับแก๊งเพื่อน (฿9,500)',
+        en: 'Phone Upgrade or Beach Getaway with Friends (฿9,500)',
       },
       story: {
-        th: 'โค้ดส่วนลดและโปรผ่อน 0% ล่อใจให้กดของที่เล็งไว้นานแล้วรวม ฿9,000 คุณจะยับยั้งใจหรือจัดเต็ม?',
-        en: 'Limited-time vouchers and 0% offers tempt you to clear your ฿9,000 wishlist today. Hold back or go for it?',
+        th: 'มือถือเริ่มแบตเสื่อมพร้อมเพื่อนชวนไปทริปทะเลพอดี ถ้ายกชุดใหม่/ไปทริปอยู่ที่ ฿9,500 หรือเลือกเปลี่ยนแบตใช้ต่อแค่ ฿1,500',
+        en: 'A fading battery coincides with a friends’ beach trip totaling ฿9,500 — or just replace the battery for ฿1,500.',
       },
     },
   ];
 
-  const EXPENSE_POOL = [
+  // 6) Routine Necessary Expenses (฿1,200–฿2,800) — everyday First Jobber surprises
+  const ROUTINE_EXPENSE_POOL = [
     {
-      id: 'commute-14k',
+      id: 'utility-surge-1600',
       category: 'expense',
       severity: 'medium',
-      billAmount: 14000,
-      badge: { th: 'รายจ่ายก้อนฉุกเฉิน', en: 'Unexpected Repair' },
+      billAmount: 1600,
+      badge: { th: 'บิลรายเดือนพุ่ง', en: 'Utility Bill Spike' },
       title: {
-        th: 'ค่าซ่อมรถ / โน้ตบุ๊กทำงานเสียกะทันหัน (฿14,000)',
-        en: 'Sudden Commute Vehicle / Work Laptop Repair (฿14,000)',
+        th: 'ค่าไฟฟ้าหน้าร้อนพุ่งเกินงบ + ค่าซ่อมก๊อกน้ำ (฿1,600)',
+        en: 'Heatwave Electricity Surge & Minor Plumbing (฿1,600)',
       },
       story: {
-        th: 'อุปกรณ์หลักที่ใช้เดินทางและทำงานเกิดเสียกะทันหัน ต้องซ่อมด่วนเพื่อให้ทำงานต่อได้ไม่สะดุด ค่าใช้จ่าย ฿14,000',
-        en: 'Essential work/commute gear breaks down suddenly and needs an immediate ฿14,000 repair so your work stays on track.',
+        th: 'อากาศร้อนจัดทำให้เปิดแอร์หนักกว่าปกติ บิลค่าไฟและค่าช่างซ่อมก๊อกน้ำเกินงบประจำมา ฿1,600',
+        en: 'Peak heat pushes your monthly electricity bill and a minor faucet fix ฿1,600 above budget.',
       },
     },
     {
-      id: 'home-appliance-12k',
+      id: 'vehicle-prb-1800',
       category: 'expense',
       severity: 'medium',
-      billAmount: 12000,
-      badge: { th: 'ค่าซ่อมฉุกเฉิน', en: 'Urgent Home Bill' },
+      billAmount: 1800,
+      badge: { th: 'ค่าเดินทางจำเป็น', en: 'Commute Upkeep' },
       title: {
-        th: 'แอร์ห้องพักเสีย + ช่วยค่าซ่อมฉุกเฉินที่บ้าน (฿12,000)',
-        en: 'Broken A/C Unit & Urgent Family Home Repair (฿12,000)',
+        th: 'เปลี่ยนยาง/เช็กระยะรถ + ต่อ พ.ร.บ. ประจำปี (฿1,800)',
+        en: 'Commute Tire Service + Annual Compulsory Motor Cover (฿1,800)',
       },
       story: {
-        th: 'หน้าร้อนจัดแอร์เสียพร้อมกับที่บ้านมีค่าซ่อมหลังคารั่วกะทันหัน ต้องช่วยออกค่าใช้จ่ายรวม ฿12,000',
-        en: 'Peak summer heat breaks your A/C just as a leak at home needs fixing, requiring ฿12,000 in sudden repair cash.',
+        th: 'ถึงรอบเช็กระยะเปลี่ยนยางและต่อภาษี/พ.ร.บ. รถที่ใช้เดินทางไปทำงาน รวมค่าใช้จ่ายจำเป็น ฿1,800',
+        en: 'Your daily commute vehicle hits its annual service and compulsory insurance renewal for ฿1,800.',
       },
     },
     {
-      id: 'vehicle-prb-5500',
+      id: 'gear-fix-2200',
       category: 'expense',
       severity: 'medium',
-      billAmount: 5500,
-      badge: { th: 'ค่าบำรุงรักษารายปี', en: 'Annual Vehicle Upkeep' },
+      billAmount: 2200,
+      badge: { th: 'ซ่อมอุปกรณ์ทำงาน', en: 'Work Gear Repair' },
       title: {
-        th: 'เปลี่ยนยางรถ + ต่อภาษีและ พ.ร.บ. ครบกำหนด (฿5,500)',
-        en: 'Worn Tires Replacement + Annual Tax & Compulsory Motor Cover (฿5,500)',
+        th: 'สายชาร์จและคีย์บอร์ด/แว่นตาทำงานชำรุดกะทันหัน (฿2,200)',
+        en: 'Broken Work Charger / Eyeglasses Replacement (฿2,200)',
       },
       story: {
-        th: 'ถึงรอบเปลี่ยนยางและต่อภาษี/พ.ร.บ. ประจำปีพอดี ซึ่งเป็นค่าใช้จ่ายจำเป็นเพื่อความปลอดภัยในการเดินทาง รวม ฿5,500',
-        en: 'Your commute vehicle hits its annual tax, compulsory cover, and worn tire replacement milestone for ฿5,500.',
+        th: 'อุปกรณ์สำคัญที่ใช้ทำงานประจำวันเกิดชำรุดกะทันหัน ต้องรีบซ่อมหรือเปลี่ยนใหม่ทันที ฿2,200',
+        en: 'Essential daily work gear breaks unexpectedly and needs a quick ฿2,200 fix to stay productive.',
       },
     },
     {
-      id: 'utility-surge-4200',
+      id: 'family-pet-2600',
       category: 'expense',
       severity: 'medium',
-      billAmount: 4200,
-      badge: { th: 'บิลพุ่งผิดปกติ', en: 'Utility Bill Spike' },
+      billAmount: 2600,
+      badge: { th: 'ช่วยค่าใช้จ่ายที่บ้าน', en: 'Family / Pet Care' },
       title: {
-        th: 'ค่าไฟฟ้าหน้าร้อนพุ่งสูง + ค่าซ่อมประปาห้องพัก (฿4,200)',
-        en: 'Heatwave Electricity Surge & Plumbing Fix (฿4,200)',
+        th: 'ช่วยค่ายาผู้ใหญ่ที่บ้าน / พาสัตว์เลี้ยงหาหมอด่วน (฿2,600)',
+        en: 'Parents’ Extra Medicine / Urgent Vet Visit (฿2,600)',
       },
       story: {
-        th: 'อากาศร้อนจัดบวกกับท่อน้ำซึมโดยไม่รู้ตัวทำให้บิลค่าน้ำไฟและค่าช่างเดือนนี้พุ่งเกินงบมา ฿4,200',
-        en: 'A heatwave and hidden pipe leak push your monthly utility and plumber bill ฿4,200 above normal.',
-      },
-    },
-    {
-      id: 'pet-vet-7500',
-      category: 'expense',
-      severity: 'medium',
-      billAmount: 7500,
-      badge: { th: 'เหตุฉุกเฉินสัตว์เลี้ยง/ครอบครัว', en: 'Urgent Family / Pet Bill' },
-      title: {
-        th: 'สัตว์เลี้ยงป่วยด่วน / ช่วยค่ายาผู้ใหญ่ที่บ้าน (฿7,500)',
-        en: 'Emergency Vet Visit / Parents’ Extra Medical Bill (฿7,500)',
-      },
-      story: {
-        th: 'มีค่าใช้จ่ายฉุกเฉินนอกแผนเพื่อดูแลคนสำคัญหรือสัตว์เลี้ยงที่บ้านรวม ฿7,500 ต้องรีบโอนช่วยทันที',
-        en: 'An unplanned ฿7,500 care expense hits home for a loved one or pet and needs immediate payment.',
+        th: 'มีค่าใช้จ่ายจำเป็นนอกแผนเพื่อดูแลคนสำคัญหรือสัตว์เลี้ยงที่บ้านรวม ฿2,600 ต้องรีบโอนช่วยทันที',
+        en: 'An unplanned ฿2,600 care bill comes up for family or a pet and needs immediate attention.',
       },
     },
   ];
 
+  // 7) Occasional Medium Repairs (฿4,800–฿6,500) — capped to 1–3 per year
+  const MEDIUM_EXPENSE_POOL = [
+    {
+      id: 'ac-repair-4800',
+      category: 'expense',
+      severity: 'medium',
+      billAmount: 4800,
+      badge: { th: 'ค่าซ่อมฉุกเฉิน', en: 'Urgent Home Repair' },
+      title: {
+        th: 'แอร์ห้องพักเสียกะทันหัน ต้องเปลี่ยนอะไหล่ (฿4,800)',
+        en: 'Broken A/C Compressor Repair (฿4,800)',
+      },
+      story: {
+        th: 'แอร์ห้องพักไม่เย็นกลางฤดูร้อน ช่างตรวจพบอะไหล่เสียต้องเปลี่ยนด่วน ค่าซ่อมมาตรฐาน ฿4,800',
+        en: 'Your room A/C dies mid-summer and needs an urgent part replacement costing ฿4,800.',
+      },
+    },
+    {
+      id: 'laptop-repair-6500',
+      category: 'expense',
+      severity: 'medium',
+      billAmount: 6500,
+      badge: { th: 'ซ่อมอุปกรณ์หลัก', en: 'Major Gear Repair' },
+      title: {
+        th: 'โน้ตบุ๊กทำงานเมนบอร์ด/จอเสีย ต้องซ่อมด่วน (฿6,500)',
+        en: 'Work Laptop Screen / Board Urgent Repair (฿6,500)',
+      },
+      story: {
+        th: 'โน้ตบุ๊กที่ใช้ทำงานหลักเกิดเปิดไม่ติดกะทันหัน ต้องส่งซ่อมด่วนเพื่อให้ทำงานต่อได้ ค่าซ่อม ฿6,500',
+        en: 'Your primary work laptop suddenly refuses to boot and needs an urgent ฿6,500 repair.',
+      },
+    },
+  ];
+
+  // 8) Positive Windfalls & Smart Financial Wins (+฿1,800 to +฿10,000)
   const WINDFALL_POOL = [
     {
-      id: 'windfall-8k',
+      id: 'windfall-1800',
       category: 'windfall',
       severity: 'positive',
-      billAmount: 8000,
-      badge: { th: 'ข่าวดีทางการเงิน', en: 'Positive Windfall' },
+      billAmount: 1800,
+      badge: { th: 'เงินคืน & รายได้ย่อย', en: 'Cashback & Resale' },
       title: {
-        th: 'ได้รับเงินคืนภาษี / โบนัสพิเศษ +฿8,000',
-        en: 'Tax Refund / Spot Performance Bonus +฿8,000',
+        th: 'ขายของมือสอง + เงินคืนบัตรสะสม +฿1,800',
+        en: 'Declutter Resale + Cashback Rebate +฿1,800',
       },
       story: {
-        th: 'การยื่นภาษีตรงเวลาและผลงานที่โดดเด่นทำให้คุณได้รับเงินพิเศษเข้าบัญชี ฿8,000 คุณจะนำเงินก้อนนี้ไปเสริมจุดไหน?',
-        en: 'Filing taxes cleanly and solid work performance earns you an unexpected ฿8,000 cash inflow. Where will you direct it?',
+        th: 'คุณเคลียร์ของใช้ไม่ได้ใช้ขายต่อบวกกับเงินคืนสะสม ได้เงินพิเศษเข้ามือ +฿1,800 จะนำไปเสริมจุดไหนดี?',
+        en: 'Selling unused items and redeeming cashback adds +฿1,800 to your hands. Where will you put it?',
       },
     },
     {
-      id: 'windfall-12k',
+      id: 'windfall-3200',
       category: 'windfall',
       severity: 'positive',
-      billAmount: 12000,
-      badge: { th: 'โบนัสพิเศษ', en: 'Extra Windfall' },
+      billAmount: 3200,
+      badge: { th: 'รายได้เสริมเข้ามือ', en: 'Side Gig Payout' },
       title: {
-        th: 'รับเงินปันผล / ค่าตอบแทนงานเสริมพิเศษ +฿12,000',
-        en: 'Dividend / Freelance Project Payout +฿12,000',
+        th: 'รับค่าตอบแทนงานเสริมช่วงวันหยุด +฿3,200',
+        en: 'Weekend Freelance Side-Project Payout +฿3,200',
       },
       story: {
-        th: 'งานเสริมที่ตั้งใจทำและเงินคืนสะสมโอนเข้าบัญชีเพิ่ม ฿12,000 เป็นจังหวะดีในการเสริมเกราะทางการเงินของคุณ',
-        en: 'A completed side project and annual rebate land ฿12,000 in your account — a great chance to strengthen your safety net.',
+        th: 'งานเสริมที่รับทำวันเสาร์-อาทิตย์โอนค่าตอบแทนเข้าบัญชี +฿3,200 เป็นจังหวะดีในการเติมเงินสำรองหรือลดหนี้',
+        en: 'A weekend side project lands +฿3,200 in your account — a great boost for your safety net.',
       },
     },
     {
-      id: 'windfall-4500',
+      id: 'windfall-4800',
       category: 'windfall',
       severity: 'positive',
-      billAmount: 4500,
-      badge: { th: 'รายได้เสริมเข้ามือ', en: 'Side Gig Bonus' },
+      billAmount: 4800,
+      badge: { th: 'เบี้ยขยัน & โอทีพิเศษ', en: 'Milestone Bonus' },
       title: {
-        th: 'ขายของมือสอง + เงินคืนบัตรเครดิตสะสม +฿4,500',
-        en: 'Declutter Resale + Cashback Rebate +฿4,500',
+        th: 'ปิดโปรเจกต์ทีมสำเร็จ รับโบนัสพิเศษ +฿4,800',
+        en: 'Project Delivery Spot Bonus +฿4,800',
       },
       story: {
-        th: 'คุณเคลียร์ของใช้ไม่ได้ใช้ขายต่อได้เงินก้อนเล็กบวกกับเงินคืนสะสมรวม +฿4,500 จะเก็บไว้ตรงไหนดี?',
-        en: 'Selling unused items and redeeming cashback adds +฿4,500 to your hands. Where will you put it?',
+        th: 'ทีมปิดงานใหญ่ทันกำหนดและได้รับโบนัสพิเศษเข้าบัญชี +฿4,800 คุณจะจัดสรรเงินก้อนนี้อย่างไร?',
+        en: 'Delivering a key project on time unlocks a +฿4,800 spot bonus — ideal for reserves or debt payoff.',
       },
     },
     {
-      id: 'windfall-6000',
+      id: 'windfall-6500',
       category: 'windfall',
       severity: 'positive',
-      billAmount: 6000,
-      badge: { th: 'เบี้ยขยัน & โอทีพิเศษ', en: 'Extra OT Payout' },
+      billAmount: 6500,
+      badge: { th: 'ข่าวดีทางการเงิน', en: 'Tax Refund' },
       title: {
-        th: 'ปิดโปรเจกต์สำคัญสำเร็จ รับเงินพิเศษ +฿6,000',
-        en: 'Milestone Project Delivery Bonus +฿6,000',
+        th: 'ได้รับเงินคืนภาษีเงินได้ประจำปี +฿6,500',
+        en: 'Annual Personal Income Tax Refund +฿6,500',
       },
       story: {
-        th: 'ทีมปิดงานใหญ่ทันกำหนดและได้รับโบนัสพิเศษเข้าบัญชี +฿6,000 เป็นจังหวะทองในการเติมกันชนหรือโปะหนี้',
-        en: 'Delivering a key project on schedule unlocks a +฿6,000 spot bonus — ideal for boosting reserves or cutting debt.',
+        th: 'การวางแผนลดหย่อนและยื่นภาษีตรงเวลาทำให้ได้รับเงินคืนภาษีเข้าบัญชี +฿6,500 จะเก็บไว้เสริมเกราะตรงไหนดี?',
+        en: 'Clean tax filing returns +฿6,500 into your bank account. Where will you direct this boost?',
+      },
+    },
+    {
+      id: 'windfall-10000',
+      category: 'windfall',
+      severity: 'positive',
+      billAmount: 10000,
+      badge: { th: 'โบนัสประจำปี', en: 'Performance Bonus' },
+      title: {
+        th: 'รับโบนัสผลงาน / เงินปันผลสะสม +฿10,000',
+        en: 'Performance Bonus / Annual Dividend +฿10,000',
+      },
+      story: {
+        th: 'ผลงานที่สม่ำเสมอตลอดช่วงที่ผ่านมาทำให้ได้รับโบนัสเข้าบัญชี +฿10,000 เป็นโอกาสทองในการเสริมความมั่นคง',
+        en: 'Consistent performance earns a +฿10,000 bonus — a major opportunity to strengthen your financial cushion.',
       },
     },
   ];
@@ -739,32 +773,38 @@ export function buildEventDeck(totalTurns, persona, previousEventIds = []) {
     return shuffleArray(candidates)[0];
   };
 
-  // Decide which global turn indices carry a major ~฿100k shock:
-  // 1-7 months => 1 major shock; 8-12 months => 2 major shocks spaced across H1 and H2
-  const criticalIndices = new Set();
-  const firstCriticalIdx =
+  // Realistic annual shock caps so 1–12 month runs (3–72 events) mirror real First Jobber life:
+  // - Critical (~฿95k): exactly 1 per run (placed in the second half so player builds buffer first)
+  // - Inpatient (~฿22k–฿38k): 0 for 1 mo, 1 for 2–7 mo, 2 for 8–12 mo
+  // - Income dip: max 1 for 1–4 mo, 2 for 5–8 mo, 3 for 9–12 mo
+  // - Medium repairs (฿4.8k–฿6.5k): max 1 for 1–4 mo, 2 for 5–8 mo, 3 for 9–12 mo
+  const criticalIdx =
     totalEventCount <= 6
-      ? Math.max(1, totalEventCount - 1 - (Math.random() < 0.35 ? 1 : 0))
-      : Math.floor(totalEventCount * (monthsCount >= 8 ? 0.32 : 0.55)) +
-        Math.floor(Math.random() * Math.max(1, Math.floor(totalEventCount * 0.12)));
-  criticalIndices.add(clamp(firstCriticalIdx, 1, totalEventCount - 1));
+      ? Math.max(1, totalEventCount - 1)
+      : clamp(
+          Math.floor(totalEventCount * 0.58) +
+            Math.floor(Math.random() * Math.max(1, Math.floor(totalEventCount * 0.2))),
+          2,
+          totalEventCount - 1
+        );
 
-  if (monthsCount >= 8) {
-    const secondCriticalIdx =
-      Math.floor(totalEventCount * 0.74) +
-      Math.floor(Math.random() * Math.max(1, Math.floor(totalEventCount * 0.14)));
-    criticalIndices.add(clamp(secondCriticalIdx, Math.min(totalEventCount - 1, firstCriticalIdx + 4), totalEventCount - 1));
+  const inpatientTargetCount = monthsCount <= 1 ? 0 : monthsCount <= 7 ? 1 : 2;
+  const inpatientIndices = new Set();
+  if (inpatientTargetCount >= 1) {
+    const idx1 = clamp(Math.floor(totalEventCount * 0.28), 1, totalEventCount - 2);
+    if (idx1 !== criticalIdx) inpatientIndices.add(idx1);
+  }
+  if (inpatientTargetCount >= 2) {
+    const idx2 = clamp(Math.floor(totalEventCount * 0.84), 2, totalEventCount - 1);
+    if (idx2 !== criticalIdx && !inpatientIndices.has(idx2)) inpatientIndices.add(idx2);
   }
 
-  const routinePools = [
-    MEDICAL_POOL,
-    EXPENSE_POOL,
-    LIFESTYLE_POOL,
-    WINDFALL_POOL,
-    INCOME_POOL,
-  ];
-  const minorMedicalPool = MEDICAL_POOL.filter((e) => e.billAmount <= 22000);
-  const majorMedicalPool = MEDICAL_POOL.filter((e) => e.billAmount > 22000);
+  let remainingIncomeDips = monthsCount <= 4 ? 1 : monthsCount <= 8 ? 2 : 3;
+  let remainingMediumRepairs = monthsCount <= 4 ? 1 : monthsCount <= 8 ? 2 : 3;
+  let remainingLargeWindfalls = monthsCount <= 3 ? 1 : monthsCount <= 8 ? 2 : 3;
+
+  const smallWindfallPool = WINDFALL_POOL.filter((w) => w.billAmount <= 4800);
+  const largeWindfallPool = WINDFALL_POOL.filter((w) => w.billAmount > 4800);
 
   const deck = [];
   const recentIds = new Set();
@@ -775,71 +815,56 @@ export function buildEventDeck(totalTurns, persona, previousEventIds = []) {
     const countInMonth = monthlyCounts[m];
     const monthNumber = m + 1;
 
-    // Build a balanced monthly category plan so every month (3-6 events) feels varied and fair
+    // Realistic monthly mix of 3–6 events: everyday bills, lifestyle choices, minor health, and positive cash wins
     const monthSlots = [];
     if (countInMonth === 3) {
-      monthSlots.push('medical-or-expense', 'lifestyle-or-income', 'windfall-or-expense');
+      monthSlots.push('routine-expense', 'lifestyle', 'windfall-or-opd');
     } else if (countInMonth === 4) {
-      monthSlots.push('medical', 'expense', 'lifestyle', 'windfall-or-income');
+      monthSlots.push('routine-expense', 'lifestyle', 'opd-or-income', 'windfall');
     } else if (countInMonth === 5) {
-      monthSlots.push('medical', 'expense', 'lifestyle', 'income', 'windfall');
+      monthSlots.push('routine-expense', 'lifestyle', 'lifestyle', 'opd-or-income', 'windfall');
     } else {
-      monthSlots.push('medical', 'expense', 'expense', 'lifestyle', 'income', 'windfall');
+      monthSlots.push('routine-expense', 'routine-expense', 'lifestyle', 'lifestyle', 'opd-or-income', 'windfall');
     }
     const shuffledSlots = shuffleArray(monthSlots);
 
     for (let eIdx = 0; eIdx < countInMonth; eIdx += 1) {
       let chosen;
-      if (criticalIndices.has(globalIdx)) {
+      if (globalIdx === criticalIdx) {
         chosen = pickNextFrom(CRITICAL_POOL, recentIds, lastId);
+      } else if (inpatientIndices.has(globalIdx)) {
+        chosen = pickNextFrom(INPATIENT_POOL, recentIds, lastId);
       } else {
         const slot = shuffledSlots[eIdx];
-        if (slot === 'medical') {
-          const pool =
-            Math.random() < 0.65 && minorMedicalPool.length > 0
-              ? minorMedicalPool
-              : majorMedicalPool.length > 0
-                ? majorMedicalPool
-                : MEDICAL_POOL;
-          chosen = pickNextFrom(pool, recentIds, lastId);
-        } else if (slot === 'medical-or-expense') {
-          chosen = pickNextFrom(
-            Math.random() < 0.5 ? minorMedicalPool : EXPENSE_POOL,
-            recentIds,
-            lastId
-          );
-        } else if (slot === 'expense') {
-          chosen = pickNextFrom(EXPENSE_POOL, recentIds, lastId);
+        if (slot === 'routine-expense') {
+          if (remainingMediumRepairs > 0 && Math.random() < 0.22) {
+            remainingMediumRepairs -= 1;
+            chosen = pickNextFrom(MEDIUM_EXPENSE_POOL, recentIds, lastId);
+          } else {
+            chosen = pickNextFrom(ROUTINE_EXPENSE_POOL, recentIds, lastId);
+          }
         } else if (slot === 'lifestyle') {
           chosen = pickNextFrom(LIFESTYLE_POOL, recentIds, lastId);
-        } else if (slot === 'lifestyle-or-income') {
-          chosen = pickNextFrom(
-            Math.random() < 0.55 ? LIFESTYLE_POOL : INCOME_POOL,
-            recentIds,
-            lastId
-          );
-        } else if (slot === 'income') {
-          chosen = pickNextFrom(INCOME_POOL, recentIds, lastId);
-        } else if (slot === 'windfall') {
-          chosen = pickNextFrom(WINDFALL_POOL, recentIds, lastId);
-        } else if (slot === 'windfall-or-income') {
-          chosen = pickNextFrom(
-            Math.random() < 0.6 ? WINDFALL_POOL : INCOME_POOL,
-            recentIds,
-            lastId
-          );
-        } else if (slot === 'windfall-or-expense') {
-          chosen = pickNextFrom(
-            Math.random() < 0.55 ? WINDFALL_POOL : EXPENSE_POOL,
-            recentIds,
-            lastId
-          );
+        } else if (slot === 'opd-or-income') {
+          if (remainingIncomeDips > 0 && Math.random() < 0.35) {
+            remainingIncomeDips -= 1;
+            chosen = pickNextFrom(INCOME_POOL, recentIds, lastId);
+          } else {
+            chosen = pickNextFrom(MINOR_MEDICAL_POOL, recentIds, lastId);
+          }
+        } else if (slot === 'windfall-or-opd') {
+          if (Math.random() < 0.6) {
+            chosen = pickNextFrom(smallWindfallPool, recentIds, lastId);
+          } else {
+            chosen = pickNextFrom(MINOR_MEDICAL_POOL, recentIds, lastId);
+          }
         } else {
-          chosen = pickNextFrom(
-            routinePools[Math.floor(Math.random() * routinePools.length)],
-            recentIds,
-            lastId
-          );
+          if (remainingLargeWindfalls > 0 && m >= Math.floor(monthsCount * 0.35) && Math.random() < 0.35) {
+            remainingLargeWindfalls -= 1;
+            chosen = pickNextFrom(largeWindfallPool, recentIds, lastId);
+          } else {
+            chosen = pickNextFrom(smallWindfallPool, recentIds, lastId);
+          }
         }
       }
 
@@ -1079,14 +1104,14 @@ export function getChoicesForEvent(event, state) {
 
   if (event.category === 'lifestyle') {
     const cost = event.billAmount;
-    const frugalFix = 2500;
+    const frugalFix = Number.isFinite(event.frugalCost) ? event.frugalCost : 0;
     const savedCash = Math.max(0, cost - frugalFix);
     const cashFrugal = Math.min(cash, frugalFix);
     const debtFrugal = Math.max(0, frugalFix - cashFrugal);
 
     const cashBuy = Math.min(cash, cost);
     const debtBuy = Math.max(0, cost - cashBuy);
-    const installmentStep = Math.min(3000, cost);
+    const installmentStep = Math.min(Math.round(cost / 3), cost);
     const installmentRemainder = Math.max(0, cost - installmentStep);
 
     return [
@@ -1094,20 +1119,26 @@ export function getChoicesForEvent(event, state) {
         id: 'skip-or-repair',
         recommended: true,
         tone: 'blue',
-        title: {
-          th: `อดใจข้ามไปก่อน / แก้ขัดแบบประหยัด (฿${frugalFix.toLocaleString('en-US')})`,
-          en: `Skip & Choose Low-Cost Alternative (฿${frugalFix.toLocaleString('en-US')})`,
-        },
+        title:
+          frugalFix === 0
+            ? {
+                th: 'อดใจข้ามไปก่อน — ไม่ซื้อ (฿0)',
+                en: 'Skip Impulse Purchase Completely (฿0)',
+              }
+            : {
+                th: `เลือกทางเลือกประหยัดงบ (฿${frugalFix.toLocaleString('en-US')})`,
+                en: `Choose Low-Cost Alternative (฿${frugalFix.toLocaleString('en-US')})`,
+              },
         subtitle: {
-          th: `ประหยัดเงินสดได้ถึง ฿${savedCash.toLocaleString('en-US')} • ความสบายใจลดเล็กน้อย (-4%)`,
-          en: `Saves ฿${savedCash.toLocaleString('en-US')} cash • Small mood dip (-4%)`,
+          th: `ประหยัดเงินสดได้ถึง ฿${savedCash.toLocaleString('en-US')} • ความสบายใจลดเล็กน้อย (-2%)`,
+          en: `Saves ฿${savedCash.toLocaleString('en-US')} cash • Small mood dip (-2%)`,
         },
         tag: { th: 'รักษากันชน', en: 'Protect Cash' },
         effects: {
           cashDelta: -cashFrugal,
           debtDelta: debtFrugal,
           protectionUsed: 0,
-          peaceDelta: -4,
+          peaceDelta: -2,
           installmentAdd: 0,
         },
         feedback: {
