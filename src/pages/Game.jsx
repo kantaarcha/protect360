@@ -36,10 +36,11 @@ import {
   computeFinalScorecard,
   computeProtectionPool,
   getChoicesForEvent,
-  getEstimatedPlayTime,
+  getEstimatedPlayTimeRange,
   getTotalMonthsForDuration,
-  getTurnCountForDuration,
+  getTurnRangeForDuration,
   resolveTurn,
+  rollMonthlyEventPlan,
   roundCustomDays,
 } from '../utils/gameEngine';
 
@@ -119,14 +120,14 @@ export default function Game({ onNavigate }) {
   const [lastTurnResult, setLastTurnResult] = useState(null);
   const [hudPulseKey, setHudPulseKey] = useState(0);
 
-  const totalTurns = useMemo(
-    () => getTurnCountForDuration(durationUnit, durationValue),
+  const turnRange = useMemo(
+    () => getTurnRangeForDuration(durationUnit, durationValue),
     [durationUnit, durationValue]
   );
 
   const estimatedPlayTime = useMemo(
-    () => getEstimatedPlayTime(totalTurns),
-    [totalTurns]
+    () => getEstimatedPlayTimeRange(turnRange.minTurns, turnRange.maxTurns),
+    [turnRange.minTurns, turnRange.maxTurns]
   );
 
   const previewProtectionPool = useMemo(
@@ -247,7 +248,7 @@ export default function Game({ onNavigate }) {
     });
   };
 
-  // Start Simulation
+  // Start Simulation — rolls 3, 4, 5, or 6 events independently for each simulated month
   const handleStartGame = () => {
     const parsedDraft = parseInt(durationInput, 10);
     const effectiveDuration =
@@ -263,13 +264,16 @@ export default function Game({ onNavigate }) {
       setDurationInput(String(effectiveDuration));
     }
 
-    const turns = getTurnCountForDuration(durationUnit, effectiveDuration);
+    const eventPlan = rollMonthlyEventPlan(durationUnit, effectiveDuration);
+    const turns = eventPlan.totalTurns;
     const totalMonths = getTotalMonthsForDuration(durationUnit, effectiveDuration);
     const monthsPerTurn = totalMonths / turns;
 
     const config = {
       unit: durationUnit,
       durationValue: effectiveDuration,
+      monthsCount: eventPlan.monthsCount,
+      monthlyCounts: eventPlan.monthlyCounts,
       totalTurns: turns,
       totalMonths,
       monthsPerTurn,
@@ -281,7 +285,7 @@ export default function Game({ onNavigate }) {
       startingProtectionPool: previewProtectionPool,
     };
 
-    const eventDeck = buildEventDeck(turns, activePersona, lastRunEventIds);
+    const eventDeck = buildEventDeck(eventPlan.monthlyCounts, activePersona, lastRunEventIds);
     const initialPeace = clamp(
       70 + (activePersona.emergencyFund >= activePersona.monthlyExpenses ? 8 : 0) + (askedHr ? 5 : 0),
       55,
@@ -385,26 +389,29 @@ export default function Game({ onNavigate }) {
     const displayStep = lastTurnResult
       ? completedTurns
       : Math.min(runConfig.totalTurns, completedTurns + 1);
+    const activeIdx = Math.min(deck.length - 1, Math.max(0, displayStep - 1));
+    const activeCard = deck[activeIdx];
     const ratio = displayStep / runConfig.totalTurns;
     const elapsedVal = Math.max(1, Math.round(runConfig.durationValue * ratio));
-    const unitWord =
+
+    const currentLabel =
       runConfig.unit === 'days'
         ? lang === 'TH'
-          ? 'วันที่'
-          : 'Day'
+          ? `วันที่ ${elapsedVal}/${runConfig.durationValue} • เดือน ${activeCard?.monthNumber || 1} (${activeCard?.eventInMonth || 1}/${activeCard?.eventsInMonth || runConfig.totalTurns})`
+          : `Day ${elapsedVal}/${runConfig.durationValue} • Mo ${activeCard?.monthNumber || 1} (${activeCard?.eventInMonth || 1}/${activeCard?.eventsInMonth || runConfig.totalTurns})`
         : lang === 'TH'
-          ? 'เดือนที่'
-          : 'Month';
+          ? `เดือนที่ ${activeCard?.monthNumber || 1}/${runConfig.monthsCount || runConfig.durationValue} • เหตุการณ์ในเดือน ${activeCard?.eventInMonth || 1}/${activeCard?.eventsInMonth || 3}`
+          : `Month ${activeCard?.monthNumber || 1}/${runConfig.monthsCount || runConfig.durationValue} • Event ${activeCard?.eventInMonth || 1}/${activeCard?.eventsInMonth || 3}`;
 
     return {
-      currentLabel: `${unitWord} ${elapsedVal} / ${runConfig.durationValue}`,
+      currentLabel,
       pct: Math.round((completedTurns / runConfig.totalTurns) * 100),
       turnLabel:
         lang === 'TH'
-          ? `เทิร์น ${Math.min(runConfig.totalTurns, displayStep)} / ${runConfig.totalTurns}`
-          : `Turn ${Math.min(runConfig.totalTurns, displayStep)} / ${runConfig.totalTurns}`,
+          ? `เหตุการณ์รวม ${Math.min(runConfig.totalTurns, displayStep)} / ${runConfig.totalTurns}`
+          : `Event ${Math.min(runConfig.totalTurns, displayStep)} / ${runConfig.totalTurns}`,
     };
-  }, [runConfig, gameState, lastTurnResult, lang]);
+  }, [runConfig, gameState, lastTurnResult, deck, lang]);
 
   const scorecard = useMemo(() => {
     if (phase !== 'results' || !gameState || !runConfig) return null;
@@ -597,8 +604,8 @@ export default function Game({ onNavigate }) {
                   <span>
                     <Calendar size={13} aria-hidden="true" />{' '}
                     {lang === 'TH'
-                      ? `${totalTurns} เทิร์น • ใช้เวลาเล่นประมาณ ${t(estimatedPlayTime)}`
-                      : `${totalTurns} turns • Est. play time ${t(estimatedPlayTime)}`}
+                      ? `สุ่ม ${turnRange.minTurns}–${turnRange.maxTurns} เหตุการณ์ (3–6/เดือน) • เล่นประมาณ ${t(estimatedPlayTime)}`
+                      : `Random ${turnRange.minTurns}–${turnRange.maxTurns} events (3–6/mo) • Est. ${t(estimatedPlayTime)}`}
                   </span>
                   {roundedNotice ? (
                     <span className="gm-rounded-pill">
@@ -953,7 +960,9 @@ export default function Game({ onNavigate }) {
                       : lang === 'TH'
                         ? 'เดือน'
                         : 'mo.'}{' '}
-                    ({totalTurns} {lang === 'TH' ? 'เทิร์น' : 'turns'})
+                    ({lang === 'TH'
+                      ? `สุ่ม ${turnRange.minTurns}–${turnRange.maxTurns} เหตุการณ์`
+                      : `${turnRange.minTurns}–${turnRange.maxTurns} random events`})
                   </span>
                 </div>
 

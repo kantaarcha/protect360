@@ -14862,9 +14862,936 @@ p {
   }
 }
 
+/* ==========================================================================
+   PATCH 7.6 — SMARTLOG EXCEL (.xlsx) EXPORT BUTTON & EDITORIAL ABOUT PAGE
+   ========================================================================== */
 
+.ak-excel-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 13px;
+  border-radius: 11px;
+  border: 1px solid rgba(16, 124, 65, 0.28);
+  background: rgba(16, 124, 65, 0.09);
+  color: #107c41;
+  font-size: 0.78rem;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background-color 0.16s ease, border-color 0.16s ease, transform 0.14s ease;
+}
 
+.ak-excel-btn:hover {
+  background: rgba(16, 124, 65, 0.16);
+  border-color: rgba(16, 124, 65, 0.48);
+  transform: translateY(-1px);
+}
 
+[data-theme='dark'] .ak-excel-btn {
+  background: rgba(34, 197, 94, 0.13);
+  border-color: rgba(74, 222, 128, 0.32);
+  color: #86efac;
+}
 
+[data-theme='dark'] .ak-excel-btn:hover {
+  background: rgba(34, 197, 94, 0.22);
+  border-color: rgba(74, 222, 128, 0.5);
+}
 
+/* --------------------------------------------------------------------------
+   EDITORIAL ABOUT PAGE (Human-Crafted Research Publication Aesthetic)
+   No dark gradient hero, no biscuit pills, no icon-in-box bento clichés.
+   -------------------------------------------------------------------------- */
 
+.ab-editorial-sheet {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: 20px;
+  padding: 36px 44px 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  color: var(--text-primary);
+  min-width: 0;
+}
+
+/* Masthead */
+.ab-ed-masthead {
+  padding-bottom: 36px;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.ab-ed-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding-bottom: 18px;
+  margin-bottom: 28px;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.ab-ed-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.ab-ed-logo {
+  width: 28px;
+  height: 28px;
+  object-fit: contain;
+  border-radius: 6px;
+}
+
+.ab-ed-wordmark {
+  font-size: 0.96rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  color: var(--text-primary);
+}
+
+.ab-ed-edition {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.ab-ed-hero-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.35fr) minmax(0, 0.95fr);
+  gap: 40px;
+  align-items: start;
+}
+
+.ab-ed-headline {
+  margin: 0 0 16px;
+  font-size: clamp(1.52rem, 2.35vw, 2.1rem);
+  font-weight: 800;
+  line-height: 1.24;
+  letter-spacing: -0.025em;
+  color: var(--text-primary);
+  text-wrap: balance;
+}
+
+.ab-ed-lead {
+  margin: 0;
+  font-size: 0.94rem;
+  line-height: 1.72;
+  color: var(--text-secondary);
+  max-width: 62ch;
+}
+
+/* Right-side Ruled Key Figures Ledger */
+.ab-ed-ledger {
+  border-top: 2px solid var(--text-primary);
+  display: flex;
+  flex-direction: column;
+}
+
+.ab-ed-ledger-row {
+  display: grid;
+  grid-template-columns: 96px minmax(0, 1fr);
+  gap: 14px;
+  align-items: baseline;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.ab-ed-ledger-num {
+  font-size: 1.55rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  color: var(--navy);
+  line-height: 1.1;
+}
+
+[data-theme='dark'] .ab-ed-ledger-num {
+  color: #93c5fd;
+}
+
+.ab-ed-ledger-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+
+.ab-ed-ledger-meta span {
+  font-size: 0.86rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  line-height: 1.45;
+}
+
+.ab-ed-ledger-meta small {
+  font-size: 0.74rem;
+  color: var(--text-muted);
+}
+
+/* Editorial Numbered Sections */
+.ab-ed-section {
+  padding: 36px 0;
+  border-bottom: 1px solid var(--border-subtle);
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  min-width: 0;
+}
+
+.ab-ed-section-head {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.ab-ed-section-head.split {
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+
+.ab-ed-section-head-left {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  min-width: 0;
+  flex: 1 1 320px;
+}
+
+.ab-ed-sec-num {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  padding-top: 6px;
+  flex-shrink: 0;
+  min-width: 24px;
+}
+
+.ab-ed-sec-title {
+  margin: 0;
+  font-size: 1.24rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1.32;
+  color: var(--text-primary);
+}
+
+.ab-ed-sec-sub {
+  margin: 6px 0 0;
+  font-size: 0.87rem;
+  line-height: 1.6;
+  color: var(--text-secondary);
+  max-width: 68ch;
+}
+
+.ab-ed-tabs-wrap {
+  flex-shrink: 1;
+  max-width: 100%;
+  min-width: 0;
+}
+
+.ab-ed-tabs-wrap .liquid-track {
+  max-width: 100%;
+  flex-wrap: wrap;
+}
+
+/* 01. Lead Document Row (Krungsri 2025) */
+.ab-ed-lead-doc {
+  display: grid;
+  grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.15fr);
+  gap: 32px;
+  padding: 24px 26px;
+  background: var(--bg-canvas);
+  border: 1px solid var(--border-subtle);
+  border-radius: 14px;
+}
+
+.ab-ed-lead-doc-left {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.ab-ed-doc-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  font-size: 0.76rem;
+  font-weight: 700;
+  color: var(--text-muted);
+}
+
+.ab-ed-doc-title {
+  margin: 0;
+  font-size: 1.06rem;
+  font-weight: 800;
+  line-height: 1.38;
+  color: var(--text-primary);
+}
+
+.ab-ed-doc-citation {
+  margin: 0;
+  font-size: 0.78rem;
+  line-height: 1.55;
+  color: var(--text-muted);
+}
+
+.ab-ed-lead-doc-right {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  border-left: 1px solid var(--border-subtle);
+  padding-left: 26px;
+}
+
+.ab-ed-subhead {
+  margin: 0;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.ab-ed-list {
+  margin: 0;
+  padding-left: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  font-size: 0.84rem;
+  line-height: 1.58;
+  color: var(--text-secondary);
+}
+
+.ab-ed-note {
+  margin: 4px 0 0;
+  padding-left: 12px;
+  border-left: 2px solid var(--brand-royal);
+  font-size: 0.81rem;
+  line-height: 1.55;
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+.ab-ed-text-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.83rem;
+  font-weight: 700;
+  color: var(--brand-royal);
+  text-decoration: none;
+  margin-top: 4px;
+  width: fit-content;
+  border-bottom: 1px solid transparent;
+  padding-bottom: 1px;
+  transition: border-color 0.15s ease, color 0.15s ease;
+}
+
+.ab-ed-text-link:hover {
+  border-bottom-color: currentColor;
+}
+
+[data-theme='dark'] .ab-ed-text-link {
+  color: #60a5fa;
+}
+
+.ab-ed-inline-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  cursor: pointer;
+  border-bottom: 1px solid var(--border-subtle);
+  padding-bottom: 1px;
+}
+
+.ab-ed-inline-btn:hover {
+  color: var(--brand-royal);
+  border-bottom-color: var(--brand-royal);
+}
+
+/* Archival Document Plates (BOT Page 5 -> Page 17) */
+.ab-ed-plates-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 28px;
+}
+
+.ab-ed-plate {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  min-width: 0;
+}
+
+.ab-ed-plate-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.ab-ed-plate-label {
+  font-size: 0.8rem;
+  font-weight: 800;
+  color: var(--text-primary);
+}
+
+.ab-ed-plate-source {
+  font-size: 0.74rem;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.ab-ed-plate-frame {
+  position: relative;
+  display: block;
+  width: 100%;
+  padding: 10px;
+  border-radius: 12px;
+  border: 1px solid var(--border-subtle);
+  background: var(--bg-canvas);
+  cursor: pointer;
+  overflow: hidden;
+  transition: border-color 0.16s ease;
+}
+
+.ab-ed-plate-frame:hover {
+  border-color: var(--brand-royal);
+}
+
+.ab-ed-plate-img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  object-fit: cover;
+  object-position: top center;
+  border-radius: 7px;
+  background: #ffffff;
+}
+
+.ab-ed-plate-zoom {
+  position: absolute;
+  right: 16px;
+  bottom: 16px;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 10px;
+  border-radius: 8px;
+  background: rgba(20, 43, 74, 0.86);
+  color: #ffffff;
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+.ab-ed-plate-body {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.ab-ed-plate-title {
+  margin: 0;
+  font-size: 0.98rem;
+  font-weight: 800;
+  line-height: 1.4;
+  color: var(--text-primary);
+}
+
+.ab-ed-plate-links {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  flex-wrap: wrap;
+  margin-top: 4px;
+}
+
+/* 02. 4-Column Ruled Typographic Stat Strip */
+.ab-ed-stat-strip {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  border-top: 1px solid var(--border-subtle);
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.ab-ed-stat-col {
+  padding: 20px 18px 20px 0;
+  border-right: 1px solid var(--border-subtle);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+}
+
+.ab-ed-stat-col:not(:first-child) {
+  padding-left: 18px;
+}
+
+.ab-ed-stat-col:last-child {
+  border-right: none;
+  padding-right: 0;
+}
+
+.ab-ed-stat-top {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.ab-ed-stat-num {
+  font-size: 1.72rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.05;
+  color: var(--navy);
+}
+
+[data-theme='dark'] .ab-ed-stat-num {
+  color: #e2e8f0;
+}
+
+.ab-ed-stat-count {
+  font-size: 0.74rem;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.ab-ed-stat-title {
+  margin: 0;
+  font-size: 0.87rem;
+  font-weight: 700;
+  line-height: 1.42;
+  color: var(--text-primary);
+}
+
+.ab-ed-stat-desc {
+  margin: 0;
+  font-size: 0.79rem;
+  line-height: 1.56;
+  color: var(--text-secondary);
+}
+
+/* Asymmetric 2-Column Data Split */
+.ab-ed-data-split {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 36px;
+  padding-top: 6px;
+}
+
+.ab-ed-chart-block {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 0;
+}
+
+.ab-ed-chart-title {
+  margin: 0;
+  font-size: 0.96rem;
+  font-weight: 800;
+  line-height: 1.4;
+  color: var(--text-primary);
+}
+
+.ab-ed-chart-sub {
+  margin: 0 0 6px;
+  font-size: 0.81rem;
+  line-height: 1.55;
+  color: var(--text-muted);
+}
+
+.ab-ed-bars {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.ab-ed-bar-item {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.ab-ed-bar-meta {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+  font-size: 0.83rem;
+}
+
+.ab-ed-bar-label {
+  color: var(--text-primary);
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+.ab-ed-bar-val {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 5px;
+  white-space: nowrap;
+  flex-shrink: 0;
+  color: var(--text-primary);
+}
+
+.ab-ed-bar-val small {
+  font-size: 0.74rem;
+  color: var(--text-muted);
+}
+
+.ab-ed-track,
+.ab-ed-demand-track {
+  width: 100%;
+  height: 7px;
+  border-radius: 4px;
+  background: var(--bg-canvas);
+  overflow: hidden;
+}
+
+[data-theme='dark'] .ab-ed-track,
+[data-theme='dark'] .ab-ed-demand-track {
+  background: rgba(148, 163, 184, 0.14);
+}
+
+.ab-ed-fill {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 0.35s ease;
+}
+
+/* Refined Muted Editorial Palette for 8 Distinct Demand Bars */
+.ab-ed-fill.tone-blue,
+.ab-ed-swatch.tone-blue { background: #2563ab; }
+.ab-ed-fill.tone-indigo,
+.ab-ed-swatch.tone-indigo { background: #4f5d95; }
+.ab-ed-fill.tone-teal,
+.ab-ed-swatch.tone-teal { background: #1c8c82; }
+.ab-ed-fill.tone-emerald,
+.ab-ed-swatch.tone-emerald { background: #2e7d5b; }
+.ab-ed-fill.tone-sky,
+.ab-ed-swatch.tone-sky { background: #2f7fa8; }
+.ab-ed-fill.tone-amber,
+.ab-ed-swatch.tone-amber { background: #c47a1c; }
+.ab-ed-fill.tone-violet,
+.ab-ed-swatch.tone-violet { background: #74548c; }
+.ab-ed-fill.tone-rose,
+.ab-ed-swatch.tone-rose { background: #b84a58; }
+
+[data-theme='dark'] .ab-ed-fill.tone-blue,
+[data-theme='dark'] .ab-ed-swatch.tone-blue { background: #60a5fa; }
+[data-theme='dark'] .ab-ed-fill.tone-indigo,
+[data-theme='dark'] .ab-ed-swatch.tone-indigo { background: #818cf8; }
+[data-theme='dark'] .ab-ed-fill.tone-teal,
+[data-theme='dark'] .ab-ed-swatch.tone-teal { background: #2dd4bf; }
+[data-theme='dark'] .ab-ed-fill.tone-emerald,
+[data-theme='dark'] .ab-ed-swatch.tone-emerald { background: #34d399; }
+[data-theme='dark'] .ab-ed-fill.tone-sky,
+[data-theme='dark'] .ab-ed-swatch.tone-sky { background: #38bdf8; }
+[data-theme='dark'] .ab-ed-fill.tone-amber,
+[data-theme='dark'] .ab-ed-swatch.tone-amber { background: #fbbf24; }
+[data-theme='dark'] .ab-ed-fill.tone-violet,
+[data-theme='dark'] .ab-ed-swatch.tone-violet { background: #c084fc; }
+[data-theme='dark'] .ab-ed-fill.tone-rose,
+[data-theme='dark'] .ab-ed-swatch.tone-rose { background: #fb7185; }
+
+/* Editorial Pull-Quotes Band */
+.ab-ed-quotes-band {
+  padding: 22px 24px;
+  border-radius: 14px;
+  background: var(--bg-canvas);
+  border: 1px solid var(--border-subtle);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.ab-ed-quotes-kicker {
+  font-size: 0.76rem;
+  font-weight: 700;
+  color: var(--text-muted);
+}
+
+.ab-ed-quotes-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 24px;
+}
+
+.ab-ed-quote {
+  margin: 0;
+  padding-left: 14px;
+  border-left: 2px solid var(--border-subtle);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.ab-ed-quote p {
+  margin: 0;
+  font-size: 0.85rem;
+  line-height: 1.62;
+  color: var(--text-primary);
+}
+
+.ab-ed-quote footer {
+  font-size: 0.74rem;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+/* 03. Feature Demand Ruled Table-Bars */
+.ab-ed-demand-list {
+  display: flex;
+  flex-direction: column;
+  border-top: 1px solid var(--border-subtle);
+}
+
+.ab-ed-demand-row {
+  appearance: none;
+  border: none;
+  border-bottom: 1px solid var(--border-subtle);
+  background: transparent;
+  text-align: left;
+  width: 100%;
+  padding: 14px 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  cursor: pointer;
+  transition: background-color 0.14s ease;
+}
+
+.ab-ed-demand-row:hover {
+  background: var(--bg-canvas);
+}
+
+.ab-ed-demand-top {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.ab-ed-demand-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  flex: 1 1 280px;
+}
+
+.ab-ed-demand-rank {
+  font-size: 0.76rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  min-width: 22px;
+}
+
+.ab-ed-swatch {
+  width: 9px;
+  height: 9px;
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+
+.ab-ed-demand-label {
+  font-size: 0.89rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1.4;
+}
+
+.ab-ed-demand-right {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.ab-ed-demand-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--brand-royal);
+}
+
+[data-theme='dark'] .ab-ed-demand-link {
+  color: #60a5fa;
+}
+
+.ab-ed-demand-count {
+  font-size: 0.77rem;
+  color: var(--text-muted);
+}
+
+.ab-ed-demand-pct {
+  font-size: 0.92rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  min-width: 48px;
+  text-align: right;
+}
+
+/* 04. Three Principles Ruled Editorial Index */
+.ab-ed-principles-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 28px;
+}
+
+.ab-ed-principle {
+  padding-top: 16px;
+  border-top: 2px solid var(--text-primary);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.ab-ed-principle-num {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--text-muted);
+}
+
+.ab-ed-principle-title {
+  margin: 0;
+  font-size: 0.98rem;
+  font-weight: 800;
+  line-height: 1.38;
+  color: var(--text-primary);
+}
+
+.ab-ed-principle-desc {
+  margin: 0;
+  font-size: 0.84rem;
+  line-height: 1.65;
+  color: var(--text-secondary);
+}
+
+/* 05. Colophon Footer */
+.ab-ed-colophon {
+  padding-top: 28px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+.ab-ed-colophon-copy {
+  flex: 1 1 460px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.ab-ed-colophon-copy strong {
+  font-size: 0.84rem;
+  font-weight: 800;
+  color: var(--text-primary);
+}
+
+.ab-ed-colophon-copy p {
+  margin: 0;
+  font-size: 0.79rem;
+  line-height: 1.65;
+  color: var(--text-muted);
+}
+
+.ab-ed-colophon-link {
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+/* Responsive Editorial Breakpoints */
+@media (max-width: 1080px) {
+  .ab-editorial-sheet {
+    padding: 28px 28px 32px;
+  }
+
+  .ab-ed-hero-grid,
+  .ab-ed-lead-doc {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 24px;
+  }
+
+  .ab-ed-lead-doc-right {
+    border-left: none;
+    padding-left: 0;
+    border-top: 1px solid var(--border-subtle);
+    padding-top: 18px;
+  }
+
+  .ab-ed-stat-strip {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .ab-ed-stat-col:nth-child(2) {
+    border-right: none;
+    padding-right: 0;
+  }
+
+  .ab-ed-stat-col:nth-child(3) {
+    padding-left: 0;
+    border-top: 1px solid var(--border-subtle);
+  }
+
+  .ab-ed-stat-col:nth-child(4) {
+    border-top: 1px solid var(--border-subtle);
+  }
+
+  .ab-ed-quotes-grid,
+  .ab-ed-principles-grid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 18px;
+  }
+}
+
+@media (max-width: 760px) {
+  .ab-editorial-sheet {
+    padding: 20px 18px 24px;
+    border-radius: 16px;
+  }
+
+  .ab-ed-plates-grid,
+  .ab-ed-data-split,
+  .ab-ed-stat-strip {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .ab-ed-stat-col {
+    padding: 16px 0 !important;
+    border-right: none;
+    border-bottom: 1px solid var(--border-subtle);
+    border-top: none !important;
+  }
+
+  .ab-ed-stat-col:last-child {
+    border-bottom: none;
+  }
+
+  .ab-ed-ledger-row {
+    grid-template-columns: 82px minmax(0, 1fr);
+    gap: 10px;
+  }
+}

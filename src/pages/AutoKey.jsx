@@ -10,6 +10,7 @@ import {
   CheckCircle2,
   ChevronRight,
   Download,
+  FileSpreadsheet,
   FolderPlus,
   ImagePlus,
   List,
@@ -31,6 +32,7 @@ import {
 import { useLanguage } from '../context/LanguageContext';
 import { formatTHB, useFinance } from '../context/FinanceContext';
 import { scanBankSlipOnDevice } from '../utils/slipOcr';
+import { buildSmartLogExcelBlob } from '../utils/excelExport';
 import {
   CORE_CATEGORIES,
   CORE_CATEGORY_MAP,
@@ -717,6 +719,34 @@ export default function AutoKey({ onNavigate }) {
     showToast('success', {
       th: `ส่งออกไฟล์ CSV 2 ภาษา (${filteredTransactions.length} รายการ) เรียบร้อยแล้ว`,
       en: `Exported bilingual CSV (${filteredTransactions.length} entries)`,
+    });
+  };
+
+  // Export ledger as a native 2-sheet Excel (.xlsx) workbook (Google Forms spreadsheet style)
+  const handleExportExcel = () => {
+    const todayIso = getTodayIso();
+    const blob = buildSmartLogExcelBlob({
+      transactions: filteredTransactions,
+      userProfile,
+      monthlyIncome,
+      monthlyExpenses,
+      emergencyFund,
+      emergencyRunway,
+      lang,
+      exportDateIso: todayIso,
+    });
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `protect360-smartlog-${todayIso}.xlsx`;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    window.URL.revokeObjectURL(url);
+
+    showToast('success', {
+      th: `ส่งออกไฟล์ Excel (.xlsx) รูปแบบตาราง 2 ชีต (${filteredTransactions.length} รายการ) เรียบร้อยแล้ว`,
+      en: `Exported 2-sheet Excel (.xlsx) table (${filteredTransactions.length} entries)`,
     });
   };
 
@@ -1836,8 +1866,8 @@ export default function AutoKey({ onNavigate }) {
             </h2>
             <p className="card-subtitle">
               {lang === 'TH'
-                ? 'ค้นหา กรอง แก้ไข หรือส่งออก CSV ได้ทันที ยอดทั้งหมดอัปเดตและบันทึกในเครื่องอัตโนมัติ'
-                : 'Search, filter, inline-edit, or export CSV — all KPIs recalculate locally'}
+                ? 'ค้นหา กรอง แก้ไข หรือส่งออกเป็นตาราง Excel (.xlsx) และ CSV ได้ทันที ยอดทั้งหมดอัปเดตและบันทึกในเครื่องอัตโนมัติ'
+                : 'Search, filter, inline-edit, or export as a formatted Excel (.xlsx) table or CSV — all KPIs recalculate locally'}
             </p>
           </div>
 
@@ -1874,6 +1904,21 @@ export default function AutoKey({ onNavigate }) {
               idPrefix="ledger-filter"
               ariaLabel="Filter ledger"
             />
+
+            <button
+              id="smartlog-export-excel-btn"
+              type="button"
+              className="ak-excel-btn"
+              onClick={handleExportExcel}
+              title={
+                lang === 'TH'
+                  ? 'ส่งออกเป็นไฟล์ Excel (.xlsx) รูปแบบตาราง 2 ชีต (สมุดบัญชี + สรุปภาพรวม พร้อมสูตร SUM)'
+                  : 'Export as a 2-sheet Excel (.xlsx) spreadsheet with live SUM formulas & Summary'
+              }
+            >
+              <FileSpreadsheet size={14} strokeWidth={2.2} aria-hidden="true" />
+              <span>{lang === 'TH' ? 'ส่งออก Excel (.xlsx)' : 'Export Excel (.xlsx)'}</span>
+            </button>
 
             <button
               id="smartlog-export-csv-btn"

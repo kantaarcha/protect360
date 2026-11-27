@@ -5,57 +5,64 @@ export const EMERGENCY_DEBT_APR = 0.2; // 20% annual interest on emergency cash 
 export const HR_GROUP_INSURANCE_BONUS = 50000; // +50,000 THB hidden coverage unlocked by asking HR
 export const PROTECTION_LEVERAGE_RATIO = 120; // 1,000 THB/mo basic protection pool ≈ 120,000 THB shock capacity
 
+export const MIN_EVENTS_PER_MONTH = 3;
+export const MAX_EVENTS_PER_MONTH = 6;
+
 export const DURATION_PRESETS = [
   {
     id: 'express',
     days: 30,
     months: 1,
-    turns: 3,
-    tag: { th: '~45 วิ', en: '~45 sec' },
+    minTurns: 3,
+    maxTurns: 6,
+    tag: { th: '~45 วิ – 1.5 นาที', en: '~45s – 1.5m' },
     labelDays: { th: '30 วัน', en: '30 Days' },
     labelMonths: { th: '1 เดือน', en: '1 Month' },
     desc: {
-      th: '3 เทิร์น • โหมดด่วนสำหรับลองเล่นเร็ว',
-      en: '3 Turns • Express quick demo',
+      th: 'สุ่ม 3–6 เหตุการณ์ (3–6/เดือน) • เริ่มต้นลองเล่นเร็ว',
+      en: 'Random 3–6 events (3–6/mo) • Quick starter run',
     },
   },
   {
     id: 'standard',
     days: 90,
     months: 3,
-    turns: 5,
-    tag: { th: '~1.5 นาที', en: '~1.5 min' },
+    minTurns: 9,
+    maxTurns: 18,
+    tag: { th: '~2 – 4 นาที', en: '~2 – 4 min' },
     labelDays: { th: '90 วัน', en: '90 Days' },
     labelMonths: { th: '3 เดือน', en: '3 Months' },
     desc: {
-      th: '5 เทิร์น • ทดสอบกันชนเงินสำรองมาตรฐาน',
-      en: '5 Turns • Classic 3-month buffer test',
+      th: 'สุ่ม 9–18 เหตุการณ์ (3–6/เดือน) • ทดสอบกันชนมาตรฐาน',
+      en: 'Random 9–18 events (3–6/mo) • Classic 3-mo test',
     },
   },
   {
     id: 'extended',
     days: 180,
     months: 6,
-    turns: 6,
-    tag: { th: '~2 นาที', en: '~2 min' },
+    minTurns: 18,
+    maxTurns: 36,
+    tag: { th: '~4 – 8 นาที', en: '~4 – 8 min' },
     labelDays: { th: '180 วัน', en: '180 Days' },
     labelMonths: { th: '6 เดือน', en: '6 Months' },
     desc: {
-      th: '6 เทิร์น • ทดสอบความอึดทางการเงินระยะกลาง',
-      en: '6 Turns • Mid-term resilience challenge',
+      th: 'สุ่ม 18–36 เหตุการณ์ (3–6/เดือน) • ทดสอบความอึดระยะกลาง',
+      en: 'Random 18–36 events (3–6/mo) • Mid-term endurance',
     },
   },
   {
     id: 'full-year',
     days: 365,
     months: 12,
-    turns: 8,
-    tag: { th: '~3 นาที', en: '~3 min' },
+    minTurns: 36,
+    maxTurns: 72,
+    tag: { th: '~8 – 15 นาที', en: '~8 – 15 min' },
     labelDays: { th: '365 วัน', en: '365 Days' },
     labelMonths: { th: '12 เดือน', en: '12 Months' },
     desc: {
-      th: '8 เทิร์น • จำลองเหตุไม่คาดฝันครบ 1 ปีเต็ม',
-      en: '8 Turns • Full-year multi-shock stress test',
+      th: 'สุ่ม 36–72 เหตุการณ์ (สูงสุด 72) • จำลองครบ 1 ปีเต็ม',
+      en: 'Random 36–72 events (max 72) • Full-year stress test',
     },
   },
 ];
@@ -90,19 +97,101 @@ export function roundCustomDays(rawValue) {
   return clamp(ceiled, 5, 365);
 }
 
+export function getMonthCountForDuration(unit, durationValue) {
+  if (unit === 'months') {
+    return clamp(Math.round(Number(durationValue) || 1), 1, 12);
+  }
+  const days = Math.max(5, Number(durationValue) || 30);
+  return clamp(Math.round(days / 30), 1, 12);
+}
+
+export function getTurnRangeForDuration(unit, durationValue) {
+  const monthsCount = getMonthCountForDuration(unit, durationValue);
+  return {
+    monthsCount,
+    minTurns: monthsCount * MIN_EVENTS_PER_MONTH,
+    maxTurns: monthsCount * MAX_EVENTS_PER_MONTH,
+  };
+}
+
+/**
+ * Independently rolls 3, 4, 5, or 6 events for each simulated month.
+ * 1 month (30 days) => 3–6 events; 12 months (365 days) => 36–72 events.
+ */
+export function rollMonthlyEventPlan(unit, durationValue) {
+  const { monthsCount, minTurns, maxTurns } = getTurnRangeForDuration(unit, durationValue);
+  const monthlyCounts = [];
+  let totalTurns = 0;
+  for (let m = 0; m < monthsCount; m += 1) {
+    const count =
+      MIN_EVENTS_PER_MONTH +
+      Math.floor(Math.random() * (MAX_EVENTS_PER_MONTH - MIN_EVENTS_PER_MONTH + 1));
+    monthlyCounts.push(count);
+    totalTurns += count;
+  }
+  return {
+    monthsCount,
+    monthlyCounts,
+    totalTurns,
+    minTurns,
+    maxTurns,
+  };
+}
+
 export function getTurnCountForDuration(unit, durationValue) {
-  const days = unit === 'months' ? durationValue * 30.4 : durationValue;
-  if (days <= 45) return 3;
-  if (days <= 105) return 5;
-  if (days <= 210) return 6;
-  return 8;
+  const { minTurns, maxTurns } = getTurnRangeForDuration(unit, durationValue);
+  return Math.round((minTurns + maxTurns) / 2);
+}
+
+function formatDurationSegment(seconds, lang) {
+  if (seconds < 60) {
+    const roundedSec = Math.max(30, Math.round(seconds / 15) * 15);
+    return lang === 'TH' ? `${roundedSec} วิ` : `${roundedSec}s`;
+  }
+  const mins = seconds / 60;
+  if (mins < 2) {
+    const halfStep = Math.round(mins * 2) / 2;
+    return lang === 'TH' ? `${halfStep} นาที` : `${halfStep} min`;
+  }
+  const wholeMin = Math.round(mins);
+  return lang === 'TH' ? `${wholeMin} นาที` : `${wholeMin} min`;
+}
+
+export function getEstimatedPlayTimeRange(minTurns, maxTurns) {
+  // ~13 sec/event minimum pace, ~14.5 sec/event thoughtful reading pace
+  const minSec = Math.max(45, Math.round(minTurns * 13));
+  const maxSec = Math.max(90, Math.round(maxTurns * 14.5));
+  if (minTurns === 3 && maxTurns === 6) {
+    return { th: '~45 วิ – 1.5 นาที', en: '~45s – 1.5 min' };
+  }
+  if (minTurns === 9 && maxTurns === 18) {
+    return { th: '~2 – 4 นาที', en: '~2 – 4 min' };
+  }
+  if (minTurns === 18 && maxTurns === 36) {
+    return { th: '~4 – 8 นาที', en: '~4 – 8 min' };
+  }
+  if (minTurns === 36 && maxTurns === 72) {
+    return { th: '~8 – 15 นาที', en: '~8 – 15 min' };
+  }
+  const thMin = formatDurationSegment(minSec, 'TH');
+  const thMax = formatDurationSegment(maxSec, 'TH');
+  const enMin = formatDurationSegment(minSec, 'EN');
+  const enMax = formatDurationSegment(maxSec, 'EN');
+  if (thMin === thMax) {
+    return { th: `~${thMin}`, en: `~${enMin}` };
+  }
+  return {
+    th: `~${thMin} – ${thMax}`,
+    en: `~${enMin} – ${enMax}`,
+  };
 }
 
 export function getEstimatedPlayTime(turns) {
-  if (turns <= 3) return { th: '~45 วิ', en: '~45 sec' };
-  if (turns <= 5) return { th: '~1.5 นาที', en: '~1.5 min' };
-  if (turns <= 6) return { th: '~2 นาที', en: '~2 min' };
-  return { th: '~3 นาที', en: '~3 min' };
+  const sec = Math.max(45, Math.round(turns * 13.5));
+  return {
+    th: `~${formatDurationSegment(sec, 'TH')}`,
+    en: `~${formatDurationSegment(sec, 'EN')}`,
+  };
 }
 
 export function getTotalMonthsForDuration(unit, durationValue) {
@@ -209,19 +298,9 @@ function shuffleArray(items) {
   return arr;
 }
 
-function pickFromPool(pool, count, avoidIds, usedIds) {
-  const available = pool.filter((item) => !usedIds.has(item.id));
-  const fresh = shuffleArray(available.filter((item) => !avoidIds.has(item.id)));
-  const seen = shuffleArray(available.filter((item) => avoidIds.has(item.id)));
-  const combined = [...fresh, ...seen];
-  const picked = combined.slice(0, count);
-  picked.forEach((item) => usedIds.add(item.id));
-  return picked;
-}
-
 /**
- * Build randomized turn-by-turn event deck scaled to totalTurns (3, 5, 6, or 8).
- * Prioritizes unseen events from previous runs and guarantees 1 major ~฿100,000 shock.
+ * Build randomized month-by-month event deck (3–6 events per month, up to 72 events for 12 months).
+ * Prioritizes unseen events, avoids back-to-back repeats, and guarantees major ~฿100,000 shocks.
  */
 export function buildEventDeck(totalTurns, persona, previousEventIds = []) {
   const monthlyIncome = Math.max(10000, Number(persona?.monthlyIncome) || 25000);
@@ -336,6 +415,51 @@ export function buildEventDeck(totalTurns, persona, previousEventIds = []) {
         en: 'Severe dehydration from gastroenteritis requires an overnight IV drip and medication totaling ฿22,000.',
       },
     },
+    {
+      id: 'opd-clinic-4500',
+      category: 'medical',
+      severity: 'medium',
+      billAmount: 4500,
+      badge: { th: 'ค่ารักษาผู้ป่วยนอก (OPD)', en: 'Outpatient Clinic (OPD)' },
+      title: {
+        th: 'ออฟฟิศซินโดรม & ไมเกรนกำเริบ ต้องพบแพทย์เฉพาะทาง (฿4,500)',
+        en: 'Severe Migraine & Office Syndrome Specialist Visit (฿4,500)',
+      },
+      story: {
+        th: 'ทำงานหนักติดกันหลายสัปดาห์จนปวดหัวไมเกรนและคอบ่าไหล่รุนแรง ต้องตรวจและรับยาจากแผนกผู้ป่วยนอก รวมค่าใช้จ่าย ฿4,500',
+        en: 'Weeks of overtime trigger severe migraine and neck strain, requiring an outpatient specialist visit and medication for ฿4,500.',
+      },
+    },
+    {
+      id: 'dental-wisdom-8500',
+      category: 'medical',
+      severity: 'medium',
+      billAmount: 8500,
+      badge: { th: 'ทันตกรรมฉุกเฉิน', en: 'Urgent Dental Care' },
+      title: {
+        th: 'ฟันคุดอักเสบเฉียบพลัน ต้องผ่าฟันคุดด่วน (฿8,500)',
+        en: 'Impacted Wisdom Tooth — Urgent Dental Surgery (฿8,500)',
+      },
+      story: {
+        th: 'ปวดฟันกรามรุนแรงจนแก้มบวม เอกซเรย์พบฟันคุดแนวนอนต้องผ่าออกทันที เกินวงเงินประกันสังคม 900 บาท เหลือจ่ายเอง ฿8,500',
+        en: 'A swollen jaw turns out to be an impacted wisdom tooth needing immediate surgery — beyond basic dental allowance, costing ฿8,500.',
+      },
+    },
+    {
+      id: 'minor-sprain-6500',
+      category: 'accident',
+      severity: 'medium',
+      billAmount: 6500,
+      badge: { th: 'อุบัติเหตุเล็กน้อย', en: 'Minor Accident' },
+      title: {
+        th: 'ข้อเท้าพลิกตกบันได BTS ต้องเอกซเรย์และใส่เฝือกอ่อน (฿6,500)',
+        en: 'Sprained Ankle on Commute Stairs — X-Ray & Brace (฿6,500)',
+      },
+      story: {
+        th: 'รีบวิ่งต่อรถไฟฟ้าช่วงเช้าจนข้อเท้าพลิกบวมแดง ต้องเข้าห้องฉุกเฉินเอกซเรย์ตรวจกระดูกและรับเฝือกอ่อน บิลรวม ฿6,500',
+        en: 'Rushing down commute stairs leads to a nasty ankle sprain needing an urgent X-ray and support brace costing ฿6,500.',
+      },
+    },
   ];
 
   const INCOME_POOL = [
@@ -367,6 +491,21 @@ export function buildEventDeck(totalTurns, persona, previousEventIds = []) {
       story: {
         th: `โปรเจกต์ของทีมถูกเลื่อนปิดงบ ทำให้เงินส่วนเพิ่มที่คาดว่าจะได้รับช่วงนี้หายไป ฿${incomeDropAmount.toLocaleString('en-US')}`,
         en: `A delayed project sign-off pushes back your expected payout, creating a ฿${incomeDropAmount.toLocaleString('en-US')} cashflow gap this period.`,
+      },
+    },
+    {
+      id: 'unpaid-leave-gap',
+      category: 'income',
+      severity: 'medium',
+      billAmount: Math.round(incomeDropAmount * 0.65),
+      badge: { th: 'ลางานไม่รับค่าจ้าง', en: 'Unpaid Leave Gap' },
+      title: {
+        th: 'ต้องลากิจด่วนดูแลครอบครัว ถูกหักรายได้บางส่วน',
+        en: 'Urgent Family Leave — Partial Income Deduction',
+      },
+      story: {
+        th: `มีธุระด่วนที่บ้านทำให้ต้องลางานเกินโควตาวันลา กระแสเงินสดเดือนนี้ลดลง ฿${Math.round(incomeDropAmount * 0.65).toLocaleString('en-US')}`,
+        en: `An unexpected family errand exceeds your paid leave quota, trimming your cash inflow by ฿${Math.round(incomeDropAmount * 0.65).toLocaleString('en-US')}.`,
       },
     },
   ];
@@ -402,6 +541,36 @@ export function buildEventDeck(totalTurns, persona, previousEventIds = []) {
         en: 'Your favorite artist announces a one-night Bangkok show alongside a flash gadget deal totaling ฿15,000. What is your move?',
       },
     },
+    {
+      id: 'social-wedding-6k',
+      category: 'lifestyle',
+      severity: 'medium',
+      billAmount: 6000,
+      badge: { th: 'ค่าสังคมรายเดือน', en: 'Social Commitments' },
+      title: {
+        th: 'ซองงานแต่งเพื่อนสนิท 2 งาน + เลี้ยงส่งทีม (฿6,000)',
+        en: 'Two Friends’ Weddings & Team Farewell Dinner (฿6,000)',
+      },
+      story: {
+        th: 'เดือนนี้มีทั้งงานแต่งเพื่อนสมัยเรียน ชุดไปงาน และงานเลี้ยงส่งรุ่นพี่ในแผนก รวมงบประมาณ ฿6,000 คุณจะจัดสรรอย่างไร?',
+        en: 'Two college weddings, outfit costs, and a team farewell dinner collide in the same month for ฿6,000. How do you manage it?',
+      },
+    },
+    {
+      id: 'flash-sale-9k',
+      category: 'lifestyle',
+      severity: 'medium',
+      billAmount: 9000,
+      badge: { th: 'โปรแรงกลางเดือน', en: 'Mid-Month Mega Sale' },
+      title: {
+        th: 'มหกรรมลดราคา 11.11 / รองเท้าและอุปกรณ์ทำงาน (฿9,000)',
+        en: 'Mega Flash Sale — Shoes & Desk Upgrade Bundle (฿9,000)',
+      },
+      story: {
+        th: 'โค้ดส่วนลดและโปรผ่อน 0% ล่อใจให้กดของที่เล็งไว้นานแล้วรวม ฿9,000 คุณจะยับยั้งใจหรือจัดเต็ม?',
+        en: 'Limited-time vouchers and 0% offers tempt you to clear your ฿9,000 wishlist today. Hold back or go for it?',
+      },
+    },
   ];
 
   const EXPENSE_POOL = [
@@ -433,6 +602,51 @@ export function buildEventDeck(totalTurns, persona, previousEventIds = []) {
       story: {
         th: 'หน้าร้อนจัดแอร์เสียพร้อมกับที่บ้านมีค่าซ่อมหลังคารั่วกะทันหัน ต้องช่วยออกค่าใช้จ่ายรวม ฿12,000',
         en: 'Peak summer heat breaks your A/C just as a leak at home needs fixing, requiring ฿12,000 in sudden repair cash.',
+      },
+    },
+    {
+      id: 'vehicle-prb-5500',
+      category: 'expense',
+      severity: 'medium',
+      billAmount: 5500,
+      badge: { th: 'ค่าบำรุงรักษารายปี', en: 'Annual Vehicle Upkeep' },
+      title: {
+        th: 'เปลี่ยนยางรถ + ต่อภาษีและ พ.ร.บ. ครบกำหนด (฿5,500)',
+        en: 'Worn Tires Replacement + Annual Tax & Compulsory Motor Cover (฿5,500)',
+      },
+      story: {
+        th: 'ถึงรอบเปลี่ยนยางและต่อภาษี/พ.ร.บ. ประจำปีพอดี ซึ่งเป็นค่าใช้จ่ายจำเป็นเพื่อความปลอดภัยในการเดินทาง รวม ฿5,500',
+        en: 'Your commute vehicle hits its annual tax, compulsory cover, and worn tire replacement milestone for ฿5,500.',
+      },
+    },
+    {
+      id: 'utility-surge-4200',
+      category: 'expense',
+      severity: 'medium',
+      billAmount: 4200,
+      badge: { th: 'บิลพุ่งผิดปกติ', en: 'Utility Bill Spike' },
+      title: {
+        th: 'ค่าไฟฟ้าหน้าร้อนพุ่งสูง + ค่าซ่อมประปาห้องพัก (฿4,200)',
+        en: 'Heatwave Electricity Surge & Plumbing Fix (฿4,200)',
+      },
+      story: {
+        th: 'อากาศร้อนจัดบวกกับท่อน้ำซึมโดยไม่รู้ตัวทำให้บิลค่าน้ำไฟและค่าช่างเดือนนี้พุ่งเกินงบมา ฿4,200',
+        en: 'A heatwave and hidden pipe leak push your monthly utility and plumber bill ฿4,200 above normal.',
+      },
+    },
+    {
+      id: 'pet-vet-7500',
+      category: 'expense',
+      severity: 'medium',
+      billAmount: 7500,
+      badge: { th: 'เหตุฉุกเฉินสัตว์เลี้ยง/ครอบครัว', en: 'Urgent Family / Pet Bill' },
+      title: {
+        th: 'สัตว์เลี้ยงป่วยด่วน / ช่วยค่ายาผู้ใหญ่ที่บ้าน (฿7,500)',
+        en: 'Emergency Vet Visit / Parents’ Extra Medical Bill (฿7,500)',
+      },
+      story: {
+        th: 'มีค่าใช้จ่ายฉุกเฉินนอกแผนเพื่อดูแลคนสำคัญหรือสัตว์เลี้ยงที่บ้านรวม ฿7,500 ต้องรีบโอนช่วยทันที',
+        en: 'An unplanned ฿7,500 care expense hits home for a loved one or pet and needs immediate payment.',
       },
     },
   ];
@@ -468,60 +682,186 @@ export function buildEventDeck(totalTurns, persona, previousEventIds = []) {
         en: 'A completed side project and annual rebate land ฿12,000 in your account — a great chance to strengthen your safety net.',
       },
     },
+    {
+      id: 'windfall-4500',
+      category: 'windfall',
+      severity: 'positive',
+      billAmount: 4500,
+      badge: { th: 'รายได้เสริมเข้ามือ', en: 'Side Gig Bonus' },
+      title: {
+        th: 'ขายของมือสอง + เงินคืนบัตรเครดิตสะสม +฿4,500',
+        en: 'Declutter Resale + Cashback Rebate +฿4,500',
+      },
+      story: {
+        th: 'คุณเคลียร์ของใช้ไม่ได้ใช้ขายต่อได้เงินก้อนเล็กบวกกับเงินคืนสะสมรวม +฿4,500 จะเก็บไว้ตรงไหนดี?',
+        en: 'Selling unused items and redeeming cashback adds +฿4,500 to your hands. Where will you put it?',
+      },
+    },
+    {
+      id: 'windfall-6000',
+      category: 'windfall',
+      severity: 'positive',
+      billAmount: 6000,
+      badge: { th: 'เบี้ยขยัน & โอทีพิเศษ', en: 'Extra OT Payout' },
+      title: {
+        th: 'ปิดโปรเจกต์สำคัญสำเร็จ รับเงินพิเศษ +฿6,000',
+        en: 'Milestone Project Delivery Bonus +฿6,000',
+      },
+      story: {
+        th: 'ทีมปิดงานใหญ่ทันกำหนดและได้รับโบนัสพิเศษเข้าบัญชี +฿6,000 เป็นจังหวะทองในการเติมกันชนหรือโปะหนี้',
+        en: 'Delivering a key project on schedule unlocks a +฿6,000 spot bonus — ideal for boosting reserves or cutting debt.',
+      },
+    },
   ];
 
+  // Normalize monthlyCounts array (supports either passing monthlyCounts[] or a legacy totalTurns number)
+  let monthlyCounts;
+  if (Array.isArray(totalTurns) && totalTurns.length > 0) {
+    monthlyCounts = totalTurns;
+  } else {
+    const count = Math.max(3, Number(totalTurns) || 3);
+    monthlyCounts = [count];
+  }
+
+  const totalEventCount = monthlyCounts.reduce((sum, n) => sum + n, 0);
+  const monthsCount = monthlyCounts.length;
   const avoidIds = new Set(Array.isArray(previousEventIds) ? previousEventIds : []);
-  const usedIds = new Set();
 
-  // Always pick 1 critical ~100k shock so every run tests risk transfer meaningfully
-  const [criticalEvent] = pickFromPool(CRITICAL_POOL, 1, avoidIds, usedIds);
-
-  if (totalTurns <= 3) {
-    const [med] = pickFromPool(MEDICAL_POOL, 1, avoidIds, usedIds);
-    const [mid] = pickFromPool(
-      [...LIFESTYLE_POOL, ...EXPENSE_POOL, ...INCOME_POOL],
-      1,
-      avoidIds,
-      usedIds
+  const pickNextFrom = (pool, recentIds, lastId) => {
+    const notLast = pool.filter((item) => item.id !== lastId);
+    const candidates = notLast.length > 0 ? notLast : pool;
+    const fresh = shuffleArray(
+      candidates.filter((item) => !recentIds.has(item.id) && !avoidIds.has(item.id))
     );
-    const early = shuffleArray([med, mid]);
-    return [...early, criticalEvent];
+    if (fresh.length > 0) return fresh[0];
+    const notRecent = shuffleArray(candidates.filter((item) => !recentIds.has(item.id)));
+    if (notRecent.length > 0) return notRecent[0];
+    return shuffleArray(candidates)[0];
+  };
+
+  // Decide which global turn indices carry a major ~฿100k shock:
+  // 1-7 months => 1 major shock; 8-12 months => 2 major shocks spaced across H1 and H2
+  const criticalIndices = new Set();
+  const firstCriticalIdx =
+    totalEventCount <= 6
+      ? Math.max(1, totalEventCount - 1 - (Math.random() < 0.35 ? 1 : 0))
+      : Math.floor(totalEventCount * (monthsCount >= 8 ? 0.32 : 0.55)) +
+        Math.floor(Math.random() * Math.max(1, Math.floor(totalEventCount * 0.12)));
+  criticalIndices.add(clamp(firstCriticalIdx, 1, totalEventCount - 1));
+
+  if (monthsCount >= 8) {
+    const secondCriticalIdx =
+      Math.floor(totalEventCount * 0.74) +
+      Math.floor(Math.random() * Math.max(1, Math.floor(totalEventCount * 0.14)));
+    criticalIndices.add(clamp(secondCriticalIdx, Math.min(totalEventCount - 1, firstCriticalIdx + 4), totalEventCount - 1));
   }
 
-  if (totalTurns === 5) {
-    const [med] = pickFromPool(MEDICAL_POOL, 1, avoidIds, usedIds);
-    const [wind] = pickFromPool(WINDFALL_POOL, 1, avoidIds, usedIds);
-    const [life] = pickFromPool([...LIFESTYLE_POOL, ...EXPENSE_POOL], 1, avoidIds, usedIds);
-    const [inc] = pickFromPool(INCOME_POOL, 1, avoidIds, usedIds);
-    const beforeCritical = shuffleArray([med, wind, life]);
-    const insertIdx = Math.random() < 0.5 ? 3 : 4;
-    const result = [...beforeCritical, inc];
-    result.splice(insertIdx, 0, criticalEvent);
-    return result;
+  const routinePools = [
+    MEDICAL_POOL,
+    EXPENSE_POOL,
+    LIFESTYLE_POOL,
+    WINDFALL_POOL,
+    INCOME_POOL,
+  ];
+  const minorMedicalPool = MEDICAL_POOL.filter((e) => e.billAmount <= 22000);
+  const majorMedicalPool = MEDICAL_POOL.filter((e) => e.billAmount > 22000);
+
+  const deck = [];
+  const recentIds = new Set();
+  let lastId = null;
+  let globalIdx = 0;
+
+  for (let m = 0; m < monthsCount; m += 1) {
+    const countInMonth = monthlyCounts[m];
+    const monthNumber = m + 1;
+
+    // Build a balanced monthly category plan so every month (3-6 events) feels varied and fair
+    const monthSlots = [];
+    if (countInMonth === 3) {
+      monthSlots.push('medical-or-expense', 'lifestyle-or-income', 'windfall-or-expense');
+    } else if (countInMonth === 4) {
+      monthSlots.push('medical', 'expense', 'lifestyle', 'windfall-or-income');
+    } else if (countInMonth === 5) {
+      monthSlots.push('medical', 'expense', 'lifestyle', 'income', 'windfall');
+    } else {
+      monthSlots.push('medical', 'expense', 'expense', 'lifestyle', 'income', 'windfall');
+    }
+    const shuffledSlots = shuffleArray(monthSlots);
+
+    for (let eIdx = 0; eIdx < countInMonth; eIdx += 1) {
+      let chosen;
+      if (criticalIndices.has(globalIdx)) {
+        chosen = pickNextFrom(CRITICAL_POOL, recentIds, lastId);
+      } else {
+        const slot = shuffledSlots[eIdx];
+        if (slot === 'medical') {
+          const pool =
+            Math.random() < 0.65 && minorMedicalPool.length > 0
+              ? minorMedicalPool
+              : majorMedicalPool.length > 0
+                ? majorMedicalPool
+                : MEDICAL_POOL;
+          chosen = pickNextFrom(pool, recentIds, lastId);
+        } else if (slot === 'medical-or-expense') {
+          chosen = pickNextFrom(
+            Math.random() < 0.5 ? minorMedicalPool : EXPENSE_POOL,
+            recentIds,
+            lastId
+          );
+        } else if (slot === 'expense') {
+          chosen = pickNextFrom(EXPENSE_POOL, recentIds, lastId);
+        } else if (slot === 'lifestyle') {
+          chosen = pickNextFrom(LIFESTYLE_POOL, recentIds, lastId);
+        } else if (slot === 'lifestyle-or-income') {
+          chosen = pickNextFrom(
+            Math.random() < 0.55 ? LIFESTYLE_POOL : INCOME_POOL,
+            recentIds,
+            lastId
+          );
+        } else if (slot === 'income') {
+          chosen = pickNextFrom(INCOME_POOL, recentIds, lastId);
+        } else if (slot === 'windfall') {
+          chosen = pickNextFrom(WINDFALL_POOL, recentIds, lastId);
+        } else if (slot === 'windfall-or-income') {
+          chosen = pickNextFrom(
+            Math.random() < 0.6 ? WINDFALL_POOL : INCOME_POOL,
+            recentIds,
+            lastId
+          );
+        } else if (slot === 'windfall-or-expense') {
+          chosen = pickNextFrom(
+            Math.random() < 0.55 ? WINDFALL_POOL : EXPENSE_POOL,
+            recentIds,
+            lastId
+          );
+        } else {
+          chosen = pickNextFrom(
+            routinePools[Math.floor(Math.random() * routinePools.length)],
+            recentIds,
+            lastId
+          );
+        }
+      }
+
+      recentIds.add(chosen.id);
+      if (recentIds.size > 10) {
+        const oldest = recentIds.values().next().value;
+        recentIds.delete(oldest);
+      }
+      lastId = chosen.id;
+
+      deck.push({
+        ...chosen,
+        deckKey: `${chosen.id}-m${monthNumber}-e${eIdx + 1}`,
+        monthNumber,
+        eventInMonth: eIdx + 1,
+        eventsInMonth: countInMonth,
+      });
+      globalIdx += 1;
+    }
   }
 
-  if (totalTurns === 6) {
-    const [med] = pickFromPool(MEDICAL_POOL, 1, avoidIds, usedIds);
-    const [wind] = pickFromPool(WINDFALL_POOL, 1, avoidIds, usedIds);
-    const [life] = pickFromPool(LIFESTYLE_POOL, 1, avoidIds, usedIds);
-    const [exp] = pickFromPool(EXPENSE_POOL, 1, avoidIds, usedIds);
-    const [inc] = pickFromPool(INCOME_POOL, 1, avoidIds, usedIds);
-    const others = shuffleArray([med, wind, life, exp, inc]);
-    const insertIdx = 3 + Math.floor(Math.random() * 2); // turn 4 or 5
-    others.splice(insertIdx, 0, criticalEvent);
-    return others;
-  }
-
-  // 8-turn full year: rich randomized sequence covering all 6 event types
-  const meds = pickFromPool(MEDICAL_POOL, 2, avoidIds, usedIds);
-  const winds = pickFromPool(WINDFALL_POOL, 2, avoidIds, usedIds);
-  const [life] = pickFromPool(LIFESTYLE_POOL, 1, avoidIds, usedIds);
-  const [exp] = pickFromPool(EXPENSE_POOL, 1, avoidIds, usedIds);
-  const [inc] = pickFromPool(INCOME_POOL, 1, avoidIds, usedIds);
-  const others = shuffleArray([...meds, ...winds, life, exp, inc]);
-  const insertIdx = 4 + Math.floor(Math.random() * 3); // turn 5, 6, or 7
-  others.splice(insertIdx, 0, criticalEvent);
-  return others;
+  return deck;
 }
 
 /**
@@ -992,18 +1332,28 @@ export function getChoicesForEvent(event, state) {
  * Apply recurring cashflow + player's chosen event action for a single turn.
  */
 export function resolveTurn({ state, event, choice, config }) {
-  const { monthsPerTurn, allocEmergency, allocLifestyle } = config;
+  const { monthsPerTurn, allocEmergency, allocLifestyle, totalTurns = 6 } = config;
 
   // 1. Recurring cashflow accumulation for this turn
   const recurringEmergencyAdded = Math.round(allocEmergency * monthsPerTurn);
-  const lifestyleBoost = allocLifestyle >= 1000 ? 3 : allocLifestyle > 0 ? 1 : -1;
+  const isLongRun = totalTurns > 10;
+  const lifestyleBoost = isLongRun
+    ? allocLifestyle >= 1000
+      ? 1
+      : 0
+    : allocLifestyle >= 1000
+      ? 3
+      : allocLifestyle > 0
+        ? 1
+        : -1;
 
   // 2. Debt interest accrued during this turn (20% APR)
   const interestAccrued =
     state.debt > 0 ? Math.round(state.debt * (EMERGENCY_DEBT_APR / 12) * monthsPerTurn) : 0;
 
-  // 3. Existing 0% installment payment due this turn
-  const installmentDue = Math.min(state.installmentBalance, 3000);
+  // 3. Existing 0% installment payment due this turn (scaled per fraction of a month)
+  const perTurnInstallmentCap = Math.max(500, Math.round(3000 * Math.min(1, monthsPerTurn)));
+  const installmentDue = Math.min(state.installmentBalance, perTurnInstallmentCap);
   let cashAfterRecurring = state.cash + recurringEmergencyAdded;
   let extraDebtFromInstallment = 0;
   if (installmentDue > 0) {
@@ -1043,7 +1393,7 @@ export function resolveTurn({ state, event, choice, config }) {
   const protectionUsed = Math.max(0, Math.round(choice.effects.protectionUsed || 0));
   const nextProtectionRemaining = Math.max(0, state.protectionRemaining - protectionUsed);
 
-  const debtDragPeace = nextDebt > 0 ? -3 : 0;
+  const debtDragPeace = nextDebt > 0 ? (isLongRun ? -1 : -3) : 0;
   const nextPeace = clamp(
     Math.round(state.peace + (choice.effects.peaceDelta || 0) + lifestyleBoost + debtDragPeace),
     0,
@@ -1055,6 +1405,9 @@ export function resolveTurn({ state, event, choice, config }) {
 
   const logEntry = {
     turnNumber: state.turnIndex + 1,
+    monthNumber: event.monthNumber || 1,
+    eventInMonth: event.eventInMonth || 1,
+    eventsInMonth: event.eventsInMonth || 1,
     eventId: event.id,
     eventTitle: event.title,
     eventBadge: event.badge,
