@@ -152,7 +152,7 @@ export default function RiskAnalysis({ onNavigate }) {
     },
     {
       id: 'results',
-      label: lang === 'TH' ? 'ผลวิเคราะห์ & แผน' : 'Gap & Plan',
+      label: lang === 'TH' ? 'ผลวิเคราะห์' : 'Gap & Plan',
       icon: ClipboardCheck,
       badge: riskAssessment.highRiskCount > 0 ? riskAssessment.highRiskCount : undefined,
     },

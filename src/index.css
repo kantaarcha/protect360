@@ -10640,9 +10640,11 @@ p {
 
 .liquid-tab-btn > span:not(.liquid-tab-badge) {
   min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  white-space: normal;
+  overflow: visible;
+  text-overflow: clip;
+  line-height: 1.24;
+  text-align: center;
 }
 
 .liquid-tab-badge {
@@ -11084,9 +11086,10 @@ p {
 }
 
 .gm-slider-label {
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  white-space: normal;
+  overflow: visible;
+  text-overflow: clip;
+  line-height: 1.3;
 }
 
 /* Lock slider bar dimensions so flex column layout never stretches range height */
@@ -12661,11 +12664,8 @@ p {
   font-size: 0.8rem;
   font-weight: 700;
   color: var(--text-primary);
-  line-height: 1.36;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
+  line-height: 1.38;
+  word-break: break-word;
 }
 
 .lc-index-empty {
@@ -12851,8 +12851,10 @@ p {
 @media (max-width: 920px) {
   .lc-guides-workspace,
   .lc-glossary-workspace {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
     min-height: auto;
+    width: 100%;
+    max-width: 100%;
   }
 
   .lc-sidebar-index,
@@ -12860,6 +12862,9 @@ p {
     border-right: none;
     border-bottom: 1px solid var(--border-subtle);
     padding: 12px 14px;
+    min-width: 0;
+    max-width: 100%;
+    overflow: hidden;
   }
 
   .lc-topic-list,
@@ -12869,11 +12874,12 @@ p {
     -webkit-overflow-scrolling: touch;
     padding-bottom: 4px;
     gap: 8px;
+    max-width: 100%;
   }
 
   .lc-topic-item {
-    min-width: 215px;
-    max-width: 235px;
+    min-width: 220px;
+    max-width: 250px;
     flex-shrink: 0;
     background: var(--bg-surface);
     border-color: var(--border-subtle);
@@ -12890,6 +12896,8 @@ p {
   .lc-glossary-pane,
   .lc-quiz-workspace {
     padding: 18px 16px;
+    min-width: 0;
+    max-width: 100%;
   }
 }
 
@@ -12996,6 +13004,12 @@ p {
   .lc-window-tabs .liquid-tab-badge {
     font-size: 0.64rem;
     padding: 1px 5px;
+  }
+}
+
+@media (max-width: 460px) {
+  .lc-window-tabs .liquid-tab-badge {
+    display: none;
   }
 }
 
