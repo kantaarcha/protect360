@@ -443,7 +443,7 @@ function AppShellContent() {
               </span>
             </div>
           </header>
-        ) : (
+        ) : activePage === 'about' ? null : (
           <header className="subpage-header">
             <div className="header-greeting-group">
               <div className="header-title-row">

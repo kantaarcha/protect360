@@ -13343,6 +13343,761 @@ p {
   }
 }
 
+/* ==========================================================================
+   ROUND 7 — LANDING & ABOUT PROTECT360 (RESEARCH SHOWCASE & LIVE ECOSYSTEM)
+   ========================================================================== */
+
+.ab-page {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* 1. Hero Bento Showcase Banner (Harmonized with .member-hero-card) */
+.ab-hero-card {
+  position: relative;
+  border-radius: 26px;
+  padding: 26px 28px;
+  background: linear-gradient(135deg, #142b4a 0%, #1c4476 58%, #196480 100%);
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  box-shadow:
+    0 16px 36px -14px rgba(20, 43, 74, 0.42),
+    0 2px 6px rgba(20, 43, 74, 0.14);
+  display: grid;
+  grid-template-columns: minmax(0, 1.65fr) minmax(220px, 0.72fr);
+  gap: 24px;
+  align-items: center;
+  overflow: hidden;
+}
+
+.ab-hero-card::before {
+  content: '';
+  position: absolute;
+  inset: -40% -10% auto auto;
+  width: 340px;
+  height: 340px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(56, 189, 248, 0.22) 0%, rgba(34, 184, 167, 0) 70%);
+  pointer-events: none;
+}
+
+.ab-hero-main {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  min-width: 0;
+}
+
+.ab-hero-brand-row {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  flex-wrap: wrap;
+}
+
+.ab-hero-logo-box {
+  width: 52px;
+  height: 52px;
+  border-radius: 16px;
+  background: #ffffff;
+  padding: 6px;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  box-shadow: 0 8px 20px -6px rgba(10, 25, 48, 0.45);
+}
+
+.ab-hero-logo-img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.ab-hero-brand-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+
+.ab-hero-wordmark-row {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.ab-hero-wordmark {
+  font-size: 1.05rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  color: #ffffff;
+}
+
+.ab-hero-oic-pill {
+  padding: 2px 9px;
+  border-radius: var(--radius-pill);
+  font-size: 0.69rem;
+  font-weight: 800;
+  letter-spacing: 0.03em;
+  background: rgba(34, 184, 167, 0.24);
+  border: 1px solid rgba(94, 234, 212, 0.42);
+  color: #ccfbf1;
+}
+
+.ab-hero-initiative-sub {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: rgba(226, 238, 255, 0.88);
+  line-height: 1.4;
+}
+
+.ab-hero-headline {
+  margin: 0;
+  font-size: clamp(1.32rem, 2.2vw, 1.72rem);
+  font-weight: 800;
+  line-height: 1.3;
+  letter-spacing: -0.015em;
+  color: #ffffff;
+}
+
+.ab-hero-welcome {
+  margin: 0;
+  font-size: 0.86rem;
+  line-height: 1.56;
+  color: rgba(226, 238, 255, 0.9);
+  max-width: 68ch;
+}
+
+.ab-hero-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  padding-top: 2px;
+}
+
+.ab-hero-primary-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 11px 18px;
+  border-radius: 14px;
+  border: none;
+  background: linear-gradient(135deg, #ffffff 0%, #eaf3ff 100%);
+  color: #142b4a;
+  font-size: 0.84rem;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 0 8px 20px -6px rgba(10, 25, 48, 0.42);
+  transition: transform 0.16s var(--ease), box-shadow 0.16s var(--ease);
+}
+
+.ab-hero-primary-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 12px 24px -8px rgba(10, 25, 48, 0.55);
+}
+
+.ab-hero-glass-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  background: rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(8px);
+  color: #ffffff;
+  font-size: 0.83rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background-color 0.16s var(--ease), transform 0.16s var(--ease);
+}
+
+.ab-hero-glass-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: translateY(-1px);
+}
+
+.ab-hero-reset-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 9px 13px;
+  border-radius: 12px;
+  border: 1px dashed rgba(255, 255, 255, 0.34);
+  background: rgba(15, 23, 42, 0.22);
+  color: rgba(226, 238, 255, 0.92);
+  font-size: 0.76rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background-color 0.16s var(--ease), border-color 0.16s var(--ease);
+}
+
+.ab-hero-reset-btn:hover {
+  background: rgba(15, 23, 42, 0.36);
+  border-color: rgba(255, 255, 255, 0.56);
+  color: #ffffff;
+}
+
+.ab-hero-stats {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.ab-hero-stat-item {
+  padding: 12px 15px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.11);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  backdrop-filter: blur(10px);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.ab-hero-stat-value {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: #ffffff;
+  line-height: 1.2;
+}
+
+.ab-hero-stat-label {
+  font-size: 0.74rem;
+  font-weight: 600;
+  color: rgba(226, 238, 255, 0.86);
+}
+
+/* 2. Three Core Pillars Grid */
+.ab-pillars-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.ab-pillar-card {
+  padding: 20px 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.ab-pillar-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.ab-pillar-icon,
+.ab-eco-icon {
+  width: 38px;
+  height: 38px;
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+}
+
+.ab-pillar-icon.tone-blue,
+.ab-eco-icon.tone-blue {
+  background: var(--accent-blue-bg);
+  color: #1d63d8;
+}
+
+[data-theme='dark'] .ab-pillar-icon.tone-blue,
+[data-theme='dark'] .ab-eco-icon.tone-blue {
+  color: #7cc0ff;
+}
+
+.ab-pillar-icon.tone-teal,
+.ab-eco-icon.tone-teal {
+  background: rgba(34, 184, 167, 0.14);
+  color: #0f766e;
+}
+
+[data-theme='dark'] .ab-pillar-icon.tone-teal,
+[data-theme='dark'] .ab-eco-icon.tone-teal {
+  background: rgba(45, 212, 191, 0.18);
+  color: #5eead4;
+}
+
+.ab-pillar-icon.tone-navy,
+.ab-eco-icon.tone-navy {
+  background: rgba(20, 43, 74, 0.1);
+  color: #142b4a;
+}
+
+[data-theme='dark'] .ab-pillar-icon.tone-navy,
+[data-theme='dark'] .ab-eco-icon.tone-navy {
+  background: rgba(148, 163, 184, 0.18);
+  color: #cbd5e1;
+}
+
+.ab-eco-icon.tone-indigo {
+  background: rgba(99, 102, 241, 0.12);
+  color: #4f46e5;
+}
+
+[data-theme='dark'] .ab-eco-icon.tone-indigo {
+  background: rgba(129, 140, 248, 0.2);
+  color: #a5b4fc;
+}
+
+.ab-pillar-badge {
+  font-size: 0.72rem;
+  font-weight: 800;
+  padding: 4px 10px;
+  border-radius: var(--radius-pill);
+  background: var(--bg-muted);
+  color: var(--text-secondary);
+}
+
+.ab-pillar-title {
+  margin: 0;
+  font-size: 0.98rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  line-height: 1.38;
+}
+
+.ab-pillar-desc {
+  margin: 0;
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+  line-height: 1.56;
+}
+
+/* 3. Interactive Research-to-Solution Bar Chart (n = 57) */
+.ab-research-card {
+  padding: 22px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.ab-section-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.ab-section-head-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  min-width: 0;
+  flex: 1 1 320px;
+}
+
+.ab-section-kicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  color: #1d63d8;
+}
+
+[data-theme='dark'] .ab-section-kicker {
+  color: #7cc0ff;
+}
+
+.ab-section-title {
+  margin: 0;
+  font-size: 1.12rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  line-height: 1.35;
+}
+
+.ab-section-sub {
+  margin: 0;
+  font-size: 0.83rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+.ab-research-tabs {
+  flex: 0 1 420px;
+  width: 100%;
+  max-width: 420px;
+}
+
+.ab-bar-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.ab-bar-row {
+  width: 100%;
+  text-align: left;
+  padding: 12px 14px;
+  border-radius: 16px;
+  border: 1px solid var(--border-subtle);
+  background: var(--bg-muted);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  cursor: pointer;
+  transition: border-color 0.16s var(--ease), background-color 0.16s var(--ease), transform 0.16s var(--ease), box-shadow 0.16s var(--ease);
+}
+
+.ab-bar-row:hover {
+  border-color: rgba(40, 120, 200, 0.44);
+  background: var(--bg-surface);
+  transform: translateY(-1px);
+  box-shadow: 0 8px 20px -10px rgba(20, 43, 74, 0.22);
+}
+
+.ab-bar-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.ab-bar-label-group {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  min-width: 0;
+}
+
+.ab-bar-rank {
+  font-size: 0.72rem;
+  font-weight: 800;
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+
+.ab-bar-label {
+  font-size: 0.87rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  line-height: 1.35;
+}
+
+.ab-bar-right-meta {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.ab-bar-solution-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 10px;
+  border-radius: var(--radius-pill);
+  background: var(--accent-blue-bg);
+  color: #1d63d8;
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+[data-theme='dark'] .ab-bar-solution-chip {
+  color: #7cc0ff;
+}
+
+.ab-bar-pct {
+  font-size: 0.92rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  min-width: 48px;
+  text-align: right;
+}
+
+.ab-bar-track {
+  width: 100%;
+  height: 10px;
+  border-radius: 999px;
+  background: rgba(148, 163, 184, 0.2);
+  overflow: hidden;
+}
+
+.ab-bar-fill {
+  height: 100%;
+  border-radius: 999px;
+  transition: width 0.35s var(--ease);
+}
+
+.ab-bar-fill.tone-blue {
+  background: linear-gradient(90deg, #1d5bb5 0%, #3b82e6 100%);
+}
+
+.ab-bar-fill.tone-teal {
+  background: linear-gradient(90deg, #168e82 0%, #2abfa9 100%);
+}
+
+.ab-bar-fill.tone-indigo {
+  background: linear-gradient(90deg, #4338ca 0%, #6366f1 100%);
+}
+
+/* 4. Live 6-Module Ecosystem Directory */
+.ab-eco-section {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.ab-eco-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.ab-eco-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.ab-eco-card {
+  width: 100%;
+  text-align: left;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  cursor: pointer;
+  border: 1px solid var(--border-subtle);
+  transition: transform 0.16s var(--ease), border-color 0.16s var(--ease), box-shadow 0.16s var(--ease);
+}
+
+.ab-eco-card:hover {
+  transform: translateY(-2px);
+  border-color: rgba(40, 120, 200, 0.44);
+  box-shadow: 0 12px 26px -12px rgba(20, 43, 74, 0.24);
+}
+
+.ab-eco-card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.ab-eco-num {
+  font-size: 0.78rem;
+  font-weight: 800;
+  color: var(--text-muted);
+  letter-spacing: 0.04em;
+}
+
+.ab-eco-title {
+  font-size: 0.94rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  line-height: 1.35;
+}
+
+.ab-eco-desc {
+  margin: 0;
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  flex: 1;
+}
+
+.ab-eco-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding-top: 10px;
+  border-top: 1px solid var(--border-subtle);
+}
+
+.ab-eco-live-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: var(--radius-pill);
+  background: var(--bg-muted);
+  font-size: 0.73rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1.3;
+}
+
+.ab-live-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #16a34a;
+  flex-shrink: 0;
+}
+
+.ab-eco-arrow {
+  color: var(--text-muted);
+  flex-shrink: 0;
+  transition: transform 0.16s var(--ease), color 0.16s var(--ease);
+}
+
+.ab-eco-card:hover .ab-eco-arrow {
+  color: #1d63d8;
+  transform: translateX(3px);
+}
+
+[data-theme='dark'] .ab-eco-card:hover .ab-eco-arrow {
+  color: #7cc0ff;
+}
+
+/* 5. Educational Governance & Disclaimer Footer Card */
+.ab-governance-card {
+  padding: 22px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  flex-wrap: wrap;
+  border-left: 4px solid #2878c8;
+}
+
+.ab-gov-left {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  flex: 1 1 420px;
+  min-width: 0;
+}
+
+.ab-gov-icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 13px;
+  background: var(--accent-blue-bg);
+  color: #1d63d8;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+}
+
+[data-theme='dark'] .ab-gov-icon {
+  color: #7cc0ff;
+}
+
+.ab-gov-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+}
+
+.ab-gov-title {
+  margin: 0;
+  font-size: 0.96rem;
+  font-weight: 800;
+  color: var(--text-primary);
+}
+
+.ab-gov-desc {
+  margin: 0;
+  font-size: 0.81rem;
+  color: var(--text-secondary);
+  line-height: 1.56;
+}
+
+.ab-gov-checks {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding-top: 2px;
+}
+
+.ab-gov-checks span {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.ab-gov-checks svg {
+  color: #16a34a;
+  flex-shrink: 0;
+}
+
+.ab-gov-oic-link {
+  padding: 10px 15px;
+  border-radius: 13px;
+  font-size: 0.8rem;
+  text-decoration: none;
+  flex-shrink: 0;
+}
+
+/* Responsive Breakpoints for LandingAbout */
+@media (max-width: 1080px) {
+  .ab-hero-card {
+    grid-template-columns: 1fr;
+  }
+
+  .ab-hero-stats {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .ab-pillars-grid,
+  .ab-eco-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 680px) {
+  .ab-hero-card {
+    padding: 20px 18px;
+  }
+
+  .ab-hero-stats,
+  .ab-pillars-grid,
+  .ab-eco-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .ab-hero-actions button,
+  .ab-gov-oic-link {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .ab-research-card,
+  .ab-governance-card {
+    padding: 18px 16px;
+  }
+
+  .ab-research-tabs {
+    max-width: 100%;
+    flex-basis: 100%;
+  }
+
+  .ab-bar-pct {
+    min-width: auto;
+  }
+}
+
 
 
 
