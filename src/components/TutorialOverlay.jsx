@@ -91,11 +91,50 @@ export default function TutorialOverlay({
     const el = findVisibleTarget(currentStep);
     const vw = window.innerWidth;
     const vh = window.innerHeight;
-    const isMobile = vw <= 680;
-    const margin = isMobile ? 12 : 18;
+    const isMobile = vw <= 768;
+    const margin = isMobile ? 10 : 18;
     const cardEl = cardRef.current;
-    const cardW = Math.min(isMobile ? vw - 24 : 390, vw - 24);
-    const cardH = cardEl?.offsetHeight || 260;
+    const cardW = Math.min(isMobile ? vw - 20 : 390, vw - 20);
+    const cardH = cardEl?.offsetHeight || (isMobile ? 240 : 260);
+
+    if (isMobile) {
+      // Steady docked bottom-sheet card: thumb position never jumps between steps
+      setCardStyle({
+        width: `${cardW}px`,
+        left: `${Math.round((vw - cardW) / 2)}px`,
+        bottom: '10px',
+        top: 'auto',
+        opacity: 1,
+      });
+
+      if (!el) {
+        setTargetRect(null);
+        return;
+      }
+
+      const raw = el.getBoundingClientRect();
+      const pad = 5;
+      const upperZoneLimit = Math.max(140, vh - cardH - 18);
+      const spotlightTop = Math.max(8, raw.top - pad);
+      const spotlightLeft = Math.max(8, raw.left - pad);
+      const spotlightRight = Math.min(vw - 8, raw.right + pad);
+      const spotlightBottom = Math.min(upperZoneLimit, raw.bottom + pad);
+      const sW = spotlightRight - spotlightLeft;
+      const sH = spotlightBottom - spotlightTop;
+
+      // Only show stationary highlight ring when target visibly sits inside upper zone above sheet
+      if (sW >= 36 && sH >= 28 && spotlightTop < upperZoneLimit - 24) {
+        setTargetRect({
+          top: spotlightTop,
+          left: spotlightLeft,
+          width: sW,
+          height: sH,
+        });
+      } else {
+        setTargetRect(null);
+      }
+      return;
+    }
 
     if (!el) {
       setTargetRect(null);
@@ -103,13 +142,14 @@ export default function TutorialOverlay({
         width: `${cardW}px`,
         top: `${Math.max(margin, Math.round((vh - cardH) / 2))}px`,
         left: `${Math.max(margin, Math.round((vw - cardW) / 2))}px`,
+        bottom: 'auto',
         opacity: 1,
       });
       return;
     }
 
     const raw = el.getBoundingClientRect();
-    const pad = isMobile ? 6 : 10;
+    const pad = 10;
     const spotlightTop = Math.max(8, raw.top - pad);
     const spotlightLeft = Math.max(8, raw.left - pad);
     const spotlightRight = Math.min(vw - 8, raw.right + pad);
@@ -123,22 +163,6 @@ export default function TutorialOverlay({
       width: sW,
       height: sH,
     });
-
-    if (isMobile) {
-      // Anchor at top if spotlight is in lower half, or bottom if spotlight is in upper half
-      const targetCenterY = spotlightTop + sH / 2;
-      const placeTop = targetCenterY > vh * 0.54;
-      const topPos = placeTop
-        ? Math.max(12, Math.min(18, spotlightTop - cardH - 12))
-        : Math.max(12, vh - cardH - 14);
-      setCardStyle({
-        width: `${cardW}px`,
-        left: `${Math.round((vw - cardW) / 2)}px`,
-        top: `${Math.round(topPos)}px`,
-        opacity: 1,
-      });
-      return;
-    }
 
     // Desktop intelligent placement: prefer below -> above -> right/left -> safe bottom corner
     const spaceBelow = vh - spotlightBottom - margin;
@@ -173,6 +197,7 @@ export default function TutorialOverlay({
       width: `${cardW}px`,
       top: `${Math.round(Math.max(margin, Math.min(topPos, vh - cardH - margin)))}px`,
       left: `${Math.round(Math.max(margin, Math.min(leftPos, vw - cardW - margin)))}px`,
+      bottom: 'auto',
       opacity: 1,
     });
   }, [tourActive, currentStep, activePage]);
@@ -183,11 +208,20 @@ export default function TutorialOverlay({
 
     const scrollTimer = window.setTimeout(() => {
       const el = findVisibleTarget(currentStep);
+      const isMobile = window.innerWidth <= 768;
       if (el) {
         const r = el.getBoundingClientRect();
-        const needsScroll = r.top < 72 || r.bottom > window.innerHeight - 110;
-        if (needsScroll) {
-          el.scrollIntoView({ block: 'center', behavior: 'auto' });
+        if (isMobile) {
+          const sheetH = cardRef.current?.offsetHeight || 245;
+          const upperLimit = Math.max(150, window.innerHeight - sheetH - 22);
+          if (r.top < 64 || r.bottom > upperLimit) {
+            window.scrollBy({ top: r.top - 72, behavior: 'auto' });
+          }
+        } else {
+          const needsScroll = r.top < 72 || r.bottom > window.innerHeight - 110;
+          if (needsScroll) {
+            el.scrollIntoView({ block: 'center', behavior: 'auto' });
+          }
         }
       }
       measureAndPosition();
@@ -210,6 +244,16 @@ export default function TutorialOverlay({
       window.removeEventListener('scroll', handleScroll, true);
     };
   }, [tourActive, currentStep, activePage, stepIndex, lang, measureAndPosition]);
+
+  // Add extra bottom scroll room on mobile only while tour is open so footer buttons scroll above the bottom sheet
+  useEffect(() => {
+    if (!tourActive) {
+      document.body.classList.remove('tutorial-tour-active');
+      return undefined;
+    }
+    document.body.classList.add('tutorial-tour-active');
+    return () => document.body.classList.remove('tutorial-tour-active');
+  }, [tourActive]);
 
   // Keyboard shortcuts (Esc / Left / Right)
   useEffect(() => {
