@@ -6,8 +6,8 @@ import {
   LayoutGrid,
   Menu,
   ShieldAlert,
-  Sparkles,
   TrendingUp,
+  Wallet,
   X,
 } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
@@ -15,7 +15,7 @@ import { useLiquidSlider } from '../hooks/useLiquidSlider';
 
 export const NAV_ITEMS = [
   { id: 'overview', labelKey: 'nav.overview', icon: LayoutGrid },
-  { id: 'smartlog', labelKey: 'nav.smartlog', icon: Sparkles },
+  { id: 'smartlog', labelKey: 'nav.smartlog', icon: Wallet },
   { id: 'risk-analysis', labelKey: 'nav.riskAnalysis', icon: ShieldAlert },
   { id: 'invest', labelKey: 'nav.invest', icon: TrendingUp },
   { id: 'game', labelKey: 'nav.game', icon: Gamepad2 },
