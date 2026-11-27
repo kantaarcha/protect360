@@ -3,25 +3,174 @@ import {
   AlertTriangle,
   ArrowRight,
   BarChart3,
+  BookMarked,
   BookOpen,
   Calculator,
   CheckCircle2,
   ExternalLink,
   FileSpreadsheet,
+  FileText,
   Gamepad2,
+  Landmark,
   LayoutGrid,
   Lock,
+  Maximize2,
   MessageSquareQuote,
   Scale,
   ShieldAlert,
   ShieldCheck,
   TrendingUp,
   Wallet,
+  X,
 } from 'lucide-react';
 import { formatTHB, useFinance } from '../context/FinanceContext';
 import { useLanguage } from '../context/LanguageContext';
 import { calculateThaiTaxImpact } from '../utils/investMath';
 import LiquidTabs from '../components/LiquidTabs';
+
+// =============================================================================
+// MACRO RESEARCH ORIGINS — NATIONAL REPORTS THAT INSPIRED PROTECT360
+// 1) Krungsri Research: Gen Z Finance Survey 2025 (12 June 2025, n = 426)
+// 2) Bank of Thailand (BOT) & NSO: Financial Literacy & Inclusion Survey 2567
+//    - Page 17: Section 1.3.1 Emergency Savings
+//    - Page 5: Deposit Services & Credit Usage
+// =============================================================================
+
+const BOT_2567_PDF_URL =
+  'https://www.bot.or.th/content/dam/bot/documents/th/research-and-publications/reports/financial-access-survey-of-thai-household/fl-fi-hh-survey-report-2024-th.pdf';
+
+const ORIGIN_REFERENCES = [
+  {
+    id: 'krungsri-genz-2025',
+    kind: 'web',
+    tone: 'amber',
+    sourceTag: {
+      th: 'วิจัยกรุงศรี (Krungsri Research)',
+      en: 'Krungsri Research (Bank of Ayudhya)',
+    },
+    title: {
+      th: 'Gen Z Finance Survey: เจาะพฤติกรรมการเงินคนรุ่นใหม่ (2568)',
+      en: 'Gen Z Finance Survey: Inside Gen Z’s Money Mindset (2025)',
+    },
+    citation: {
+      th: 'ที่มา: วิจัยกรุงศรี, ธนาคารกรุงศรีอยุธยา จำกัด (มหาชน) • เผยแพร่ 12 มิถุนายน 2568 • สำรวจคนรุ่นใหม่ Gen Z อายุ 18–30 ปี จำนวน 426 คน (ช่วง ก.พ.–มี.ค. 2568)',
+      en: 'Source: Krungsri Research, Bank of Ayudhya PCL • Published June 12, 2025 • Online survey of 426 Thai Gen Z participants aged 18–30 (Feb–Mar 2025).',
+    },
+    whatInside: [
+      {
+        th: 'โครงสร้างรายได้และการออมของวัยเริ่มทำงาน (อายุ 23–26 ปี รายได้เฉลี่ย ฿25,826/ด. • กว่า 9 ใน 10 รายได้ต่ำกว่า ฿50,000/ด.)',
+        en: 'Income & saving habits of First Jobbers (ages 23–26 average ฿25,826/mo; over 9 in 10 earn under ฿50,000/mo).',
+      },
+      {
+        th: 'ความกังวลหลักของคนรุ่นใหม่: ค่าครองชีพสูง (69%), เงินเก็บไม่พอยามฉุกเฉิน (~50%) และค่าใช้จ่ายด้านสุขภาพ/การรักษาพยาบาลติด 5 อันดับแรก',
+        en: 'Top financial worries: rising living costs (69%), insufficient emergency funds (~50%), and healthcare costs in the top 5.',
+      },
+      {
+        th: 'เป้าหมายการออมอันดับ 1 คือ “ออมเผื่อฉุกเฉิน” (67.6%) โดย 88% อยากเริ่มออมตั้งแต่เนิ่น ๆ และ 86% ไม่อยากแบกหนี้ก้อนใหญ่ระยะยาว',
+        en: '#1 savings goal is emergency reserves (67.6%), with 88% wanting to save early and 86% avoiding heavy long-term debt.',
+      },
+    ],
+    whyLedToApp: {
+      th: 'จุดประกายให้สร้างพื้นที่กลางที่วางระบบเงินสำรอง + ป้องกันค่ารักษาพยาบาลสำหรับวัยเริ่มทำงานโดยไม่ผลักภาระหนี้หรือเร่งขาย',
+      en: 'Inspired a neutral platform helping First Jobbers build emergency reserves and healthcare protection without sales pressure.',
+    },
+    url: 'https://www.krungsri.com/th/research/research-intelligence/gen-z-finance-survey-2025',
+    ctaLabel: {
+      th: 'เปิดอ่านบทความวิจัยกรุงศรี (ฉบับเต็ม)',
+      en: 'Read Full Krungsri Research Article',
+    },
+  },
+  {
+    id: 'bot-2567-p17',
+    kind: 'image',
+    tone: 'blue',
+    sourceTag: {
+      th: 'ธนาคารแห่งประเทศไทย (ธปท.) • หน้า 17',
+      en: 'Bank of Thailand (BOT) • Page 17',
+    },
+    title: {
+      th: 'รายงานผลสำรวจทักษะทางการเงิน ปี 2567 — หัวข้อ 1.3.1 การออมเผื่อฉุกเฉิน',
+      en: 'Thailand Financial Literacy Survey 2024 — Sec. 1.3.1 Emergency Savings',
+    },
+    citation: {
+      th: 'ที่มา: ธนาคารแห่งประเทศไทย (ธปท.) ร่วมกับสำนักงานสถิติแห่งชาติ • รายงานผลสำรวจทักษะทางการเงินของไทย และระดับการเข้าถึงบริการทางการเงินภาคครัวเรือน ปี 2567 • หน้า 17',
+      en: 'Source: Bank of Thailand (BOT) & National Statistical Office • Financial Literacy & Household Financial Access Survey 2024 • Page 17.',
+    },
+    imageUrl: '/references/bot-2567-p17-emergency-savings.jpg',
+    imageCaption: {
+      th: 'เอกสารแนบหน้า 17: กราฟสัดส่วนการเก็บออมเผื่อฉุกเฉินของคนไทยปี 2563–2567 แยกตามอายุและอาชีพ',
+      en: 'Attached Page 17: Thai emergency savings ratios (2020–2024) broken down by age & occupation.',
+    },
+    whatInside: [
+      {
+        th: 'กราฟเปรียบเทียบสัดส่วนเงินสำรองฉุกเฉินของคนไทยปี 2563, 2565 และ 2567 — พบว่ากว่า 75% ของคนไทยมีเงินสำรองใช้จ่ายได้ไม่เกิน 6 เดือน',
+        en: '2020–2024 emergency savings chart showing over 75% of Thai people hold 6 months or less of emergency reserves.',
+      },
+      {
+        th: 'เจาะตัวเลขปี 2567: มีเงินสำรองน้อยกว่า 1 เดือนถึง 20.8% และไม่ทราบ/ไม่แน่ใจอีก 22.4% (มีเกิน 6 เดือนเพียง 23.7%)',
+        en: '2024 breakdown: 20.8% hold under 1 month of cash and 22.4% are unsure (only 23.7% hold more than 6 months).',
+      },
+      {
+        th: 'กราฟแยกตามมิติอายุและอาชีพชี้ชัดว่ากลุ่มวัยรุ่น–เด็กจบใหม่ (15–30 ปี), ลูกจ้างเอกชน และอาชีพอิสระ เปราะบางที่สุดเมื่อขาดรายได้กะทันหัน',
+        en: 'Age & occupation breakdown highlighting youth/new grads (15–30), private employees, and freelancers as most vulnerable.',
+      },
+    ],
+    whyLedToApp: {
+      th: 'ที่มาของเกณฑ์วัดเงินสำรองฉุกเฉิน 3–6 เดือนใน SmartLog และโหมดจำลองภาวะขาดรายได้ใน Survival Lab',
+      en: 'Directly shaped our 3–6 month Emergency Runway gauge in SmartLog and income-shock scenarios in Survival Lab.',
+    },
+    url: BOT_2567_PDF_URL,
+    ctaLabel: {
+      th: 'เปิดรายงาน ธปท. ฉบับเต็ม (PDF)',
+      en: 'Open Official BOT Report (PDF)',
+    },
+  },
+  {
+    id: 'bot-2567-p05',
+    kind: 'image',
+    tone: 'teal',
+    sourceTag: {
+      th: 'ธนาคารแห่งประเทศไทย (ธปท.) • หน้า 5',
+      en: 'Bank of Thailand (BOT) • Page 5',
+    },
+    title: {
+      th: 'รายงานผลสำรวจทักษะทางการเงิน ปี 2567 — การใช้บริการเงินฝากและสินเชื่อ',
+      en: 'Thailand Financial Literacy Survey 2024 — Deposits & Credit Usage',
+    },
+    citation: {
+      th: 'ที่มา: ธนาคารแห่งประเทศไทย (ธปท.) ร่วมกับสำนักงานสถิติแห่งชาติ • รายงานผลสำรวจทักษะทางการเงินของไทย และระดับการเข้าถึงบริการทางการเงินภาคครัวเรือน ปี 2567 • หน้า 5',
+      en: 'Source: Bank of Thailand (BOT) & National Statistical Office • Financial Literacy & Household Financial Access Survey 2024 • Page 5.',
+    },
+    imageUrl: '/references/bot-2567-p05-deposit-credit.jpg',
+    imageCaption: {
+      th: 'เอกสารแนบหน้า 5: อินโฟกราฟิกผลของการแยกบัญชีเพื่อออม (เพิ่มโอกาสมีเงินสำรอง ~3 เท่า) และพฤติกรรมเมื่อเงินไม่พอใช้',
+      en: 'Attached Page 5: Infographic on dedicated savings accounts (~3x higher 6-mo reserves) & coping when cash falls short.',
+    },
+    whatInside: [
+      {
+        th: 'ช่องว่างสำคัญ: คนไทย 96.1% มีบัญชีเงินฝาก (91.9% ใช้จ่ายรายวัน) แต่มีเพียง 56.1% เท่านั้นที่ตั้งใจแยกบัญชีไว้เพื่อการออมโดยเฉพาะ',
+        en: 'Key gap: 96.1% hold bank accounts (91.9% for daily spending), yet only 56.1% maintain a dedicated savings account.',
+      },
+      {
+        th: 'หลักฐานชี้ชัดว่า “ผู้ที่มีบัญชีเพื่อออมโดยเฉพาะ” มีโอกาสเก็บเงินสำรอง 6 เดือนขึ้นไปสูงกว่า ~3 เท่า (33% vs 11.7%) และออมเกษียณได้ตามแผนสูงกว่า ~3 เท่า (20.2% vs 6%)',
+        en: 'Dedicated savers are ~3x more likely to hold 6+ months of reserves (33% vs 11.7%) and ~3x more likely to meet retirement goals (20.2% vs 6%).',
+      },
+      {
+        th: 'สรุปวิธีรับมือเมื่อเงินไม่พอใช้ (ลดรายจ่าย → ถอนเงินออม → ขอยืมคนใกล้ตัว) และบทบาทผู้ให้บริการสินเชื่อ (SFIs 33%, ธนาคารพาณิชย์ 25.9%, Non-bank 25.5%)',
+        en: 'Shows how households cope with shortfalls (cut spending → withdraw savings → borrow from family) and credit provider shares.',
+      },
+    ],
+    whyLedToApp: {
+      th: 'ที่มาของการออกแบบระบบแยก “เงินสำรองฉุกเฉิน” ออกจากเงินใช้จ่ายรายวันใน AutoKey และสอนการโอนย้ายความเสี่ยงก่อนพึ่งหนี้',
+      en: 'Motivated separating liquid emergency buckets from daily cashflow in AutoKey and transferring major risks before taking debt.',
+    },
+    url: BOT_2567_PDF_URL,
+    ctaLabel: {
+      th: 'เปิดรายงาน ธปท. ฉบับเต็ม (PDF)',
+      en: 'Open Official BOT Report (PDF)',
+    },
+  },
+];
 
 // =============================================================================
 // VERIFIED RESEARCH DATA FROM ACTUAL FIRST JOBBER SURVEY (n = 57, PDPA-Safe)
@@ -266,6 +415,7 @@ export default function LandingAbout({ onNavigate }) {
   } = useFinance();
 
   const [researchFilter, setResearchFilter] = useState('all');
+  const [previewDoc, setPreviewDoc] = useState(null);
 
   const displayName = (userProfile?.firstName || '').trim() || 'First Jobber';
   const monthlySurplus = Math.max(0, (monthlyIncome || 0) - (monthlyExpenses || 0));
@@ -426,40 +576,154 @@ export default function LandingAbout({ onNavigate }) {
 
           <p className="ab-hero-welcome">
             {lang === 'TH'
-              ? `สวัสดีคุณ ${displayName} • PROTECT360 เกิดจากการสำรวจปัญหาจริงของวัยเริ่มต้นทำงานในไทย (n = 57 คน) ที่พบว่ากว่า 61.4% ไม่เคยประเมินช่องว่างความคุ้มครองของตนเอง และเกือบ 6 ใน 10 ต้องพึ่งหนี้สินหรือครอบครัวเมื่อเจอเหตุฉุกเฉิน ฿100,000`
-              : `Hello ${displayName} • PROTECT360 was born from real survey evidence of Thai First Jobbers (n = 57), showing 61.4% have never assessed their protection gap and nearly 6 in 10 would fall back on debt or family during a ฿100,000 shock.`}
+              ? `สวัสดีคุณ ${displayName} • การเกิดขึ้นของเว็บไซต์ PROTECT360 เป็นผลมาจากการตกผลึกหลักฐานเชิงประจักษ์ 3 แหล่งร่วมกัน ได้แก่ รายงาน “เจาะพฤติกรรมการเงินคนรุ่นใหม่ (Gen Z Finance Survey 2025)” ของวิจัยกรุงศรี, รายงานผลสำรวจทักษะทางการเงินปี 2567 ของธนาคารแห่งประเทศไทย (ธปท.) และแบบสำรวจวัยเริ่มต้นทำงานจริง (n = 57 คน)`
+              : `Hello ${displayName} • PROTECT360 was built from three converging bodies of evidence: Krungsri Research’s “Gen Z Finance Survey 2025,” the Bank of Thailand’s 2024 Financial Literacy Survey, and our primary First Jobber survey (n = 57).`}
           </p>
 
           <div className="ab-hero-source-pill">
             <FileSpreadsheet size={14} aria-hidden="true" />
             <span>
               {lang === 'TH'
-                ? 'อ้างอิงชุดข้อมูลจริง: แบบสอบถามความมั่นคงทางการเงินและความคุ้มครองวัยเริ่มต้นทำงาน (n = 57 คน • ไม่ระบุตัวตนตามหลัก PDPA)'
-                : 'Primary Dataset: Financial Security & Protection Survey for Early-Career Workers (n = 57 • Anonymous PDPA-Safe)'}
+                ? 'ฐานข้อมูลอ้างอิง 3 แหล่ง: รายงาน ธปท. ปี 2567 (หน้า 5 & 17) • วิจัยกรุงศรี 2568 (n = 426) • แบบสำรวจทีม (n = 57)'
+                : '3 Evidence Pillars: BOT Survey 2024 (pp. 5 & 17) • Krungsri Gen Z 2025 (n = 426) • Primary Survey (n = 57)'}
             </span>
           </div>
         </div>
 
         <aside className="ab-hero-stats tabular-nums" aria-label="Survey headline metrics">
           <div className="ab-hero-stat-item">
-            <span className="ab-hero-stat-value">n = 57</span>
+            <span className="ab-hero-stat-value">&gt; 75%</span>
             <span className="ab-hero-stat-label">
-              {lang === 'TH' ? 'ผู้ตอบแบบสอบถามจริง' : 'Survey Respondents'}
+              {lang === 'TH' ? 'คนไทยมีสำรองไม่เกิน 6 ด. (ธปท. 2567)' : 'Thais ≤ 6-Mo Reserve (BOT 2024)'}
             </span>
           </div>
           <div className="ab-hero-stat-item">
             <span className="ab-hero-stat-value">61.4%</span>
             <span className="ab-hero-stat-label">
-              {lang === 'TH' ? 'ไม่เคยประเมินช่องว่างความคุ้มครอง' : 'Never Evaluated Coverage Gap'}
+              {lang === 'TH' ? 'ไม่เคยประเมินช่องว่างคุ้มครอง (n = 57)' : 'Never Assessed Gap (n = 57)'}
             </span>
           </div>
           <div className="ab-hero-stat-item">
             <span className="ab-hero-stat-value">63.2%</span>
             <span className="ab-hero-stat-label">
-              {lang === 'TH' ? 'สนใจใช้เครื่องมือกลางช่วยประเมิน' : 'Want a Neutral Assessment Tool'}
+              {lang === 'TH' ? 'ต้องการเครื่องมือกลางช่วยประเมิน' : 'Want a Neutral Assessment Tool'}
             </span>
           </div>
         </aside>
+      </section>
+
+      {/* ===================================================================== */}
+      {/* 1.5 MACRO RESEARCH ORIGINS & ATTACHED OFFICIAL REPORTS                */}
+      {/* ===================================================================== */}
+      <section
+        className="ab-origins-section"
+        aria-label="National research reports that inspired PROTECT360"
+      >
+        <div className="ab-eco-header">
+          <div>
+            <div className="ab-section-kicker">
+              <Landmark size={14} aria-hidden="true" />
+              <span>
+                {lang === 'TH'
+                  ? 'RESEARCH ORIGINS • แหล่งข้อมูลและเอกสารอ้างอิงที่ทำให้เกิดเว็บไซต์นี้'
+                  : 'RESEARCH ORIGINS • NATIONAL REPORTS BEHIND PROTECT360'}
+              </span>
+            </div>
+            <h2 className="ab-section-title">
+              {lang === 'TH'
+                ? 'หลักฐานระดับประเทศที่เป็นแรงผลักดันในการสร้าง PROTECT360'
+                : 'National Financial Studies & Attached Reference Pages'}
+            </h2>
+            <p className="ab-section-sub">
+              {lang === 'TH'
+                ? 'ระบุที่มาครบถ้วนพร้อมสรุปว่าในแต่ละเอกสารจะพาไปดูอะไร และกดเปิดดูไฟล์ภาพต้นฉบับหรือบทความฉบับเต็มได้ทันที'
+                : 'Complete citations with clear guides on what each document shows — click to inspect attached BOT pages or open official reports.'}
+            </p>
+          </div>
+        </div>
+
+        <div className="ab-origins-grid">
+          {ORIGIN_REFERENCES.map((doc) => (
+            <article key={doc.id} className={`bento-card ab-origin-card tone-${doc.tone}`}>
+              <div className="ab-origin-head">
+                <span className={`ab-origin-tag tone-${doc.tone}`}>
+                  {doc.kind === 'web' ? (
+                    <BookMarked size={13} aria-hidden="true" />
+                  ) : (
+                    <FileText size={13} aria-hidden="true" />
+                  )}
+                  <span>{t(doc.sourceTag)}</span>
+                </span>
+              </div>
+
+              <h3 className="ab-origin-title">{t(doc.title)}</h3>
+              <p className="ab-origin-citation">{t(doc.citation)}</p>
+
+              {doc.imageUrl && (
+                <button
+                  type="button"
+                  id={`ab-preview-${doc.id}`}
+                  className="ab-origin-thumb-btn"
+                  onClick={() => setPreviewDoc(doc)}
+                  aria-label={
+                    lang === 'TH'
+                      ? `ขยายดูภาพเอกสาร ${t(doc.title)}`
+                      : `Zoom attached page: ${t(doc.title)}`
+                  }
+                >
+                  <img
+                    src={doc.imageUrl}
+                    alt={t(doc.imageCaption)}
+                    className="ab-origin-thumb-img"
+                    loading="lazy"
+                  />
+                  <span className="ab-origin-zoom-chip">
+                    <Maximize2 size={13} aria-hidden="true" />
+                    <span>{lang === 'TH' ? 'คลิกขยายดูไฟล์หน้านี้' : 'Click to Zoom Page'}</span>
+                  </span>
+                </button>
+              )}
+
+              <div className="ab-origin-inside">
+                <strong className="ab-origin-inside-label">
+                  {lang === 'TH' ? 'ในเอกสารนี้จะพาไปดูอะไร:' : 'What this document shows:'}
+                </strong>
+                <ul className="ab-origin-list">
+                  {doc.whatInside.map((point, idx) => (
+                    <li key={idx}>{t(point)}</li>
+                  ))}
+                </ul>
+              </div>
+
+              <div className="ab-origin-why">
+                <span>{t(doc.whyLedToApp)}</span>
+              </div>
+
+              <div className="ab-origin-actions">
+                {doc.imageUrl && (
+                  <button
+                    type="button"
+                    className="btn-soft-gray ab-origin-btn"
+                    onClick={() => setPreviewDoc(doc)}
+                  >
+                    <Maximize2 size={14} aria-hidden="true" />
+                    <span>{lang === 'TH' ? 'ดูภาพเอกสารแนบ' : 'View Attached Page'}</span>
+                  </button>
+                )}
+
+                <a
+                  href={doc.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={`ab-origin-btn ${doc.imageUrl ? 'btn-soft-gray' : 'btn-primary-gradient'}`}
+                >
+                  <span>{t(doc.ctaLabel)}</span>
+                  <ExternalLink size={14} aria-hidden="true" />
+                </a>
+              </div>
+            </article>
+          ))}
+        </div>
       </section>
 
       {/* ===================================================================== */}
@@ -763,13 +1027,13 @@ export default function LandingAbout({ onNavigate }) {
             </h2>
             <p className="ab-gov-desc">
               {lang === 'TH'
-                ? 'PROTECT360 เป็นต้นแบบแพลตฟอร์มเสริมสร้างความรู้ทางการเงินและช่วยตัดสินใจจัดการความเสี่ยงเพื่อการศึกษาเท่านั้น (Educational Decision-Support Prototype) อ้างอิงสถิติจาก “แบบสอบถามเกี่ยวกับความมั่นคงทางการเงินและความคุ้มครองสำหรับวัยเริ่มต้นทำงาน” (n = 57 คน, เก็บข้อมูลแบบสมัครใจไม่ระบุตัวตนตามหลัก PDPA) โดยไม่มีการเสนอขายกรมธรรม์หรือรับค่านายหน้าใด ๆ'
-                : 'PROTECT360 is an educational decision-support prototype grounded in the anonymous “Financial Security & Protection Survey for Early-Career Workers” (n = 57, PDPA-compliant), built purely for consumer risk literacy with zero brokerage or policy sales.'}
+                ? 'PROTECT360 เป็นต้นแบบแพลตฟอร์มเสริมสร้างความรู้ทางการเงินและช่วยตัดสินใจจัดการความเสี่ยงเพื่อการศึกษาเท่านั้น (Educational Decision-Support Prototype) อ้างอิงหลักฐานจาก (1) วิจัยกรุงศรี: Gen Z Finance Survey 2025, (2) รายงานผลสำรวจทักษะทางการเงินของไทย ปี 2567 โดยธนาคารแห่งประเทศไทยร่วมกับสำนักงานสถิติแห่งชาติ (หน้า 5 และ 17) และ (3) แบบสอบถามความมั่นคงทางการเงินวัยเริ่มต้นทำงาน (n = 57 คน, PDPA-Safe) โดยไม่มีการเสนอขายกรมธรรม์หรือรับค่านายหน้าใด ๆ'
+                : 'PROTECT360 is an educational decision-support prototype grounded in (1) Krungsri Research’s Gen Z Finance Survey 2025, (2) the Bank of Thailand & NSO 2024 Financial Literacy Survey (pp. 5 & 17), and (3) our anonymous First Jobber survey (n = 57, PDPA-safe), built strictly for risk literacy with zero brokerage or policy sales.'}
             </p>
             <div className="ab-gov-checks">
               <span>
                 <CheckCircle2 size={14} aria-hidden="true" />
-                {lang === 'TH' ? 'สถิติจริงจากกลุ่มตัวอย่าง n = 57 คน' : 'Primary Survey Data (n = 57)'}
+                {lang === 'TH' ? 'อ้างอิง ธปท. 2567 + วิจัยกรุงศรี 2568 + ผลสำรวจ n = 57' : 'BOT 2024 + Krungsri 2025 + Survey (n = 57)'}
               </span>
               <span>
                 <CheckCircle2 size={14} aria-hidden="true" />
@@ -793,6 +1057,64 @@ export default function LandingAbout({ onNavigate }) {
           <ExternalLink size={14} aria-hidden="true" />
         </a>
       </section>
+
+      {/* Full-Resolution Attached Document Preview Modal */}
+      {previewDoc && previewDoc.imageUrl && (
+        <div
+          className="ab-lightbox-backdrop"
+          role="dialog"
+          aria-modal="true"
+          aria-label={t(previewDoc.title)}
+          onClick={() => setPreviewDoc(null)}
+        >
+          <div className="ab-lightbox-dialog" onClick={(e) => e.stopPropagation()}>
+            <div className="ab-lightbox-head">
+              <div className="ab-lightbox-title-group">
+                <span className="ab-lightbox-source">{t(previewDoc.sourceTag)}</span>
+                <h3>{t(previewDoc.title)}</h3>
+              </div>
+              <button
+                type="button"
+                className="modal-close-btn"
+                onClick={() => setPreviewDoc(null)}
+                aria-label="Close document preview"
+              >
+                <X size={18} />
+              </button>
+            </div>
+
+            <div className="ab-lightbox-body">
+              <img
+                src={previewDoc.imageUrl}
+                alt={t(previewDoc.imageCaption)}
+                className="ab-lightbox-img"
+              />
+              <p className="ab-lightbox-citation">{t(previewDoc.citation)}</p>
+            </div>
+
+            <div className="ab-lightbox-foot">
+              <a
+                href={previewDoc.imageUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn-soft-gray ab-origin-btn"
+              >
+                <span>{lang === 'TH' ? 'เปิดไฟล์ภาพเต็มจอในแท็บใหม่' : 'Open Raw Image'}</span>
+                <ExternalLink size={14} aria-hidden="true" />
+              </a>
+              <a
+                href={previewDoc.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn-primary-gradient ab-origin-btn"
+              >
+                <span>{t(previewDoc.ctaLabel)}</span>
+                <ExternalLink size={14} aria-hidden="true" />
+              </a>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
