@@ -11089,6 +11089,26 @@ p {
   text-overflow: ellipsis;
 }
 
+/* Lock slider bar dimensions so flex column layout never stretches range height */
+.gm-range,
+.gm-slider-box .gm-range,
+.gm-custom-duration-box .gm-range {
+  flex: 0 0 8px;
+  width: 100%;
+  height: 8px;
+  min-height: 8px;
+  max-height: 8px;
+  margin: 6px 0;
+  align-self: stretch;
+}
+
+.inv-input-slider-row .inv-range {
+  flex: 1 1 0%;
+  height: 8px;
+  min-height: 8px;
+  max-height: 8px;
+}
+
 /* 3. SmartLog Interactive SVG Donut Chart */
 .ak-breakdown-head-left {
   display: inline-flex;
