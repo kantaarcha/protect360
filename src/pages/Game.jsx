@@ -436,11 +436,12 @@ export default function Game({ onNavigate }) {
 
               <div className="gm-unit-tabs-wrap">
                 <LiquidTabs
-                  items={unitTabItems}
+                  tabs={unitTabItems}
                   activeId={durationUnit}
                   onChange={handleUnitChange}
+                  variant="compact"
+                  idPrefix="gm-duration-unit"
                   ariaLabel={lang === 'TH' ? 'หน่วยระยะเวลาเกม' : 'Duration unit'}
-                  size="sm"
                 />
               </div>
 

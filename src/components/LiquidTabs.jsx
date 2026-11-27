@@ -9,7 +9,7 @@ import { useLiquidSlider } from '../hooks/useLiquidSlider';
  * - 'segmented': form choice controls
  */
 export default function LiquidTabs({
-  tabs,
+  tabs = [],
   activeId,
   onChange,
   variant = 'surface',
@@ -18,7 +18,8 @@ export default function LiquidTabs({
   idPrefix = 'tab',
 }) {
   const { lang, fontStepIdx } = useLanguage();
-  const slider = useLiquidSlider(activeId, [lang, fontStepIdx, tabs.length]);
+  const safeTabs = Array.isArray(tabs) ? tabs : [];
+  const slider = useLiquidSlider(activeId, [lang, fontStepIdx, safeTabs.length]);
 
   const shellClass =
     variant === 'compact'
@@ -46,7 +47,7 @@ export default function LiquidTabs({
         style={slider.indicatorStyle}
         aria-hidden="true"
       />
-      {tabs.map((tab) => {
+      {safeTabs.map((tab) => {
         const Icon = tab.icon;
         const isActive = activeId === tab.id;
         return (
