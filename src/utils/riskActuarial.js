@@ -55,9 +55,49 @@ export const GOV_SCHEMES = [
   },
 ];
 
+export const NONE_GOV_SCHEME = {
+  id: 'none',
+  label: { th: 'ยังไม่ได้เลือกสิทธิภาครัฐ', en: 'No Statutory Scheme Selected' },
+  shortLabel: { th: 'ยังไม่ระบุ', en: 'Not Set' },
+  desc: {
+    th: 'ยังไม่ได้เลือกสิทธิภาครัฐ (คำนวณเป็น ฿0)',
+    en: 'No statutory scheme selected yet (counted as ฿0)',
+  },
+  benefits: {
+    medical: 0,
+    accident: 0,
+    criticalIllness: 0,
+    disability: 0,
+    incomeComp: 0,
+    family: 0,
+  },
+};
+
+// Clean zero-slate default so real users start from 0 and enter their own profile
 export const INITIAL_RISK_PROFILE_DATA = {
   riskTolerance: 'moderate',
   assessmentCompleted: false,
+  lastAssessedAt: null,
+  monthlyDebt: 0,
+  totalDebt: 0,
+  govScheme: 'none',
+  groupInsurance: {
+    active: false,
+    unknownLimit: false,
+    limit: 0,
+  },
+  personalPolicies: {
+    health: { active: false, unknownLimit: false, limit: 0 },
+    accident: { active: false, unknownLimit: false, limit: 0 },
+    criticalIllness: { active: false, unknownLimit: false, limit: 0 },
+    lifeDisability: { active: false, unknownLimit: false, limit: 0 },
+  },
+};
+
+// Optional hypothetical First Jobber scenario (explicitly labeled as simulated sample)
+export const DEMO_RISK_PROFILE_DATA = {
+  riskTolerance: 'moderate',
+  assessmentCompleted: true,
   lastAssessedAt: null,
   monthlyDebt: 0,
   totalDebt: 0,
@@ -76,7 +116,8 @@ export const INITIAL_RISK_PROFILE_DATA = {
 };
 
 export function getGovSchemeMeta(schemeId) {
-  return GOV_SCHEMES.find((s) => s.id === schemeId) || GOV_SCHEMES[0];
+  if (schemeId === 'none' || !schemeId) return NONE_GOV_SCHEME;
+  return GOV_SCHEMES.find((s) => s.id === schemeId) || NONE_GOV_SCHEME;
 }
 
 function safeNonNegative(val, fallback = 0) {
@@ -107,7 +148,7 @@ export function sanitizeRiskProfileData(raw) {
     };
   }
   const allowedTolerance = ['low', 'moderate', 'high'];
-  const allowedSchemes = ['sso', 'uc', 'civil'];
+  const allowedSchemes = ['none', 'sso', 'uc', 'civil'];
   const rawPersonal = raw.personalPolicies || {};
 
   return {
@@ -116,7 +157,7 @@ export function sanitizeRiskProfileData(raw) {
     lastAssessedAt: typeof raw.lastAssessedAt === 'string' ? raw.lastAssessedAt : null,
     monthlyDebt: safeNonNegative(raw.monthlyDebt, 0),
     totalDebt: safeNonNegative(raw.totalDebt, 0),
-    govScheme: allowedSchemes.includes(raw.govScheme) ? raw.govScheme : 'sso',
+    govScheme: allowedSchemes.includes(raw.govScheme) ? raw.govScheme : 'none',
     groupInsurance: sanitizeRiskPolicyRow(
       raw.groupInsurance,
       INITIAL_RISK_PROFILE_DATA.groupInsurance
@@ -147,9 +188,9 @@ export function sanitizeRiskProfileData(raw) {
  * Any active coverage marked "unknownLimit" strictly contributes 0 THB.
  */
 export function computeActuarialRiskAssessment({
-  monthlyIncome = 25000,
-  monthlyExpenses = 20000,
-  emergencyFund = 15000,
+  monthlyIncome = 0,
+  monthlyExpenses = 0,
+  emergencyFund = 0,
   dependents = 0,
   riskProfile = INITIAL_RISK_PROFILE_DATA,
   coverages = [],
@@ -187,6 +228,19 @@ export function computeActuarialRiskAssessment({
     (p) => p.active && p.unknownLimit
   );
   const hasAnyUnknownLimit = hasGroupUnknown || hasPersonalUnknown || hasExtraUnknown;
+  const hasAnyPersonalActive = Object.values(rp.personalPolicies).some((p) => p.active);
+
+  const isZeroSlate =
+    income === 0 &&
+    expenses === 0 &&
+    liquidCash === 0 &&
+    depCount === 0 &&
+    rp.totalDebt === 0 &&
+    rp.monthlyDebt === 0 &&
+    rp.govScheme === 'none' &&
+    !rp.groupInsurance.active &&
+    !hasAnyPersonalActive &&
+    extraCoverages.length === 0;
 
   // Conservative Effective Available amounts (Unknown limit = 0 THB strictly!)
   const effGroupMedical =
@@ -212,39 +266,41 @@ export function computeActuarialRiskAssessment({
       ? rp.personalPolicies.lifeDisability.limit
       : 0;
 
-  // 1) Medical Risk: Needed = 500,000 THB
-  const medicalNeeded = 500000;
+  // 1) Medical Risk: Needed = 500,000 THB (0 when clean slate)
+  const medicalNeeded = isZeroSlate ? 0 : 500000;
   const medicalEffective =
     govMeta.benefits.medical + effGroupMedical + effPersonalHealth + sumExtra('medical');
 
-  // 2) Accident Risk: Needed = 300,000 THB
-  const accidentNeeded = 300000;
+  // 2) Accident Risk: Needed = 300,000 THB (0 when clean slate)
+  const accidentNeeded = isZeroSlate ? 0 : 300000;
   const accidentEffective =
     govMeta.benefits.accident + effPersonalAccident + sumExtra('accident');
 
-  // 3) Critical Illness Risk: Needed = monthlyExpenses * 24 months
-  const ciNeeded = Math.max(120000, Math.round(expenses * 24));
+  // 3) Critical Illness Risk: Needed = monthlyExpenses * 24 months (0 when clean slate)
+  const ciNeeded = isZeroSlate ? 0 : Math.max(120000, Math.round(expenses * 24));
   const ciEffective =
     govMeta.benefits.criticalIllness + effPersonalCI + sumExtra('criticalIllness');
 
-  // 4) Disability Risk: Needed = monthlyIncome * 12 * 3 years
-  const disabilityNeeded = Math.max(180000, Math.round(income * 12 * 3));
+  // 4) Disability Risk: Needed = monthlyIncome * 12 * 3 years (0 when clean slate)
+  const disabilityNeeded = isZeroSlate ? 0 : Math.max(180000, Math.round(income * 12 * 3));
   const disabilityEffective =
     govMeta.benefits.disability + effPersonalLifeDisability + sumExtra('disability');
 
   // 5) Income Interruption Risk: Needed = monthlyExpenses * 6 months vs liquid emergencyFund
-  const incomeNeeded = Math.max(60000, Math.round(expenses * 6));
+  const incomeNeeded = isZeroSlate ? 0 : Math.max(60000, Math.round(expenses * 6));
   const incomeEffective = liquidCash;
 
   // 6) Family & Debt Responsibility: (monthlyExpenses * 36 * dependents) + totalDebt, min 100,000 THB
-  const familyNeeded =
-    depCount === 0 && rp.totalDebt === 0
+  const familyNeeded = isZeroSlate
+    ? 0
+    : depCount === 0 && rp.totalDebt === 0
       ? 100000
       : Math.max(100000, Math.round(expenses * 36 * depCount + rp.totalDebt));
   const familyEffective =
     govMeta.benefits.family + effPersonalLifeDisability + sumExtra('family');
 
   const classifyLevel = (coveragePct, hasDirectUnknown = false) => {
+    if (isZeroSlate) return 'moderate';
     if (coveragePct >= 80 && !hasDirectUnknown) return 'low'; // Covered / เพียงพอ
     if (coveragePct >= 40) return 'moderate'; // Moderate / ปานกลาง
     return 'high'; // High Risk / เสี่ยงสูง
@@ -264,7 +320,7 @@ export function computeActuarialRiskAssessment({
   }) => {
     const gap = Math.max(0, needed - effectiveAvailable);
     const coveragePct =
-      needed > 0 ? Math.min(100, Math.round((effectiveAvailable / needed) * 100)) : 100;
+      needed > 0 ? Math.min(100, Math.round((effectiveAvailable / needed) * 100)) : 0;
     const level = classifyLevel(coveragePct, hasDirectUnknown);
 
     return {
@@ -461,14 +517,16 @@ export function computeActuarialRiskAssessment({
   const overallCoveragePct =
     totalNeededCoverage > 0
       ? Math.round((totalEffectiveCoverage / totalNeededCoverage) * 100)
-      : 100;
+      : 0;
 
   const highRiskCount = categories.filter((c) => c.level === 'high').length;
   const moderateRiskCount = categories.filter((c) => c.level === 'moderate').length;
   const coveredCount = categories.filter((c) => c.level === 'low').length;
 
   let overallRiskLevel = 'low';
-  if (highRiskCount >= 3 || overallCoveragePct < 35) {
+  if (isZeroSlate) {
+    overallRiskLevel = 'moderate';
+  } else if (highRiskCount >= 3 || overallCoveragePct < 35) {
     overallRiskLevel = 'high';
   } else if (highRiskCount >= 1 || moderateRiskCount >= 2 || overallCoveragePct < 75) {
     overallRiskLevel = 'moderate';
@@ -478,6 +536,7 @@ export function computeActuarialRiskAssessment({
     income > 0 ? Math.round((rp.monthlyDebt / income) * 100) : 0;
 
   return {
+    isZeroSlate,
     categories,
     totalNeededCoverage,
     totalEffectiveCoverage,

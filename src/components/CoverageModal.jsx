@@ -21,16 +21,16 @@ export default function CoverageModal({ editingCoverage, onClose }) {
   );
   const limitSlider = useLiquidSlider(limitKnown ? 'known' : 'unknown', [lang, fontStepIdx]);
   const [medical, setMedical] = useState(
-    isEditing ? String(editingCoverage.benefits?.medical || 200000) : '300000'
+    isEditing ? String(editingCoverage.benefits?.medical ?? 0) : '0'
   );
   const [accident, setAccident] = useState(
-    isEditing ? String(editingCoverage.benefits?.accident || 100000) : '150000'
+    isEditing ? String(editingCoverage.benefits?.accident ?? 0) : '0'
   );
   const [criticalIllness, setCriticalIllness] = useState(
-    isEditing ? String(editingCoverage.benefits?.criticalIllness || 0) : '200000'
+    isEditing ? String(editingCoverage.benefits?.criticalIllness ?? 0) : '0'
   );
   const [monthlyPremium, setMonthlyPremium] = useState(
-    isEditing ? String(editingCoverage.monthlyPremium || 0) : '1200'
+    isEditing ? String(editingCoverage.monthlyPremium ?? 0) : '0'
   );
 
   const cardHolderName = getCardHolderDisplay(userProfile);

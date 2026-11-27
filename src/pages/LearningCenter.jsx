@@ -110,10 +110,10 @@ export default function LearningCenter({ onNavigate }) {
   }, [progress]);
 
   const displayName = (userProfile?.firstName || '').trim() || 'First Jobber';
-  const safeCapMin = Math.round((monthlyIncome || 25000) * 0.1);
-  const safeCapMax = Math.round((monthlyIncome || 25000) * 0.15);
+  const safeCapMin = Math.round((monthlyIncome || 0) * 0.1);
+  const safeCapMax = Math.round((monthlyIncome || 0) * 0.15);
   const targetMonths = userProfile?.emergencyTargetMonths || 3;
-  const emergencyGoal = Math.max(30000, Math.round((monthlyExpenses || 20000) * targetMonths));
+  const emergencyGoal = Math.round((monthlyExpenses || 0) * targetMonths);
 
   // Main 3-tab window bar (compact labels safe across 100% / 112% / 125% font scale)
   const windowTabs = useMemo(

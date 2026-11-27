@@ -4,10 +4,12 @@ import {
   BookOpen,
   CheckCircle2,
   ChevronRight,
+  FlaskConical,
   Gamepad2,
   Info,
   Pencil,
   PlusCircle,
+  RotateCcw,
   ShieldAlert,
   TrendingUp,
   Wallet,
@@ -73,6 +75,8 @@ function AppShellContent() {
     savingsRatio,
     emergencyRunway,
     riskAssessment,
+    isDemoMode,
+    resetDemoData,
     toast,
     dismissToast,
   } = useFinance();
@@ -97,7 +101,7 @@ function AppShellContent() {
       case 'risk-analysis':
         return <RiskAnalysis onNavigate={handleNavigate} />;
       case 'invest':
-        return <Invest onNavigate={handleNavigate} />;
+        return <Invest key={isDemoMode ? 'demo' : 'clean'} onNavigate={handleNavigate} />;
       case 'game':
         return <Game onNavigate={handleNavigate} />;
       case 'learning':
@@ -165,6 +169,39 @@ function AppShellContent() {
 
           <TopControlBar onOpenProfile={handleOpenProfile} />
         </div>
+
+        {/* Active Hypothetical Sample Mode Banner — clearly labels simulated figures */}
+        {isDemoMode && (
+          <div
+            id="demo-sample-banner"
+            className="demo-sample-banner"
+            role="status"
+            aria-live="polite"
+          >
+            <div className="demo-sample-banner-copy">
+              <FlaskConical size={16} strokeWidth={2.3} aria-hidden="true" />
+              <span>
+                <strong>
+                  {lang === 'TH' ? 'โหมดตัวอย่างคำนวณ:' : 'Sample Preview Mode:'}
+                </strong>{' '}
+                {lang === 'TH'
+                  ? 'ตัวเลขที่แสดงเป็นเงินและสถานการณ์สมมติเพื่อทดลองคำนวณเท่านั้น (ไม่ใช่ข้อมูลจริงของคุณ)'
+                  : 'All figures shown are hypothetical money & scenario values for calculation preview only (not your real data).'}
+              </span>
+            </div>
+            <button
+              id="demo-sample-clear-btn"
+              type="button"
+              className="demo-sample-clear-btn"
+              onClick={resetDemoData}
+            >
+              <RotateCcw size={13} strokeWidth={2.3} aria-hidden="true" />
+              <span>
+                {lang === 'TH' ? 'ล้างกลับเป็น 0 เพื่อกรอกเอง' : 'Clear back to 0'}
+              </span>
+            </button>
+          </div>
+        )}
 
         {/* Row 2: Elevated PROTECT360 Member Card (Overview) or Compact Subpage Header */}
         {activePage === 'overview' ? (

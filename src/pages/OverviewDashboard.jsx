@@ -227,7 +227,9 @@ export default function OverviewDashboard({ onNavigate, onOpenProfile }) {
                   <span className="metric-icon-badge income" aria-hidden="true">
                     <ArrowDownLeft size={18} strokeWidth={2.2} />
                   </span>
-                  <span className="metric-pill-tag positive tabular-nums">100%</span>
+                  <span className="metric-pill-tag positive tabular-nums">
+                    {profile.monthlyIncome > 0 ? '100%' : '0%'}
+                  </span>
                 </div>
                 <div>
                   <div className="metric-mini-label">{t('overview.metricIncome')}</div>

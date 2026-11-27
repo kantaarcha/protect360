@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import {
   CheckCircle2,
   Download,
+  FlaskConical,
   Lock,
   RotateCcw,
   ShieldCheck,
@@ -34,9 +35,11 @@ export default function UserProfileModal({ initialTab = 'profile', onClose }) {
   const {
     userProfile,
     monthlyExpenses,
+    isDemoMode,
     updateUserProfile,
     exportUserData,
     importUserData,
+    loadDemoSample,
     resetDemoData,
   } = useFinance();
 
@@ -140,6 +143,27 @@ export default function UserProfileModal({ initialTab = 'profile', onClose }) {
     if (result?.ok && result.userProfile) {
       applyProfileToDraft(result.userProfile);
     }
+  };
+
+  const handleLoadSample = () => {
+    loadDemoSample();
+    applyProfileToDraft({
+      title: '',
+      firstName: 'สมมติ (First Jobber)',
+      lastName: '',
+      age: 25,
+      occupation: OCCUPATION_OPTIONS[0].th,
+      dependents: 0,
+      emergencyTargetMonths: 3,
+    });
+    setConfirmReset(false);
+    setImportFeedback({
+      ok: true,
+      message: {
+        th: 'ใส่ค่าและสถานการณ์สมมติเรียบร้อยแล้ว (ตัวเลขสมมติเพื่อทดลองคำนวณเท่านั้น)',
+        en: 'Loaded hypothetical sample scenario (simulated numbers for calculation preview only).',
+      },
+    });
   };
 
   const handleResetClick = () => {
@@ -491,8 +515,47 @@ export default function UserProfileModal({ initialTab = 'profile', onClose }) {
               </div>
             )}
 
-            {/* 3 Clean Bento Action Cards */}
+            {/* 4 Clean Bento Action Cards */}
             <div className="data-action-list">
+              {/* 0) Optional Hypothetical Sample Scenario for Calculation Preview */}
+              <div className={`data-action-card sample-preview ${isDemoMode ? 'is-active' : ''}`}>
+                <div className="data-action-info">
+                  <span className="data-action-icon sample" aria-hidden="true">
+                    <FlaskConical size={18} strokeWidth={2.1} />
+                  </span>
+                  <div>
+                    <div className="data-action-title-row">
+                      <span className="data-action-title">
+                        {lang === 'TH'
+                          ? 'ทดลองใส่ค่าสมมติ (ดูตัวอย่างการคำนวณ)'
+                          : 'Try Hypothetical Sample Scenario'}
+                      </span>
+                      <span className="sample-disclaimer-badge">
+                        {lang === 'TH'
+                          ? 'เงินและสถานการณ์สมมติคำนวณ'
+                          : 'Hypothetical Preview Only'}
+                      </span>
+                    </div>
+                    <p className="data-action-desc">
+                      {lang === 'TH'
+                        ? 'จำลองข้อมูล First Jobber (รายได้สมมติ ฿25,000/ด. • รายจ่าย ฿20,000/ด. • สำรอง ฿15,000 • ประกันสังคม ม.33 + ประกันกลุ่ม • 6 รายการรับ-จ่าย) เพื่อดูผลลัพธ์การคำนวณทุกหน้าก่อนกรอกข้อมูลจริง'
+                        : 'Loads a simulated First Jobber scenario (hypothetical ฿25,000/mo income, ฿20,000 expenses, ฿15,000 reserve, SSO Sec. 33 + group cover, 6 sample logs) so you can preview how every module calculates.'}
+                    </p>
+                  </div>
+                </div>
+                <button
+                  id="load-sample-scenario-btn"
+                  type="button"
+                  className="btn-soft-gray data-action-btn sample-load-btn"
+                  onClick={handleLoadSample}
+                >
+                  <FlaskConical size={15} strokeWidth={2.2} />
+                  <span>
+                    {lang === 'TH' ? 'ใส่ค่าสมมติคำนวณ' : 'Load Sample'}
+                  </span>
+                </button>
+              </div>
+
               {/* 1) Export .json */}
               <div className="data-action-card">
                 <div className="data-action-info">
@@ -545,15 +608,23 @@ export default function UserProfileModal({ initialTab = 'profile', onClose }) {
                 </button>
               </div>
 
-              {/* 3) Two-Step Reset Demo Data */}
+              {/* 3) Two-Step Reset All Values to 0 / 00.00 */}
               <div className={`data-action-card ${confirmReset ? 'danger-armed' : ''}`}>
                 <div className="data-action-info">
                   <span className="data-action-icon reset" aria-hidden="true">
                     <RotateCcw size={18} strokeWidth={2.1} />
                   </span>
                   <div>
-                    <div className="data-action-title">{t('profileModal.resetTitle')}</div>
-                    <p className="data-action-desc">{t('profileModal.resetDesc')}</p>
+                    <div className="data-action-title">
+                      {lang === 'TH'
+                        ? 'รีเซ็ตข้อมูลทุกค่ากลับเป็น 0 / 00.00'
+                        : 'Reset All Values to 0 / 00.00'}
+                    </div>
+                    <p className="data-action-desc">
+                      {lang === 'TH'
+                        ? 'ล้างรายรับ-รายจ่าย เงินสำรอง รายการบันทึก และบัตรสิทธิทั้งหมดให้เป็น 0 เพื่อเริ่มกรอกข้อมูลจริงของตนเองใหม่'
+                        : 'Clear all income, expenses, reserves, transactions, and coverage cards back to 0 to enter your own real numbers.'}
+                    </p>
                   </div>
                 </div>
 
@@ -576,8 +647,12 @@ export default function UserProfileModal({ initialTab = 'profile', onClose }) {
                     <RotateCcw size={15} strokeWidth={2.2} />
                     <span>
                       {confirmReset
-                        ? t('profileModal.resetConfirmBtn')
-                        : t('profileModal.resetBtn')}
+                        ? lang === 'TH'
+                          ? 'ยืนยันล้างเป็น 0'
+                          : 'Confirm Reset to 0'
+                        : lang === 'TH'
+                          ? 'ล้างทุกค่าเป็น 0'
+                          : 'Reset to 0'}
                     </span>
                   </button>
                 </div>

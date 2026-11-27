@@ -5,14 +5,16 @@ import {
   translateBilingualAsync,
 } from '../utils/bilingualTranslate';
 import {
+  DEMO_RISK_PROFILE_DATA,
   INITIAL_RISK_PROFILE_DATA,
   computeActuarialRiskAssessment,
   getGovSchemeMeta,
   sanitizeRiskProfileData,
 } from '../utils/riskActuarial';
 
-const STORAGE_KEY = 'protect360_data_v1';
+const STORAGE_KEY = 'protect360_data_v2';
 
+// Clean zero-slate defaults — real users start at 0 / 00.00 and enter their own numbers
 const INITIAL_USER_PROFILE = {
   title: '',
   firstName: '',
@@ -24,20 +26,41 @@ const INITIAL_USER_PROFILE = {
 };
 
 const INITIAL_FINANCIALS = {
-  personaName: { th: 'First Jobber', en: 'First Jobber' },
+  personaName: { th: 'โปรไฟล์ของคุณ', en: 'My Profile' },
+  monthlyIncome: 0,
+  monthlyExpenses: 0,
+  monthlySavings: 0,
+  liquidEmergencyFund: 0,
+};
+
+const INITIAL_RISK_PROFILE = INITIAL_RISK_PROFILE_DATA;
+const INITIAL_COVERAGES = [];
+const INITIAL_TRANSACTIONS = [];
+
+// Optional hypothetical sample scenario (explicitly labeled as simulated numbers in Local Storage mode)
+const DEMO_USER_PROFILE = {
+  title: '',
+  firstName: 'สมมติ (First Jobber)',
+  lastName: '',
+  age: 25,
+  occupation: DEFAULT_OCCUPATION_TH,
+  dependents: 0,
+  emergencyTargetMonths: 3,
+};
+
+const DEMO_FINANCIALS = {
+  personaName: { th: 'สถานการณ์สมมติ (First Jobber)', en: 'Hypothetical First Jobber' },
   monthlyIncome: 25000,
   monthlyExpenses: 20000,
   monthlySavings: 5000,
   liquidEmergencyFund: 15000,
 };
 
-const INITIAL_RISK_PROFILE = INITIAL_RISK_PROFILE_DATA;
-
-const INITIAL_COVERAGES = [
+const DEMO_COVERAGES = [
   {
     id: 'sso-33',
     type: 'statutory',
-    name: { th: 'ประกันสังคม ม.33', en: 'Social Security Sec. 33' },
+    name: { th: 'ประกันสังคม ม.33 (สมมติ)', en: 'Social Security Sec. 33 (Sample)' },
     providerTag: { th: 'สิทธิภาครัฐ', en: 'Statutory' },
     cardNumberMask: 'SSO •••• 3301',
     subtitle: {
@@ -46,7 +69,7 @@ const INITIAL_COVERAGES = [
     },
     status: 'active',
     limitKnown: true,
-    monthlyPremium: 0, // Statutory payroll contribution tracked separately from personal self-paid insurance
+    monthlyPremium: 0,
     theme: 'navy',
     benefits: {
       medical: 100000,
@@ -60,7 +83,7 @@ const INITIAL_COVERAGES = [
   {
     id: 'group-ins',
     type: 'employer',
-    name: { th: 'ประกันกลุ่มบริษัท', en: 'Employer Group Insurance' },
+    name: { th: 'ประกันกลุ่มบริษัท (สมมติ)', en: 'Employer Group Insurance (Sample)' },
     providerTag: { th: 'สวัสดิการบริษัท', en: 'Employer' },
     cardNumberMask: 'GRP •••• 0000',
     subtitle: {
@@ -82,55 +105,59 @@ const INITIAL_COVERAGES = [
   },
 ];
 
-const INITIAL_TRANSACTIONS = [
+const DEMO_TRANSACTIONS = [
   {
     id: 'tx-1',
-    title: { th: 'เงินเดือนประจำ', en: 'Monthly Salary' },
-    note: { th: 'โอนเข้าบัญชีเงินเดือน', en: 'Payroll Direct Deposit' },
+    title: { th: 'เงินเดือนประจำ (สมมติ)', en: 'Monthly Salary (Sample)' },
+    note: { th: 'สถานการณ์สมมติเพื่อทดลองคำนวณ', en: 'Hypothetical sample for preview' },
     category: 'income',
     categoryLabel: { th: 'รายรับประจำ', en: 'Salary' },
     iconKey: 'salary',
     date: { th: '25 พ.ย. 2569', en: '25 Nov 2026' },
+    isoDate: '2026-11-25',
     amount: 25000,
     status: 'completed',
   },
   {
     id: 'tx-2',
-    title: { th: 'ค่าเช่าหอพัก', en: 'Apartment Rent' },
-    note: { th: 'ค่าเช่ารายเดือน + ค่าน้ำไฟ', en: 'Monthly rent & utilities' },
+    title: { th: 'ค่าเช่าหอพัก (สมมติ)', en: 'Apartment Rent (Sample)' },
+    note: { th: 'ค่าเช่ารายเดือน + ค่าน้ำไฟ (สมมติ)', en: 'Monthly rent & utilities (sample)' },
     category: 'expense',
     categoryLabel: { th: 'ที่อยู่อาศัย', en: 'Housing' },
     iconKey: 'housing',
     date: { th: '26 พ.ย. 2569', en: '26 Nov 2026' },
+    isoDate: '2026-11-26',
     amount: -6500,
     status: 'completed',
   },
   {
     id: 'tx-3',
-    title: { th: 'อาหารและกาแฟ', en: 'Food & Coffee' },
-    note: { th: 'ค่าอาหารประจำวัน & คาเฟ่', en: 'Daily meals & coffee' },
+    title: { th: 'อาหารและกาแฟ (สมมติ)', en: 'Food & Coffee (Sample)' },
+    note: { th: 'ค่าอาหารประจำวัน & คาเฟ่ (สมมติ)', en: 'Daily meals & coffee (sample)' },
     category: 'expense',
     categoryLabel: { th: 'อาหาร & เครื่องดื่ม', en: 'Food & Dining' },
     iconKey: 'food',
     date: { th: '26 พ.ย. 2569', en: '26 Nov 2026' },
+    isoDate: '2026-11-26',
     amount: -5800,
     status: 'completed',
   },
   {
     id: 'tx-4',
-    title: { th: 'ค่าเดินทาง BTS / รถไฟฟ้า', en: 'BTS / Transport' },
-    note: { th: 'บัตรโดยสาร BTS & วินมอเตอร์ไซค์', en: 'BTS pass & local commute' },
+    title: { th: 'ค่าเดินทาง BTS / รถไฟฟ้า (สมมติ)', en: 'BTS / Transport (Sample)' },
+    note: { th: 'บัตรโดยสาร BTS & วินมอเตอร์ไซค์ (สมมติ)', en: 'BTS pass & local commute (sample)' },
     category: 'expense',
     categoryLabel: { th: 'การเดินทาง', en: 'Transport' },
     iconKey: 'transport',
     date: { th: '26 พ.ย. 2569', en: '26 Nov 2026' },
+    isoDate: '2026-11-26',
     amount: -2700,
     status: 'completed',
   },
   {
     id: 'tx-5',
-    title: { th: 'โอนเข้าบัญชีเงินสำรองฉุกเฉิน', en: 'Emergency Saving Transfer' },
-    note: { th: 'ออมอัตโนมัติ 20% ของรายได้', en: 'Auto-save 20% of income' },
+    title: { th: 'โอนเข้าบัญชีเงินสำรองฉุกเฉิน (สมมติ)', en: 'Emergency Saving Transfer (Sample)' },
+    note: { th: 'ออมอัตโนมัติ 20% ของรายได้ (สมมติ)', en: 'Auto-save 20% of income (sample)' },
     category: 'saving',
     categoryLabel: { th: 'เงินออมฉุกเฉิน', en: 'Emergency Fund' },
     iconKey: 'saving',
@@ -141,8 +168,8 @@ const INITIAL_TRANSACTIONS = [
   },
   {
     id: 'tx-6',
-    title: { th: 'ค่าโทรศัพท์ เน็ต & ไลฟ์สไตล์', en: 'Mobile, Internet & Lifestyle' },
-    note: { th: 'แพ็กเกจเน็ตมือถือ + ของใช้ส่วนตัว', en: 'Mobile plan, streaming & personal care' },
+    title: { th: 'ค่าโทรศัพท์ เน็ต & ไลฟ์สไตล์ (สมมติ)', en: 'Mobile, Internet & Lifestyle (Sample)' },
+    note: { th: 'แพ็กเกจเน็ตมือถือ + ของใช้ส่วนตัว (สมมติ)', en: 'Mobile plan & personal care (sample)' },
     category: 'expense',
     categoryLabel: { th: 'ไลฟ์สไตล์', en: 'Lifestyle' },
     iconKey: 'lifestyle',
@@ -243,24 +270,27 @@ function syncCoveragesWithRiskProfile(prevCoverages, nextRisk) {
     return [...list, item];
   };
 
-  let updated = upsert(baseList, {
-    id: 'sso-33',
-    type: 'statutory',
-    name: govMeta.label,
-    providerTag: { th: 'สิทธิภาครัฐ', en: 'Statutory' },
-    cardNumberMask:
-      nextRisk.govScheme === 'uc'
-        ? 'UC •••• 3000'
-        : nextRisk.govScheme === 'civil'
-          ? 'GOV •••• 0100'
-          : 'SSO •••• 3301',
-    subtitle: govMeta.desc,
-    status: 'active',
-    limitKnown: true,
-    monthlyPremium: 0,
-    theme: 'navy',
-    benefits: { ...govMeta.benefits },
-  });
+  let updated =
+    nextRisk.govScheme === 'none'
+      ? baseList.filter((c) => c.id !== 'sso-33')
+      : upsert(baseList, {
+          id: 'sso-33',
+          type: 'statutory',
+          name: govMeta.label,
+          providerTag: { th: 'สิทธิภาครัฐ', en: 'Statutory' },
+          cardNumberMask:
+            nextRisk.govScheme === 'uc'
+              ? 'UC •••• 3000'
+              : nextRisk.govScheme === 'civil'
+                ? 'GOV •••• 0100'
+                : 'SSO •••• 3301',
+          subtitle: govMeta.desc,
+          status: 'active',
+          limitKnown: true,
+          monthlyPremium: 0,
+          theme: 'navy',
+          benefits: { ...govMeta.benefits },
+        });
 
   // Sync Employer Group Insurance card
   if (nextRisk.groupInsurance.active) {
@@ -421,6 +451,7 @@ function loadInitialState() {
         transactions: INITIAL_TRANSACTIONS,
         riskProfile: { ...INITIAL_RISK_PROFILE },
         customCategories: [],
+        isDemoMode: false,
       };
     }
     const parsed = JSON.parse(raw);
@@ -453,6 +484,7 @@ function loadInitialState() {
       transactions: sanitizeTransactions(parsed.transactions),
       riskProfile: sanitizeRiskProfile(parsed.riskProfile),
       customCategories: sanitizeCustomCategories(parsed.customCategories),
+      isDemoMode: Boolean(parsed.isDemoMode),
     };
   } catch {
     return {
@@ -462,6 +494,7 @@ function loadInitialState() {
       transactions: INITIAL_TRANSACTIONS,
       riskProfile: { ...INITIAL_RISK_PROFILE },
       customCategories: [],
+      isDemoMode: false,
     };
   }
 }
@@ -470,7 +503,15 @@ const FinanceContext = createContext(null);
 
 export function FinanceProvider({ children }) {
   const [store, setStore] = useState(loadInitialState);
-  const { userProfile, financials, coverages, transactions, riskProfile, customCategories } = store;
+  const {
+    userProfile,
+    financials,
+    coverages,
+    transactions,
+    riskProfile,
+    customCategories,
+    isDemoMode,
+  } = store;
   const [toast, setToast] = useState(null);
   const toastTimerRef = useRef(null);
 
@@ -499,11 +540,12 @@ export function FinanceProvider({ children }) {
     };
   }, []);
 
-  // Automatically persist all state to localStorage under 'protect360_data_v1'
+  // Automatically persist all state to localStorage under 'protect360_data_v2'
   useEffect(() => {
     const payload = {
-      schemaVersion: 1,
+      schemaVersion: 2,
       updatedAt: new Date().toISOString(),
+      isDemoMode: Boolean(isDemoMode),
       userProfile,
       monthlyIncome: financials.monthlyIncome,
       monthlyExpenses: financials.monthlyExpenses,
@@ -519,7 +561,7 @@ export function FinanceProvider({ children }) {
     } catch {
       // Ignore storage quota or private browsing errors
     }
-  }, [userProfile, financials, coverages, transactions, riskProfile, customCategories]);
+  }, [isDemoMode, userProfile, financials, coverages, transactions, riskProfile, customCategories]);
 
   // Backward-compatible merged profile object for Round 1 & future modules
   const profile = useMemo(
@@ -1180,6 +1222,7 @@ export function FinanceProvider({ children }) {
           transactions: nextTransactions,
           riskProfile: nextRiskProfile,
           customCategories: nextCustomCategories,
+          isDemoMode: false,
         });
 
         const message = {
@@ -1208,10 +1251,27 @@ export function FinanceProvider({ children }) {
       transactions: INITIAL_TRANSACTIONS,
       riskProfile: { ...INITIAL_RISK_PROFILE },
       customCategories: [],
+      isDemoMode: false,
     });
     showToast('info', {
-      th: 'รีเซ็ตกลับเป็นโปรไฟล์ตัวอย่าง First Jobber เรียบร้อยแล้ว',
-      en: 'Reset to default First Jobber demo profile',
+      th: 'รีเซ็ตข้อมูลทุกช่องกลับเป็น 0 / 00.00 เรียบร้อยแล้ว พร้อมให้คุณกรอกข้อมูลจริง',
+      en: 'Reset all fields to 0 / 00.00 — ready for your own numbers.',
+    });
+  }, [showToast]);
+
+  const loadDemoSample = useCallback(() => {
+    setStore({
+      userProfile: { ...DEMO_USER_PROFILE },
+      financials: { ...DEMO_FINANCIALS },
+      coverages: DEMO_COVERAGES,
+      transactions: DEMO_TRANSACTIONS,
+      riskProfile: { ...DEMO_RISK_PROFILE_DATA },
+      customCategories: [],
+      isDemoMode: true,
+    });
+    showToast('info', {
+      th: 'โหลดเงินและสถานการณ์สมมติเพื่อทดลองคำนวณแล้ว (ไม่ใช่ข้อมูลจริงของคุณ)',
+      en: 'Loaded hypothetical sample numbers & scenario for calculation preview only.',
     });
   }, [showToast]);
 
@@ -1226,6 +1286,7 @@ export function FinanceProvider({ children }) {
     transactions,
     riskProfile,
     customCategories: customCategories || [],
+    isDemoMode: Boolean(isDemoMode),
     toast,
     ...derived,
     updateUserProfile,
@@ -1241,6 +1302,7 @@ export function FinanceProvider({ children }) {
     removeCoverage,
     exportUserData,
     importUserData,
+    loadDemoSample,
     resetDemoData,
     showToast,
     dismissToast,

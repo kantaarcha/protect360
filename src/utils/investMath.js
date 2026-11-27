@@ -178,20 +178,47 @@ export function solveIRR(cashFlows) {
  * Full Tab 2 IRR, Real Inflation Return, Tax Benefit & Multi-Year Timeline Computation.
  */
 export function computeLongTermIrrAnalysis({
-  annualContribution = 30000,
-  paymentYears = 10,
-  planDuration = 20,
-  annualCashback = 3000,
-  maturityLumpSum = 330000,
-  inflationRatePct = 2.5,
-  annualIncome = 300000,
+  annualContribution = 0,
+  paymentYears = 0,
+  planDuration = 0,
+  annualCashback = 0,
+  maturityLumpSum = 0,
+  inflationRatePct = 0,
+  annualIncome = 0,
 }) {
   const contrib = Math.max(0, Number(annualContribution) || 0);
-  const duration = Math.max(2, Math.min(40, Math.round(Number(planDuration) || 20)));
-  const payYears = Math.max(1, Math.min(duration, Math.round(Number(paymentYears) || 10)));
+  const rawDuration = Math.max(0, Math.min(40, Math.round(Number(planDuration) || 0)));
+  const rawPayYears = Math.max(0, Math.min(rawDuration || 40, Math.round(Number(paymentYears) || 0)));
   const cashback = Math.max(0, Number(annualCashback) || 0);
   const maturity = Math.max(0, Number(maturityLumpSum) || 0);
   const inflation = Math.max(0, Number(inflationRatePct) || 0) / 100;
+
+  if (contrib === 0 && cashback === 0 && maturity === 0) {
+    const taxInfo = calculateThaiTaxImpact({
+      annualIncome,
+      annualContribution: 0,
+      planDurationYears: rawDuration || 0,
+    });
+    return {
+      timeline: [],
+      nominalIrr: null,
+      realIrr: null,
+      effectiveIrrWithTax: null,
+      realIrrWithTax: null,
+      totalPaid: 0,
+      totalCashback: 0,
+      totalTaxSavings: 0,
+      totalNominalReturn: 0,
+      netNominalProfit: 0,
+      maturityRealPurchasingPower: 0,
+      taxInfo,
+      payYears: rawPayYears,
+      duration: rawDuration,
+    };
+  }
+
+  const duration = Math.max(2, rawDuration || 2);
+  const payYears = Math.max(1, Math.min(duration, rawPayYears || 1));
 
   const taxInfo = calculateThaiTaxImpact({
     annualIncome,
@@ -273,12 +300,12 @@ export function computeLongTermIrrAnalysis({
  * Full Tab 1 Risk Transfer vs. Self-Insure Simulator (24-month emergency loan amortization).
  */
 export function computeRiskTransferComparison({
-  annualProtectionBudget = 12000,
-  emergencyBill = 150000,
-  emergencyFund = 15000,
-  monthlyExpenses = 20000,
-  monthlyIncome = 25000,
-  loanAprPct = 20,
+  annualProtectionBudget = 0,
+  emergencyBill = 0,
+  emergencyFund = 0,
+  monthlyExpenses = 0,
+  monthlyIncome = 0,
+  loanAprPct = 0,
   repaymentMonths = 24,
 }) {
   const budget = Math.max(0, Number(annualProtectionBudget) || 0);

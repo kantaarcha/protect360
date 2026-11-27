@@ -49,14 +49,14 @@ const PLAN_PRESETS = [
 ];
 
 function formatSignedPct(decimalRate) {
-  if (decimalRate === null || !Number.isFinite(decimalRate)) return '—';
+  if (decimalRate === null || !Number.isFinite(decimalRate)) return '0.00%';
   const pct = decimalRate * 100;
   const sign = pct > 0 ? '+' : '';
   return `${sign}${pct.toFixed(2)}%`;
 }
 
 function formatPlainPct(decimalRate) {
-  if (decimalRate === null || !Number.isFinite(decimalRate)) return '—';
+  if (decimalRate === null || !Number.isFinite(decimalRate)) return '0.00%';
   return `${(decimalRate * 100).toFixed(2)}%`;
 }
 
@@ -68,27 +68,24 @@ export default function Invest({ onNavigate }) {
     emergencyFund,
     emergencyRunway,
     userProfile,
+    isDemoMode,
   } = useFinance();
 
   // Core calculator tabs: 'transfer' | 'irr'
   const [activeTab, setActiveTab] = useState('transfer');
 
-  // --- TAB 1: Risk Transfer vs. Self-Insure state ---
-  const defaultAnnualBudget = Math.min(
-    12000,
-    Math.max(3000, Math.round((monthlyIncome * 12 * 0.05) / 1000) * 1000)
-  );
-  const [annualBudget, setAnnualBudget] = useState(defaultAnnualBudget || 12000);
-  const [emergencyBill, setEmergencyBill] = useState(150000);
-  const [loanAprPct, setLoanAprPct] = useState(20);
+  // --- TAB 1: Risk Transfer vs. Self-Insure state (0 clean slate by default; hypothetical values only in demo mode) ---
+  const [annualBudget, setAnnualBudget] = useState(() => (isDemoMode ? 12000 : 0));
+  const [emergencyBill, setEmergencyBill] = useState(() => (isDemoMode ? 150000 : 0));
+  const [loanAprPct, setLoanAprPct] = useState(() => (isDemoMode ? 20 : 0));
 
-  // --- TAB 2: True IRR, Inflation & Tax state ---
-  const [annualContribution, setAnnualContribution] = useState(30000);
-  const [paymentYears, setPaymentYears] = useState(10);
-  const [planDuration, setPlanDuration] = useState(20);
-  const [annualCashback, setAnnualCashback] = useState(3000);
-  const [maturityLumpSum, setMaturityLumpSum] = useState(330000);
-  const [inflationRatePct, setInflationRatePct] = useState(2.5);
+  // --- TAB 2: True IRR, Inflation & Tax state (0 clean slate by default) ---
+  const [annualContribution, setAnnualContribution] = useState(() => (isDemoMode ? 30000 : 0));
+  const [paymentYears, setPaymentYears] = useState(() => (isDemoMode ? 10 : 0));
+  const [planDuration, setPlanDuration] = useState(() => (isDemoMode ? 20 : 0));
+  const [annualCashback, setAnnualCashback] = useState(() => (isDemoMode ? 3000 : 0));
+  const [maturityLumpSum, setMaturityLumpSum] = useState(() => (isDemoMode ? 330000 : 0));
+  const [inflationRatePct, setInflationRatePct] = useState(() => (isDemoMode ? 2.5 : 0));
   const [annualIncomeOverride, setAnnualIncomeOverride] = useState(null);
   const [selectedTimelineYear, setSelectedTimelineYear] = useState(null);
 
@@ -306,7 +303,7 @@ export default function Invest({ onNavigate }) {
                     />
                     <input
                       type="range"
-                      min="2000"
+                      min="0"
                       max={Math.max(45000, transferResult.safeAnnualMax || 45000)}
                       step="1000"
                       className="inv-range tone-blue"
@@ -320,12 +317,11 @@ export default function Invest({ onNavigate }) {
                           Math.max(
                             0,
                             Math.round(
-                              ((Math.min(
+                              (Math.min(
                                 annualBudget,
                                 Math.max(45000, transferResult.safeAnnualMax || 45000)
-                              ) -
-                                2000) /
-                                (Math.max(45000, transferResult.safeAnnualMax || 45000) - 2000)) *
+                              ) /
+                                Math.max(45000, transferResult.safeAnnualMax || 45000)) *
                                 100
                             )
                           )
@@ -378,7 +374,7 @@ export default function Invest({ onNavigate }) {
                     />
                     <input
                       type="range"
-                      min="10000"
+                      min="0"
                       max="500000"
                       step="10000"
                       className="inv-range expense tone-red"
@@ -388,7 +384,7 @@ export default function Invest({ onNavigate }) {
                           100,
                           Math.max(
                             0,
-                            Math.round(((Math.min(emergencyBill, 500000) - 10000) / 490000) * 100)
+                            Math.round((Math.min(emergencyBill, 500000) / 500000) * 100)
                           )
                         )}%`,
                       }}
@@ -786,13 +782,17 @@ export default function Invest({ onNavigate }) {
                 </div>
               </div>
               <div className="ra-kpi-footnote">
-                {irrResult.realIrr !== null && irrResult.realIrr < 0
+                {irrResult.realIrr === null
                   ? lang === 'TH'
-                    ? 'ต่ำกว่าเงินเฟ้อ (อำนาจซื้อลดลง)'
-                    : 'Below inflation (purchasing power erodes)'
-                  : lang === 'TH'
-                    ? 'ชนะอัตราเงินเฟ้อคาดการณ์'
-                    : 'Beats expected inflation'}
+                    ? 'กรอกตัวเลขแผนออมเพื่อคำนวณผลตอบแทนจริง'
+                    : 'Enter plan numbers to compute real return'
+                  : irrResult.realIrr < 0
+                    ? lang === 'TH'
+                      ? 'ต่ำกว่าเงินเฟ้อ (อำนาจซื้อลดลง)'
+                      : 'Below inflation (purchasing power erodes)'
+                    : lang === 'TH'
+                      ? 'ชนะอัตราเงินเฟ้อคาดการณ์'
+                      : 'Beats expected inflation'}
               </div>
             </article>
 
