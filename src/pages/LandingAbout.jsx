@@ -443,15 +443,37 @@ export default function LandingAbout({ onNavigate }) {
             </div>
           </aside>
         </div>
+
+        {/* Quiet Editorial Chapter Index — jump straight to any chapter */}
+        <nav className="ab-ed-toc" aria-label={lang === 'TH' ? 'สารบัญหัวข้อ' : 'Section contents'}>
+          {[
+            { id: 'ab-block-origins', num: '01', th: 'รายงานอ้างอิงและเอกสารแนบ', en: 'National Reports & Scans' },
+            { id: 'ab-block-survey', num: '02', th: 'ผลสำรวจจริง (n = 57)', en: 'Primary Survey (n = 57)' },
+            { id: 'ab-block-features', num: '03', th: 'ฟีเจอร์ที่กลุ่มตัวอย่างต้องการ', en: 'Requested Features' },
+            { id: 'ab-block-principles', num: '04', th: 'หลักการ 3 ข้อของเรา', en: 'Three Core Principles' },
+          ].map((ch) => (
+            <button
+              key={ch.id}
+              type="button"
+              className="ab-ed-toc-item"
+              onClick={() => {
+                document.getElementById(ch.id)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+              }}
+            >
+              <span className="ab-ed-toc-num tabular-nums">{ch.num}</span>
+              <span className="ab-ed-toc-label">{lang === 'TH' ? ch.th : ch.en}</span>
+            </button>
+          ))}
+        </nav>
       </header>
 
       {/* ===================================================================== */}
       {/* 01. NATIONAL RESEARCH SOURCES & ATTACHED BOT PAGES (PAGE 5 -> PAGE 17) */}
       {/* ===================================================================== */}
-      <section className="ab-ed-section" aria-labelledby="ab-sec-origins">
+      <section id="ab-block-origins" className="ab-ed-section" aria-labelledby="ab-sec-origins">
         <div className="ab-ed-section-head">
           <span className="ab-ed-sec-num tabular-nums">01</span>
-          <div>
+          <div className="ab-ed-sec-title-wrap">
             <h2 id="ab-sec-origins" className="ab-ed-sec-title">
               {lang === 'TH'
                 ? 'รายงานและเอกสารอ้างอิงที่ทำให้เกิดเว็บไซต์นี้'
@@ -572,12 +594,12 @@ export default function LandingAbout({ onNavigate }) {
       </section>
 
       {/* ===================================================================== */}
-      {/* 02. PRIMARY SURVEY FINDINGS (n = 57) — RULED STAT STRIP + DATA + VOICES */}
+      {/* 02. PRIMARY SURVEY FINDINGS (n = 57) — SPLIT INTO BREATHABLE BLOCKS   */}
       {/* ===================================================================== */}
-      <section className="ab-ed-section" aria-labelledby="ab-sec-survey">
+      <section id="ab-block-survey" className="ab-ed-section" aria-labelledby="ab-sec-survey">
         <div className="ab-ed-section-head">
           <span className="ab-ed-sec-num tabular-nums">02</span>
-          <div>
+          <div className="ab-ed-sec-title-wrap">
             <h2 id="ab-sec-survey" className="ab-ed-sec-title">
               {lang === 'TH'
                 ? 'ภาพจริงจากแบบสำรวจวัยเริ่มต้นทำงาน (n = 57 คน)'
@@ -604,8 +626,10 @@ export default function LandingAbout({ onNavigate }) {
             </div>
           ))}
         </div>
+      </section>
 
-        {/* Asymmetric 2-Column Data Charts */}
+      {/* Companion Block 02B: 2-Column Data Charts (Separated for Easy Reading) */}
+      <section className="ab-ed-subblock" aria-label="Survey breakdown charts">
         <div className="ab-ed-data-split">
           <div className="ab-ed-chart-block">
             <h3 className="ab-ed-chart-title">
@@ -671,33 +695,33 @@ export default function LandingAbout({ onNavigate }) {
             </div>
           </div>
         </div>
+      </section>
 
-        {/* Clean Editorial Pull-Quotes */}
-        <div className="ab-ed-quotes-band">
-          <div className="ab-ed-quotes-kicker">
-            {lang === 'TH'
-              ? 'เสียงสะท้อนตรงจากผู้ตอบแบบสอบถาม (ไม่ระบุตัวตน)'
-              : 'Selected verbatim responses (anonymized)'}
-          </div>
-          <div className="ab-ed-quotes-grid">
-            {VERBATIM_VOICES.map((voice) => (
-              <blockquote key={voice.id} className="ab-ed-quote">
-                <p>{t(voice.quote)}</p>
-                <footer>{t(voice.mappedTo)}</footer>
-              </blockquote>
-            ))}
-          </div>
+      {/* Companion Block 02C: Editorial Pull-Quotes Band */}
+      <section className="ab-ed-subblock ab-ed-quotes-section" aria-label="Verbatim survey voices">
+        <div className="ab-ed-quotes-kicker">
+          {lang === 'TH'
+            ? 'เสียงสะท้อนตรงจากผู้ตอบแบบสอบถาม (ไม่ระบุตัวตน)'
+            : 'Selected verbatim responses (anonymized)'}
+        </div>
+        <div className="ab-ed-quotes-grid">
+          {VERBATIM_VOICES.map((voice) => (
+            <blockquote key={voice.id} className="ab-ed-quote">
+              <p>{t(voice.quote)}</p>
+              <footer>{t(voice.mappedTo)}</footer>
+            </blockquote>
+          ))}
         </div>
       </section>
 
       {/* ===================================================================== */}
       {/* 03. WHAT n = 57 WANT IN PROTECT360 — INTERACTIVE MULTI-COLOR CHART    */}
       {/* ===================================================================== */}
-      <section className="ab-ed-section" aria-labelledby="ab-sec-features">
+      <section id="ab-block-features" className="ab-ed-section" aria-labelledby="ab-sec-features">
         <div className="ab-ed-section-head split">
           <div className="ab-ed-section-head-left">
             <span className="ab-ed-sec-num tabular-nums">03</span>
-            <div>
+            <div className="ab-ed-sec-title-wrap">
               <h2 id="ab-sec-features" className="ab-ed-sec-title">
                 {lang === 'TH'
                   ? 'กลุ่มตัวอย่าง (n = 57 คน) อยากให้แอปมีฟีเจอร์อะไรบ้าง?'
@@ -767,15 +791,20 @@ export default function LandingAbout({ onNavigate }) {
       {/* ===================================================================== */}
       {/* 04. THREE DESIGN PRINCIPLES — RULED EDITORIAL INDEX (NO ICON BOXES)   */}
       {/* ===================================================================== */}
-      <section className="ab-ed-section" aria-labelledby="ab-sec-principles">
+      <section id="ab-block-principles" className="ab-ed-section" aria-labelledby="ab-sec-principles">
         <div className="ab-ed-section-head">
           <span className="ab-ed-sec-num tabular-nums">04</span>
-          <div>
+          <div className="ab-ed-sec-title-wrap">
             <h2 id="ab-sec-principles" className="ab-ed-sec-title">
               {lang === 'TH'
                 ? 'หลักการ 3 ข้อที่ PROTECT360 ยึดถือ'
                 : 'Three Principles PROTECT360 Follows'}
             </h2>
+            <p className="ab-ed-sec-sub">
+              {lang === 'TH'
+                ? 'กรอบการทำงานที่เป็นกลาง โปร่งใส และเคารพความเป็นส่วนตัวของผู้ใช้ตั้งแต่บรรทัดแรก'
+                : 'Our non-negotiable standards for neutrality, local privacy, and honest math.'}
+            </p>
           </div>
         </div>
 
