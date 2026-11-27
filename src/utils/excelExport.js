@@ -476,8 +476,8 @@ export function buildSmartLogExcelBlob({
     freezeTopRow: false,
   });
 
-  const sheet1Name = lang === 'TH' ? 'บัญชีรับ-จ่าย' : 'SmartLog Ledger';
-  const sheet2Name = lang === 'TH' ? 'สรุปภาพรวม' : 'Summary';
+  const sheet1Name = lang === 'TH' ? 'บัญชีรับ-จ่าย 360Flow' : lang === 'ZH' ? '360Flow 收支账本' : '360Flow Ledger';
+  const sheet2Name = lang === 'TH' ? 'สรุปภาพรวม' : lang === 'ZH' ? '总览汇总' : 'Summary';
 
   const contentTypesXml = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">

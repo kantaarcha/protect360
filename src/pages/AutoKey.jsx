@@ -618,7 +618,7 @@ export default function AutoKey({ onNavigate }) {
       manualType === 'saving'
         ? { th: 'เติมเงินเข้ากองทุนสำรองฉุกเฉิน', en: 'Added to Liquid Emergency Fund' }
         : manualType === 'income'
-          ? { th: 'บันทึกรายรับผ่าน SmartLog', en: 'Logged income via SmartLog' }
+          ? { th: 'บันทึกรายรับผ่าน 360Flow', en: 'Logged income via 360Flow', zh: '通过 360Flow 记录收入' }
           : { th: `รายจ่ายหมวด${catMeta.label.th}`, en: `${catMeta.label.en} expense` };
 
     addTransaction({
@@ -710,7 +710,7 @@ export default function AutoKey({ onNavigate }) {
     const url = window.URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
-    link.download = `protect360-smartlog-${getTodayIso()}.csv`;
+    link.download = `protect360-360flow-${getTodayIso()}.csv`;
     document.body.appendChild(link);
     link.click();
     link.remove();
@@ -738,7 +738,7 @@ export default function AutoKey({ onNavigate }) {
     const url = window.URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
-    link.download = `protect360-smartlog-${todayIso}.xlsx`;
+    link.download = `protect360-360flow-${todayIso}.xlsx`;
     document.body.appendChild(link);
     link.click();
     link.remove();

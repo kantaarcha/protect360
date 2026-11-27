@@ -319,7 +319,7 @@ export default function UserProfileModal({ initialTab = 'profile', onClose }) {
                     aria-pressed={title === opt.value}
                     onClick={() => setTitle(opt.value)}
                   >
-                    {lang === 'EN' ? opt.en : opt.th}
+                    {lang === 'EN' ? opt.en : lang === 'ZH' ? opt.zh : opt.th}
                   </button>
                 ))}
               </div>
@@ -387,7 +387,7 @@ export default function UserProfileModal({ initialTab = 'profile', onClose }) {
                 >
                   {OCCUPATION_OPTIONS.map((opt) => (
                     <option key={opt.id} value={opt.th}>
-                      {lang === 'EN' ? opt.en : opt.th}
+                      {lang === 'EN' ? opt.en : lang === 'ZH' ? opt.zh : opt.th}
                     </option>
                   ))}
                 </select>

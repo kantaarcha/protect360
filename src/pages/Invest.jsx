@@ -1049,7 +1049,7 @@ export default function Invest({ onNavigate }) {
                           className="ak-mini-tool-btn"
                           onClick={() => setAnnualIncomeOverride(null)}
                         >
-                          {lang === 'TH' ? 'ซิงก์จาก SmartLog' : 'Sync'}
+                          {lang === 'TH' ? 'ซิงก์จาก 360Flow' : 'Sync'}
                         </button>
                       )}
                     </div>
@@ -1336,7 +1336,7 @@ export default function Invest({ onNavigate }) {
                     onClick={() => onNavigate('smartlog')}
                   >
                     <Wallet size={14} strokeWidth={2.2} aria-hidden="true" />
-                    <span>{lang === 'TH' ? 'เติมเงินสำรอง (SmartLog)' : 'Build Reserve'}</span>
+                    <span>{lang === 'TH' ? 'เติมเงินสำรอง (360Flow)' : 'Build Reserve (360Flow)'}</span>
                   </button>
                   <button
                     type="button"

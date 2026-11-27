@@ -88,8 +88,8 @@ const BOT_PLATES = [
       },
     ],
     whyLedToApp: {
-      th: 'ที่มาของการแยก “เงินสำรองฉุกเฉิน” ออกจากเงินใช้จ่ายรายวันในสมุดบัญชี AutoKey',
-      en: 'Directly motivated separating liquid emergency savings from daily cashflow in AutoKey.',
+      th: 'ที่มาของการแยก “เงินสำรองฉุกเฉิน” ออกจากเงินใช้จ่ายรายวันในสมุดบัญชี 360Flow',
+      en: 'Directly motivated separating liquid emergency savings from daily cashflow in 360Flow.',
     },
     url: BOT_2567_PDF_URL,
     ctaLabel: { th: 'เปิดรายงาน ธปท. ฉบับเต็ม (PDF)', en: 'Open BOT Report (PDF)' },
@@ -236,7 +236,7 @@ const WANTED_FEATURES_CHART = [
     colorKey: 'emerald',
     targetPage: 'smartlog',
     label: { th: 'วางแผนรายรับ รายจ่าย และงบประมาณสำหรับเบี้ยประกัน', en: 'Plan Cashflow & Premium Budget' },
-    solution: { th: 'AutoKey บันทึกรับ-จ่าย', en: 'AutoKey Cashbook' },
+    solution: { th: '360Flow บันทึกรับ-จ่าย', en: '360Flow Cashbook' },
   },
   {
     id: 'compare-value',
@@ -256,7 +256,7 @@ const WANTED_FEATURES_CHART = [
     colorKey: 'amber',
     targetPage: 'smartlog',
     label: { th: 'คำนวณเงินสำรองฉุกเฉินที่ควรมี', en: 'Calculate Ideal Emergency Reserve' },
-    solution: { th: 'ตัววัดเงินสำรอง SmartLog', en: 'SmartLog Reserve Tracker' },
+    solution: { th: 'ตัววัดเงินสำรอง 360Flow', en: '360Flow Reserve Tracker' },
   },
   {
     id: 'plain-language',
@@ -319,7 +319,7 @@ const VERBATIM_VOICES = [
       th: '“อยากวางแผนการเงินให้มีเงินเก็บมากขึ้น และทราบว่าควรมีความคุ้มครองด้านไหนที่จำเป็นโดยไม่เป็นภาระค่าใช้จ่ายมากเกินไป”',
       en: '“I want to build savings while knowing which protection is truly necessary without overburdening my budget.”',
     },
-    mappedTo: { th: 'ที่มาของ SmartLog และกรอบงบ 10–15%', en: 'Led to SmartLog + 10–15% Guardrail' },
+    mappedTo: { th: 'ที่มาของ 360Flow และกรอบงบ 10–15%', en: 'Led to 360Flow + 10–15% Guardrail' },
   },
 ];
 
@@ -353,7 +353,7 @@ const CORE_PRINCIPLES = [
   },
 ];
 
-export default function LandingAbout({ onNavigate }) {
+export default function LandingAbout() {
   const { lang, t } = useLanguage();
 
   const [researchFilter, setResearchFilter] = useState('all');
@@ -693,7 +693,7 @@ export default function LandingAbout({ onNavigate }) {
       </section>
 
       {/* ===================================================================== */}
-      {/* 03. FEATURE DEMAND — INTERACTIVE MULTI-COLOR CHART                    */}
+      {/* 03. FEATURE DEMAND — CLEAN NON-CLICKABLE MULTI-COLOR INFO CHART       */}
       {/* ===================================================================== */}
       <section id="ab-block-features" className="ab-ed-section" aria-labelledby="ab-sec-features">
         <div className="ab-ed-section-head split">
@@ -707,8 +707,8 @@ export default function LandingAbout({ onNavigate }) {
               </h2>
               <p className="ab-ed-sec-sub">
                 {lang === 'TH'
-                  ? 'แยกโทนสีตามแต่ละความต้องการ (เลือกได้มากกว่า 1 ข้อ) — กดที่แถวใดก็ได้เพื่อเปิดดูหน้าเครื่องมือจริง'
-                  : 'Color-coded demand ranking (multi-select) — click any row to jump directly to the live feature.'}
+                  ? 'จัดอันดับความต้องการจากผู้ตอบแบบสอบถาม (เลือกได้มากกว่า 1 ข้อ) แยกสีตามแต่ละหมวดหมู่เพื่อให้อ่านเปรียบเทียบได้ชัดเจน'
+                  : 'Color-coded demand ranking (multi-select) arranged cleanly for quick side-by-side comparison.'}
               </p>
             </div>
           </div>
@@ -725,14 +725,13 @@ export default function LandingAbout({ onNavigate }) {
           </div>
         </div>
 
-        <div className="ab-ed-demand-list">
+        <div className="ab-ed-demand-list" role="list">
           {visibleFindings.map((item, idx) => (
-            <button
+            <div
               key={item.id}
               id={`ab-survey-bar-${item.id}`}
-              type="button"
-              className="ab-ed-demand-row"
-              onClick={() => onNavigate?.(item.targetPage)}
+              role="listitem"
+              className="ab-ed-demand-row is-static"
             >
               <div className="ab-ed-demand-top">
                 <div className="ab-ed-demand-left">
@@ -744,10 +743,6 @@ export default function LandingAbout({ onNavigate }) {
                 </div>
 
                 <div className="ab-ed-demand-right tabular-nums">
-                  <span className="ab-ed-demand-link">
-                    <span>{t(item.solution)}</span>
-                    <ArrowUpRight size={13} aria-hidden="true" />
-                  </span>
                   <span className="ab-ed-demand-count">
                     {lang === 'TH' ? `${item.count} คน` : `${item.count}`}
                   </span>
@@ -761,7 +756,7 @@ export default function LandingAbout({ onNavigate }) {
                   style={{ width: `${Math.min(100, (item.pct / 62) * 100)}%` }}
                 />
               </div>
-            </button>
+            </div>
           ))}
         </div>
       </section>

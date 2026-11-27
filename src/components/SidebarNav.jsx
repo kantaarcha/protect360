@@ -5,6 +5,7 @@ import {
   Info,
   LayoutGrid,
   Menu,
+  Settings,
   ShieldAlert,
   TrendingUp,
   Wallet,
@@ -21,6 +22,7 @@ export const NAV_ITEMS = [
   { id: 'game', labelKey: 'nav.game', icon: Gamepad2 },
   { id: 'learning', labelKey: 'nav.learning', icon: BookOpen },
   { id: 'about', labelKey: 'nav.about', icon: Info },
+  { id: 'settings', labelKey: 'nav.settings', icon: Settings },
 ];
 
 export default function SidebarNav({ activePage, onNavigate }) {
@@ -28,7 +30,7 @@ export default function SidebarNav({ activePage, onNavigate }) {
   const [drawerOpen, setDrawerOpen] = useState(false);
 
   const mobilePrimary = NAV_ITEMS.slice(0, 4);
-  const isMoreActive = ['game', 'learning', 'about'].includes(activePage);
+  const isMoreActive = ['game', 'learning', 'about', 'settings'].includes(activePage);
   const mobileActiveKey = isMoreActive ? 'more' : activePage;
 
   const desktopSlider = useLiquidSlider(activePage, [lang, fontStepIdx]);

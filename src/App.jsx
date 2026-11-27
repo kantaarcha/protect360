@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   AlertCircle,
   BookOpen,
@@ -10,6 +10,7 @@ import {
   Pencil,
   PlusCircle,
   RotateCcw,
+  Settings,
   ShieldAlert,
   TrendingUp,
   Wallet,
@@ -21,6 +22,7 @@ import { FinanceProvider, formatTHB, useFinance } from './context/FinanceContext
 import SidebarNav from './components/SidebarNav';
 import TopControlBar from './components/TopControlBar';
 import UserProfileModal from './components/UserProfileModal';
+import OnboardingFlow from './components/OnboardingFlow';
 import OverviewDashboard from './pages/OverviewDashboard';
 import AutoKey from './pages/AutoKey';
 import RiskAnalysis from './pages/RiskAnalysis';
@@ -28,43 +30,70 @@ import Invest from './pages/Invest';
 import Game from './pages/Game';
 import LearningCenter from './pages/LearningCenter';
 import LandingAbout from './pages/LandingAbout';
+import SettingsPage from './pages/SettingsPage';
 import {
   getCardHolderDisplay,
   getGreetingText,
   getOccupationLabel,
   getProfilePillLabel,
   getUserInitials,
+  syncReferenceHour,
 } from './utils/userHelpers';
 import { calculateThaiTaxImpact } from './utils/investMath';
+
+const ONBOARDING_STORAGE_KEY = 'protect360_onboarded_v1';
 
 const PAGE_TITLES = {
   overview: null,
   smartlog: {
-    th: 'สมุดบัญชี SmartLog',
-    en: 'SmartLog Cashbook',
+    th: 'สมุดบัญชี 360Flow',
+    en: '360Flow Cashbook',
+    zh: '360Flow 收支账本',
   },
   'risk-analysis': {
     th: 'วิเคราะห์ความเสี่ยง & ช่องว่างความคุ้มครอง',
     en: 'Risk & Protection Gap Analysis',
+    zh: '风险评估与保障缺口分析',
   },
   invest: {
     th: 'วางแผนลงทุน & คำนวณ IRR (Value Lab)',
     en: 'Invest & Value Lab (True IRR)',
+    zh: '投资规划与真实 IRR 计算',
   },
   game: {
     th: 'PROTECT360 Survival Lab — เกมจำลองเอาตัวรอดทางการเงิน',
     en: 'PROTECT360 Survival Lab — Financial Resilience Simulator',
+    zh: 'PROTECT360 生存实验室 — 财务韧性模拟器',
   },
   learning: {
     th: 'คลังความรู้ PROTECT360 — ย่อยเรื่องเงินและความเสี่ยงใน 2 นาที',
     en: 'PROTECT360 Learning Library — 2-Minute Plain-Language Risk Guides',
+    zh: 'PROTECT360 知识库 — 2 分钟看懂理财与风险',
   },
-  about: { th: 'เกี่ยวกับเรา', en: 'About PROTECT360' },
+  about: { th: 'เกี่ยวกับเรา', en: 'About PROTECT360', zh: '关于我们' },
+  settings: {
+    th: 'ตั้งค่า & ข้อมูลในเครื่อง',
+    en: 'Settings & Local Privacy',
+    zh: '设置与本地数据管理',
+  },
 };
 
 function AppShellContent() {
+  const [hasOnboarded, setHasOnboarded] = useState(() => {
+    try {
+      return window.localStorage.getItem(ONBOARDING_STORAGE_KEY) === '1';
+    } catch {
+      return false;
+    }
+  });
   const [activePage, setActivePage] = useState('overview');
   const [profileModal, setProfileModal] = useState({ open: false, tab: 'profile' });
+  const [clockState, setClockState] = useState(() => ({
+    hour: new Date().getHours(),
+    source: 'device',
+    offsetHours: 0,
+  }));
+
   const { lang, t } = useLanguage();
   const {
     userProfile,
@@ -81,6 +110,48 @@ function AppShellContent() {
     dismissToast,
   } = useFinance();
 
+  // Synchronize 24-hour clock (checks internet time non-blockingly, falls back cleanly to device clock)
+  useEffect(() => {
+    let active = true;
+    let offsetHours = 0;
+
+    syncReferenceHour().then(({ hour, source }) => {
+      if (!active) return;
+      const localNowHour = new Date().getHours();
+      offsetHours = source === 'internet' ? hour - localNowHour : 0;
+      setClockState({ hour, source, offsetHours });
+    });
+
+    const intervalId = window.setInterval(() => {
+      const localHour = new Date().getHours();
+      const computedHour = (((localHour + offsetHours) % 24) + 24) % 24;
+      setClockState((prev) =>
+        prev.hour === computedHour ? prev : { ...prev, hour: computedHour }
+      );
+    }, 60000);
+
+    return () => {
+      active = false;
+      window.clearInterval(intervalId);
+    };
+  }, []);
+
+  const handleCompleteOnboarding = () => {
+    try {
+      window.localStorage.setItem(ONBOARDING_STORAGE_KEY, '1');
+    } catch {
+      // Ignore storage access errors
+    }
+    setHasOnboarded(true);
+    setActivePage('overview');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleReplayOnboarding = () => {
+    setHasOnboarded(false);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   const handleNavigate = (pageId) => {
     setActivePage(pageId);
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -93,6 +164,15 @@ function AppShellContent() {
   const handleCloseProfile = () => {
     setProfileModal((prev) => ({ ...prev, open: false }));
   };
+
+  if (!hasOnboarded) {
+    return (
+      <OnboardingFlow
+        referenceHour={clockState.hour}
+        onComplete={handleCompleteOnboarding}
+      />
+    );
+  }
 
   const renderActivePage = () => {
     switch (activePage) {
@@ -107,7 +187,16 @@ function AppShellContent() {
       case 'learning':
         return <LearningCenter onNavigate={handleNavigate} />;
       case 'about':
-        return <LandingAbout onNavigate={handleNavigate} />;
+        return <LandingAbout />;
+      case 'settings':
+        return (
+          <SettingsPage
+            referenceHour={clockState.hour}
+            clockSource={clockState.source}
+            onOpenProfile={handleOpenProfile}
+            onReplayOnboarding={handleReplayOnboarding}
+          />
+        );
       case 'overview':
       default:
         return (
@@ -119,7 +208,7 @@ function AppShellContent() {
     }
   };
 
-  const greetingHeading = getGreetingText(userProfile, lang);
+  const greetingHeading = getGreetingText(userProfile, lang, clockState.hour);
   const cardHolderName = getCardHolderDisplay(userProfile);
   const userInitials = getUserInitials(userProfile.firstName, userProfile.lastName);
   const occupationLabel = getOccupationLabel(userProfile.occupation, lang);
@@ -128,14 +217,16 @@ function AppShellContent() {
   const dependentsLabel =
     lang === 'TH'
       ? `ดูแล ${userProfile.dependents >= 3 ? '3+' : userProfile.dependents} คน`
-      : `${userProfile.dependents >= 3 ? '3+' : userProfile.dependents} dep.`;
+      : lang === 'ZH'
+        ? `扶养 ${userProfile.dependents >= 3 ? '3+' : userProfile.dependents} 人`
+        : `${userProfile.dependents >= 3 ? '3+' : userProfile.dependents} dep.`;
 
   return (
     <div className="app-shell">
       <SidebarNav activePage={activePage} onNavigate={handleNavigate} />
 
       <main className="app-main">
-        {/* Row 1: Clean, Symmetrical Utility Strip (Brand + Subpage Profile Pill + Control Groups) */}
+        {/* Row 1: Clean, Symmetrical Utility Strip (Brand + Subpage Profile Pill + No Sales & Settings) */}
         <div className={`top-utility-row ${activePage !== 'overview' ? 'has-subpage-profile' : ''}`}>
           <div className="top-utility-left">
             <button
@@ -166,7 +257,7 @@ function AppShellContent() {
             )}
           </div>
 
-          <TopControlBar onOpenProfile={handleOpenProfile} />
+          <TopControlBar activePage={activePage} onNavigate={handleNavigate} />
         </div>
 
         {/* Active Hypothetical Sample Mode Banner — clearly labels simulated figures */}
@@ -181,11 +272,17 @@ function AppShellContent() {
               <FlaskConical size={16} strokeWidth={2.3} aria-hidden="true" />
               <span>
                 <strong>
-                  {lang === 'TH' ? 'โหมดตัวอย่างคำนวณ:' : 'Sample Preview Mode:'}
+                  {lang === 'TH'
+                    ? 'โหมดตัวอย่างคำนวณ:'
+                    : lang === 'ZH'
+                      ? '假设模拟计算模式：'
+                      : 'Sample Preview Mode:'}
                 </strong>{' '}
                 {lang === 'TH'
                   ? 'ตัวเลขที่แสดงเป็นเงินและสถานการณ์สมมติเพื่อทดลองคำนวณเท่านั้น (ไม่ใช่ข้อมูลจริงของคุณ)'
-                  : 'All figures shown are hypothetical money & scenario values for calculation preview only (not your real data).'}
+                  : lang === 'ZH'
+                    ? '当前展示的金额与情景均为模拟演示数据，非您的真实个人财务数据。'
+                    : 'All figures shown are hypothetical money & scenario values for calculation preview only (not your real data).'}
               </span>
             </div>
             <button
@@ -196,7 +293,11 @@ function AppShellContent() {
             >
               <RotateCcw size={13} strokeWidth={2.3} aria-hidden="true" />
               <span>
-                {lang === 'TH' ? 'ล้างกลับเป็น 0 เพื่อกรอกเอง' : 'Clear back to 0'}
+                {lang === 'TH'
+                  ? 'ล้างกลับเป็น 0 เพื่อกรอกเอง'
+                  : lang === 'ZH'
+                    ? '清空归零并自行填写'
+                    : 'Clear back to 0'}
               </span>
             </button>
           </div>
@@ -243,10 +344,18 @@ function AppShellContent() {
               <div className="member-id-meta tabular-nums">
                 <span className="member-meta-chip">{occupationLabel}</span>
                 <span className="member-meta-chip">
-                  {lang === 'TH' ? `อายุ ${userProfile.age} ปี` : `Age ${userProfile.age}`}
+                  {lang === 'TH'
+                    ? `อายุ ${userProfile.age} ปี`
+                    : lang === 'ZH'
+                      ? `${userProfile.age} 岁`
+                      : `Age ${userProfile.age}`}
                 </span>
                 <span className="member-meta-chip">
-                  {lang === 'TH' ? `เป้าสำรอง ${targetMonths} ด.` : `${targetMonths}-Mo Goal`}
+                  {lang === 'TH'
+                    ? `เป้าสำรอง ${targetMonths} ด.`
+                    : lang === 'ZH'
+                      ? `${targetMonths} 个月目标`
+                      : `${targetMonths}-Mo Goal`}
                 </span>
                 {userProfile.dependents > 0 && (
                   <span className="member-meta-chip">{dependentsLabel}</span>
@@ -263,7 +372,7 @@ function AppShellContent() {
             </button>
           </header>
         ) : activePage === 'smartlog' ? (
-          <header className="bento-card smartlog-header-card" aria-label="SmartLog Cashbook">
+          <header className="bento-card smartlog-header-card" aria-label="360Flow Cashbook">
             <div className="smartlog-header-left">
               <span className="smartlog-header-icon" aria-hidden="true">
                 <Wallet size={22} strokeWidth={2.1} />
@@ -275,7 +384,9 @@ function AppShellContent() {
                 <p className="smartlog-header-sub">
                   {lang === 'TH'
                     ? 'จดรับ-จ่าย สแกนสลิป และติดตามยอดเงินสำรองฉุกเฉินได้ครบในหน้าเดียว'
-                    : 'Log daily cashflow, scan bank slips, and track your emergency reserve in one place.'}
+                    : lang === 'ZH'
+                      ? '在同一页面轻松记录日常收支、扫描转账凭证并追踪应急储备金。'
+                      : 'Log daily cashflow, scan bank slips, and track your emergency reserve in one place.'}
                 </p>
               </div>
             </div>
@@ -479,7 +590,39 @@ function AppShellContent() {
               </span>
             </div>
           </header>
-        ) : activePage === 'about' ? null : (
+        ) : activePage === 'about' ? null : activePage === 'settings' ? (
+          <header
+            className="bento-card smartlog-header-card"
+            aria-label="PROTECT360 Settings and Local Data"
+          >
+            <div className="smartlog-header-left">
+              <span className="smartlog-header-icon" aria-hidden="true">
+                <Settings size={22} strokeWidth={2.1} />
+              </span>
+              <div className="smartlog-header-copy">
+                <h1 className="smartlog-header-title">
+                  {t(PAGE_TITLES.settings)}
+                </h1>
+                <p className="smartlog-header-sub">
+                  {lang === 'TH'
+                    ? 'รวมการตั้งค่าภาษา ธีมสี ขนาดตัวอักษร และการจัดการข้อมูลที่บันทึกในเครื่อง (PDPA-Safe) ไว้ในหน้าเดียว'
+                    : lang === 'ZH'
+                      ? '在一个页面集中管理语言、深浅主题、字号大小以及所有本机隐私数据 (PDPA 安全)。'
+                      : 'Manage language, light/dark theme, text scale, and all local PDPA-safe data controls in one place.'}
+                </p>
+              </div>
+            </div>
+
+            <div className="smartlog-header-chips tabular-nums">
+              <span className="smartlog-stat-chip blue">
+                {t('header.savedLocally')}
+              </span>
+              <span className="smartlog-stat-chip neutral">
+                {lang} · PDPA-Safe
+              </span>
+            </div>
+          </header>
+        ) : (
           <header className="subpage-header">
             <div className="header-greeting-group">
               <div className="header-title-row">

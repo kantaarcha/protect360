@@ -1,15 +1,15 @@
 export const TITLE_OPTIONS = [
-  { value: 'นาย', th: 'นาย', en: 'Mr.' },
-  { value: 'นาง', th: 'นาง', en: 'Mrs.' },
-  { value: 'นางสาว', th: 'นางสาว', en: 'Ms.' },
-  { value: '', th: 'ไม่ระบุ', en: 'Unspecified' },
+  { value: 'นาย', th: 'นาย', en: 'Mr.', zh: '先生' },
+  { value: 'นาง', th: 'นาง', en: 'Mrs.', zh: '女士' },
+  { value: 'นางสาว', th: 'นางสาว', en: 'Ms.', zh: '小姐' },
+  { value: '', th: 'ไม่ระบุ', en: 'Unspecified', zh: '不指定' },
 ];
 
 export const OCCUPATION_OPTIONS = [
-  { id: 'office_worker', th: 'พนักงานออฟฟิศ', en: 'Office Worker' },
-  { id: 'freelancer', th: 'ฟรีแลนซ์', en: 'Freelancer' },
-  { id: 'business_owner', th: 'เจ้าของกิจการ', en: 'Business Owner' },
-  { id: 'fresh_grad', th: 'นักศึกษาจบใหม่', en: 'Fresh Graduate' },
+  { id: 'office_worker', th: 'พนักงานออฟฟิศ', en: 'Office Worker', zh: '上班族' },
+  { id: 'freelancer', th: 'ฟรีแลนซ์', en: 'Freelancer', zh: '自由职业' },
+  { id: 'business_owner', th: 'เจ้าของกิจการ', en: 'Business Owner', zh: '企业主' },
+  { id: 'fresh_grad', th: 'นักศึกษาจบใหม่', en: 'Fresh Graduate', zh: '应届毕业生' },
 ];
 
 export const DEFAULT_OCCUPATION_TH = 'พนักงานออฟฟิศ';
@@ -22,7 +22,8 @@ export function normalizeTitle(value) {
     (opt) =>
       opt.value === trimmed ||
       opt.th === trimmed ||
-      opt.en.toLowerCase() === trimmed.toLowerCase()
+      opt.en.toLowerCase() === trimmed.toLowerCase() ||
+      opt.zh === trimmed
   );
   return match ? match.value : '';
 }
@@ -32,7 +33,9 @@ export function getTitleLabel(title, lang = 'TH') {
   if (!normalized) return '';
   const match = TITLE_OPTIONS.find((opt) => opt.value === normalized);
   if (!match) return '';
-  return lang === 'EN' ? match.en : match.th;
+  if (lang === 'EN') return match.en;
+  if (lang === 'ZH') return match.zh;
+  return match.th;
 }
 
 export function normalizeOccupation(value) {
@@ -42,6 +45,7 @@ export function normalizeOccupation(value) {
     (opt) =>
       opt.th === trimmed ||
       opt.en.toLowerCase() === trimmed.toLowerCase() ||
+      opt.zh === trimmed ||
       opt.id === trimmed.toLowerCase()
   );
   return match ? match.th : DEFAULT_OCCUPATION_TH;
@@ -50,8 +54,14 @@ export function normalizeOccupation(value) {
 export function getOccupationLabel(occupation, lang = 'TH') {
   const normalized = normalizeOccupation(occupation);
   const match = OCCUPATION_OPTIONS.find((opt) => opt.th === normalized);
-  if (!match) return lang === 'EN' ? 'Office Worker' : DEFAULT_OCCUPATION_TH;
-  return lang === 'EN' ? match.en : match.th;
+  if (!match) {
+    if (lang === 'EN') return 'Office Worker';
+    if (lang === 'ZH') return '上班族';
+    return DEFAULT_OCCUPATION_TH;
+  }
+  if (lang === 'EN') return match.en;
+  if (lang === 'ZH') return match.zh;
+  return match.th;
 }
 
 function isLatinName(text) {
@@ -81,8 +91,8 @@ export function getUserInitials(firstName, lastName) {
   const firstInit = extractLeadingInitial(f);
   const lastInit = extractLeadingInitial(l);
 
-  // If Thai name, a single crisp consonant looks cleanest inside a compact circle
-  if (firstInit && /[\u0E00-\u0E7F]/.test(firstInit)) {
+  // If Thai or CJK name, a single crisp character looks cleanest inside a compact circle
+  if (firstInit && (/[\u0E00-\u0E7F]/.test(firstInit) || /[\u4E00-\u9FFF]/.test(firstInit))) {
     return firstInit;
   }
 
@@ -102,31 +112,122 @@ export function formatNameWithTitle(userProfile, lang = 'TH') {
   const normalizedTitle = normalizeTitle(userProfile?.title);
   if (!normalizedTitle) return fullName;
 
+  if (lang === 'ZH') {
+    const zhSuffix = getTitleLabel(normalizedTitle, 'ZH');
+    return zhSuffix ? `${fullName}${zhSuffix}` : fullName;
+  }
+
   // Match prefix script naturally to language / name script
   const useEnglishPrefix = lang === 'EN' || isLatinName(fullName);
   const prefix = getTitleLabel(normalizedTitle, useEnglishPrefix ? 'EN' : 'TH');
   if (!prefix) return fullName;
 
-  // Thai prefixes attach directly to Thai names (e.g. นายกันต์ อาชา); English prefixes use a space (e.g. Mr. Kant Archa)
+  // Thai prefixes attach directly to Thai names (e.g. นายกันต์ อาชา); English prefixes use a space
   return useEnglishPrefix ? `${prefix} ${fullName}` : `${prefix}${fullName}`;
 }
 
-export function getGreetingText(userProfile, lang = 'TH') {
+/**
+ * Resolve 24-hour time-of-day salutation:
+ * - 05:00–11:59 => เช้า (Morning)
+ * - 12:00–15:59 => บ่าย (Afternoon)
+ * - 16:00–18:59 => เย็น (Late Afternoon / Early Evening)
+ * - 19:00–04:59 => ค่ำ (Night / Evening)
+ */
+export function getTimeOfDayGreeting(lang = 'TH', dateOrHour = new Date()) {
+  const hour =
+    typeof dateOrHour === 'number' && Number.isFinite(dateOrHour)
+      ? ((Math.floor(dateOrHour) % 24) + 24) % 24
+      : (dateOrHour instanceof Date ? dateOrHour : new Date()).getHours();
+
+  let bucket = 'night';
+  if (hour >= 5 && hour < 12) {
+    bucket = 'morning';
+  } else if (hour >= 12 && hour < 16) {
+    bucket = 'afternoon';
+  } else if (hour >= 16 && hour < 19) {
+    bucket = 'evening';
+  }
+
+  if (lang === 'EN') {
+    if (bucket === 'morning') return 'Good morning';
+    if (bucket === 'afternoon') return 'Good afternoon';
+    return 'Good evening';
+  }
+
+  if (lang === 'ZH') {
+    if (bucket === 'morning') return '早上好';
+    if (bucket === 'afternoon') return '下午好';
+    if (bucket === 'evening') return '傍晚好';
+    return '晚上好';
+  }
+
+  if (bucket === 'morning') return 'สวัสดีตอนเช้า';
+  if (bucket === 'afternoon') return 'สวัสดีตอนบ่าย';
+  if (bucket === 'evening') return 'สวัสดีตอนเย็น';
+  return 'สวัสดีตอนค่ำ';
+}
+
+/**
+ * Optionally cross-checks current local hour from a public internet time service
+ * (WorldTimeAPI) with a strict short timeout; gracefully falls back to the user's
+ * local device 24-hour clock when offline or restricted.
+ */
+export async function syncReferenceHour() {
+  const localNow = new Date();
+  const localHour = localNow.getHours();
+  if (typeof fetch !== 'function' || typeof AbortController === 'undefined') {
+    return { hour: localHour, source: 'device' };
+  }
+
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), 2200);
+  try {
+    const res = await fetch('https://worldtimeapi.org/api/ip', {
+      signal: controller.signal,
+      cache: 'no-store',
+    });
+    if (!res.ok) return { hour: localHour, source: 'device' };
+    const data = await res.json();
+    const match = typeof data?.datetime === 'string' ? data.datetime.match(/T(\d{2}):/) : null;
+    if (match) {
+      const internetHour = Number(match[1]);
+      if (Number.isInteger(internetHour) && internetHour >= 0 && internetHour <= 23) {
+        return { hour: internetHour, source: 'internet' };
+      }
+    }
+    return { hour: localHour, source: 'device' };
+  } catch {
+    return { hour: localHour, source: 'device' };
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
+export function getGreetingText(userProfile, lang = 'TH', dateOrHour = new Date()) {
+  const salutation = getTimeOfDayGreeting(lang, dateOrHour);
   const fullName = getFullName(userProfile);
+
   if (!fullName) {
-    return lang === 'TH' ? 'สวัสดี, First Jobber' : 'Hello, First Jobber';
+    if (lang === 'ZH') return `${salutation}，First Jobber`;
+    return `${salutation}, First Jobber`;
   }
 
   const normalizedTitle = normalizeTitle(userProfile?.title);
   if (normalizedTitle) {
     const withTitle = formatNameWithTitle(userProfile, lang);
-    return lang === 'TH' ? `สวัสดี, ${withTitle}` : `Hello, ${withTitle}`;
+    if (lang === 'ZH') return `${salutation}，${withTitle}`;
+    return `${salutation}, ${withTitle}`;
   }
 
   if (lang === 'TH') {
-    return isLatinName(fullName) ? `สวัสดี, คุณ ${fullName}` : `สวัสดี, คุณ${fullName}`;
+    return isLatinName(fullName)
+      ? `${salutation}, คุณ ${fullName}`
+      : `${salutation}, คุณ${fullName}`;
   }
-  return `Hello, ${fullName}`;
+  if (lang === 'ZH') {
+    return `${salutation}，${fullName}`;
+  }
+  return `${salutation}, ${fullName}`;
 }
 
 export function getProfilePillLabel(userProfile, lang = 'TH') {
@@ -135,6 +236,10 @@ export function getProfilePillLabel(userProfile, lang = 'TH') {
 
   const normalizedTitle = normalizeTitle(userProfile?.title);
   if (normalizedTitle) {
+    if (lang === 'ZH') {
+      const suffix = getTitleLabel(normalizedTitle, 'ZH');
+      return suffix ? `${first}${suffix}` : first;
+    }
     const useEnglishPrefix = lang === 'EN' || isLatinName(first);
     const prefix = getTitleLabel(normalizedTitle, useEnglishPrefix ? 'EN' : 'TH');
     return useEnglishPrefix ? `${prefix} ${first}` : `${prefix}${first}`;

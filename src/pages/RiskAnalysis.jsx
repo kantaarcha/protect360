@@ -316,8 +316,8 @@ export default function RiskAnalysis({ onNavigate }) {
                   </h2>
                   <p className="card-subtitle">
                     {lang === 'TH'
-                      ? 'เชื่อมต่อสดกับโปรไฟล์และสมุดบัญชี SmartLog แก้ไขตรงนี้แล้วซิงก์ทั้งระบบทันที'
-                      : 'Synced live with your profile & SmartLog — edits update across PROTECT360'}
+                      ? 'เชื่อมต่อสดกับโปรไฟล์และสมุดบัญชี 360Flow แก้ไขตรงนี้แล้วซิงก์ทั้งระบบทันที'
+                      : 'Synced live with your profile & 360Flow — edits update across PROTECT360'}
                   </p>
                 </div>
               </div>
@@ -1143,8 +1143,8 @@ export default function RiskAnalysis({ onNavigate }) {
                       <Wallet size={13} strokeWidth={2.2} aria-hidden="true" />
                       <span>
                         {lang === 'TH'
-                          ? 'ไปบันทึกเติมเงินสำรองใน SmartLog'
-                          : 'Log Emergency Savings in SmartLog'}
+                          ? 'ไปบันทึกเติมเงินสำรองใน 360Flow'
+                          : 'Log Emergency Savings in 360Flow'}
                       </span>
                       <ChevronRight size={13} strokeWidth={2.4} aria-hidden="true" />
                     </button>

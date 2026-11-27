@@ -1,25 +1,9 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
-import { CheckCircle2, Moon, ShieldCheck, Sun, X } from 'lucide-react';
+import { Settings, ShieldCheck, X } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
-import { useTheme } from '../context/ThemeContext';
-import { useLiquidSlider } from '../hooks/useLiquidSlider';
 
-export default function TopControlBar({ onOpenProfile }) {
-  const {
-    lang,
-    setLang,
-    t,
-    fontStepIdx,
-    fontScaleLabel,
-    canDecreaseFont,
-    canIncreaseFont,
-    decreaseFontSize,
-    increaseFontSize,
-    resetFontSize,
-  } = useLanguage();
-
-  const { isDark, toggleTheme } = useTheme();
-  const langSlider = useLiquidSlider(lang, [fontStepIdx]);
+export default function TopControlBar({ activePage, onNavigate }) {
+  const { lang, t, fontStepIdx } = useLanguage();
 
   const [showCharter, setShowCharter] = useState(false);
   const [popoverCoords, setPopoverCoords] = useState({ top: 72, left: 12, width: 310 });
@@ -86,107 +70,15 @@ export default function TopControlBar({ onOpenProfile }) {
     };
   }, [showCharter]);
 
+  const isSettingsActive = activePage === 'settings';
+
   return (
     <div
-      className="top-controls-groups"
+      className="top-controls-groups top-controls-compact"
       role="region"
-      aria-label="Display, language, and privacy controls"
+      aria-label="Trust charter and settings shortcut"
     >
-      {/* Group 1: Display & Accessibility Controls (TH/EN, A-/A+, Theme) */}
-      <div className="control-pill-group control-group-display">
-        <div
-          className="lang-toggle liquid-track"
-          ref={langSlider.containerRef}
-          role="group"
-          aria-label={t('controls.switchLang')}
-        >
-          <span
-            className="liquid-glass-pill liquid-pill-compact"
-            style={langSlider.indicatorStyle}
-            aria-hidden="true"
-          />
-          <button
-            id="lang-btn-th"
-            type="button"
-            data-liquid-active={lang === 'TH' ? 'true' : undefined}
-            className={`lang-btn ${lang === 'TH' ? 'active' : ''}`}
-            aria-pressed={lang === 'TH'}
-            onClick={() => setLang('TH')}
-          >
-            TH
-          </button>
-          <button
-            id="lang-btn-en"
-            type="button"
-            data-liquid-active={lang === 'EN' ? 'true' : undefined}
-            className={`lang-btn ${lang === 'EN' ? 'active' : ''}`}
-            aria-pressed={lang === 'EN'}
-            onClick={() => setLang('EN')}
-          >
-            EN
-          </button>
-        </div>
-
-        <span className="control-divider" aria-hidden="true" />
-
-        <div className="font-scaler" role="group" aria-label="Font size controls">
-          <button
-            id="font-decrease-btn"
-            type="button"
-            className="font-btn"
-            onClick={decreaseFontSize}
-            disabled={!canDecreaseFont}
-            title={t('controls.decreaseFont')}
-            aria-label={t('controls.decreaseFont')}
-          >
-            A-
-          </button>
-          <button
-            id="font-reset-btn"
-            type="button"
-            className="font-scale-readout tabular-nums"
-            onClick={resetFontSize}
-            title={t('controls.resetFont')}
-          >
-            {fontScaleLabel}
-          </button>
-          <button
-            id="font-increase-btn"
-            type="button"
-            className="font-btn"
-            onClick={increaseFontSize}
-            disabled={!canIncreaseFont}
-            title={t('controls.increaseFont')}
-            aria-label={t('controls.increaseFont')}
-          >
-            A+
-          </button>
-        </div>
-
-        <span className="control-divider" aria-hidden="true" />
-
-        <button
-          id="theme-toggle-btn"
-          type="button"
-          className="theme-toggle-btn"
-          onClick={toggleTheme}
-          aria-pressed={isDark}
-          title={t('controls.switchTheme')}
-          aria-label={isDark ? t('controls.lightMode') : t('controls.darkMode')}
-        >
-          {isDark ? (
-            <Sun size={16} strokeWidth={2.2} className="theme-icon sun" />
-          ) : (
-            <Moon size={16} strokeWidth={2.2} className="theme-icon moon" />
-          )}
-          <span className="theme-toggle-label">
-            {isDark ? t('controls.lightMode') : t('controls.darkMode')}
-          </span>
-        </button>
-      </div>
-
-      {/* Group 2: Trust & Local Privacy Badges (No Sales + Saved Locally) */}
-      <div className="control-pill-group control-group-trust">
+      <div className="control-pill-group control-group-compact">
         <div className="neutral-badge-wrap">
           <button
             ref={charterBtnRef}
@@ -233,14 +125,15 @@ export default function TopControlBar({ onOpenProfile }) {
         </div>
 
         <button
-          id="saved-locally-pill"
+          id="top-settings-btn"
           type="button"
-          className="saved-locally-pill"
-          onClick={() => onOpenProfile?.('privacy')}
-          title={t('header.savedLocallyTitle')}
+          className={`top-settings-btn ${isSettingsActive ? 'active' : ''}`}
+          aria-current={isSettingsActive ? 'page' : undefined}
+          onClick={() => onNavigate?.('settings')}
+          title={t('nav.settings')}
         >
-          <CheckCircle2 size={14} strokeWidth={2.3} className="saved-locally-icon" />
-          <span>{t('header.savedLocally')}</span>
+          <Settings size={15} strokeWidth={2.2} aria-hidden="true" />
+          <span>{t('nav.settings')}</span>
         </button>
       </div>
     </div>
