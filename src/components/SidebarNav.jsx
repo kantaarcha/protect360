@@ -25,7 +25,7 @@ export const NAV_ITEMS = [
   { id: 'settings', labelKey: 'nav.settings', icon: Settings },
 ];
 
-export default function SidebarNav({ activePage, onNavigate }) {
+export default function SidebarNav({ activePage, onNavigate, onGoWelcome }) {
   const { lang, fontStepIdx, t } = useLanguage();
   const [drawerOpen, setDrawerOpen] = useState(false);
 
@@ -41,6 +41,15 @@ export default function SidebarNav({ activePage, onNavigate }) {
     setDrawerOpen(false);
   };
 
+  const handleBrandClick = () => {
+    setDrawerOpen(false);
+    if (onGoWelcome) {
+      onGoWelcome();
+    } else {
+      handleSelect('overview');
+    }
+  };
+
   return (
     <>
       {/* Desktop Slim Floating Vertical Navigation Rail (Liquid Glass Vertical Glide) */}
@@ -49,8 +58,8 @@ export default function SidebarNav({ activePage, onNavigate }) {
           type="button"
           id="nav-brand-home"
           className="rail-brand"
-          onClick={() => handleSelect('overview')}
-          title="PROTECT360"
+          onClick={handleBrandClick}
+          title={lang === 'TH' ? 'PROTECT360 • หน้าเริ่มต้นใช้งาน' : 'PROTECT360 • Welcome Screen'}
         >
           <span className="rail-brand-mark" aria-hidden="true">
             <img src="/logo.png" alt="PROTECT360" className="brand-logo-img" />

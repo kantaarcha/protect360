@@ -93,14 +93,32 @@ const OB_COPY = {
 export default function OnboardingFlow({ referenceHour, onComplete }) {
   const { lang, setLang } = useLanguage();
   const { isDark, toggleTheme } = useTheme();
-  const { userProfile, updateUserProfile } = useFinance();
+  const {
+    userProfile,
+    transactions,
+    coverages,
+    monthlyIncome,
+    monthlyExpenses,
+    emergencyFund,
+    updateUserProfile,
+  } = useFinance();
+
+  const hasSavedUserData =
+    Boolean((userProfile.firstName || '').trim()) ||
+    transactions.length > 0 ||
+    coverages.length > 0 ||
+    monthlyIncome > 0 ||
+    monthlyExpenses > 0 ||
+    emergencyFund > 0;
 
   const [step, setStep] = useState(1);
   const [title, setTitle] = useState(userProfile.title || '');
   const [firstName, setFirstName] = useState(userProfile.firstName || '');
   const [lastName, setLastName] = useState(userProfile.lastName || '');
   const [occupation, setOccupation] = useState(userProfile.occupation || OCCUPATION_OPTIONS[0].th);
-  const [age, setAge] = useState('');
+  const [age, setAge] = useState(() =>
+    hasSavedUserData && userProfile.age ? String(userProfile.age) : ''
+  );
   const [emergencyTargetMonths, setEmergencyTargetMonths] = useState(
     userProfile.emergencyTargetMonths === 6 ? 6 : 3
   );

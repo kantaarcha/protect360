@@ -215,16 +215,22 @@ function AppShellContent() {
 
   return (
     <div className="app-shell">
-      <SidebarNav activePage={activePage} onNavigate={handleNavigate} />
+      <SidebarNav
+        activePage={activePage}
+        onNavigate={handleNavigate}
+        onGoWelcome={handleReplayOnboarding}
+      />
 
       <main className="app-main">
         {/* Row 1: Clean, Symmetrical Utility Strip (Brand + Subpage Profile Pill + No Sales & Settings) */}
         <div className={`top-utility-row ${activePage !== 'overview' ? 'has-subpage-profile' : ''}`}>
           <div className="top-utility-left">
             <button
+              id="mobile-brand-home-btn"
               type="button"
               className="mobile-brand-bar"
-              onClick={() => handleNavigate('overview')}
+              onClick={handleReplayOnboarding}
+              title={lang === 'TH' ? 'PROTECT360 • หน้าเริ่มต้นใช้งาน' : 'PROTECT360 • Welcome Screen'}
             >
               <span className="mobile-brand-mark" aria-hidden="true">
                 <img src="/logo.png" alt="PROTECT360" className="brand-logo-img" />

@@ -44,7 +44,6 @@ const SETTINGS_COPY = {
     profileSub: 'ปรับชื่อ อาชีพ เป้าหมายเงินสำรอง และตรวจสอบเวลาที่ใช้ทักทาย',
     clockSourceInternet: 'อ้างอิงเวลาอินเทอร์เน็ต (24 ชม.)',
     clockSourceDevice: 'อ้างอิงเวลาในเครื่อง (24 ชม.)',
-    greetingSchedule: '05:00–11:59 เช้า · 12:00–15:59 บ่าย · 16:00–18:59 เย็น · 19:00–04:59 ค่ำ',
     editProfileBtn: 'แก้ไขข้อมูลส่วนตัว',
     replayWelcomeBtn: 'เปิดหน้าต้อนรับเริ่มต้นใช้งานอีกครั้ง',
     dataTitle: 'บันทึกในเครื่อง & จัดการข้อมูล (PDPA-Safe)',
@@ -95,7 +94,6 @@ const SETTINGS_COPY = {
     profileSub: 'Personalize your name, occupation, reserve goal, and live time-of-day salutation.',
     clockSourceInternet: 'Synced with internet 24h clock',
     clockSourceDevice: 'Using device local 24h clock',
-    greetingSchedule: '05:00–11:59 Morning · 12:00–15:59 Afternoon · 16:00–18:59 Evening · 19:00–04:59 Night',
     editProfileBtn: 'Edit Personal Profile',
     replayWelcomeBtn: 'Replay Welcome Screen',
     dataTitle: 'Saved Locally & Data Portability (PDPA-Safe)',
@@ -426,7 +424,6 @@ export default function SettingsPage({
               </span>
             </div>
             <div className="st-clock-greeting">{greetingNow}</div>
-            <p className="st-clock-schedule tabular-nums">{copy.greetingSchedule}</p>
           </div>
 
           <div className="st-profile-actions">
