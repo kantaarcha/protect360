@@ -14098,6 +14098,353 @@ p {
   }
 }
 
+/* ==========================================================================
+   PATCH 7.1 — REAL n=57 SURVEY STORYTELLING & 8-COLOR HARMONIOUS BAR PALETTE
+   ========================================================================== */
+
+.ab-hero-source-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 7px 12px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: rgba(235, 245, 255, 0.94);
+  font-size: 0.75rem;
+  font-weight: 600;
+  line-height: 1.4;
+  width: fit-content;
+  max-width: 100%;
+}
+
+.ab-hero-source-pill svg {
+  flex-shrink: 0;
+  color: #7dd3fc;
+}
+
+/* 4 Headline Research KPI Cards */
+.ab-insights-section {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.ab-kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.ab-kpi-card {
+  padding: 18px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  border-top: 3px solid transparent;
+}
+
+.ab-kpi-card.tone-blue { border-top-color: #2563eb; }
+.ab-kpi-card.tone-rose { border-top-color: #e11d48; }
+.ab-kpi-card.tone-amber { border-top-color: #d97706; }
+.ab-kpi-card.tone-teal { border-top-color: #0d9488; }
+
+.ab-kpi-top {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.ab-kpi-value {
+  font-size: 1.5rem;
+  font-weight: 800;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+}
+
+.ab-kpi-value.tone-blue { color: #1d63d8; }
+.ab-kpi-value.tone-rose { color: #be123c; }
+.ab-kpi-value.tone-amber { color: #b45309; }
+.ab-kpi-value.tone-teal { color: #0f766e; }
+
+[data-theme='dark'] .ab-kpi-value.tone-blue { color: #7cc0ff; }
+[data-theme='dark'] .ab-kpi-value.tone-rose { color: #fda4af; }
+[data-theme='dark'] .ab-kpi-value.tone-amber { color: #fcd34d; }
+[data-theme='dark'] .ab-kpi-value.tone-teal { color: #5eead4; }
+
+.ab-kpi-count {
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: var(--radius-pill);
+  background: var(--bg-muted);
+  color: var(--text-secondary);
+}
+
+.ab-kpi-title {
+  margin: 0;
+  font-size: 0.86rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  line-height: 1.38;
+}
+
+.ab-kpi-desc {
+  margin: 0;
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+/* Deep Dive 2-Column Survey Mini Charts */
+.ab-deep-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.ab-mini-chart-card {
+  padding: 20px 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.ab-mini-chart-title {
+  margin: 0;
+  font-size: 0.94rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  line-height: 1.38;
+}
+
+.ab-mini-chart-sub {
+  margin: 0;
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+  line-height: 1.45;
+}
+
+.ab-mini-bars {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding-top: 4px;
+}
+
+.ab-mini-bar-item {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.ab-mini-bar-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 0.8rem;
+  color: var(--text-primary);
+}
+
+.ab-mini-bar-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-weight: 600;
+  min-width: 0;
+}
+
+.ab-mini-bar-val {
+  flex-shrink: 0;
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+}
+
+.ab-mini-bar-val strong {
+  color: var(--text-primary);
+  font-weight: 800;
+}
+
+.ab-mini-track {
+  width: 100%;
+  height: 8px;
+  border-radius: 999px;
+  background: rgba(148, 163, 184, 0.2);
+  overflow: hidden;
+}
+
+.ab-color-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+/* Verbatim Voices Row */
+.ab-voices-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.ab-voice-card {
+  margin: 0;
+  padding: 16px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  border-left: 3px solid #2878c8;
+}
+
+.ab-voice-top {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.ab-voice-icon {
+  color: #1d63d8;
+  flex-shrink: 0;
+}
+
+[data-theme='dark'] .ab-voice-icon {
+  color: #7cc0ff;
+}
+
+.ab-voice-tag {
+  font-size: 0.71rem;
+  font-weight: 800;
+  color: var(--text-muted);
+}
+
+.ab-voice-quote {
+  margin: 0;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  line-height: 1.54;
+  flex: 1;
+}
+
+.ab-voice-map {
+  font-size: 0.73rem;
+  font-weight: 800;
+  color: #1d63d8;
+}
+
+[data-theme='dark'] .ab-voice-map {
+  color: #7cc0ff;
+}
+
+/* 8-Color Distinct Harmonious Bar Palette for Feature Demand Chart */
+.ab-bar-rank-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 26px;
+  height: 22px;
+  padding: 0 6px;
+  border-radius: 8px;
+  font-size: 0.71rem;
+  font-weight: 800;
+  flex-shrink: 0;
+}
+
+.ab-bar-count-pill {
+  font-size: 0.73rem;
+  font-weight: 700;
+  color: var(--text-muted);
+}
+
+/* 1. Royal Blue */
+.ab-bar-fill.color-blue { background: linear-gradient(90deg, #1d5bb5 0%, #4f94f0 100%); }
+.ab-color-dot.color-blue { background: #2563eb; }
+.ab-bar-rank-badge.color-blue,
+.ab-bar-solution-chip.color-blue { background: rgba(37, 99, 235, 0.12); color: #1d4ed8; }
+[data-theme='dark'] .ab-bar-rank-badge.color-blue,
+[data-theme='dark'] .ab-bar-solution-chip.color-blue { background: rgba(96, 165, 250, 0.18); color: #93c5fd; }
+
+/* 2. Indigo */
+.ab-bar-fill.color-indigo { background: linear-gradient(90deg, #4338ca 0%, #818cf8 100%); }
+.ab-color-dot.color-indigo { background: #4f46e5; }
+.ab-bar-rank-badge.color-indigo,
+.ab-bar-solution-chip.color-indigo { background: rgba(79, 70, 229, 0.12); color: #4338ca; }
+[data-theme='dark'] .ab-bar-rank-badge.color-indigo,
+[data-theme='dark'] .ab-bar-solution-chip.color-indigo { background: rgba(129, 140, 248, 0.2); color: #c7d2fe; }
+
+/* 3. Teal */
+.ab-bar-fill.color-teal { background: linear-gradient(90deg, #0f766e 0%, #2dd4bf 100%); }
+.ab-color-dot.color-teal { background: #0d9488; }
+.ab-bar-rank-badge.color-teal,
+.ab-bar-solution-chip.color-teal { background: rgba(13, 148, 136, 0.12); color: #0f766e; }
+[data-theme='dark'] .ab-bar-rank-badge.color-teal,
+[data-theme='dark'] .ab-bar-solution-chip.color-teal { background: rgba(45, 212, 191, 0.18); color: #5eead4; }
+
+/* 4. Emerald */
+.ab-bar-fill.color-emerald { background: linear-gradient(90deg, #047857 0%, #34d399 100%); }
+.ab-color-dot.color-emerald { background: #059669; }
+.ab-bar-rank-badge.color-emerald,
+.ab-bar-solution-chip.color-emerald { background: rgba(5, 150, 105, 0.12); color: #047857; }
+[data-theme='dark'] .ab-bar-rank-badge.color-emerald,
+[data-theme='dark'] .ab-bar-solution-chip.color-emerald { background: rgba(52, 211, 153, 0.18); color: #6ee7b7; }
+
+/* 5. Sky Cyan */
+.ab-bar-fill.color-sky { background: linear-gradient(90deg, #0369a1 0%, #38bdf8 100%); }
+.ab-color-dot.color-sky { background: #0284c7; }
+.ab-bar-rank-badge.color-sky,
+.ab-bar-solution-chip.color-sky { background: rgba(2, 132, 199, 0.12); color: #0369a1; }
+[data-theme='dark'] .ab-bar-rank-badge.color-sky,
+[data-theme='dark'] .ab-bar-solution-chip.color-sky { background: rgba(56, 189, 248, 0.18); color: #7dd3fc; }
+
+/* 6. Warm Amber */
+.ab-bar-fill.color-amber { background: linear-gradient(90deg, #b45309 0%, #f59e0b 100%); }
+.ab-color-dot.color-amber { background: #d97706; }
+.ab-bar-rank-badge.color-amber,
+.ab-bar-solution-chip.color-amber { background: rgba(217, 119, 6, 0.13); color: #b45309; }
+[data-theme='dark'] .ab-bar-rank-badge.color-amber,
+[data-theme='dark'] .ab-bar-solution-chip.color-amber { background: rgba(251, 191, 36, 0.18); color: #fcd34d; }
+
+/* 7. Soft Violet */
+.ab-bar-fill.color-violet { background: linear-gradient(90deg, #6d28d9 0%, #a78bfa 100%); }
+.ab-color-dot.color-violet { background: #7c3aed; }
+.ab-bar-rank-badge.color-violet,
+.ab-bar-solution-chip.color-violet { background: rgba(124, 58, 237, 0.12); color: #6d28d9; }
+[data-theme='dark'] .ab-bar-rank-badge.color-violet,
+[data-theme='dark'] .ab-bar-solution-chip.color-violet { background: rgba(167, 139, 250, 0.2); color: #c4b5fd; }
+
+/* 8. Rose Coral */
+.ab-bar-fill.color-rose { background: linear-gradient(90deg, #be123c 0%, #fb7185 100%); }
+.ab-color-dot.color-rose { background: #e11d48; }
+.ab-bar-rank-badge.color-rose,
+.ab-bar-solution-chip.color-rose { background: rgba(225, 29, 72, 0.12); color: #be123c; }
+[data-theme='dark'] .ab-bar-rank-badge.color-rose,
+[data-theme='dark'] .ab-bar-solution-chip.color-rose { background: rgba(251, 113, 133, 0.18); color: #fda4af; }
+
+@media (max-width: 1120px) {
+  .ab-kpi-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .ab-voices-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 820px) {
+  .ab-deep-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 680px) {
+  .ab-kpi-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
 
 
 
