@@ -3,6 +3,7 @@ import {
   AlertCircle,
   ArrowDownLeft,
   ArrowUpRight,
+  BarChart3,
   Calculator,
   Calendar,
   Check,
@@ -11,9 +12,11 @@ import {
   Download,
   FolderPlus,
   ImagePlus,
+  List,
   MoreHorizontal,
   PenLine,
   Pencil,
+  PieChart,
   PiggyBank,
   ScanLine,
   Search,
@@ -39,6 +42,8 @@ import LiquidTabs from '../components/LiquidTabs';
 import MerchantCalculator from '../components/MerchantCalculator';
 import CustomCategoryModal from '../components/CustomCategoryModal';
 import KpiDetailModal from '../components/KpiDetailModal';
+import CashflowDonutChart from '../components/CashflowDonutChart';
+import CashflowCalendarView from '../components/CashflowCalendarView';
 
 const THAI_MONTHS_SHORT = [
   'ม.ค.',
@@ -200,10 +205,12 @@ export default function AutoKey({ onNavigate }) {
   // Interactive KPI Drill-Down modal: null | 'income' | 'expense' | 'saving'
   const [kpiDetailMode, setKpiDetailMode] = useState(null);
 
-  // Cashflow Category Breakdown filter: 'all' | 'income' | 'expense' | 'saving'
+  // Cashflow Category Breakdown filter & chart style ('bar' | 'donut')
   const [breakdownFilter, setBreakdownFilter] = useState('all');
+  const [breakdownChartType, setBreakdownChartType] = useState('bar');
 
-  // Ledger state (search, filter, delete confirm, inline edit)
+  // Ledger state (view mode: 'list' | 'calendar', search, filter, delete confirm, inline edit)
+  const [ledgerViewMode, setLedgerViewMode] = useState('list');
   const [ledgerSearch, setLedgerSearch] = useState('');
   const [ledgerFilter, setLedgerFilter] = useState('all');
   const [confirmDeleteTxId, setConfirmDeleteTxId] = useState(null);
@@ -749,6 +756,22 @@ export default function AutoKey({ onNavigate }) {
     { id: 'expense', label: lang === 'TH' ? 'รายจ่าย' : 'Expense' },
     { id: 'saving', label: lang === 'TH' ? 'เงินออม' : 'Savings' },
   ];
+
+  const chartTypeTabs = [
+    { id: 'bar', label: lang === 'TH' ? 'แท่ง' : 'Bar', icon: BarChart3 },
+    { id: 'donut', label: lang === 'TH' ? 'วงกลม' : 'Donut', icon: PieChart },
+  ];
+
+  const ledgerViewTabs = [
+    { id: 'list', label: lang === 'TH' ? 'รายการ' : 'List', icon: List },
+    { id: 'calendar', label: lang === 'TH' ? 'ปฏิทิน' : 'Calendar', icon: Calendar },
+  ];
+
+  const handleQuickAddDate = (isoDate) => {
+    setManualDate(isoDate);
+    setInputMode('manual');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
 
   const todayIso = getTodayIso();
   const yesterdayIso = getIsoDateOffset(-1);
@@ -1637,11 +1660,21 @@ export default function AutoKey({ onNavigate }) {
 
             <div className="ak-divider" />
 
-            {/* Category Breakdown Filter (All / Income / Expense / Savings) */}
+            {/* Category Breakdown Filter (All / Income / Expense / Savings) + Bar/Donut Switcher */}
             <div className="ak-breakdown-filter-row">
-              <span className="ak-section-micro-label">
-                {lang === 'TH' ? 'แยกตามหมวดหมู่' : 'By Category'}
-              </span>
+              <div className="ak-breakdown-head-left">
+                <span className="ak-section-micro-label">
+                  {lang === 'TH' ? 'แยกตามหมวดหมู่' : 'By Category'}
+                </span>
+                <LiquidTabs
+                  tabs={chartTypeTabs}
+                  activeId={breakdownChartType}
+                  onChange={setBreakdownChartType}
+                  variant="compact"
+                  idPrefix="breakdown-chart-type"
+                  ariaLabel={lang === 'TH' ? 'รูปแบบกราฟ' : 'Chart style'}
+                />
+              </div>
               <LiquidTabs
                 tabs={breakdownFilterTabs}
                 activeId={breakdownFilter}
@@ -1652,48 +1685,72 @@ export default function AutoKey({ onNavigate }) {
               />
             </div>
 
-            {/* Category Breakdown Bars (Income Green, Expense Red, Saving Blue) */}
-            <div className="ak-cat-breakdown-list">
-              {cashflowBreakdown.items.length === 0 ? (
-                <div className="ak-empty-mini">
-                  {lang === 'TH' ? 'ยังไม่มีรายการในหมวดนี้' : 'No items logged in this stream yet'}
-                </div>
-              ) : (
-                cashflowBreakdown.items.map((item) => {
-                  const Icon = item.icon;
-                  const valSign = item.type === 'expense' ? '-' : '+';
-                  return (
-                    <div
-                      key={item.key}
-                      className={`ak-cat-bar-item type-${item.type}`}
-                    >
-                      <div className="ak-cat-bar-top">
-                        <span className="ak-cat-bar-name">
-                          <span className="ak-cat-bar-icon" aria-hidden="true">
-                            <Icon size={14} strokeWidth={2.2} />
+            {/* Category Breakdown Visualization (Bar or Donut) */}
+            {breakdownChartType === 'donut' ? (
+              <CashflowDonutChart
+                items={cashflowBreakdown.items}
+                breakdownFilter={breakdownFilter}
+                totalLabel={
+                  breakdownFilter === 'income'
+                    ? lang === 'TH'
+                      ? 'รวมรายรับ'
+                      : 'Total Income'
+                    : breakdownFilter === 'expense'
+                      ? lang === 'TH'
+                        ? 'รวมรายจ่าย'
+                        : 'Total Expense'
+                      : breakdownFilter === 'saving'
+                        ? lang === 'TH'
+                          ? 'รวมเงินสำรอง'
+                          : 'Total Reserve'
+                        : lang === 'TH'
+                          ? 'รวมทุกหมวด'
+                          : 'All Streams'
+                }
+              />
+            ) : (
+              <div className="ak-cat-breakdown-list">
+                {cashflowBreakdown.items.length === 0 ? (
+                  <div className="ak-empty-mini">
+                    {lang === 'TH' ? 'ยังไม่มีรายการในหมวดนี้' : 'No items logged in this stream yet'}
+                  </div>
+                ) : (
+                  cashflowBreakdown.items.map((item) => {
+                    const Icon = item.icon;
+                    const valSign = item.type === 'expense' ? '-' : '+';
+                    return (
+                      <div
+                        key={item.key}
+                        className={`ak-cat-bar-item type-${item.type}`}
+                      >
+                        <div className="ak-cat-bar-top">
+                          <span className="ak-cat-bar-name">
+                            <span className="ak-cat-bar-icon" aria-hidden="true">
+                              <Icon size={14} strokeWidth={2.2} />
+                            </span>
+                            <span>{t(item.label)}</span>
                           </span>
-                          <span>{t(item.label)}</span>
-                        </span>
-                        <span className={`ak-cat-bar-val ${item.type} tabular-nums`}>
-                          {valSign}
-                          {formatTHB(item.amount)}
-                          <span className="ak-cat-bar-pct">
-                            {' '}
-                            ({breakdownFilter === 'all' ? item.pct : item.shareOfStream}%)
+                          <span className={`ak-cat-bar-val ${item.type} tabular-nums`}>
+                            {valSign}
+                            {formatTHB(item.amount)}
+                            <span className="ak-cat-bar-pct">
+                              {' '}
+                              ({breakdownFilter === 'all' ? item.pct : item.shareOfStream}%)
+                            </span>
                           </span>
-                        </span>
+                        </div>
+                        <div className="ak-bar-track sm">
+                          <div
+                            className="ak-bar-fill ak-bar-fill-cat"
+                            style={{ width: `${breakdownFilter === 'all' ? item.pct : item.shareOfStream}%` }}
+                          />
+                        </div>
                       </div>
-                      <div className="ak-bar-track sm">
-                        <div
-                          className="ak-bar-fill ak-bar-fill-cat"
-                          style={{ width: `${breakdownFilter === 'all' ? item.pct : item.shareOfStream}%` }}
-                        />
-                      </div>
-                    </div>
-                  );
-                })
-              )}
-            </div>
+                    );
+                  })
+                )}
+              </div>
+            )}
           </section>
 
           {/* Card B: Safe Protection Budget Coach (Bridge to Round 3 Risk Analysis) */}
@@ -1785,18 +1842,29 @@ export default function AutoKey({ onNavigate }) {
           </div>
 
           <div className="activities-controls">
-            <div className="search-input-wrap">
-              <Search size={15} className="search-input-icon" aria-hidden="true" />
-              <input
-                id="smartlog-ledger-search"
-                type="search"
-                className="search-input"
-                value={ledgerSearch}
-                onChange={(e) => setLedgerSearch(e.target.value)}
-                placeholder={t('overview.searchPlaceholder')}
-                aria-label={t('overview.searchPlaceholder')}
-              />
-            </div>
+            <LiquidTabs
+              tabs={ledgerViewTabs}
+              activeId={ledgerViewMode}
+              onChange={setLedgerViewMode}
+              variant="compact"
+              idPrefix="ledger-view-mode"
+              ariaLabel={lang === 'TH' ? 'มุมมองสมุดบัญชี' : 'Ledger view mode'}
+            />
+
+            {ledgerViewMode === 'list' && (
+              <div className="search-input-wrap">
+                <Search size={15} className="search-input-icon" aria-hidden="true" />
+                <input
+                  id="smartlog-ledger-search"
+                  type="search"
+                  className="search-input"
+                  value={ledgerSearch}
+                  onChange={(e) => setLedgerSearch(e.target.value)}
+                  placeholder={t('overview.searchPlaceholder')}
+                  aria-label={t('overview.searchPlaceholder')}
+                />
+              </div>
+            )}
 
             <LiquidTabs
               tabs={ledgerFilterTabs}
@@ -1821,6 +1889,14 @@ export default function AutoKey({ onNavigate }) {
           </div>
         </div>
 
+        {ledgerViewMode === 'calendar' ? (
+          <CashflowCalendarView
+            transactions={filteredTransactions}
+            customCategories={customCategories}
+            onQuickAddDate={handleQuickAddDate}
+          />
+        ) : (
+          <>
         {/* Desktop Ledger Table */}
         <div className="table-scroll desktop-activities-table ak-ledger-scroll">
           <table className="activities-table">
@@ -2172,6 +2248,8 @@ export default function AutoKey({ onNavigate }) {
             })
           )}
         </div>
+          </>
+        )}
       </section>
 
       {/* Interactive KPI Drill-Down Modal (Income / Expenses / Net Savings) */}

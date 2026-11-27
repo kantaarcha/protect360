@@ -36,9 +36,11 @@ import {
   computeFinalScorecard,
   computeProtectionPool,
   getChoicesForEvent,
+  getEstimatedPlayTime,
   getTotalMonthsForDuration,
   getTurnCountForDuration,
   resolveTurn,
+  roundCustomDays,
 } from '../utils/gameEngine';
 
 function getRangePct(value, min, max) {
@@ -91,6 +93,8 @@ export default function Game({ onNavigate }) {
   // Lobby Setup State
   const [durationUnit, setDurationUnit] = useState('days'); // 'days' | 'months'
   const [durationValue, setDurationValue] = useState(30); // default Express 30 days
+  const [durationInput, setDurationInput] = useState('30');
+  const [roundedNotice, setRoundedNotice] = useState(null);
   const [personaMode, setPersonaMode] = useState('default'); // 'profile' | 'default'
   const [askedHr, setAskedHr] = useState(false);
 
@@ -120,6 +124,11 @@ export default function Game({ onNavigate }) {
     [durationUnit, durationValue]
   );
 
+  const estimatedPlayTime = useMemo(
+    () => getEstimatedPlayTime(totalTurns),
+    [totalTurns]
+  );
+
   const previewProtectionPool = useMemo(
     () =>
       computeProtectionPool({
@@ -130,28 +139,62 @@ export default function Game({ onNavigate }) {
     [activePersona.existingProtectionLimit, allocations.protection, askedHr]
   );
 
+  const syncDuration = (nextVal) => {
+    setDurationValue(nextVal);
+    setDurationInput(String(nextVal));
+    setRoundedNotice(null);
+  };
+
   // Switch between Days and Months cleanly
   const handleUnitChange = (nextUnit) => {
     if (nextUnit === durationUnit) return;
     setDurationUnit(nextUnit);
     if (nextUnit === 'months') {
       const approxMonths = clamp(Math.round(durationValue / 30), 1, 12);
-      setDurationValue(approxMonths);
+      syncDuration(approxMonths);
     } else {
       const mapDays = { 1: 30, 3: 90, 6: 180, 12: 365 };
-      setDurationValue(mapDays[durationValue] || clamp(durationValue * 30, 15, 365));
+      const nextDays = mapDays[durationValue] || roundCustomDays(durationValue * 30);
+      syncDuration(nextDays);
     }
   };
 
   const handleSelectPreset = (preset) => {
-    setDurationValue(durationUnit === 'days' ? preset.days : preset.months);
+    syncDuration(durationUnit === 'days' ? preset.days : preset.months);
   };
 
   const handleStepDuration = (delta) => {
     if (durationUnit === 'days') {
-      setDurationValue((prev) => clamp(prev + delta, 15, 365));
+      syncDuration(clamp(durationValue + delta, 5, 365));
     } else {
-      setDurationValue((prev) => clamp(prev + delta, 1, 12));
+      syncDuration(clamp(durationValue + delta, 1, 12));
+    }
+  };
+
+  const handleDurationTextChange = (raw) => {
+    const digitsOnly = String(raw || '').replace(/[^\d]/g, '').slice(0, 3);
+    setDurationInput(digitsOnly);
+    setRoundedNotice(null);
+  };
+
+  const commitDurationInput = () => {
+    const parsed = parseInt(durationInput, 10);
+    if (durationUnit === 'days') {
+      if (!Number.isFinite(parsed) || parsed <= 0) {
+        syncDuration(5);
+        return;
+      }
+      const rounded = roundCustomDays(parsed);
+      setDurationValue(rounded);
+      setDurationInput(String(rounded));
+      if (rounded !== parsed) {
+        setRoundedNotice({ from: parsed, to: rounded });
+      } else {
+        setRoundedNotice(null);
+      }
+    } else {
+      const clampedMo = clamp(Number.isFinite(parsed) && parsed > 0 ? parsed : 1, 1, 12);
+      syncDuration(clampedMo);
     }
   };
 
@@ -206,13 +249,27 @@ export default function Game({ onNavigate }) {
 
   // Start Simulation
   const handleStartGame = () => {
-    const turns = getTurnCountForDuration(durationUnit, durationValue);
-    const totalMonths = getTotalMonthsForDuration(durationUnit, durationValue);
+    const parsedDraft = parseInt(durationInput, 10);
+    const effectiveDuration =
+      durationUnit === 'days'
+        ? Number.isFinite(parsedDraft) && parsedDraft > 0
+          ? roundCustomDays(parsedDraft)
+          : durationValue
+        : Number.isFinite(parsedDraft) && parsedDraft > 0
+          ? clamp(parsedDraft, 1, 12)
+          : durationValue;
+    if (effectiveDuration !== durationValue) {
+      setDurationValue(effectiveDuration);
+      setDurationInput(String(effectiveDuration));
+    }
+
+    const turns = getTurnCountForDuration(durationUnit, effectiveDuration);
+    const totalMonths = getTotalMonthsForDuration(durationUnit, effectiveDuration);
     const monthsPerTurn = totalMonths / turns;
 
     const config = {
       unit: durationUnit,
-      durationValue,
+      durationValue: effectiveDuration,
       totalTurns: turns,
       totalMonths,
       monthsPerTurn,
@@ -458,35 +515,59 @@ export default function Game({ onNavigate }) {
                 })}
               </div>
 
-              {/* Custom Slider & Stepper */}
+              {/* Custom Slider & Direct Number Input */}
               <div className="gm-custom-duration-box">
                 <div className="gm-custom-dur-head">
                   <span className="gm-label-muted">
-                    {lang === 'TH' ? 'ปรับระยะเวลาเองแบบละเอียด' : 'Fine-Tune Custom Duration'}
+                    {lang === 'TH' ? 'พิมพ์หรือเลื่อนปรับระยะเวลาเอง' : 'Type or Slide Custom Duration'}
                   </span>
                   <div className="gm-stepper-group tabular-nums">
                     <button
                       type="button"
                       className="gm-step-btn"
-                      onClick={() => handleStepDuration(durationUnit === 'days' ? -15 : -1)}
+                      onClick={() => handleStepDuration(durationUnit === 'days' ? -5 : -1)}
                       aria-label="Decrease duration"
                     >
                       <Minus size={14} />
                     </button>
-                    <strong className="gm-dur-readout">
-                      {durationValue}{' '}
-                      {durationUnit === 'days'
-                        ? lang === 'TH'
-                          ? 'วัน'
-                          : 'days'
-                        : lang === 'TH'
-                          ? 'เดือน'
-                          : 'mo.'}
-                    </strong>
+                    <div className="gm-dur-input-wrap">
+                      <input
+                        id="gm-custom-duration-input"
+                        type="text"
+                        inputMode="numeric"
+                        className="gm-dur-input tabular-nums"
+                        value={durationInput}
+                        onChange={(e) => handleDurationTextChange(e.target.value)}
+                        onBlur={commitDurationInput}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter') {
+                            e.currentTarget.blur();
+                          }
+                        }}
+                        aria-label={
+                          durationUnit === 'days'
+                            ? lang === 'TH'
+                              ? 'ระบุจำนวนวัน'
+                              : 'Enter number of days'
+                            : lang === 'TH'
+                              ? 'ระบุจำนวนเดือน'
+                              : 'Enter number of months'
+                        }
+                      />
+                      <span className="gm-dur-unit-lbl">
+                        {durationUnit === 'days'
+                          ? lang === 'TH'
+                            ? 'วัน'
+                            : 'days'
+                          : lang === 'TH'
+                            ? 'เดือน'
+                            : 'mo.'}
+                      </span>
+                    </div>
                     <button
                       type="button"
                       className="gm-step-btn"
-                      onClick={() => handleStepDuration(durationUnit === 'days' ? 15 : 1)}
+                      onClick={() => handleStepDuration(durationUnit === 'days' ? 5 : 1)}
                       aria-label="Increase duration"
                     >
                       <Plus size={14} />
@@ -497,18 +578,18 @@ export default function Game({ onNavigate }) {
                 <input
                   type="range"
                   className="inv-range gm-range tone-blue"
-                  min={durationUnit === 'days' ? 15 : 1}
+                  min={durationUnit === 'days' ? 5 : 1}
                   max={durationUnit === 'days' ? 365 : 12}
                   step={durationUnit === 'days' ? 5 : 1}
                   value={durationValue}
                   style={{
                     '--range-pct': `${getRangePct(
                       durationValue,
-                      durationUnit === 'days' ? 15 : 1,
+                      durationUnit === 'days' ? 5 : 1,
                       durationUnit === 'days' ? 365 : 12
                     )}%`,
                   }}
-                  onChange={(e) => setDurationValue(Number(e.target.value))}
+                  onChange={(e) => syncDuration(Number(e.target.value))}
                   aria-label="Custom simulation duration"
                 />
 
@@ -516,14 +597,26 @@ export default function Game({ onNavigate }) {
                   <span>
                     <Calendar size={13} aria-hidden="true" />{' '}
                     {lang === 'TH'
-                      ? `จำนวนเทิร์นจำลอง: ${totalTurns} เทิร์น`
-                      : `Simulated Turns: ${totalTurns} turns`}
+                      ? `${totalTurns} เทิร์น • ใช้เวลาเล่นประมาณ ${t(estimatedPlayTime)}`
+                      : `${totalTurns} turns • Est. play time ${t(estimatedPlayTime)}`}
                   </span>
-                  <span className="gm-shock-guarantee">
-                    {lang === 'TH'
-                      ? 'รวมเหตุฉุกเฉินใหญ่ ฿100,000 ทุกโหมด'
-                      : 'Includes ฿100,000 shock in every mode'}
-                  </span>
+                  {roundedNotice ? (
+                    <span className="gm-rounded-pill">
+                      {lang === 'TH'
+                        ? `ปัด ${roundedNotice.from} → ${roundedNotice.to} วันอัตโนมัติ`
+                        : `Auto-rounded ${roundedNotice.from} → ${roundedNotice.to} days`}
+                    </span>
+                  ) : durationUnit === 'days' ? (
+                    <span className="gm-shock-guarantee">
+                      {lang === 'TH'
+                        ? 'พิมพ์วันได้ (ปัดขึ้นทีละ 5 วัน)'
+                        : 'Type any day (rounds up to 5s)'}
+                    </span>
+                  ) : (
+                    <span className="gm-shock-guarantee">
+                      {lang === 'TH' ? 'พิมพ์ได้ 1–12 เดือน' : 'Type 1–12 months'}
+                    </span>
+                  )}
                 </div>
               </div>
             </section>
@@ -630,7 +723,7 @@ export default function Game({ onNavigate }) {
             </section>
           </div>
 
-          {/* 3. Pre-Game Strategy Allocation (Quick 10-Second Prep) */}
+          {/* 3. Pre-Game Strategy Allocation */}
           <section className="bento-card gm-card gm-strategy-card">
             <div className="gm-strategy-header">
               <div className="gm-card-title-row">
@@ -640,8 +733,8 @@ export default function Game({ onNavigate }) {
                 <div>
                   <h2 className="gm-card-title">
                     {lang === 'TH'
-                      ? '3. จัดสรรกลยุทธ์ก่อนเริ่มเกม (10 วินาที)'
-                      : '3. Pre-Game Strategy Allocation (10-Sec Prep)'}
+                      ? '3. จัดสรรกลยุทธ์ก่อนเริ่มเกม'
+                      : '3. Pre-Game Strategy Allocation'}
                   </h2>
                   <p className="gm-card-sub">
                     {lang === 'TH'
@@ -709,13 +802,13 @@ export default function Game({ onNavigate }) {
               </div>
             )}
 
-            {/* 3 Strategy Sliders */}
+            {/* 3 Strategy Sliders (All aligned to exact same monthlySurplus scale) */}
             <div className="gm-sliders-grid">
               {/* Bucket 1: Emergency Fund */}
               <div className="gm-slider-box">
                 <div className="gm-slider-top">
                   <label htmlFor="gm-alloc-emergency" className="gm-slider-label">
-                    {lang === 'TH' ? '1. ออมเงินสำรองฉุกเฉิน' : '1. Emergency Cash Fund'}
+                    {lang === 'TH' ? '1. เงินสำรองฉุกเฉิน' : '1. Emergency Cash'}
                   </label>
                   <strong className="gm-slider-val text-blue tabular-nums">
                     {formatTHB(allocations.emergency)}
@@ -745,9 +838,7 @@ export default function Game({ onNavigate }) {
               <div className="gm-slider-box">
                 <div className="gm-slider-top">
                   <label htmlFor="gm-alloc-protection" className="gm-slider-label">
-                    {lang === 'TH'
-                      ? '2. โอนย้ายความเสี่ยงพื้นฐาน'
-                      : '2. Basic Health/Accident Transfer'}
+                    {lang === 'TH' ? '2. โอนย้ายความเสี่ยง' : '2. Risk Transfer'}
                   </label>
                   <strong className="gm-slider-val text-navy tabular-nums">
                     {formatTHB(allocations.protection)}
@@ -759,17 +850,17 @@ export default function Game({ onNavigate }) {
                   type="range"
                   className="inv-range gm-range tone-navy"
                   min={0}
-                  max={safeProtectionCap}
+                  max={monthlySurplus}
                   step={100}
                   disabled={safeProtectionCap <= 0}
                   value={allocations.protection}
-                  style={{ '--range-pct': `${getRangePct(allocations.protection, 0, safeProtectionCap)}%` }}
+                  style={{ '--range-pct': `${getRangePct(allocations.protection, 0, monthlySurplus)}%` }}
                   onChange={(e) => handleAllocationChange('protection', e.target.value)}
                 />
                 <p className="gm-slider-hint tabular-nums">
                   {lang === 'TH'
-                    ? `จำกัดกรอบปลอดภัยไม่เกิน 15% ของรายได้ (${formatTHB(recommendedProtMin)}–${formatTHB(recommendedProtMax)}/ด.) • เกราะเสริม ≈ ${formatTHB(allocations.protection * 120)}`
-                    : `Safely capped at 15% of income (${formatTHB(recommendedProtMin)}–${formatTHB(recommendedProtMax)}/mo) • Adds ≈ ${formatTHB(allocations.protection * 120)} shield`}
+                    ? `จำกัดปลอดภัยไม่เกิน ${formatTHB(safeProtectionCap)}/ด. (15% ของรายได้ • แนะนำ ${formatTHB(recommendedProtMin)}–${formatTHB(recommendedProtMax)}) • เกราะ ≈ ${formatTHB(allocations.protection * 120)}`
+                    : `Capped safely at ${formatTHB(safeProtectionCap)}/mo (15% of income) • Shield ≈ ${formatTHB(allocations.protection * 120)}`}
                 </p>
               </div>
 
@@ -777,9 +868,7 @@ export default function Game({ onNavigate }) {
               <div className="gm-slider-box">
                 <div className="gm-slider-top">
                   <label htmlFor="gm-alloc-lifestyle" className="gm-slider-label">
-                    {lang === 'TH'
-                      ? '3. ไลฟ์สไตล์ / ความสุขวันนี้'
-                      : '3. Lifestyle & Enjoyment Today'}
+                    {lang === 'TH' ? '3. ไลฟ์สไตล์วันนี้' : '3. Lifestyle Today'}
                   </label>
                   <strong className="gm-slider-val text-green tabular-nums">
                     {formatTHB(allocations.lifestyle)}

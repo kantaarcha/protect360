@@ -11,12 +11,12 @@ export const DURATION_PRESETS = [
     days: 30,
     months: 1,
     turns: 3,
-    tag: { th: 'โหมดด่วน ~45 วิ', en: 'Express ~45s' },
+    tag: { th: '~45 วิ', en: '~45 sec' },
     labelDays: { th: '30 วัน', en: '30 Days' },
     labelMonths: { th: '1 เดือน', en: '1 Month' },
     desc: {
-      th: '3 เทิร์น • เหมาะสำหรับทดลองเร็วและเดโม่หน้างาน',
-      en: '3 Turns • Ideal for quick runs & live demos',
+      th: '3 เทิร์น • โหมดด่วนสำหรับลองเล่นเร็ว',
+      en: '3 Turns • Express quick demo',
     },
   },
   {
@@ -24,12 +24,12 @@ export const DURATION_PRESETS = [
     days: 90,
     months: 3,
     turns: 5,
-    tag: { th: 'โหมดมาตรฐาน', en: 'Standard' },
+    tag: { th: '~1.5 นาที', en: '~1.5 min' },
     labelDays: { th: '90 วัน', en: '90 Days' },
     labelMonths: { th: '3 เดือน', en: '3 Months' },
     desc: {
-      th: '5 เทิร์น • ทดสอบกันชนเงินสำรองฉุกเฉินมาตรฐาน',
-      en: '5 Turns • Classic 3-month emergency buffer test',
+      th: '5 เทิร์น • ทดสอบกันชนเงินสำรองมาตรฐาน',
+      en: '5 Turns • Classic 3-month buffer test',
     },
   },
   {
@@ -37,12 +37,12 @@ export const DURATION_PRESETS = [
     days: 180,
     months: 6,
     turns: 6,
-    tag: { th: 'โหมดท้าทาย', en: 'Extended' },
+    tag: { th: '~2 นาที', en: '~2 min' },
     labelDays: { th: '180 วัน', en: '180 Days' },
     labelMonths: { th: '6 เดือน', en: '6 Months' },
     desc: {
       th: '6 เทิร์น • ทดสอบความอึดทางการเงินระยะกลาง',
-      en: '6 Turns • Mid-term financial resilience challenge',
+      en: '6 Turns • Mid-term resilience challenge',
     },
   },
   {
@@ -50,11 +50,11 @@ export const DURATION_PRESETS = [
     days: 365,
     months: 12,
     turns: 8,
-    tag: { th: 'โหมดเต็มปี', en: 'Full Year' },
+    tag: { th: '~3 นาที', en: '~3 min' },
     labelDays: { th: '365 วัน', en: '365 Days' },
     labelMonths: { th: '12 เดือน', en: '12 Months' },
     desc: {
-      th: '8 เทิร์น • จำลองเหตุไม่คาดฝันครบวงรอบ 1 ปีเต็ม',
+      th: '8 เทิร์น • จำลองเหตุไม่คาดฝันครบ 1 ปีเต็ม',
       en: '8 Turns • Full-year multi-shock stress test',
     },
   },
@@ -79,6 +79,17 @@ export function clamp(val, min, max) {
   return Math.min(max, Math.max(min, val));
 }
 
+/**
+ * Auto-round user-typed custom days upward to multiples of 5:
+ * 1-4 -> 5, 6-9 -> 10, 11-14 -> 15, ..., capped at 365.
+ */
+export function roundCustomDays(rawValue) {
+  const num = Number(rawValue);
+  if (!Number.isFinite(num) || num <= 0) return 5;
+  const ceiled = Math.ceil(num / 5) * 5;
+  return clamp(ceiled, 5, 365);
+}
+
 export function getTurnCountForDuration(unit, durationValue) {
   const days = unit === 'months' ? durationValue * 30.4 : durationValue;
   if (days <= 45) return 3;
@@ -87,9 +98,16 @@ export function getTurnCountForDuration(unit, durationValue) {
   return 8;
 }
 
+export function getEstimatedPlayTime(turns) {
+  if (turns <= 3) return { th: '~45 วิ', en: '~45 sec' };
+  if (turns <= 5) return { th: '~1.5 นาที', en: '~1.5 min' };
+  if (turns <= 6) return { th: '~2 นาที', en: '~2 min' };
+  return { th: '~3 นาที', en: '~3 min' };
+}
+
 export function getTotalMonthsForDuration(unit, durationValue) {
   if (unit === 'months') return Math.max(1, Number(durationValue) || 1);
-  return Math.max(0.5, (Number(durationValue) || 30) / 30);
+  return Math.max(5 / 30, (Number(durationValue) || 30) / 30);
 }
 
 /**
