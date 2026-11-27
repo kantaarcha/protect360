@@ -12979,7 +12979,7 @@ p {
 }
 
 /* ==========================================================================
-   ROUND 6.5.0 — A+ TAB SAFETY, PURPLE "รู้ไว้ใช้ว่า?", REFERENCES & QUIZ SHUFFLE
+   ROUND 6.5.0 — A+ TAB SAFETY, PURPLE "รู้ไว้ใช่ว่า", REFERENCES & QUIZ SHUFFLE
    ========================================================================== */
 
 /* Keep Learning Center window tabs readable without truncation at 112% & 125% */
@@ -13013,7 +13013,8 @@ p {
   }
 }
 
-/* Purple category: "รู้ไว้ใช้ว่า?" (Good to Know?) */
+/* Purple category inside articles & topic icons: "รู้ไว้ใช่ว่า" (Good to Know) */
+/* Filter button on the search row intentionally keeps standard neutral/blue styling */
 .lc-cat-pill.cat-good-to-know {
   background: rgba(124, 58, 237, 0.12);
   color: #6d28d9;
@@ -13032,35 +13033,6 @@ p {
 [data-theme='dark'] .lc-topic-icon.cat-good-to-know {
   background: rgba(167, 139, 250, 0.18);
   color: #c4b5fd;
-}
-
-.lc-mini-cat-btn.cat-good-to-know {
-  border-color: rgba(124, 58, 237, 0.28);
-  color: #6d28d9;
-}
-
-.lc-mini-cat-btn.cat-good-to-know:hover {
-  border-color: rgba(124, 58, 237, 0.5);
-  background: rgba(124, 58, 237, 0.08);
-  color: #5b21b6;
-}
-
-.lc-mini-cat-btn.cat-good-to-know.active {
-  background: rgba(124, 58, 237, 0.15);
-  border-color: rgba(124, 58, 237, 0.48);
-  color: #5b21b6;
-}
-
-[data-theme='dark'] .lc-mini-cat-btn.cat-good-to-know {
-  border-color: rgba(192, 132, 252, 0.3);
-  color: #c4b5fd;
-}
-
-[data-theme='dark'] .lc-mini-cat-btn.cat-good-to-know:hover,
-[data-theme='dark'] .lc-mini-cat-btn.cat-good-to-know.active {
-  background: rgba(167, 139, 250, 0.2);
-  border-color: rgba(192, 132, 252, 0.54);
-  color: #ddd6fe;
 }
 
 /* Official Reference Links Box inside Reading Pane */
@@ -13168,6 +13140,111 @@ p {
   .lc-ref-title {
     flex-basis: calc(100% - 24px);
   }
+}
+
+/* ==========================================================================
+   PATCH 6.8 — STRUCTURED ACADEMIC QUIZ FEEDBACK BREAKDOWN
+   ========================================================================== */
+.lc-fb-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.86rem;
+  font-weight: 800;
+  color: var(--text-primary);
+}
+
+.lc-fb-icon {
+  flex-shrink: 0;
+}
+
+.lc-fb-icon.ok {
+  color: #15803d;
+}
+
+.lc-fb-icon.err {
+  color: #dc2626;
+}
+
+[data-theme='dark'] .lc-fb-icon.ok {
+  color: #4ade80;
+}
+
+[data-theme='dark'] .lc-fb-icon.err {
+  color: #f87171;
+}
+
+.lc-fb-body {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.lc-fb-block {
+  padding: 9px 12px;
+  border-radius: 10px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.lc-fb-block.wrong {
+  border-left: 3px solid #dc2626;
+}
+
+.lc-fb-block.correct {
+  border-left: 3px solid #16a34a;
+}
+
+.lc-fb-block.extra {
+  border-left: 3px solid #2878c8;
+  background: var(--accent-blue-bg);
+  border-color: rgba(40, 120, 200, 0.2);
+}
+
+.lc-fb-label {
+  font-size: 0.74rem;
+  font-weight: 800;
+  letter-spacing: 0.01em;
+}
+
+.lc-fb-block.wrong .lc-fb-label {
+  color: #b91c1c;
+}
+
+.lc-fb-block.correct .lc-fb-label {
+  color: #15803d;
+}
+
+.lc-fb-block.extra .lc-fb-label {
+  color: #1d63d8;
+}
+
+[data-theme='dark'] .lc-fb-block.wrong .lc-fb-label {
+  color: #fca5a5;
+}
+
+[data-theme='dark'] .lc-fb-block.correct .lc-fb-label {
+  color: #86efac;
+}
+
+[data-theme='dark'] .lc-fb-block.extra .lc-fb-label {
+  color: #7cc0ff;
+}
+
+.lc-fb-block p {
+  margin: 0;
+  font-size: 0.81rem;
+  color: var(--text-primary);
+  line-height: 1.54;
+}
+
+.lc-fb-actions {
+  display: flex;
+  justify-content: flex-end;
+  padding-top: 2px;
 }
 
 

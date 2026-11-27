@@ -202,10 +202,19 @@ export default function LearningCenter({ onNavigate }) {
     filteredTerms[0] ||
     null;
 
-  // Quiz handlers (randomized 5-question round from 15-question bank)
+  // Quiz handlers (randomized 5-question round from 20-question bank)
   const currentQuestion = quizSession[quizIdx];
   const isAnswered = selectedOptionId !== null;
   const isCorrectAnswer = isAnswered && selectedOptionId === currentQuestion?.correctId;
+  const pickedOptionIdx = currentQuestion
+    ? currentQuestion.options.findIndex((o) => o.id === selectedOptionId)
+    : -1;
+  const pickedOption = pickedOptionIdx >= 0 ? currentQuestion.options[pickedOptionIdx] : null;
+  const pickedLetter = pickedOptionIdx >= 0 ? String.fromCharCode(65 + pickedOptionIdx) : '';
+  const correctOptionIdx = currentQuestion
+    ? currentQuestion.options.findIndex((o) => o.id === currentQuestion.correctId)
+    : -1;
+  const correctLetter = correctOptionIdx >= 0 ? String.fromCharCode(65 + correctOptionIdx) : '';
 
   const handleSelectQuizOption = (optionId) => {
     if (isAnswered || !currentQuestion) return;
@@ -290,11 +299,11 @@ export default function LearningCenter({ onNavigate }) {
                   placeholder={
                     activeTab === 'guides'
                       ? lang === 'TH'
-                        ? 'ค้นหาหัวข้อ เช่น ระยะเวลารอคอย, OPD, ประกันกลุ่ม...'
-                        : 'Search topics: Waiting Period, OPD, Group plan...'
+                        ? 'ค้นหาหัวข้อ เช่น OPD, UCEP...'
+                        : 'Search: OPD, UCEP...'
                       : lang === 'TH'
-                        ? 'ค้นหาคำศัพท์ เช่น ทุนประกัน, ข้อยกเว้น, IRR...'
-                        : 'Search terms: Sum Insured, Rider, IRR...'
+                        ? 'ค้นหาศัพท์ เช่น IRR, OPD...'
+                        : 'Search: IRR, OPD...'
                   }
                   aria-label={lang === 'TH' ? 'ค้นหาในคลังความรู้' : 'Search learning center'}
                 />
@@ -698,24 +707,77 @@ export default function LearningCenter({ onNavigate }) {
 
                 {isAnswered && (
                   <div className={`lc-quiz-feedback ${isCorrectAnswer ? 'ok' : 'warn'}`}>
-                    <p>{t(currentQuestion.explanation)}</p>
-                    <button
-                      type="button"
-                      id="lc-quiz-next-btn"
-                      className="btn-primary-gradient lc-quiz-next-btn"
-                      onClick={handleNextQuestion}
-                    >
-                      <span>
-                        {quizIdx + 1 >= quizSession.length
+                    <div className="lc-fb-head">
+                      {isCorrectAnswer ? (
+                        <CheckCircle2 size={17} className="lc-fb-icon ok" aria-hidden="true" />
+                      ) : (
+                        <XCircle size={17} className="lc-fb-icon err" aria-hidden="true" />
+                      )}
+                      <strong>
+                        {isCorrectAnswer
                           ? lang === 'TH'
-                            ? 'ดูผลคะแนนควิซ'
-                            : 'See Quiz Result'
+                            ? `ถูกต้อง! ข้อ ${correctLetter} คือคำตอบที่ถูก`
+                            : `Correct! Option ${correctLetter} is right`
                           : lang === 'TH'
-                            ? 'ข้อถัดไป'
-                            : 'Next Question'}
-                      </span>
-                      <ArrowRight size={15} />
-                    </button>
+                            ? `ยังไม่ถูกต้อง (คุณเลือกข้อ ${pickedLetter} • คำตอบที่ถูกคือข้อ ${correctLetter})`
+                            : `Not quite (You chose ${pickedLetter} • Correct answer is ${correctLetter})`}
+                      </strong>
+                    </div>
+
+                    <div className="lc-fb-body">
+                      {!isCorrectAnswer && pickedOption?.wrongReason && (
+                        <div className="lc-fb-block wrong">
+                          <span className="lc-fb-label">
+                            {lang === 'TH'
+                              ? `ทำไมข้อ ${pickedLetter} จึงยังไม่ถูก:`
+                              : `Why Option ${pickedLetter} is incorrect:`}
+                          </span>
+                          <p>{t(pickedOption.wrongReason)}</p>
+                        </div>
+                      )}
+
+                      <div className="lc-fb-block correct">
+                        <span className="lc-fb-label">
+                          {isCorrectAnswer
+                            ? lang === 'TH'
+                              ? 'หลักการที่ทำให้ข้อนี้ถูกต้อง:'
+                              : 'Why this is correct:'
+                            : lang === 'TH'
+                              ? `ทำไมข้อ ${correctLetter} จึงถูกต้อง:`
+                              : `Why Option ${correctLetter} is correct:`}
+                        </span>
+                        <p>{t(currentQuestion.correctReason)}</p>
+                      </div>
+
+                      {currentQuestion.extraNote && (
+                        <div className="lc-fb-block extra">
+                          <span className="lc-fb-label">
+                            {lang === 'TH' ? 'ความรู้เสริมที่ควรรู้:' : 'Key Extra Insight:'}
+                          </span>
+                          <p>{t(currentQuestion.extraNote)}</p>
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="lc-fb-actions">
+                      <button
+                        type="button"
+                        id="lc-quiz-next-btn"
+                        className="btn-primary-gradient lc-quiz-next-btn"
+                        onClick={handleNextQuestion}
+                      >
+                        <span>
+                          {quizIdx + 1 >= quizSession.length
+                            ? lang === 'TH'
+                              ? 'ดูผลคะแนนควิซ'
+                              : 'See Quiz Result'
+                            : lang === 'TH'
+                              ? 'ข้อถัดไป'
+                              : 'Next Question'}
+                        </span>
+                        <ArrowRight size={15} />
+                      </button>
+                    </div>
                   </div>
                 )}
               </div>

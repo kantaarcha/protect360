@@ -436,10 +436,10 @@ function AppShellContent() {
                 {lang === 'TH' ? '10 บทความ + แหล่งอ้างอิง' : '10 Guides & Sources'}
               </span>
               <span className="smartlog-stat-chip neutral">
-                {lang === 'TH' ? '6 ศัพท์กรมธรรม์' : '6 Key Terms'}
+                {lang === 'TH' ? '14 ศัพท์สำคัญ' : '14 Key Terms'}
               </span>
               <span className="smartlog-stat-chip neutral">
-                {lang === 'TH' ? 'ควิซสุ่มคลัง 15 ข้อ' : '15-Q Random Quiz'}
+                {lang === 'TH' ? 'ควิซสุ่มคลัง 20 ข้อ' : '20-Q Random Quiz'}
               </span>
             </div>
           </header>

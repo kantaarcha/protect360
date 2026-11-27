@@ -8,7 +8,7 @@ export const LEARNING_CATEGORIES = [
   { id: 'cash', label: { th: 'เงินสำรอง', en: 'Emergency' } },
   { id: 'policy', label: { th: 'อ่านกรมธรรม์', en: 'Policy Rules' } },
   { id: 'benefits', label: { th: 'สวัสดิการ', en: 'Benefits' } },
-  { id: 'good-to-know', label: { th: 'รู้ไว้ใช้ว่า?', en: 'Good to Know?' } },
+  { id: 'good-to-know', label: { th: 'รู้ไว้ใช่ว่า', en: 'Good to Know' } },
 ];
 
 export const LEARNING_ARTICLES = [
@@ -403,14 +403,14 @@ export const LEARNING_ARTICLES = [
       label: { th: 'กลับไปติดตามเงินสำรองใน SmartLog', en: 'Track Your Reserve in SmartLog' },
     },
   },
-  // ==================== NEW PURPLE CATEGORY: รู้ไว้ใช้ว่า? ====================
+  // ==================== NEW PURPLE CATEGORY: รู้ไว้ใช่ว่า? ====================
   {
     id: 'ucep-72h-rights',
     category: 'good-to-know',
-    categoryLabel: { th: 'รู้ไว้ใช้ว่า?', en: 'Good to Know?' },
+    categoryLabel: { th: 'รู้ไว้ใช่ว่า', en: 'Good to Know' },
     readMinutes: 2,
     iconName: 'siren',
-    keywords: ['ucep', 'ฉุกเฉินวิกฤต', '72 ชั่วโมง', '1669', 'สปสช', 'รักษาฟรี', 'รู้ไว้ใช้ว่า'],
+    keywords: ['ucep', 'ฉุกเฉินวิกฤต', '72 ชั่วโมง', '1669', 'สปสช', 'รักษาฟรี', 'รู้ไว้ใช่ว่า'],
     title: {
       th: 'สิทธิ UCEP เจ็บป่วยฉุกเฉินวิกฤต รักษาฟรี 72 ชม. ทุก รพ. ใกล้ที่สุด',
       en: 'UCEP 72-Hour Right: Free Critical Emergency Care Anywhere',
@@ -472,10 +472,10 @@ export const LEARNING_ARTICLES = [
   {
     id: 'oic-freelook-license',
     category: 'good-to-know',
-    categoryLabel: { th: 'รู้ไว้ใช้ว่า?', en: 'Good to Know?' },
+    categoryLabel: { th: 'รู้ไว้ใช่ว่า', en: 'Good to Know' },
     readMinutes: 2,
     iconName: 'badge-check',
-    keywords: ['free look', '15 วัน', 'ยกเลิกกรมธรรม์', 'ใบอนุญาตตัวแทน', 'คปภ', '1186', 'รู้ไว้ใช้ว่า'],
+    keywords: ['free look', '15 วัน', 'ยกเลิกกรมธรรม์', 'ใบอนุญาตตัวแทน', 'คปภ', '1186', 'รู้ไว้ใช่ว่า'],
     title: {
       th: 'เช็กใบอนุญาตตัวแทน & สิทธิ Free Look ยกเลิกคืนเงินใน 15 วัน',
       en: 'Verify Agent Licenses & Your 15-Day Free-Look Right',
@@ -542,10 +542,10 @@ export const LEARNING_ARTICLES = [
   {
     id: 'copayment-2568-rules',
     category: 'good-to-know',
-    categoryLabel: { th: 'รู้ไว้ใช้ว่า?', en: 'Good to Know?' },
+    categoryLabel: { th: 'รู้ไว้ใช่ว่า', en: 'Good to Know' },
     readMinutes: 2,
     iconName: 'shield-question',
-    keywords: ['co-payment', 'copayment', '2568', 'simple diseases', 'ป่วยเล็กน้อย', 'ร่วมจ่าย 30%', 'รู้ไว้ใช้ว่า'],
+    keywords: ['co-payment', 'copayment', '2568', 'simple diseases', 'ป่วยเล็กน้อย', 'ร่วมจ่าย 30%', 'รู้ไว้ใช่ว่า'],
     title: {
       th: 'กติกาใหม่ Co-payment สุขภาพ (2568): เคลมแบบไหนไม่โดนร่วมจ่าย?',
       en: 'New 2025 Health Co-Payment Rules: When Does It Trigger?',
@@ -612,10 +612,10 @@ export const LEARNING_ARTICLES = [
   {
     id: 'thai-tax-deduction-facts',
     category: 'good-to-know',
-    categoryLabel: { th: 'รู้ไว้ใช้ว่า?', en: 'Good to Know?' },
+    categoryLabel: { th: 'รู้ไว้ใช่ว่า', en: 'Good to Know' },
     readMinutes: 2,
     iconName: 'receipt',
-    keywords: ['ลดหย่อนภาษี', 'สรรพากร', '100000', '25000', '10 ปี', 'ฐานภาษี', 'irr', 'รู้ไว้ใช้ว่า'],
+    keywords: ['ลดหย่อนภาษี', 'สรรพากร', '100000', '25000', '10 ปี', 'ฐานภาษี', 'irr', 'รู้ไว้ใช่ว่า'],
     title: {
       th: 'สิทธิลดหย่อนภาษีเบี้ยประกันชีวิต & สุขภาพ (สรรพากร): ใครคุ้มจริง?',
       en: 'Thai Tax Deduction Rules (RD): Who Actually Benefits?',
@@ -760,11 +760,116 @@ export const JARGON_TERMS = [
       en: 'Use our Invest & Value Lab to check real inflation-adjusted IRR and your actual Thai tax bracket before locking money long term.',
     },
   },
+  {
+    id: 'waiting-period',
+    term: { th: 'ระยะเวลารอคอย (Waiting Period)', en: 'Waiting Period' },
+    shortTag: { th: 'ช่วงยังไม่คุ้มครองโรค', en: 'Initial Hold Window' },
+    plainMeaning: {
+      th: 'ช่วงเวลาตั้งแต่วันที่กรมธรรม์เริ่มมีผลบังคับไปจนครบกำหนด (มาตรฐาน 30 วันสำหรับโรคทั่วไป และ 120 วันสำหรับ 8 โรคเฉพาะ เช่น เนื้องอก ไส้เลื่อน นิ่ว) หากป่วยในช่วงนี้จะยังเคลมไม่ได้',
+      en: 'The initial window after policy start (typically 30 days for general illnesses and 120 days for 8 specific conditions like tumors or stones) during which illness claims are not yet covered.',
+    },
+    tip: {
+      th: 'อุบัติเหตุเฉียบพลันส่วนใหญ่มักคุ้มครองทันทีหลังอนุมัติ แต่โรคภัยต้องรอพ้นระยะเวลารอคอย จึงไม่ควรรอให้เริ่มมีอาการแล้วค่อยทำ',
+      en: 'Sudden accidents are usually covered immediately upon approval, while illnesses require clearing the waiting window — never wait until symptoms appear.',
+    },
+  },
+  {
+    id: 'opd-ipd',
+    term: { th: 'ผู้ป่วยนอก (OPD) vs. ผู้ป่วยใน (IPD)', en: 'Outpatient (OPD) vs. Inpatient (IPD)' },
+    shortTag: { th: 'กลับบ้าน vs แอดมิต', en: 'Clinic vs Admission' },
+    plainMeaning: {
+      th: 'OPD คือการไปพบแพทย์ รับยา แล้วกลับบ้านโดยไม่นอนโรงพยาบาล ส่วน IPD คือการแอดมิตนอนพักรักษาตัวตามความจำเป็นทางการแพทย์ (โดยทั่วไปตั้งแต่ 6 ชั่วโมงขึ้นไป)',
+      en: 'OPD covers doctor visits and medicine without staying overnight, while IPD covers medically necessary hospital admissions (typically 6+ hours).',
+    },
+    tip: {
+      th: 'สำหรับมือใหม่งบจำกัด ควรปิดความเสี่ยง IPD ที่บิลพุ่งหลักแสนก่อน ส่วน OPD ยอดหลักพันสามารถใช้เงินสำรองหรือประกันกลุ่มบริษัทดูแลได้คุ้มกว่า',
+      en: 'On a starter budget, protect against high-cost IPD admissions first; routine OPD bills are usually cheaper to absorb via reserves or workplace plans.',
+    },
+  },
+  {
+    id: 'deductible',
+    term: { th: 'ความรับผิดส่วนแรก (Deductible)', en: 'Deductible' },
+    shortTag: { th: 'ยอดจ่ายก้อนแรก', en: 'First-Layer Amount' },
+    plainMeaning: {
+      th: 'ยอดค่ารักษาพยาบาลก้อนแรกที่ผู้เอาประกันหรือสวัสดิการอื่น (เช่น ประกันกลุ่มบริษัท) รับผิดชอบก่อน เช่น ฿30,000 แรก จากนั้นแผนคุ้มครองส่วนเกินจึงเข้ามาจ่ายส่วนที่เหลือทั้งหมด',
+      en: 'The initial fixed claim amount paid first by you or another benefit (such as employer group cover, e.g., the first ฿30,000) before the main policy pays the excess.',
+    },
+    tip: {
+      th: 'เป็นเครื่องมือสำคัญในการลดการจ่ายเบี้ยซ้ำซ้อนกับสวัสดิการเดิม โดยยังคงได้วงเงินเหมาจ่ายก้อนใหญ่ไว้กันบิลหลักแสน-หลักล้าน',
+      en: 'One of the smartest ways to avoid overlapping premiums with existing workplace benefits while keeping catastrophic hospital protection.',
+    },
+  },
+  {
+    id: 'co-payment',
+    term: { th: 'ส่วนร่วมจ่าย (Co-payment)', en: 'Co-payment' },
+    shortTag: { th: 'ร่วมจ่ายเป็นร้อยละ', en: 'Percentage Share' },
+    plainMeaning: {
+      th: 'เงื่อนไขที่ผู้เอาประกันร่วมรับผิดชอบค่ารักษาเป็นเปอร์เซ็นต์ (เช่น 30% ในปีต่ออายุ) ตามเกณฑ์มาตรฐานสุขภาพปี 2568 จะเกิดเฉพาะกรณีเคลมแอดมิตโรคเล็กน้อย (Simple Diseases) ซ้ำ 3 ครั้งขึ้นไปและยอดเคลมสูงเกินเกณฑ์',
+      en: 'A percentage share of medical bills paid by the policyholder (e.g., 30% at renewal). Under Thailand’s 2025 standard, it only triggers after 3+ minor illness admissions exceeding claim ratio thresholds.',
+    },
+    tip: {
+      th: 'การผ่าตัดใหญ่และโรคร้ายแรงได้รับยกเว้นจากเงื่อนไข Co-payment ปี 2568 จึงไม่ต้องกังวลว่าจะโดนร่วมจ่ายเมื่อป่วยหนักจริง',
+      en: 'Major surgeries and critical illnesses are explicitly exempt under Thailand’s 2025 co-payment standard.',
+    },
+  },
+  {
+    id: 'pre-existing',
+    term: { th: 'โรคที่เป็นมาก่อน (Pre-existing Condition)', en: 'Pre-existing Condition' },
+    shortTag: { th: 'ประวัติสุขภาพเดิม', en: 'Prior Medical History' },
+    plainMeaning: {
+      th: 'ภาวะเจ็บป่วย อาการ หรือความผิดปกติที่เกิดขึ้น มีการตรวจพบ หรือได้รับการรักษาก่อนวันที่กรมธรรม์เริ่มมีผลคุ้มครอง ซึ่งกฎหมายกำหนดให้ต้องแถลงตามความจริงในใบคำขอ',
+      en: 'Any medical condition, symptom, or diagnosis that existed or was treated before the policy start date, which must be honestly disclosed on the application.',
+    },
+    tip: {
+      th: 'การแถลงความจริงครบ 100% ทำให้สิทธิการเคลมโรคอื่นแข็งแรงเต็มที่ ตรงข้ามกับการปกปิดซึ่งเสี่ยงถูกบอกล้างสัญญาตามกฎหมายภายใน 2 ปี',
+      en: '100% honest disclosure keeps all other claims legally airtight, whereas omitting prior history risks contract rescission within 2 years.',
+    },
+  },
+  {
+    id: 'free-look',
+    term: { th: 'สิทธิยกเลิกกรมธรรม์ (Free Look)', en: 'Free-Look Period' },
+    shortTag: { th: 'ทบทวนได้ 15 วัน', en: '15-Day Review Right' },
+    plainMeaning: {
+      th: 'สิทธิผู้บริโภคภายใต้เกณฑ์ คปภ. ที่ให้เวลาตรวจสอบรายละเอียดเล่มกรมธรรม์ภายใน 15 วันหลังได้รับเล่ม (หรือ 30 วันหากซื้อทางโทรศัพท์) หากไม่ตรงเงื่อนไขสามารถขอยกเลิกคืนเบี้ยได้',
+      en: 'An OIC consumer right giving you 15 days after policy delivery (30 days for telesales) to review terms and cancel for a refund minus minimal processing fees.',
+    },
+    tip: {
+      th: 'เมื่อได้รับเล่มกรมธรรม์ ให้เปิดเช็กหน้าตารางผลประโยชน์ ข้อยกเว้น และระยะเวลารอคอยทันทีตั้งแต่วันแรกที่ได้รับ',
+      en: 'The day your policy arrives, check the benefit schedule, exclusions, and waiting periods before the 15-day review clock runs out.',
+    },
+  },
+  {
+    id: 'ucep',
+    term: { th: 'สิทธิฉุกเฉินวิกฤต (UCEP)', en: 'UCEP 72-Hour Right' },
+    shortTag: { th: 'รักษาฟรี 72 ชม.', en: 'Free Critical Care' },
+    plainMeaning: {
+      th: 'นโยบายรัฐที่ให้ผู้ป่วยฉุกเฉินวิกฤต (เข้าเกณฑ์ 6 อาการอันตรายถึงชีวิต) เข้ารักษาในโรงพยาบาลที่ใกล้ที่สุดทั้งรัฐและเอกชนได้ทันทีโดยไม่ต้องสำรองจ่าย สูงสุด 72 ชั่วโมงจนพ้นวิกฤต',
+      en: 'Thailand’s universal emergency right allowing patients with 6 qualifying life-threatening symptoms to receive free stabilization at the nearest public or private hospital for up to 72 hours.',
+    },
+    tip: {
+      th: 'บันทึกเบอร์สายด่วนการแพทย์ฉุกเฉิน 1669 และสายด่วน สปสช. 1330 ไว้ในมือถือ เพื่อใช้ยืนยันสิทธิได้ทันท่วงทีในเหตุวิกฤต',
+      en: 'Save Emergency Medical Hotline 1669 and NHSO 1330 in your phone to confirm eligibility rapidly during critical emergencies.',
+    },
+  },
+  {
+    id: 'emergency-runway',
+    term: { th: 'เงินสำรองฉุกเฉิน (Emergency Runway)', en: 'Emergency Runway' },
+    shortTag: { th: 'กันชน 3–6 เดือน', en: '3–6 Month Buffer' },
+    plainMeaning: {
+      th: 'เงินสดสภาพคล่องสูงที่แยกเก็บไว้รับมือเหตุฉุกเฉิน เช่น ตกงาน ซ่อมรถ หรือป่วยเล็กน้อย วัดเป็น "จำนวนเดือนที่อยู่ได้" จากสูตร เงินสำรอง ÷ รายจ่ายจำเป็นต่อเดือน',
+      en: 'Liquid cash reserved purely for unexpected shocks (job loss, urgent repairs, minor bills), measured in months as Emergency Cash ÷ Monthly Essential Expenses.',
+    },
+    tip: {
+      th: 'ตามหลักวางแผนการเงิน ควรสร้างฐานเงินสำรองอย่างน้อย 3 เดือนให้มั่นคงก่อนนำเงินไปผูกพันกับสินทรัพย์สภาพคล่องต่ำหรือกองทุนระยะยาว',
+      en: 'Build at least a 3-month liquid buffer before locking surplus cash into illiquid long-term contracts or retirement funds.',
+    },
+  },
 ];
 
 // =============================================================================
-// 15-QUESTION RANDOMIZED LITERACY QUIZ BANK
-// All 3 choices per question are strictly balanced in length (anti-guessing!)
+// 20-QUESTION RANDOMIZED LITERACY QUIZ BANK
+// - Strictly 3 choices (A/B/C) with balanced length to prevent length-guessing
+// - Academic, concise per-option wrongReason + correctReason + extraNote
 // =============================================================================
 export const LITERACY_QUIZ_BANK = [
   {
@@ -777,6 +882,10 @@ export const LITERACY_QUIZ_BANK = [
       {
         id: 'a',
         label: { th: 'เคลมได้เต็มวงเงินทันที เพราะสัญญาอนุมัติแล้ว', en: 'Fully covered immediately once policy is approved' },
+        wrongReason: {
+          th: 'การอนุมัติสัญญาไม่ได้แปลว่าคุ้มครองโรคภัยทันที สัญญาประกันสุขภาพมาตรฐานในไทยมีกลไกระยะเวลารอคอยเพื่อป้องกันภาวะการคัดเลือกปฏิปักษ์ (Anti-selection) หรือการซื้อเมื่อเริ่มป่วยแล้ว',
+          en: 'Approval alone does not activate illness cover immediately — health policies enforce a waiting period to prevent anti-selection (buying right as symptoms start).',
+        },
       },
       {
         id: 'b',
@@ -785,12 +894,20 @@ export const LITERACY_QUIZ_BANK = [
       {
         id: 'c',
         label: { th: 'เคลมได้ครึ่งหนึ่งเฉพาะค่าห้องและค่ายาเบื้องต้น', en: 'Half covered for standard hospital room fees only' },
+        wrongReason: {
+          th: 'กรมธรรม์ไม่มีกติกาจ่าย "ครึ่งหนึ่ง" ระหว่างระยะเวลารอคอย หากเจ็บป่วยภายใน 30 วันแรกจะยังไม่เข้าเงื่อนไขความคุ้มครองทั้งบิล',
+          en: 'Policies do not pay 50% during a waiting period — illnesses diagnosed within the first 30 days are completely excluded from coverage.',
+        },
       },
     ],
     correctId: 'b',
-    explanation: {
-      th: 'โรคทั่วไปมีระยะเวลารอคอยมาตรฐาน 30 วัน (และ 120 วันสำหรับ 8 โรคเฉพาะ) ส่วนอุบัติเหตุเฉียบพลันมักคุ้มครองทันที',
-      en: 'General illnesses carry a 30-day waiting period (120 days for 8 specific conditions), while sudden accidents usually start immediately.',
+    correctReason: {
+      th: 'ตามมาตรฐานประกันสุขภาพไทย โรคทั่วไป (รวมถึงไข้เลือดออก) มีระยะเวลารอคอย 30 วันนับจากวันเริ่มมีผลคุ้มครอง หากเกิดโรคภายในช่วงนี้จะยังไม่สามารถเคลมได้',
+      en: 'Under Thai health insurance standards, general illnesses (including dengue) carry a mandatory 30-day waiting period from the effective date before claims qualify.',
+    },
+    extraNote: {
+      th: 'ยกเว้น "อุบัติเหตุเฉียบพลัน" ที่มักคุ้มครองทันทีหลังอนุมัติ ส่วน 8 โรคเฉพาะ (เช่น เนื้องอก ไส้เลื่อน นิ่ว ต้อเนื้อ) จะมีระยะเวลารอคอยยาวกว่าคือ 120 วัน',
+      en: 'Sudden accidents usually start immediately after approval, while 8 specific conditions (such as tumors, hernias, and stones) carry a longer 120-day waiting period.',
     },
   },
   {
@@ -807,16 +924,28 @@ export const LITERACY_QUIZ_BANK = [
       {
         id: 'b',
         label: { th: 'เดาไว้ก่อนว่าน่าจะคุ้มครองราว 100,000 บาท', en: 'Estimate it at ฿100,000 as a rough baseline' },
+        wrongReason: {
+          th: 'การเดาตัวเลขสูงเกินจริงอาจทำให้คุณชะล่าใจว่าปลอดภัยแล้ว ทั้งที่ประกันกลุ่มระดับเริ่มต้นจำนวนมากจำกัดค่าห้องและค่ารักษาต่อครั้งไว้เพียง ฿20,000–฿30,000',
+          en: 'Guessing a high limit creates false security — many entry-level group plans cap inpatient treatment at just ฿20,000–฿30,000 per stay.',
+        },
       },
       {
         id: 'c',
         label: { th: 'นับว่าครอบคลุมเต็มบิลได้ทุกโรงพยาบาลเอกชน', en: 'Assume it covers 100% of private hospital bills' },
+        wrongReason: {
+          th: 'ประกันกลุ่มเกือบทุกแห่งมีเพดานย่อย (Sub-limit) เช่น ค่าห้อง ค่าผ่าตัด และค่ารักษาพยาบาลแยกหมวด จึงแทบไม่เคยครอบคลุมบิลเอกชน 100% ในเคสผ่าตัดใหญ่',
+          en: 'Almost all group plans impose strict sub-limits per room, surgery, and medication category — rarely covering 100% of a major private hospital bill.',
+        },
       },
     ],
     correctId: 'a',
-    explanation: {
-      th: 'หลักประเมินแบบรอบคอบจะนับวงเงินที่ไม่ทราบค่าเป็น ฿0 เพื่อไม่ให้ประเมินช่องว่างความเสี่ยงต่ำเกินจริง จากนั้นถาม HR เพื่อกรอกตัวเลขจริง',
-      en: 'Conservative estimation counts unknown limits as ฿0 so you never underestimate your risk gap before getting exact numbers from HR.',
+    correctReason: {
+      th: 'ตามหลักคณิตศาสตร์ประกันภัยและการบริหารความเสี่ยงแบบรอบคอบ (Conservatism Principle) สิทธิที่ไม่ทราบตัวเลขชัดเจนต้องนับเป็น ฿0 ไว้ก่อน เพื่อไม่ให้ประเมินช่องว่างความเสี่ยงต่ำกว่าความจริง',
+      en: 'Under the actuarial Conservatism Principle, any unverified benefit is counted as ฿0 so your risk gap is never underestimated.',
+    },
+    extraNote: {
+      th: 'เมื่อขอตารางสิทธิ (Benefit Schedule) จาก HR ได้แล้ว ให้แยกเช็ก 3 ตัวเลขหลักเสมอ คือ ค่าห้องต่อคืน, วงเงินผู้ป่วยใน (IPD) ต่อครั้ง และเงื่อนไขเมื่อลาออก',
+      en: 'Once HR shares your Benefit Schedule, check three exact figures: daily room rate, per-admission IPD cap, and termination rules upon resignation.',
     },
   },
   {
@@ -829,6 +958,10 @@ export const LITERACY_QUIZ_BANK = [
       {
         id: 'a',
         label: { th: 'เพิ่มวงเงินผู้ป่วยนอก (OPD) ให้สูงสุดทุกปี', en: 'Maximize routine OPD clinic visits each year' },
+        wrongReason: {
+          th: 'การซื้อ OPD เพิ่มไม่ได้ช่วยปิดช่องว่างบิลแอดมิต (IPD) หลักแสน และยังทำให้เบี้ยประกันแพงขึ้นมากเพราะเคลมบ่อยตามหลักความถี่สูง',
+          en: 'Adding high OPD limits does not close catastrophic IPD hospital gaps and heavily inflates premiums because minor visits occur frequently.',
+        },
       },
       {
         id: 'b',
@@ -837,12 +970,20 @@ export const LITERACY_QUIZ_BANK = [
       {
         id: 'c',
         label: { th: 'ยกเลิกสิทธิประกันสังคม ม.33 เพื่อลดความซ้ำ', en: 'Cancel Social Security Sec. 33 to cut overlap' },
+        wrongReason: {
+          th: 'ประกันสังคม ม.33 เป็นสิทธิบังคับตามกฎหมายสำหรับลูกจ้างประจำที่ไม่สามารถยกเลิกเองได้ และยังให้สิทธิประโยชน์สำคัญด้านชราภาพและว่างงานด้วย',
+          en: 'Social Security Sec. 33 is mandatory by law for salaried employees and cannot be canceled voluntarily; it also provides pension and unemployment cover.',
+        },
       },
     ],
     correctId: 'b',
-    explanation: {
-      th: 'Deductible ช่วยให้ประกันกลุ่มจ่ายก้อนแรกก่อน แล้วแผนส่วนตัวค่อยรับช่วงส่วนเกิน จึงลดเบี้ยที่ซ้ำซ้อนได้จริง',
-      en: 'A deductible lets your group plan pay the first layer while supplemental cover absorbs catastrophic excess bills.',
+    correctReason: {
+      th: 'กลไกความรับผิดส่วนแรก (Deductible) เช่น ฿30,000 แรก ทำให้สามารถใช้ประกันกลุ่มบริษัทจ่ายบิลส่วนต้นก่อน แล้วแผนส่วนตัวค่อยรับช่วงจ่ายส่วนเกินหลักแสน-หลักล้าน จึงลดเบี้ยซ้ำซ้อนลงได้ชัดเจน',
+      en: 'A Deductible (e.g., first ฿30,000) lets employer group cover absorb the first layer while personal cover handles catastrophic excess, cutting overlapping premiums.',
+    },
+    extraNote: {
+      th: 'ควรกันเงินสดสำรองไว้เท่ากับยอด Deductible เผื่อกรณีเปลี่ยนงานในอนาคต (ช่วงที่ไม่มีประกันกลุ่มบริษัท) จะได้ยังรับผิดชอบก้อนแรกได้โดยไม่สะดุด',
+      en: 'Keep liquid emergency cash equal to your deductible amount in case you switch jobs and temporarily have no employer group coverage.',
     },
   },
   {
@@ -859,16 +1000,28 @@ export const LITERACY_QUIZ_BANK = [
       {
         id: 'b',
         label: { th: 'ประมาณ 30%–40% ของรายได้เพื่อวงเงินสูงสุด', en: 'Around 30%–40% of income for maximum limits' },
+        wrongReason: {
+          th: 'การจ่ายเบี้ยสูงถึง 30%–40% ของรายได้ (Over-insuring) จะบีบสภาพคล่องจนไม่มีเงินเก็บฉุกเฉินและเสี่ยงส่งเบี้ยไม่ไหวจนต้องเวนคืนขาดทุนในอนาคต',
+          en: 'Spending 30%–40% of income causes over-insuring — starving liquidity and creating high lapse risk where early surrender locks in losses.',
+        },
       },
       {
         id: 'c',
         label: { th: 'ใช้เงินเหลือเก็บต่อเดือนทั้งหมด 100% เต็ม', en: 'Use 100% of all leftover monthly cash surplus' },
+        wrongReason: {
+          th: 'หากเทเงินเหลือเก็บทั้งหมดไปเป็นเบี้ยประกัน คุณจะไม่เหลือเงินสำรองฉุกเฉินสำหรับเหตุที่เคลมไม่ได้ (เช่น ตกงาน ซ่อมรถ) และเสียโอกาสลงทุนระยะยาว',
+          en: 'Putting 100% of surplus into premiums leaves zero buffer for non-insurable shocks (job loss, urgent repairs) and zero capital for compounding.',
+        },
       },
     ],
     correctId: 'a',
-    explanation: {
-      th: 'กรอบ 10%–15% ช่วยป้องกันเหตุใหญ่ได้โดยไม่เบียดเบียนเงินสำรองฉุกเฉินและการลงทุนเติบโตระยะยาว',
-      en: 'The 10%–15% cap protects against major shocks without starving your emergency reserve or long-term investments.',
+    correctReason: {
+      th: 'กรอบมาตรฐานวางแผนการเงินส่วนบุคคลแนะนำคุมงบโอนย้ายความเสี่ยงไว้ไม่เกิน 10%–15% ของรายได้ เพื่อให้คุ้มครองเหตุวิกฤตได้จริงโดยยังเหลือสภาพคล่องสำหรับเงินสำรองและการลงทุน',
+      en: 'Standard financial planning caps risk-transfer spend at 10%–15% of income so catastrophic risks are protected without starving emergency savings or investments.',
+    },
+    extraNote: {
+      th: 'หากคำนวณแล้วเบี้ยเกิน 15% ของรายได้ ควรปรับโครงสร้าง (เช่น ตัด OPD เพิ่ม Deductible หรือเน้น IPD ก่อน) แทนการฝืนจ่ายเกินกำลัง',
+      en: 'If quotes exceed 15% of income, restructure the coverage (e.g., drop OPD or add a deductible) rather than straining your monthly cashflow.',
     },
   },
   {
@@ -881,10 +1034,18 @@ export const LITERACY_QUIZ_BANK = [
       {
         id: 'a',
         label: { th: 'ไม่มีผลกระทบ เพราะตรวจสอบประวัติย้อนหลังไม่ได้', en: 'No impact because past records stay private' },
+        wrongReason: {
+          th: 'เมื่อมีการเรียกร้องสินไหม ผู้รับประกันมีสิทธิขอตรวจสอบเวชระเบียนย้อนหลัง (Medical Records) ตามหนังสือยินยอมที่ผู้เอาประกันลงนามไว้ในใบคำขอ',
+          en: 'During claim review, insurers are legally authorized via your signed consent form to verify historical hospital medical records.',
+        },
       },
       {
         id: 'b',
         label: { th: 'ได้เบี้ยรายปีถูกลงและเบิกโรคนั้นได้ตามปกติ', en: 'Lower premiums with normal claim approvals' },
+        wrongReason: {
+          th: 'โรคที่เป็นมาก่อน (Pre-existing Condition) อยู่ในหมวดข้อยกเว้นมาตรฐานอยู่แล้ว การปกปิดไม่ทำให้เบิกได้จริงแต่กลับเพิ่มความเสี่ยงให้สัญญาเป็นโมฆียะ',
+          en: 'Pre-existing conditions are excluded regardless — concealing them does not unlock claims and instead exposes the entire contract to rescission.',
+        },
       },
       {
         id: 'c',
@@ -892,9 +1053,13 @@ export const LITERACY_QUIZ_BANK = [
       },
     ],
     correctId: 'c',
-    explanation: {
-      th: 'การแถลงความจริง 100% คือเกราะป้องกันสิทธิที่ดีที่สุด เพราะหากปกปิดประวัติสำคัญ บริษัทมีสิทธิบอกล้างสัญญาได้ภายใน 2 ปี',
-      en: '100% honest disclosure protects your valid claims; concealing material history allows legal rescission within 2 years.',
+    correctReason: {
+      th: 'สัญญาประกันภัยยึดหลักความสุจริตใจอย่างยิ่ง (Utmost Good Faith) ตาม ป.พ.พ. มาตรา 865 หากปกปิดข้อความจริงที่เป็นสาระสำคัญ ผู้รับประกันมีสิทธิบอกล้างสัญญาและปฏิเสธเคลมได้ภายใน 2 ปี',
+      en: 'Insurance relies on Utmost Good Faith (Civil & Commercial Code Sec. 865). Omitting material medical history lets the insurer deny claims and rescind the contract within 2 years.',
+    },
+    extraNote: {
+      th: 'การแถลงประวัติครบ 100% อาจได้ผลพิจารณารับประกันแบบเพิ่มเบี้ยหรือยกเว้นเฉพาะโรคนั้น แต่โรคอื่น ๆ ทั้งหมดจะคุ้มครองอย่างมั่นคงไร้ปัญหาตอนเคลม',
+      en: 'Full disclosure may result in a targeted exclusion or loading for that single condition, while keeping every other illness legally protected.',
     },
   },
   {
@@ -907,6 +1072,10 @@ export const LITERACY_QUIZ_BANK = [
       {
         id: 'a',
         label: { th: 'คุ้มครองฟรีสูงสุด 24 ชั่วโมงแรกหลังเกิดเหตุ', en: 'Free emergency care for the first 24 hours' },
+        wrongReason: {
+          th: '24 ชั่วโมงน้อยกว่าเกณฑ์จริงตามนโยบายรัฐ ภาวะวิกฤตหลายกรณีต้องการเวลาประคับประคองสัญญาณชีพและเตรียมส่งต่อโรงพยาบาลตามสิทธิมากกว่า 1 วัน',
+          en: '24 hours is shorter than the official rule — life-threatening emergencies often need more than one day to stabilize before safe transfer.',
+        },
       },
       {
         id: 'b',
@@ -915,12 +1084,20 @@ export const LITERACY_QUIZ_BANK = [
       {
         id: 'c',
         label: { th: 'คุ้มครองฟรีตลอดการรักษาจนกว่าจะหายขาดดี', en: 'Free unlimited inpatient stay until fully cured' },
+        wrongReason: {
+          th: 'UCEP ไม่ได้คุ้มครองฟรีแบบไม่จำกัดวัน เมื่อพ้น 72 ชั่วโมงหรือพ้นภาวะวิกฤตแล้วหากผู้ป่วยยังเลือกพักต่อใน รพ.เอกชนนอกสิทธิจะต้องรับผิดชอบค่าใช้จ่ายส่วนเกินเอง',
+          en: 'UCEP is not unlimited — once 72 hours pass or the patient stabilizes, refusing transfer to their registered hospital shifts costs to the patient.',
+        },
       },
     ],
     correctId: 'b',
-    explanation: {
-      th: 'สิทธิ UCEP ครอบคลุม 6 อาการฉุกเฉินวิกฤตที่ รพ.ใกล้ที่สุด (รัฐหรือเอกชน) ฟรีไม่เกิน 72 ชั่วโมงจนพ้นวิกฤตและย้ายไป รพ.ตามสิทธิได้',
-      en: 'UCEP covers 6 qualifying life-threatening conditions at the nearest hospital for up to 72 hours until safe transfer.',
+    correctReason: {
+      th: 'นโยบาย UCEP (Universal Coverage for Emergency Patients) ให้ผู้ป่วยฉุกเฉินวิกฤตเข้ารับการรักษาใน รพ.ที่ใกล้ที่สุดทั้งรัฐและเอกชนโดยไม่ต้องสำรองจ่าย สูงสุด 72 ชั่วโมงจนพ้นวิกฤต',
+      en: 'Thailand’s UCEP policy covers free stabilization at the nearest public or private hospital for up to 72 hours until critical danger passes.',
+    },
+    extraNote: {
+      th: 'ต้องเข้าเกณฑ์ 6 อาการวิกฤต (เช่น หมดสติ หายใจลำบาก เจ็บหน้าอกรุนแรง อ่อนแรงครึ่งซีก) และสามารถโทรสายด่วน 1669 หรือ สปสช. 1330 เพื่อช่วยประสานสิทธิได้ตลอด 24 ชม.',
+      en: 'It applies to 6 qualifying life-threatening symptoms (e.g., unconsciousness, severe chest pain, stroke signs); call 1669 or NHSO 1330 for 24/7 coordination.',
     },
   },
   {
@@ -937,16 +1114,28 @@ export const LITERACY_QUIZ_BANK = [
       {
         id: 'b',
         label: { th: 'ภายใน 3 วันนับจากวันที่โอนเงินชำระเบี้ยแรก', en: 'Within 3 days after making your first payment' },
+        wrongReason: {
+          th: 'เกณฑ์ไม่ได้นับจากวันโอนเงินและไม่ได้สั้นแค่ 3 วัน เพราะผู้บริโภคต้องมีเวลาอ่านเล่มกรมธรรม์ฉบับจริงที่ส่งมาถึงมือก่อนตัดสินใจ',
+          en: 'The clock does not start at payment nor end in 3 days — consumers are legally given time to read the actual delivered policy document.',
+        },
       },
       {
         id: 'c',
         label: { th: 'ไม่สามารถยกเลิกได้ทุกกรณีหลังอนุมัติสัญญา', en: 'Cancellation is never allowed once approved' },
+        wrongReason: {
+          th: 'กฎหมายและประกาศ คปภ. คุ้มครองสิทธิผู้บริโภคให้สามารถทบทวนและขอยกเลิกภายในระยะเวลา Free Look ได้เสมอเพื่อป้องกันการซื้อจากความเข้าใจคลาดเคลื่อน',
+          en: 'OIC consumer protection regulations explicitly guarantee a review-and-cancel right so buyers are not trapped by misunderstandings.',
+        },
       },
     ],
     correctId: 'a',
-    explanation: {
-      th: 'สิทธิ Free Look ให้เวลาอ่านเงื่อนไข 15 วันหลังรับเล่ม (หรือ 30 วันกรณีซื้อทางโทรศัพท์) หากไม่ตรงใจสามารถขอยกเลิกคืนเงินได้',
-      en: 'The Free Look window gives you 15 days after delivery (30 days for telesales) to cancel for a refund minus minimal fees.',
+    correctReason: {
+      th: 'ตามหลักเกณฑ์ คปภ. สิทธิ Free Look เปิดโอกาสให้ผู้เอาประกันอ่านเงื่อนไขและขอยกเลิกได้ภายใน 15 วันนับจากวันที่ได้รับกรมธรรม์ โดยได้รับเบี้ยคืนหักเพียงค่าใช้จ่ายตามเกณฑ์ (เช่น ค่าออกกรมธรรม์ ฿500 และค่าตรวจสุขภาพตามจริงถ้ามี)',
+      en: 'OIC rules grant a 15-day Free Look window from policy delivery to cancel for a refund minus minimal statutory fees (e.g., ฿500 issuance fee and actual exam fees if any).',
+    },
+    extraNote: {
+      th: 'หากเป็นการซื้อผ่านช่องทางโทรศัพท์ (Telesales) สิทธิ Free Look จะขยายเป็น 30 วัน และสามารถตรวจสอบใบอนุญาตผู้ขายได้ก่อนซื้อที่ระบบ E-Service ของ คปภ.',
+      en: 'For telesales purchases, the Free Look window extends to 30 days; always verify agent licenses beforehand via the OIC E-Service portal.',
     },
   },
   {
@@ -963,16 +1152,28 @@ export const LITERACY_QUIZ_BANK = [
       {
         id: 'b',
         label: { th: 'สายด่วนกรมสรรพากร หมายเลข 1161 โดยตรง', en: 'Thai Revenue Department Hotline 1161 directly' },
+        wrongReason: {
+          th: 'กรมสรรพากร (1161) ดูแลเรื่องภาษีอากรและสิทธิลดหย่อนภาษีเท่านั้น ไม่มีอำนาจกำกับดูแลสัญญาประกันภัยหรือไกล่เกลี่ยข้อพิพาทการเคลม',
+          en: 'The Revenue Department (1161) handles tax filings and deductions only — it does not regulate insurers or mediate claim disputes.',
+        },
       },
       {
         id: 'c',
         label: { th: 'สายด่วนการท่องเที่ยวแห่งประเทศไทย 1672', en: 'Tourism Authority of Thailand Hotline 1672' },
+        wrongReason: {
+          th: 'สายด่วน 1672 เป็นศูนย์บริการข้อมูลด้านการท่องเที่ยว ไม่ใช่หน่วยงานกำกับดูแลธุรกิจประกันภัยหรือคุ้มครองผู้เอาประกัน',
+          en: 'Hotline 1672 is strictly for tourism inquiries, not insurance regulation or policyholder dispute resolution.',
+        },
       },
     ],
     correctId: 'a',
-    explanation: {
-      th: 'สายด่วน คปภ. 1186 คือช่องทางกลางสำหรับปรึกษาเงื่อนไข ตรวจสอบสิทธิ และร้องเรียนข้อพิพาทด้านประกันภัยโดยเฉพาะ',
-      en: 'OIC Hotline 1186 is Thailand’s official insurance regulator channel for neutral advice, license checks, and dispute resolution.',
+    correctReason: {
+      th: 'สำนักงานคณะกรรมการกำกับและส่งเสริมการประกอบธุรกิจประกันภัย (คปภ.) สายด่วน 1186 คือหน่วยงานกำกับดูแลที่เป็นกลาง มีหน้าที่ให้คำปรึกษา ตรวจสอบเงื่อนไข และไกล่เกลี่ยข้อพิพาทการเคลม',
+      en: 'The Office of Insurance Commission (OIC) Hotline 1186 is Thailand’s neutral regulator for policy guidance, license checks, and claim mediation.',
+    },
+    extraNote: {
+      th: 'ก่อนติดต่อสายด่วน 1186 ควรเตรียมเลขกรมธรรม์ เอกสารใบเสร็จ/ใบรับรองแพทย์ และหนังสือปฏิเสธเคลม (ถ้ามี) เพื่อให้เจ้าหน้าที่ตรวจสอบได้รวดเร็วขึ้น',
+      en: 'Keep your policy number, medical certificates, receipts, and any claim denial letter handy when calling 1186 for faster resolution.',
     },
   },
   {
@@ -985,6 +1186,10 @@ export const LITERACY_QUIZ_BANK = [
       {
         id: 'a',
         label: { th: 'ผู้ป่วยนอก (OPD) เพื่อเบิกค่ายาหวัดได้ทุกครั้ง', en: 'Outpatient (OPD) to claim every minor clinic trip' },
+        wrongReason: {
+          th: 'OPD เป็นเหตุความถี่สูงแต่ความรุนแรงต่ำ (หลักพันบาท) ซึ่งมีเบี้ยแพงมากเมื่อเทียบกับวงเงินที่ได้รับ จึงไม่คุ้มค่าที่จะโอนย้ายความเสี่ยงเมื่อเทียบกับการใช้เงินสำรอง',
+          en: 'OPD is high-frequency, low-severity — premiums are steep relative to small clinic payouts, making self-insuring via reserves far more efficient.',
+        },
       },
       {
         id: 'b',
@@ -993,12 +1198,20 @@ export const LITERACY_QUIZ_BANK = [
       {
         id: 'c',
         label: { th: 'ทันตกรรมและตรวจสุขภาพประจำปีแบบพรีเมียม', en: 'Premium dental and annual wellness packages' },
+        wrongReason: {
+          th: 'ค่าทันตกรรมและตรวจสุขภาพเป็นรายจ่ายที่คาดการณ์ล่วงหน้าได้และมีวงเงินต่ำ (ประกันสังคมมีสิทธิทำฟัน ฿900/ปีอยู่แล้ว) จึงไม่ใช่วิกฤตที่ทำให้ล้มละลายทางการเงิน',
+          en: 'Dental and wellness checkups are predictable, low-cost expenses (SSO already grants ฿900/yr dental) and do not cause catastrophic financial ruin.',
+        },
       },
     ],
     correctId: 'b',
-    explanation: {
-      th: 'IPD คือเหตุที่เกิดไม่บ่อยแต่ยอดบิลสูงหลักหมื่น-แสน ส่วน OPD ยอดเล็กสามารถใช้เงินสำรองหรือสวัสดิการบริษัทดูแลได้คุ้มกว่า',
-      en: 'Inpatient (IPD) stays can wipe out savings in one shock, while small OPD clinic bills are cheaper to handle via reserves or workplace benefits.',
+    correctReason: {
+      th: 'ตามหลักบริหารความเสี่ยง (Risk Matrix) ควรโอนย้ายความเสี่ยงที่ "เกิดไม่บ่อยแต่เสียหายหนัก" อย่างผู้ป่วยใน (IPD) ก่อน เพราะการผ่าตัดหรือแอดมิตเพียงครั้งเดียวอาจล้างเงินเก็บทั้งปีได้',
+      en: 'Actuarial Risk Matrix principles prioritize transferring low-frequency, high-severity risks like IPD admissions, where a single surgery can wipe out a year of savings.',
+    },
+    extraNote: {
+      th: 'เมื่อฐาน IPD แข็งแรงแล้วและยังมีงบเหลือภายใต้เพดาน 10%–15% ของรายได้ ค่อยพิจารณาความคุ้มครองเสริมอื่นตามความจำเป็น',
+      en: 'Only consider extra layers once core IPD protection is solid and total risk-transfer cost still fits within 10%–15% of income.',
     },
   },
   {
@@ -1011,6 +1224,10 @@ export const LITERACY_QUIZ_BANK = [
       {
         id: 'a',
         label: { th: 'เปอร์เซ็นต์เงินคืนเทียบกับทุนประกันในแต่ละปี', en: 'Annual headline cashback percent of sum insured' },
+        wrongReason: {
+          th: '"เงินคืน % ของทุนประกัน" เป็นเพียงตัวเลขการตลาดที่ไม่สะท้อนเงินที่คุณจ่ายจริงทั้งหมด เช่น ทุนประกัน ฿100,000 แต่ต้องจ่ายเบี้ยรวมหลายแสน ทำให้ดูสูงกว่าผลตอบแทนจริงมาก',
+          en: 'Headline "% of sum insured" cashback ignores total premiums paid over time — often looking far higher than the actual annualized return.',
+        },
       },
       {
         id: 'b',
@@ -1019,12 +1236,20 @@ export const LITERACY_QUIZ_BANK = [
       {
         id: 'c',
         label: { th: 'อัตราภาษีที่กรมสรรพากรหัก ณ ที่จ่ายทุกสิ้นปี', en: 'Annual withholding tax rate charged at year-end' },
+        wrongReason: {
+          th: 'IRR เป็นเครื่องมือวัดผลตอบแทนทางการเงิน (Internal Rate of Return) ไม่ใช่อัตราภาษี และเงินครบกำหนดสัญญาประกันชีวิตทั่วไปในไทยได้รับยกเว้นภาษีเงินได้',
+          en: 'IRR is a financial yield metric (Internal Rate of Return), not a tax rate — standard life maturity payouts in Thailand are generally tax-exempt.',
+        },
       },
     ],
     correctId: 'b',
-    explanation: {
-      th: 'IRR คืออัตราดอกเบี้ยทบต้นที่แท้จริงต่อปีจากเงินที่จ่ายออกและรับคืนจริงตลอดสัญญา ไม่ใช่ตัวเลข % เงินคืนตามทุนประกัน',
-      en: 'IRR measures your true annualized compound interest rate across actual cash outflows and inflows, unlike marketing cashback slogans.',
+    correctReason: {
+      th: 'IRR (Internal Rate of Return) คืออัตราผลตอบแทนทบต้นเฉลี่ยต่อปีที่แท้จริง ซึ่งคำนวณจากกระแสเงินสดจ่ายออกและรับคืนจริงทุกปีตามหลักมูลค่าเงินตามเวลา (Time Value of Money)',
+      en: 'IRR (Internal Rate of Return) computes the true annualized compound rate across every actual cash outflow and inflow using Time Value of Money.',
+    },
+    extraNote: {
+      th: 'เวลาเปรียบเทียบกับเงินฝากหรือกองทุน ควรเทียบ "IRR หลังหักเงินเฟ้อ" (Real IRR) และคิดรวมข้อจำกัดด้านสภาพคล่องที่เงินถูกล็อกหลายปีด้วย',
+      en: 'Always compare inflation-adjusted Real IRR against bank deposits or index funds, while weighing multi-year liquidity lock-in.',
     },
   },
   {
@@ -1037,10 +1262,18 @@ export const LITERACY_QUIZ_BANK = [
       {
         id: 'a',
         label: { th: 'ต้องมีระยะเวลาคุ้มครองตั้งแต่ 3 ปีขึ้นไป', en: 'Contract duration of at least 3 years or more' },
+        wrongReason: {
+          th: 'สัญญาระยะสั้น 3 ปีไม่เข้าเกณฑ์การส่งเสริมการออมระยะยาวของกรมสรรพากร จึงไม่สามารถนำเบี้ยไปหักลดหย่อนภาษีเงินได้บุคคลธรรมดาได้',
+          en: 'A 3-year contract fails the Revenue Department’s long-term savings requirement and does not qualify for personal income tax deductions.',
+        },
       },
       {
         id: 'b',
         label: { th: 'ต้องมีระยะเวลาคุ้มครองตั้งแต่ 5 ปีขึ้นไป', en: 'Contract duration of at least 5 years or more' },
+        wrongReason: {
+          th: 'ระยะเวลา 5 ปีเป็นเกณฑ์เก่าของกองทุนบางประเภทในอดีต ไม่ใช่เกณฑ์ระยะเวลาคุ้มครองขั้นต่ำของกรมธรรม์ประกันชีวิตตามประมวลรัษฎากร',
+          en: 'Five years was an older threshold for certain funds, not the statutory minimum term required for Thai life insurance policies.',
+        },
       },
       {
         id: 'c',
@@ -1048,9 +1281,13 @@ export const LITERACY_QUIZ_BANK = [
       },
     ],
     correctId: 'c',
-    explanation: {
-      th: 'ตามเกณฑ์กรมสรรพากร กรมธรรม์ประกันชีวิตต้องมีระยะเวลาคุ้มครองตั้งแต่ 10 ปีขึ้นไป และลดหย่อนได้สูงสุด ฿100,000/ปี',
-      en: 'Thai Revenue Department rules require at least a 10-year policy term, deductible up to ฿100,000 per year.',
+    correctReason: {
+      th: 'ตามประกาศอธิบดีกรมสรรพากร กรมธรรม์ประกันชีวิตทั่วไปต้องมีระยะเวลาคุ้มครองตั้งแต่ 10 ปีขึ้นไป และทำกับบริษัทที่ประกอบกิจการในไทย จึงใช้ลดหย่อนได้ตามจริงสูงสุด ฿100,000/ปี',
+      en: 'Thai Revenue Department regulations require a minimum 10-year life policy term with a locally licensed insurer, deductible up to ฿100,000/year.',
+    },
+    extraNote: {
+      th: 'หากเวนคืนกรมธรรม์ก่อนครบ 10 ปีจะถือว่าผิดเงื่อนไขภาษี ต้องยื่นปรับปรุงภาษีและคืนเงินภาษีที่เคยลดหย่อนไปพร้อมเงินเพิ่มตามกฎหมาย',
+      en: 'Surrendering before year 10 breaches tax rules, requiring you to repay prior tax savings plus statutory interest penalties.',
     },
   },
   {
@@ -1067,16 +1304,28 @@ export const LITERACY_QUIZ_BANK = [
       {
         id: 'b',
         label: { th: 'ได้ภาษีคืน 3,000 บาทเท่ากันทุกคนทุกช่วงรายได้', en: 'Saves ฿3,000 flat regardless of income bracket' },
+        wrongReason: {
+          th: 'ภาษีไทยเป็นอัตราก้าวหน้า (Progressive Tax) ประโยชน์ลดหย่อนคิดจาก "ยอดลดหย่อน × ฐานภาษีสูงสุดของคุณ" ไม่ใช่การแจกเงินคืนคงที่เท่ากันทุกคน',
+          en: 'Thailand uses progressive tax brackets — savings equal Deduction × Your Marginal Tax Rate, never a flat payout for everyone.',
+        },
       },
       {
         id: 'c',
         label: { th: 'ได้ภาษีคืน 6,000 บาทเข้าบัญชีพร้อมเพย์ปลายปี', en: 'Saves ฿6,000 refunded via PromptPay at year-end' },
+        wrongReason: {
+          th: 'การจะได้ภาษีคืน ฿6,000 จากยอด ฿30,000 เกิดขึ้นได้เฉพาะคนที่มีฐานภาษี 20% เท่านั้น หากคุณไม่ถูกหักภาษีไว้เลย กรมสรรพากรไม่มีภาษีส่วนเกินให้คืน',
+          en: 'A ฿6,000 refund on ฿30,000 only happens in the 20% bracket — if zero tax was owed or withheld, there is nothing to refund.',
+        },
       },
     ],
     correctId: 'a',
-    explanation: {
-      th: 'หากรายได้สุทธิอยู่ในเกณฑ์ยกเว้นภาษี (0%) คุณไม่เสียภาษีอยู่แล้ว จึงไม่มีภาษีให้ลดหย่อน ควรเน้นสร้างเงินสำรองฉุกเฉินก่อน',
-      en: 'When your marginal tax rate is 0%, tax deductions save ฿0 — focus on building emergency savings and liquid wealth first.',
+    correctReason: {
+      th: 'รายได้ ฿300,000/ปี เมื่อหักค่าใช้จ่าย ฿100,000 ค่าลดหย่อนส่วนตัว ฿60,000 และประกันสังคม จะเหลือเงินได้สุทธิต่ำกว่า ฿150,000 (ยกเว้นภาษี 0%) ดังนั้น ฿30,000 × 0% = ประหยัดภาษี ฿0',
+      en: 'At ฿300,000/yr minus standard deductions (฿100k expense + ฿60k personal + SSO), net taxable income sits under the ฿150k 0% exemption — so ฿30,000 × 0% = ฿0 saved.',
+    },
+    extraNote: {
+      th: 'สำหรับ First Jobber ที่อยู่ฐานภาษี 0%–5% ควรจัดลำดับความสำคัญที่ "เงินสำรองฉุกเฉิน" และ "ความคุ้มครองที่จำเป็นจริง" แทนการซื้อสินทรัพย์ล็อกเงินยาวเพื่อลดหย่อนภาษี',
+      en: 'Earners in the 0%–5% bracket should prioritize liquid emergency reserves and essential protection over locking cash solely for tax perks.',
     },
   },
   {
@@ -1089,6 +1338,10 @@ export const LITERACY_QUIZ_BANK = [
       {
         id: 'a',
         label: { th: 'ติดตัวไปใช้ต่อที่บริษัทใหม่ได้โดยอัตโนมัติ', en: 'Automatically transfers over to your new employer' },
+        wrongReason: {
+          th: 'ผู้ถือกรมธรรม์ประกันกลุ่มคือ "นายจ้าง" ไม่ใช่ตัวพนักงาน สิทธิจึงไม่สามารถโอนย้ายข้ามบริษัทได้โดยอัตโนมัติ',
+          en: 'The master policyholder is the employer, not the employee — coverage cannot automatically follow you to a new company.',
+        },
       },
       {
         id: 'b',
@@ -1097,12 +1350,20 @@ export const LITERACY_QUIZ_BANK = [
       {
         id: 'c',
         label: { th: 'คุ้มครองฟรีต่ออีก 2 ปีเต็มแม้ไม่ได้ทำงานแล้ว', en: 'Stays active free for 2 full years after leaving' },
+        wrongReason: {
+          th: 'ไม่มีประกันกลุ่มบริษัทที่คุ้มครองฟรีต่ออีก 2 ปีหลังลาออก (มักสับสนกับประกันสังคม ม.33 ที่คุ้มครองต่อ 6 เดือนหลังสิ้นสภาพลูกจ้าง)',
+          en: 'Employer group plans never stay free for 2 years post-resignation (unlike Social Security Sec. 33, which extends for 6 months).',
+        },
       },
     ],
     correctId: 'b',
-    explanation: {
-      th: 'ประกันกลุ่มเป็นสวัสดิการผูกกับบริษัทเดิม เมื่อลาออกสิทธิจะสิ้นสุดทันที จึงควรวางแผนรับมือช่วงรอยต่อเปลี่ยนงานไว้ด้วย',
-      en: 'Group insurance belongs to the employer and terminates upon resignation, creating a transition gap during probation.',
+    correctReason: {
+      th: 'ประกันกลุ่มเป็นสวัสดิการที่บริษัทจัดทำเพื่อพนักงานปัจจุบันเท่านั้น ทันทีที่พ้นสภาพพนักงาน ความคุ้มครองจากกรมธรรม์กลุ่มเดิมจะสิ้นสุดลงตามวันลาออก',
+      en: 'Group insurance is tied strictly to active employment — coverage terminates on your final working day at that employer.',
+    },
+    extraNote: {
+      th: 'บริษัทใหม่หลายแห่งมักให้สิทธิประกันกลุ่มหลังผ่านช่วงทดลองงาน (90–120 วัน) จึงควรเตรียมเงินสำรองหรือแผนพื้นฐานส่วนตัวไว้รับมือช่วงรอยต่อนี้',
+      en: 'Many new employers only activate group coverage after probation (90–120 days), so plan liquid reserves or personal cover for this gap.',
     },
   },
   {
@@ -1115,6 +1376,10 @@ export const LITERACY_QUIZ_BANK = [
       {
         id: 'a',
         label: { th: 'ประมาณ 7 วัน และตัดความคุ้มครองทันทีในวันที่ 8', en: 'About 7 days before coverage drops on day 8' },
+        wrongReason: {
+          th: '7 วันสั้นกว่ามาตรฐานกรมธรรม์ไทย กฎหมายและแบบกรมธรรม์มาตรฐานให้ช่วงเวลาที่นานพอเพื่อให้ผู้เอาประกันจัดการสภาพคล่องหรือแก้ไขปัญหาการตัดบัญชีได้ทัน',
+          en: '7 days is far shorter than Thai policy standards, which provide a full month buffer for banking or cashflow delays.',
+        },
       },
       {
         id: 'b',
@@ -1123,12 +1388,20 @@ export const LITERACY_QUIZ_BANK = [
       {
         id: 'c',
         label: { th: 'ประมาณ 180 วัน โดยไม่ต้องชำระเบี้ยย้อนหลังเลย', en: 'About 180 days with no back-payments required' },
+        wrongReason: {
+          th: 'หากค้างชำระเบี้ยถึง 180 วันกรมธรรม์จะขาดอายุ (Lapse) ไปแล้ว หากต้องการต่ออายุใหม่ (Reinstatement) ต้องชำระเบี้ยค้างพร้อมดอกเบี้ยและอาจต้องแถลงสุขภาพใหม่',
+          en: 'After 180 days unpaid, the policy has already lapsed — reinstatement requires back-premiums, interest, and often fresh medical underwriting.',
+        },
       },
     ],
     correctId: 'b',
-    explanation: {
-      th: 'Grace Period มาตรฐานอยู่ที่ 31 วันหลังครบกำหนด ระหว่างนี้ความคุ้มครองยังคงอยู่ แต่ควรตั้งปฏิทินเตือนล่วงหน้าเพื่อไม่ให้ขาดอายุ',
-      en: 'Standard grace periods last 31 days with active protection, though setting a calendar reminder avoids accidental lapses.',
+    correctReason: {
+      th: 'ตามมาตรฐานสัญญาประกันชีวิตและสุขภาพทั่วไป ระยะเวลาผ่อนผัน (Grace Period) อยู่ที่ 31 วันหลังวันครบกำหนด โดยความคุ้มครองยังคงมีผลสมบูรณ์ระหว่างนี้',
+      en: 'Standard life and health contracts provide a 31-day Grace Period after the due date during which full coverage stays active.',
+    },
+    extraNote: {
+      th: 'หากเกิดเคลมในช่วงผ่อนผัน บริษัทจะหักเบี้ยที่ค้างชำระออกจากเงินสินไหมได้ และควรตั้งเตือนปฏิทิน (.ics) ล่วงหน้า 7 วันเพื่อไม่ให้เลยกำหนดจนสัญญาขาดอายุ',
+      en: 'If a claim occurs during the grace period, unpaid premiums are deducted from the payout; set a calendar reminder 7 days early to stay safe.',
     },
   },
   {
@@ -1141,6 +1414,10 @@ export const LITERACY_QUIZ_BANK = [
       {
         id: 'a',
         label: { th: 'โดนร่วมจ่าย 30% ทันทีตั้งแต่วันแรกที่เข้าผ่าตัด', en: 'Triggers 30% co-pay immediately on day one' },
+        wrongReason: {
+          th: 'เกณฑ์ Co-payment ปี 2568 ไม่ได้บังคับร่วมจ่ายตั้งแต่ปีแรกหรือเมื่อป่วยหนักจริง แต่จะพิจารณาเฉพาะรอบปีต่ออายุเมื่อเข้าเกณฑ์การเคลมซ้ำซ้อนที่กำหนดไว้',
+          en: 'The 2025 standard never imposes day-one co-pay on major illness — co-pay is only assessed at renewal when repeated-claim thresholds are met.',
+        },
       },
       {
         id: 'b',
@@ -1149,12 +1426,211 @@ export const LITERACY_QUIZ_BANK = [
       {
         id: 'c',
         label: { th: 'โดนยกเลิกกรมธรรม์ทันทีเมื่อยอดเคลมเกิน 50,000', en: 'Cancels the policy whenever a claim tops ฿50k' },
+        wrongReason: {
+          th: 'ตามมาตรฐานสุขภาพใหม่ (New Health Standard) บริษัทไม่สามารถยกเลิกกรมธรรม์เพียงเพราะผู้เอาประกันเคลมสูงจากการเจ็บป่วยจริงตามเงื่อนไขได้',
+          en: 'Under Thailand’s New Health Standard, insurers cannot cancel a policy solely because a policyholder files legitimate high medical claims.',
+        },
       },
     ],
     correctId: 'b',
-    explanation: {
-      th: 'เกณฑ์ Co-payment ปี 2568 มุ่งคุมการแอดมิตโรคเล็กน้อย (Simple Diseases) ซ้ำ ๆ 3 ครั้งขึ้นไป โดยยกเว้นการผ่าตัดใหญ่และโรคร้ายแรง',
-      en: 'The 2025 co-payment standard targets repeated minor admissions (3+ times/yr) and explicitly exempts major surgeries and critical illnesses.',
+    correctReason: {
+      th: 'เกณฑ์ Co-payment ปี 2568 ออกแบบมาเพื่อลดการแอดมิตโรคเล็กน้อยที่ไม่จำเป็น (Simple Diseases เช่น ไข้หวัด ท้องเสีย ปวดศีรษะ) ซ้ำตั้งแต่ 3 ครั้งขึ้นไปต่อปี โดย "ยกเว้น" โรคร้ายแรงและการผ่าตัดใหญ่ชัดเจน',
+      en: 'Thailand’s 2025 Co-payment standard targets repeated unnecessary admissions for Simple Diseases (3+ times/yr) and explicitly exempts major surgeries and critical illnesses.',
+    },
+    extraNote: {
+      th: 'แม้ปีใดจะเข้าเงื่อนไขร่วมจ่าย 30% หากปีถัดไปไม่มีประวัติเคลมเข้าเกณฑ์อีก เงื่อนไขร่วมจ่ายสามารถถูกปลดออกได้ตามกติกาของแต่ละสัญญา',
+      en: 'Even if renewal co-pay triggers in one year, clean claim years afterward can remove the co-payment requirement under policy renewal rules.',
+    },
+  },
+  // ==================== 5 NEW QUESTIONS (Q16–Q20) ====================
+  {
+    id: 'q16-inflation-real-return',
+    question: {
+      th: 'ถ้าได้ผลตอบแทนเฉลี่ย 2% ต่อปี แต่เงินเฟ้ออยู่ที่ 3% ต่อปี อำนาจซื้อที่แท้จริงจะเป็นอย่างไร?',
+      en: 'If an asset earns 2%/yr while inflation is 3%/yr, what happens to your real purchasing power?',
+    },
+    options: [
+      {
+        id: 'a',
+        label: { th: 'อำนาจซื้อเพิ่มขึ้นสุทธิราว 5% ต่อปีอย่างต่อเนื่อง', en: 'Purchasing power grows by 5% net every single year' },
+        wrongReason: {
+          th: 'เงินเฟ้อไม่ได้ "บวกเพิ่ม" ให้ผลตอบแทน แต่จะกัดกร่อนมูลค่าเงินให้ซื้อของได้น้อยลง จึงต้องนำผลตอบแทนมา "หักลบ" ด้วยเงินเฟ้อ ไม่ใช่นำมาบวกกัน',
+          en: 'Inflation erodes value rather than adding to yield — you must subtract inflation from nominal return instead of adding them together.',
+        },
+      },
+      {
+        id: 'b',
+        label: { th: 'อำนาจซื้อลดลงสุทธิราว 1% ต่อปีแม้ตัวเลขเงินเพิ่ม', en: 'Purchasing power shrinks ~1%/yr even as cash grows' },
+      },
+      {
+        id: 'c',
+        label: { th: 'อำนาจซื้อคงที่เท่าเดิม เพราะเงินต้นไม่ได้หายไป', en: 'Purchasing power stays unchanged since principal holds' },
+        wrongReason: {
+          th: 'แม้ตัวเลขเงินบาทในบัญชีจะดูเพิ่มขึ้น (Nominal Return +2%) แต่เมื่อราคาสินค้าและค่ารักษาพยาบาลแพงขึ้นเร็วกว่า (+3%) เงินก้อนเดิมจะซื้อของได้น้อยลงจริง',
+          en: 'Even when nominal baht grows (+2%), prices and medical costs rising faster (+3%) mean the same money buys less in real life.',
+        },
+      },
+    ],
+    correctId: 'b',
+    correctReason: {
+      th: 'ตามสมการฟิชเชอร์อย่างง่าย ผลตอบแทนที่แท้จริง (Real Return) ≈ ผลตอบแทนตัวเงิน (2%) − เงินเฟ้อ (3%) = −1% ต่อปี หมายถึงอำนาจซื้อจริงหดตัวลงทุกปี',
+      en: 'By the Fisher approximation, Real Return ≈ Nominal Return (2%) − Inflation (3%) = −1%/yr, meaning real purchasing power declines each year.',
+    },
+    extraNote: {
+      th: 'ค่ารักษาพยาบาล (Medical Inflation) มักสูงกว่าเงินเฟ้อทั่วไปอยู่ที่ 6%–8%/ปี การเช็ก Real Return ในหน้า Invest จึงสำคัญมากก่อนล็อกเงินยาว',
+      en: 'Medical inflation often runs 6%–8%/yr — well above general inflation — making Real Return checks in our Invest tab essential for long-term plans.',
+    },
+  },
+  {
+    id: 'q17-risk-matrix',
+    question: {
+      th: 'ตามหลักบริหารความเสี่ยง เหตุการณ์แบบใดควร "รับความเสี่ยงเองด้วยเงินสำรอง" (Self-Insure)?',
+      en: 'In risk management, which type of loss is best handled via Self-Insurance (emergency cash)?',
+    },
+    options: [
+      {
+        id: 'a',
+        label: { th: 'เหตุที่เกิดบ่อยแต่ค่าเสียหายเล็กน้อย เช่น ซ่อมมือถือ', en: 'Frequent but small losses such as phone repairs' },
+      },
+      {
+        id: 'b',
+        label: { th: 'เหตุที่เกิดยากแต่บิลสูงหลักล้าน เช่น ผ่าตัดใหญ่', en: 'Rare million-baht shocks such as major surgery' },
+        wrongReason: {
+          th: 'เหตุการณ์ความรุนแรงสูงระดับหลักแสน-หลักล้าน (Low Frequency, High Severity) ไม่ควรรับความเสี่ยงเอง เพราะเงินสำรองอาจหมดเกลี้ยงในเหตุการณ์เดียว',
+          en: 'Low-frequency, high-severity shocks (฿100k–฿1M+) should be transferred — trying to self-insure can wipe out years of savings overnight.',
+        },
+      },
+      {
+        id: 'c',
+        label: { th: 'เหตุทุพพลภาพถาวรที่ทำให้ขาดรายได้ตลอดชีวิต', en: 'Permanent disability causing lifelong income loss' },
+        wrongReason: {
+          th: 'การสูญเสียความสามารถในการหารายได้ตลอดชีวิตคือความเสี่ยงระดับวิกฤตที่เงินสำรองฉุกเฉิน 3–6 เดือนไม่สามารถรองรับได้ จำเป็นต้องโอนย้ายความเสี่ยง',
+          en: 'Losing lifelong earning power is a catastrophic risk far beyond a 3–6 month cash buffer and requires risk transfer.',
+        },
+      },
+    ],
+    correctId: 'a',
+    correctReason: {
+      th: 'หลัก Risk Management Matrix ระบุว่าเหตุการณ์ที่ "เกิดบ่อยแต่ความเสียหายน้อย" (High Frequency, Low Severity) ควรรับความเสี่ยงเอง (Retention / Self-Insure) เพราะเบี้ยประกันสำหรับเหตุลักษณะนี้จะมีต้นทุนดำเนินการสูงจนไม่คุ้มค่า',
+      en: 'The Risk Management Matrix assigns high-frequency, low-severity events to Risk Retention (Self-Insure), because insuring frequent tiny losses carries poor premium value.',
+    },
+    extraNote: {
+      th: 'สูตรจัดสรรที่ได้ประสิทธิภาพสูงสุดคือ "เงินสำรองรับบิลเล็ก + โอนย้ายความเสี่ยงเฉพาะบิลวิกฤต" ซึ่งคุณสามารถลองจำลองตัวเลขเทียบได้ในหน้า Invest และเกมเอาตัวรอด',
+      en: 'The optimal formula combines liquid reserves for minor shocks with targeted risk transfer only for catastrophic bills — testable in our Invest & Game modules.',
+    },
+  },
+  {
+    id: 'q18-emergency-order',
+    question: {
+      th: 'First Jobber มีเงินเก็บก้อนแรก ฿25,000 (รายจ่าย ฿15,000/ด.) ควรจัดสรรเงินก้อนนี้อย่างไรก่อน?',
+      en: 'A First Jobber has ฿25,000 saved (expenses ฿15,000/mo). What is the soundest first move?',
+    },
+    options: [
+      {
+        id: 'a',
+        label: { th: 'ล็อกในกองทุนเกษียณระยะยาวทั้งหมดเพื่อลดหย่อน', en: 'Lock all of it in a long-term retirement tax fund' },
+        wrongReason: {
+          th: 'กองทุนเกษียณ (เช่น RMF) ล็อกเงินจนอายุ 55 ปี หากเกิดเหตุฉุกเฉินต้องใช้เงินแล้วขายคืนก่อนกำหนดจะผิดเงื่อนไขภาษีและเสี่ยงขาดทุนจากจังหวะตลาด',
+          en: 'Retirement funds (like RMF) lock cash until age 55 — forced early withdrawal triggers tax clawbacks and potential market losses.',
+        },
+      },
+      {
+        id: 'b',
+        label: { th: 'เก็บไว้ในบัญชีสภาพคล่องสูงเพื่อเติมเงินสำรองก่อน', en: 'Keep it liquid to build your 3-month reserve first' },
+      },
+      {
+        id: 'c',
+        label: { th: 'ลงทุนในสินทรัพย์ผันผวนสูงทั้งหมดเพื่อเร่งกำไร', en: 'Put 100% into high-volatility assets for fast gains' },
+        wrongReason: {
+          th: 'เมื่อเงินสำรองยังไม่ถึง 3 เดือน (฿45,000) การนำเงินทั้งหมดไปเสี่ยงในสินทรัพย์ผันผวนสูงอาจบังคับให้ต้องขายขาดทุนหนักทันทีหากตกงานหรือป่วยกะทันหัน',
+          en: 'Without a 3-month buffer (฿45,000), volatile assets can force you to sell at a steep loss if sudden job loss or illness strikes.',
+        },
+      },
+    ],
+    correctId: 'b',
+    correctReason: {
+      th: 'ปัจจุบันมีเงินสำรองเพียง 1.67 เดือน (฿25,000 ÷ ฿15,000) ยังต่ำกว่าเกณฑ์ขั้นต่ำ 3 เดือน (฿45,000) จึงควรพักในบัญชีออมทรัพย์ดอกเบี้ยสูง/กองทุนตลาดเงินที่ถอนได้ทันทีเป็นอันดับแรก',
+      en: 'Current runway is only 1.67 months (฿25k ÷ ฿15k), below the 3-month floor (฿45k), so keeping cash liquid in high-yield savings or money market funds comes first.',
+    },
+    extraNote: {
+      th: 'เมื่อเติมเงินสำรองครบ 3–6 เดือนแล้ว ค่อยทยอยแบ่งเงินส่วนเกินไปลงทุนระยะยาวเพื่อสร้างความมั่งคั่งตามหลักพีระมิดทางการเงิน (Financial Pyramid)',
+      en: 'Once your 3–6 month base is complete, channel new monthly surplus into long-term growth assets following the Financial Pyramid.',
+    },
+  },
+  {
+    id: 'q19-rider-main',
+    question: {
+      th: 'หาก "สัญญาหลัก" (เช่น ประกันชีวิต) ขาดอายุหรือถูกยกเลิก "สัญญาเพิ่มเติมสุขภาพ (Rider)" จะเป็นอย่างไร?',
+      en: 'If your base policy (e.g., life contract) lapses or is canceled, what happens to its Health Rider?',
+    },
+    options: [
+      {
+        id: 'a',
+        label: { th: 'สัญญาเพิ่มเติมสุขภาพจะสิ้นสุดลงพร้อมสัญญาหลัก', en: 'The health rider terminates alongside the base policy' },
+      },
+      {
+        id: 'b',
+        label: { th: 'สัญญาเพิ่มเติมสุขภาพยังคงคุ้มครองต่อได้ตลอดชีพ', en: 'The health rider continues independently for life' },
+        wrongReason: {
+          th: 'สัญญาเพิ่มเติม (Rider) ไม่ใช่สัญญาเอกเทศ (Standalone) แต่เป็นส่วนแนบท้ายสัญญาหลัก จึงไม่สามารถคงอยู่เดี่ยว ๆ ได้เมื่อสัญญาหลักสิ้นผลบังคับ',
+          en: 'A Rider is an attached endorsement, not a standalone contract — it cannot remain active on its own once the base policy ends.',
+        },
+      },
+      {
+        id: 'c',
+        label: { th: 'เปลี่ยนเป็นเงินสดคืนให้ผู้เอาประกัน 100% ทันที', en: 'Automatically converts into a 100% cash refund' },
+        wrongReason: {
+          th: 'สัญญาเพิ่มเติมสุขภาพเป็นเบี้ยจ่ายทิ้งปีต่อปี (Term-style) ไม่มีมูลค่าเวนคืนเงินสด (Cash Surrender Value) เมื่อสิ้นสุดสัญญาจึงไม่ได้รับเบี้ยที่จ่ายไปแล้วคืน',
+          en: 'Health riders are annual risk-priced coverage with no cash surrender value, so terminating them does not return prior premiums.',
+        },
+      },
+    ],
+    correctId: 'a',
+    correctReason: {
+      th: 'ตามโครงสร้างกรมธรรม์ประกันภัย สัญญาเพิ่มเติม (Rider) ต้องอาศัย "สัญญาหลัก" เป็นฐานรองรับ เมื่อสัญญาหลักครบกำหนด ขาดอายุ หรือถูกเวนคืน สัญญาเพิ่มเติมที่แนบอยู่จะสิ้นสุดลงพร้อมกัน',
+      en: 'Structurally, a Rider depends on an active base policy — if the base contract matures, lapses, or is surrendered, attached riders terminate together.',
+    },
+    extraNote: {
+      th: 'ดังนั้นหากต้องการความคุ้มครองสุขภาพระยะยาว ควรเลือกสัญญาหลักที่มีระยะเวลาคุ้มครองยาวเพียงพอ (เช่น ตลอดชีพ) เพื่อไม่ให้สัญญาหลักหมดอายุก่อนวัยเกษียณ',
+      en: 'To maintain long-term health coverage, pair riders with a sufficiently long base policy (e.g., whole life) so the base does not expire before retirement.',
+    },
+  },
+  {
+    id: 'q20-sso-6months',
+    question: {
+      th: 'ผู้ประกันตนประกันสังคม ม.33 เมื่อลาออกจากงานประจำ สิทธิรักษาพยาบาลจะคุ้มครองต่ออีกกี่เดือน?',
+      en: 'After resigning from a salaried job, how many months does Social Security Sec. 33 medical cover continue?',
+    },
+    options: [
+      {
+        id: 'a',
+        label: { th: 'คุ้มครองต่ออีก 6 เดือนโดยไม่ต้องส่งเงินสมทบเพิ่ม', en: 'Continues for 6 months with no extra contributions' },
+      },
+      {
+        id: 'b',
+        label: { th: 'สิ้นสุดความคุ้มครองทันทีในวันสุดท้ายที่ทำงานเดิม', en: 'Terminates immediately on your final working day' },
+        wrongReason: {
+          th: 'ประกันสังคม ม.33 ต่างจากประกันกลุ่มบริษัทเอกชน โดยกฎหมายประกันสังคมให้ระยะเวลาคุ้มครองต่อเนื่องหลังสิ้นสภาพลูกจ้าง ไม่ได้ตัดสิทธิทันทีในวันลาออก',
+          en: 'Unlike employer group plans, Thailand’s Social Security Act grants an automatic post-employment grace buffer rather than cutting off on day one.',
+        },
+      },
+      {
+        id: 'c',
+        label: { th: 'คุ้มครองต่ออีก 24 เดือนเต็มโดยอัตโนมัติทุกคน', en: 'Automatically continues free for 24 full months' },
+        wrongReason: {
+          th: 'สิทธิคุ้มครองต่อเนื่องมีระยะเวลาจำกัดเพียง 6 เดือนเท่านั้น หากเกิน 6 เดือนแล้วยังไม่กลับเข้าทำงานประจำ สิทธิจะโอนไปบัตรทอง (สปสช.) หรือต้องสมัคร ม.39 ภายใน 6 เดือน',
+          en: 'The post-employment extension lasts strictly 6 months — afterward you transition to Universal Coverage (Gold Card) unless you apply for Sec. 39 within 6 months.',
+        },
+      },
+    ],
+    correctId: 'a',
+    correctReason: {
+      th: 'ตาม พ.ร.บ. ประกันสังคม มาตรา 38 ผู้ประกันตน ม.33 ที่ลาออกจะยังคงได้รับความคุ้มครอง 4 กรณี (เจ็บป่วย คลอดบุตร ทุพพลภาพ เสียชีวิต) ต่อเนื่องอีก 6 เดือนโดยไม่ต้องจ่ายเงินสมทบ',
+      en: 'Under Section 38 of Thailand’s Social Security Act, resigned Sec. 33 members retain 4 benefits (medical, maternity, disability, death) for 6 extra months free.',
+    },
+    extraNote: {
+      th: 'หากต้องการรักษาสิทธิประกันสังคมต่อเนื่องหลังลาออก ต้องยื่นสมัคร ม.39 ภายใน 6 เดือน (ส่งสมทบ ฿432/ด.) และอย่าลืมขึ้นทะเบียนว่างงานภายใน 30 วันเพื่อรับเงินทดแทนด้วย',
+      en: 'To continue SSO afterward, apply for Sec. 39 within 6 months (฿432/mo), and register for unemployment benefits within 30 days of leaving.',
     },
   },
 ];
@@ -1172,7 +1648,7 @@ function shuffleList(items) {
 }
 
 /**
- * Pick 5 fresh questions from the 15-question bank (avoiding previous round IDs)
+ * Pick 5 fresh questions from the 20-question bank (avoiding previous round IDs)
  * and shuffle the A/B/C option order on every question.
  */
 export function buildRandomQuizSession(count = 5, previousIds = []) {
