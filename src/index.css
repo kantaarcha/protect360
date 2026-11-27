@@ -5834,9 +5834,9 @@ p {
 }
 
 [data-theme='dark'] .rail-brand-mark {
-  background: rgba(255, 255, 255, 0.95);
-  border-color: rgba(255, 255, 255, 0.2);
-  box-shadow: 0 8px 20px -6px rgba(0, 0, 0, 0.55);
+  background: rgba(15, 29, 52, 0.94);
+  border-color: rgba(148, 197, 255, 0.24);
+  box-shadow: 0 8px 20px -6px rgba(0, 0, 0, 0.65);
 }
 
 .mobile-brand-mark {
@@ -5851,8 +5851,9 @@ p {
 }
 
 [data-theme='dark'] .mobile-brand-mark {
-  background: rgba(255, 255, 255, 0.95);
-  border-color: rgba(255, 255, 255, 0.2);
+  background: rgba(15, 29, 52, 0.94);
+  border-color: rgba(148, 197, 255, 0.24);
+  box-shadow: 0 4px 12px -4px rgba(0, 0, 0, 0.55);
 }
 
 .brand-logo-img {
@@ -17197,6 +17198,28 @@ p {
   align-items: center;
   justify-content: center;
   gap: 6px;
+}
+
+.ak-csv-btn.ak-excel-green {
+  background: #107c41;
+  border-color: #0e6b38;
+  color: #ffffff;
+}
+
+.ak-csv-btn.ak-excel-green:hover:not(:disabled) {
+  background: #0d6836;
+  border-color: #0a542b;
+}
+
+[data-theme='dark'] .ak-csv-btn.ak-excel-green {
+  background: #15803d;
+  border-color: #22c55e;
+  color: #f0fdf4;
+}
+
+[data-theme='dark'] .ak-csv-btn.ak-excel-green:hover:not(:disabled) {
+  background: #166534;
+  border-color: #4ade80;
 }
 
 @media (max-width: 480px) {

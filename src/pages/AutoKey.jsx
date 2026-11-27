@@ -1913,7 +1913,7 @@ export default function AutoKey({ onNavigate }) {
               <button
                 id="smartlog-export-excel-btn"
                 type="button"
-                className="ak-csv-btn ak-export-btn"
+                className="ak-csv-btn ak-export-btn ak-excel-green"
                 onClick={handleExportExcel}
                 title={
                   lang === 'TH'

@@ -1,6 +1,7 @@
-// Pure JavaScript Zero-Dependency OpenXML (.xlsx) Workbook Exporter for PROTECT360 SmartLog
+// Pure JavaScript Zero-Dependency OpenXML (.xlsx) Workbook Exporter for PROTECT360 360Flow
 // Produces a native 2-sheet Excel workbook (Ledger + Summary) with live SUM formulas,
-// frozen header row, AutoFilter, styled Navy headers, currency formatting, and full Thai UTF-8 support.
+// sharedStrings table (t="s"), Tahoma Thai charset (222), LTR readingOrder="0",
+// frozen header row, AutoFilter, styled Navy headers, and full NFC UTF-8 Thai support.
 
 const textEncoder = new TextEncoder();
 
@@ -10,7 +11,7 @@ const CRC32_TABLE = (() => {
   for (let i = 0; i < 256; i += 1) {
     let c = i;
     for (let k = 0; k < 8; k += 1) {
-      c = (c & 1) ? (0xedb88320 ^ (c >>> 1)) : (c >>> 1);
+      c = c & 1 ? 0xedb88320 ^ (c >>> 1) : c >>> 1;
     }
     table[i] = c >>> 0;
   }
@@ -36,8 +37,13 @@ function stripXmlControlChars(str) {
   return out;
 }
 
+function normalizeText(value) {
+  const raw = stripXmlControlChars(String(value ?? ''));
+  return typeof raw.normalize === 'function' ? raw.normalize('NFC') : raw;
+}
+
 function escapeXml(value) {
-  return stripXmlControlChars(String(value ?? ''))
+  return normalizeText(value)
     .replace(/&/g, '&amp;')
     .replace(/</g, '&lt;')
     .replace(/>/g, '&gt;')
@@ -54,6 +60,49 @@ function colIndexToLetter(index) {
     n = Math.floor((n - 1) / 26);
   }
   return letters;
+}
+
+/**
+ * Shared String Table helper so every text cell compiles to standard OpenXML `t="s"`
+ * pointing into `xl/sharedStrings.xml` (guarantees identical Thai shaping in Excel,
+ * Apple Numbers/QuickLook, WPS, LibreOffice, and Google Sheets).
+ */
+function createSharedStringCollector() {
+  const indexMap = new Map();
+  const list = [];
+  let totalCount = 0;
+
+  const intern = (raw) => {
+    const clean = normalizeText(raw);
+    totalCount += 1;
+    if (indexMap.has(clean)) {
+      return indexMap.get(clean);
+    }
+    const idx = list.length;
+    indexMap.set(clean, idx);
+    list.push(clean);
+    return idx;
+  };
+
+  const toXml = () => {
+    const itemsXml = list
+      .map((str) => {
+        const escaped = str
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;')
+          .replace(/'/g, '&apos;');
+        const needsPreserve = /^\s|\s$/.test(str) || str.includes('\n');
+        return `<si><t${needsPreserve ? ' xml:space="preserve"' : ''}>${escaped}</t></si>`;
+      })
+      .join('');
+
+    return `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<sst xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" count="${totalCount}" uniqueCount="${list.length}">${itemsXml}</sst>`;
+  };
+
+  return { intern, toXml };
 }
 
 /**
@@ -157,7 +206,7 @@ function buildZipBlob(files) {
 // 9 = muted label
 // 10 = decimal 2-digit (0.00)
 
-function renderCell(colIdx, rowNum, cell) {
+function renderCell(colIdx, rowNum, cell, sharedStrings) {
   const ref = `${colIndexToLetter(colIdx)}${rowNum}`;
   if (cell === null || cell === undefined || cell === '') {
     return `<c r="${ref}" s="0"/>`;
@@ -175,17 +224,28 @@ function renderCell(colIdx, rowNum, cell) {
       const n = Number(cell.value);
       return `<c r="${ref}" s="${s}"><v>${Number.isFinite(n) ? n : 0}</v></c>`;
     }
-    return `<c r="${ref}" t="inlineStr" s="${s}"><is><t xml:space="preserve">${escapeXml(cell.value)}</t></is></c>`;
+    if (cell.value === '') {
+      return `<c r="${ref}" s="${s}"/>`;
+    }
+    const strIdx = sharedStrings.intern(cell.value);
+    return `<c r="${ref}" t="s" s="${s}"><v>${strIdx}</v></c>`;
   }
 
   if (typeof cell === 'number') {
     return `<c r="${ref}" s="2"><v>${Number.isFinite(cell) ? cell : 0}</v></c>`;
   }
 
-  return `<c r="${ref}" t="inlineStr" s="0"><is><t xml:space="preserve">${escapeXml(cell)}</t></is></c>`;
+  const strIdx = sharedStrings.intern(cell);
+  return `<c r="${ref}" t="s" s="0"><v>${strIdx}</v></c>`;
 }
 
-function buildWorksheetXml({ rows, colWidths, freezeTopRow = false, autoFilterRef = null }) {
+function buildWorksheetXml({
+  rows,
+  colWidths,
+  freezeTopRow = false,
+  autoFilterRef = null,
+  sharedStrings,
+}) {
   const colsXml = colWidths
     .map(
       (w, idx) =>
@@ -201,8 +261,13 @@ function buildWorksheetXml({ rows, colWidths, freezeTopRow = false, autoFilterRe
     .map((rowObj, rIdx) => {
       const rowNum = rIdx + 1;
       const cells = Array.isArray(rowObj) ? rowObj : rowObj.cells;
-      const htAttr = !Array.isArray(rowObj) && rowObj.height ? ` ht="${rowObj.height}" customHeight="1"` : '';
-      const cellsXml = cells.map((c, cIdx) => renderCell(cIdx, rowNum, c)).join('');
+      const htAttr =
+        !Array.isArray(rowObj) && rowObj.height
+          ? ` ht="${rowObj.height}" customHeight="1"`
+          : '';
+      const cellsXml = cells
+        .map((c, cIdx) => renderCell(cIdx, rowNum, c, sharedStrings))
+        .join('');
       return `<row r="${rowNum}"${htAttr}>${cellsXml}</row>`;
     })
     .join('');
@@ -220,6 +285,9 @@ function buildWorksheetXml({ rows, colWidths, freezeTopRow = false, autoFilterRe
 }
 
 function buildStylesXml() {
+  // Tahoma + <family val="2"/> + <charset val="222"/> provides native Thai GPOS diacritic
+  // anchor tables on both Windows Excel and macOS/iOS viewers, preventing combining marks
+  // (e.g. ั / ี) from shifting before their base consonant.
   return `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <styleSheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">
   <numFmts count="3">
@@ -228,10 +296,10 @@ function buildStylesXml() {
     <numFmt numFmtId="166" formatCode="#,##0"/>
   </numFmts>
   <fonts count="4">
-    <font><sz val="11"/><color rgb="FF142B4A"/><name val="Sarabun"/></font>
-    <font><b/><sz val="11"/><color rgb="FFFFFFFF"/><name val="Sarabun"/></font>
-    <font><b/><sz val="11"/><color rgb="FF142B4A"/><name val="Sarabun"/></font>
-    <font><b/><sz val="14"/><color rgb="FF142B4A"/><name val="Sarabun"/></font>
+    <font><sz val="11"/><color rgb="FF142B4A"/><name val="Tahoma"/><family val="2"/><charset val="222"/></font>
+    <font><b/><sz val="11"/><color rgb="FFFFFFFF"/><name val="Tahoma"/><family val="2"/><charset val="222"/></font>
+    <font><b/><sz val="11"/><color rgb="FF142B4A"/><name val="Tahoma"/><family val="2"/><charset val="222"/></font>
+    <font><b/><sz val="14"/><color rgb="FF142B4A"/><name val="Tahoma"/><family val="2"/><charset val="222"/></font>
   </fonts>
   <fills count="4">
     <fill><patternFill patternType="none"/></fill>
@@ -257,26 +325,29 @@ function buildStylesXml() {
     </border>
   </borders>
   <cellStyleXfs count="1">
-    <xf numFmtId="0" fontId="0" fillId="0" borderId="0"/>
+    <xf numFmtId="0" fontId="0" fillId="0" borderId="0" applyFont="1" applyAlignment="1"><alignment readingOrder="0" vertical="center"/></xf>
   </cellStyleXfs>
   <cellXfs count="11">
-    <xf numFmtId="0" fontId="0" fillId="0" borderId="1" xfId="0" applyBorder="1" applyAlignment="1"><alignment vertical="center"/></xf>
-    <xf numFmtId="0" fontId="1" fillId="2" borderId="1" xfId="0" applyFont="1" applyFill="1" applyBorder="1" applyAlignment="1"><alignment horizontal="center" vertical="center" wrapText="1"/></xf>
-    <xf numFmtId="164" fontId="0" fillId="0" borderId="1" xfId="0" applyNumberFormat="1" applyBorder="1" applyAlignment="1"><alignment horizontal="right" vertical="center"/></xf>
-    <xf numFmtId="165" fontId="0" fillId="0" borderId="1" xfId="0" applyNumberFormat="1" applyBorder="1" applyAlignment="1"><alignment horizontal="right" vertical="center"/></xf>
-    <xf numFmtId="166" fontId="0" fillId="0" borderId="1" xfId="0" applyNumberFormat="1" applyBorder="1" applyAlignment="1"><alignment horizontal="center" vertical="center"/></xf>
-    <xf numFmtId="0" fontId="2" fillId="3" borderId="2" xfId="0" applyFont="1" applyFill="1" applyBorder="1" applyAlignment="1"><alignment vertical="center"/></xf>
-    <xf numFmtId="164" fontId="2" fillId="3" borderId="2" xfId="0" applyNumberFormat="1" applyFont="1" applyFill="1" applyBorder="1" applyAlignment="1"><alignment horizontal="right" vertical="center"/></xf>
-    <xf numFmtId="165" fontId="2" fillId="3" borderId="2" xfId="0" applyNumberFormat="1" applyFont="1" applyFill="1" applyBorder="1" applyAlignment="1"><alignment horizontal="right" vertical="center"/></xf>
-    <xf numFmtId="0" fontId="3" fillId="0" borderId="0" xfId="0" applyFont="1" applyAlignment="1"><alignment vertical="center"/></xf>
-    <xf numFmtId="0" fontId="2" fillId="0" borderId="1" xfId="0" applyFont="1" applyBorder="1" applyAlignment="1"><alignment vertical="center"/></xf>
-    <xf numFmtId="2" fontId="2" fillId="3" borderId="2" xfId="0" applyNumberFormat="1" applyFont="1" applyFill="1" applyBorder="1" applyAlignment="1"><alignment horizontal="right" vertical="center"/></xf>
+    <xf numFmtId="0" fontId="0" fillId="0" borderId="1" xfId="0" applyFont="1" applyBorder="1" applyAlignment="1"><alignment readingOrder="0" vertical="center"/></xf>
+    <xf numFmtId="0" fontId="1" fillId="2" borderId="1" xfId="0" applyFont="1" applyFill="1" applyBorder="1" applyAlignment="1"><alignment horizontal="center" readingOrder="0" vertical="center" wrapText="1"/></xf>
+    <xf numFmtId="164" fontId="0" fillId="0" borderId="1" xfId="0" applyNumberFormat="1" applyFont="1" applyBorder="1" applyAlignment="1"><alignment horizontal="right" readingOrder="0" vertical="center"/></xf>
+    <xf numFmtId="165" fontId="0" fillId="0" borderId="1" xfId="0" applyNumberFormat="1" applyFont="1" applyBorder="1" applyAlignment="1"><alignment horizontal="right" readingOrder="0" vertical="center"/></xf>
+    <xf numFmtId="166" fontId="0" fillId="0" borderId="1" xfId="0" applyNumberFormat="1" applyFont="1" applyBorder="1" applyAlignment="1"><alignment horizontal="center" readingOrder="0" vertical="center"/></xf>
+    <xf numFmtId="0" fontId="2" fillId="3" borderId="2" xfId="0" applyFont="1" applyFill="1" applyBorder="1" applyAlignment="1"><alignment readingOrder="0" vertical="center"/></xf>
+    <xf numFmtId="164" fontId="2" fillId="3" borderId="2" xfId="0" applyNumberFormat="1" applyFont="1" applyFill="1" applyBorder="1" applyAlignment="1"><alignment horizontal="right" readingOrder="0" vertical="center"/></xf>
+    <xf numFmtId="165" fontId="2" fillId="3" borderId="2" xfId="0" applyNumberFormat="1" applyFont="1" applyFill="1" applyBorder="1" applyAlignment="1"><alignment horizontal="right" readingOrder="0" vertical="center"/></xf>
+    <xf numFmtId="0" fontId="3" fillId="0" borderId="0" xfId="0" applyFont="1" applyAlignment="1"><alignment readingOrder="0" vertical="center"/></xf>
+    <xf numFmtId="0" fontId="2" fillId="0" borderId="1" xfId="0" applyFont="1" applyBorder="1" applyAlignment="1"><alignment readingOrder="0" vertical="center"/></xf>
+    <xf numFmtId="2" fontId="2" fillId="3" borderId="2" xfId="0" applyNumberFormat="1" applyFont="1" applyFill="1" applyBorder="1" applyAlignment="1"><alignment horizontal="right" readingOrder="0" vertical="center"/></xf>
   </cellXfs>
+  <cellStyles count="1">
+    <cellStyle xfId="0" name="Normal" builtinId="0"/>
+  </cellStyles>
 </styleSheet>`;
 }
 
 /**
- * Generate a Google-Forms-style multi-sheet Excel (.xlsx) Blob for PROTECT360 SmartLog.
+ * Generate a Google-Forms-style multi-sheet Excel (.xlsx) Blob for PROTECT360 360Flow.
  */
 export function buildSmartLogExcelBlob({
   transactions = [],
@@ -288,6 +359,8 @@ export function buildSmartLogExcelBlob({
   lang = 'TH',
   exportDateIso = new Date().toISOString().slice(0, 10),
 }) {
+  const sharedStrings = createSharedStringCollector();
+
   const typeMap = {
     income: lang === 'TH' ? 'รายรับ' : 'Income',
     expense: lang === 'TH' ? 'รายจ่าย' : 'Expense',
@@ -364,7 +437,10 @@ export function buildSmartLogExcelBlob({
       { value: '', style: 5 },
       { value: '', style: 5 },
       { value: '', style: 5 },
-      { value: lang === 'TH' ? `รวมทั้งหมด (${transactions.length} รายการ)` : `Total (${transactions.length} entries)`, style: 5 },
+      {
+        value: lang === 'TH' ? `รวมทั้งหมด (${transactions.length} รายการ)` : `Total (${transactions.length} entries)`,
+        style: 5,
+      },
       hasData ? { formula: `SUM(G2:G${lastDataRowNum})`, value: sumIncome, style: 6 } : { type: 'number', value: 0, style: 6 },
       hasData ? { formula: `SUM(H2:H${lastDataRowNum})`, value: sumExpense, style: 6 } : { type: 'number', value: 0, style: 6 },
       hasData ? { formula: `SUM(I2:I${lastDataRowNum})`, value: sumSaving, style: 6 } : { type: 'number', value: 0, style: 6 },
@@ -378,6 +454,7 @@ export function buildSmartLogExcelBlob({
     colWidths: [8, 16, 13, 18, 22, 34, 16, 16, 20, 20, 32],
     freezeTopRow: true,
     autoFilterRef: `A1:K${Math.max(1, lastDataRowNum)}`,
+    sharedStrings,
   });
 
   // ---------------- SHEET 2: SUMMARY OVERVIEW ----------------
@@ -474,8 +551,10 @@ export function buildSmartLogExcelBlob({
     rows: summaryRows,
     colWidths: [42, 20, 18, 16],
     freezeTopRow: false,
+    sharedStrings,
   });
 
+  const sharedStringsXml = sharedStrings.toXml();
   const sheet1Name = lang === 'TH' ? 'บัญชีรับ-จ่าย 360Flow' : '360Flow Ledger';
   const sheet2Name = lang === 'TH' ? 'สรุปภาพรวม' : 'Summary';
 
@@ -487,6 +566,7 @@ export function buildSmartLogExcelBlob({
   <Override PartName="/xl/worksheets/sheet1.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/>
   <Override PartName="/xl/worksheets/sheet2.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/>
   <Override PartName="/xl/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml"/>
+  <Override PartName="/xl/sharedStrings.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sharedStrings+xml"/>
 </Types>`;
 
   const rootRelsXml = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
@@ -496,10 +576,12 @@ export function buildSmartLogExcelBlob({
 
   const workbookXml = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">
+  <workbookPr/>
   <sheets>
-    <sheet name="${escapeXml(sheet1Name)}" sheetId="1" r:id="rId1"/>
-    <sheet name="${escapeXml(sheet2Name)}" sheetId="2" r:id="rId2"/>
+    <sheet state="visible" name="${escapeXml(sheet1Name)}" sheetId="1" r:id="rId1"/>
+    <sheet state="visible" name="${escapeXml(sheet2Name)}" sheetId="2" r:id="rId2"/>
   </sheets>
+  <calcPr fullCalcOnLoad="1"/>
 </workbook>`;
 
   const workbookRelsXml = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
@@ -507,6 +589,7 @@ export function buildSmartLogExcelBlob({
   <Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet1.xml"/>
   <Relationship Id="rId2" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet2.xml"/>
   <Relationship Id="rId3" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/>
+  <Relationship Id="rId4" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/sharedStrings" Target="sharedStrings.xml"/>
 </Relationships>`;
 
   return buildZipBlob([
@@ -515,6 +598,7 @@ export function buildSmartLogExcelBlob({
     { name: 'xl/workbook.xml', content: workbookXml },
     { name: 'xl/_rels/workbook.xml.rels', content: workbookRelsXml },
     { name: 'xl/styles.xml', content: buildStylesXml() },
+    { name: 'xl/sharedStrings.xml', content: sharedStringsXml },
     { name: 'xl/worksheets/sheet1.xml', content: sheet1Xml },
     { name: 'xl/worksheets/sheet2.xml', content: sheet2Xml },
   ]);
