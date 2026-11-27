@@ -1119,71 +1119,124 @@ export default function Invest({ onNavigate }) {
                   </div>
                 </div>
 
-                {/* Diverging Multi-Year Bar Chart (scroll-safe on phones) */}
-                <div className="inv-timeline-scroll">
-                  <div className="inv-timeline-plot">
-                    {irrResult.timeline.map((row) => {
-                      const outPct =
-                        row.outflow > 0
-                          ? Math.max(8, Math.round((row.outflow / maxTimelineAbs) * 100))
-                          : 0;
-                      const payoutTotal = row.cashback + row.maturity;
-                      const payoutPct =
-                        payoutTotal > 0
-                          ? Math.max(8, Math.round((payoutTotal / maxTimelineAbs) * 100))
-                          : 0;
-                      const taxPctH =
-                        row.taxSaving > 0
-                          ? Math.max(6, Math.round((row.taxSaving / maxTimelineAbs) * 100))
-                          : 0;
-                      const isSelected = activeTimelineRow?.year === row.year;
+                {/* Refined Diverging Multi-Year Bar Chart (strictly contained inside frame at 2–40 years) */}
+                <div className="inv-timeline-frame">
+                  {irrResult.timeline.length === 0 ? (
+                    <div className="inv-timeline-empty">
+                      {lang === 'TH'
+                        ? 'กรอกข้อมูลแผนออมทางด้านซ้าย หรือเลือกแผนตัวอย่าง เพื่อแสดงกราฟกระแสเงินสดรายปี'
+                        : 'Enter savings plan inputs or choose a preset to preview the yearly cashflow timeline.'}
+                    </div>
+                  ) : (
+                    <>
+                      <div className="inv-timeline-scroll">
+                        <div className="inv-timeline-plot">
+                          {irrResult.timeline.map((row) => {
+                            const outPct =
+                              row.outflow > 0
+                                ? Math.max(8, Math.round((row.outflow / maxTimelineAbs) * 100))
+                                : 0;
+                            const payoutTotal = row.cashback + row.maturity;
+                            const payoutPct =
+                              payoutTotal > 0
+                                ? Math.max(8, Math.round((payoutTotal / maxTimelineAbs) * 100))
+                                : 0;
+                            const taxPctH =
+                              row.taxSaving > 0
+                                ? Math.max(6, Math.round((row.taxSaving / maxTimelineAbs) * 100))
+                                : 0;
+                            const isSelected = activeTimelineRow?.year === row.year;
 
-                      return (
-                        <button
-                          key={row.year}
-                          type="button"
-                          className={`inv-tl-col ${isSelected ? 'selected' : ''}`}
-                          onMouseEnter={() => setSelectedTimelineYear(row.year)}
-                          onClick={() => setSelectedTimelineYear(row.year)}
-                          aria-label={`${lang === 'TH' ? 'ปีที่' : 'Year'} ${row.year}`}
-                        >
-                          <div className="inv-tl-inflow-lane">
-                            {taxPctH > 0 && (
-                              <span
-                                className="inv-tl-bar tax"
-                                style={{ height: `${Math.min(100, taxPctH)}%` }}
-                              />
-                            )}
-                            {payoutPct > 0 && (
-                              <span
-                                className="inv-tl-bar payout"
-                                style={{ height: `${Math.min(100, payoutPct)}%` }}
-                              />
-                            )}
-                          </div>
-                          <div className="inv-tl-axis-line" />
-                          <div className="inv-tl-outflow-lane">
-                            {outPct > 0 && (
-                              <span
-                                className="inv-tl-bar outflow"
-                                style={{ height: `${Math.min(100, outPct)}%` }}
-                              />
-                            )}
-                          </div>
-                          <span className="inv-tl-year tabular-nums">Y{row.year}</span>
-                        </button>
-                      );
-                    })}
-                  </div>
+                            return (
+                              <button
+                                key={row.year}
+                                type="button"
+                                className={`inv-tl-col ${isSelected ? 'selected' : ''}`}
+                                onMouseEnter={() => setSelectedTimelineYear(row.year)}
+                                onClick={() => setSelectedTimelineYear(row.year)}
+                                aria-label={`${lang === 'TH' ? 'ปีที่' : 'Year'} ${row.year}`}
+                              >
+                                <div className="inv-tl-inflow-lane">
+                                  {taxPctH > 0 && (
+                                    <span
+                                      className="inv-tl-bar tax"
+                                      style={{ height: `${Math.min(100, taxPctH)}%` }}
+                                    />
+                                  )}
+                                  {payoutPct > 0 && (
+                                    <span
+                                      className="inv-tl-bar payout"
+                                      style={{ height: `${Math.min(100, payoutPct)}%` }}
+                                    />
+                                  )}
+                                </div>
+                                <div className="inv-tl-axis-line" />
+                                <div className="inv-tl-outflow-lane">
+                                  {outPct > 0 && (
+                                    <span
+                                      className="inv-tl-bar outflow"
+                                      style={{ height: `${Math.min(100, outPct)}%` }}
+                                    />
+                                  )}
+                                </div>
+                                <span className="inv-tl-year tabular-nums">Y{row.year}</span>
+                              </button>
+                            );
+                          })}
+                        </div>
+                      </div>
+
+                      {irrResult.timeline.length > 10 && (
+                        <div className="inv-timeline-scroll-cue tabular-nums">
+                          <span>
+                            {lang === 'TH'
+                              ? `แสดงครบ ${irrResult.duration + 1} จุดเวลา (ปีที่ 0 – ${irrResult.duration})`
+                              : `${irrResult.duration + 1} timeline points (Y0 – Y${irrResult.duration})`}
+                          </span>
+                          <span>
+                            {lang === 'TH' ? '← เลื่อนซ้าย-ขวาได้ →' : '← Scroll horizontally →'}
+                          </span>
+                        </div>
+                      )}
+                    </>
+                  )}
                 </div>
 
-                {/* Selected Year Inspector */}
+                {/* Selected Year Inspector with Prev / Next Year Steppers */}
                 {activeTimelineRow && (
                   <div className="inv-tl-inspector tabular-nums">
-                    <div className="inv-tl-inspector-yr">
-                      {lang === 'TH'
-                        ? `ปีที่ ${activeTimelineRow.year}`
-                        : `Year ${activeTimelineRow.year}`}
+                    <div className="inv-tl-inspector-head">
+                      <div className="inv-tl-inspector-yr">
+                        {lang === 'TH'
+                          ? `ปีที่ ${activeTimelineRow.year}`
+                          : `Year ${activeTimelineRow.year}`}
+                      </div>
+                      <div className="inv-tl-yr-nav">
+                        <button
+                          type="button"
+                          className="inv-tl-yr-btn"
+                          disabled={activeTimelineRow.year <= 0}
+                          onClick={() =>
+                            setSelectedTimelineYear(Math.max(0, activeTimelineRow.year - 1))
+                          }
+                          aria-label={lang === 'TH' ? 'ปีก่อนหน้า' : 'Previous year'}
+                        >
+                          ‹
+                        </button>
+                        <button
+                          type="button"
+                          className="inv-tl-yr-btn"
+                          disabled={activeTimelineRow.year >= irrResult.duration}
+                          onClick={() =>
+                            setSelectedTimelineYear(
+                              Math.min(irrResult.duration, activeTimelineRow.year + 1)
+                            )
+                          }
+                          aria-label={lang === 'TH' ? 'ปีถัดไป' : 'Next year'}
+                        >
+                          ›
+                        </button>
+                      </div>
                     </div>
                     <div className="inv-tl-inspector-stats">
                       <span>
