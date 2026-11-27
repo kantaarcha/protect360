@@ -182,31 +182,35 @@ export function computeProtectionPool({
   return Math.max(0, Math.round(existingProtectionLimit) + fromBudget + fromHr);
 }
 
+function shuffleArray(items) {
+  const arr = [...items];
+  for (let i = arr.length - 1; i > 0; i -= 1) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
+function pickFromPool(pool, count, avoidIds, usedIds) {
+  const available = pool.filter((item) => !usedIds.has(item.id));
+  const fresh = shuffleArray(available.filter((item) => !avoidIds.has(item.id)));
+  const seen = shuffleArray(available.filter((item) => avoidIds.has(item.id)));
+  const combined = [...fresh, ...seen];
+  const picked = combined.slice(0, count);
+  picked.forEach((item) => usedIds.add(item.id));
+  return picked;
+}
+
 /**
- * Build turn-by-turn event deck scaled to totalTurns (3, 5, 6, or 8).
- * Guarantees at least one major 100,000 THB shock even in 30-day Express mode.
+ * Build randomized turn-by-turn event deck scaled to totalTurns (3, 5, 6, or 8).
+ * Prioritizes unseen events from previous runs and guarantees 1 major ~฿100,000 shock.
  */
-export function buildEventDeck(totalTurns, persona) {
+export function buildEventDeck(totalTurns, persona, previousEventIds = []) {
   const monthlyIncome = Math.max(10000, Number(persona?.monthlyIncome) || 25000);
   const incomeDropAmount = Math.round(monthlyIncome * 0.2);
 
-  const EVENTS = {
-    medical45k: {
-      id: 'medical-45k',
-      category: 'medical',
-      severity: 'high',
-      billAmount: 45000,
-      badge: { th: 'เหตุฉุกเฉินสุขภาพ', en: 'Medical Shock' },
-      title: {
-        th: 'อาหารเป็นพิษรุนแรง / ไข้เลือดออก ต้องแอดมิตด่วน',
-        en: 'Severe Food Poisoning / Dengue — Urgent Hospital Admission',
-      },
-      story: {
-        th: 'คุณไข้สูงเฉียบพลันตอนตี 2 ต้องเข้าโรงพยาบาลเอกชนใกล้บ้านและนอนพักรักษาตัว 3 คืน บิลค่ารักษาและค่าห้องรวมทั้งสิ้น ฿45,000',
-        en: 'A sudden high fever at 2 AM sends you to the nearest private hospital for 3 nights. Total medical and room charges come to ฿45,000.',
-      },
-    },
-    accident100k: {
+  const CRITICAL_POOL = [
+    {
       id: 'accident-100k',
       category: 'accident',
       severity: 'critical',
@@ -221,7 +225,103 @@ export function buildEventDeck(totalTurns, persona) {
         en: 'An unexpected commute collision causes a fracture requiring urgent surgery and recovery care. The total hospital bill is ฿100,000.',
       },
     },
-    incomeDrop: {
+    {
+      id: 'appendicitis-95k',
+      category: 'medical',
+      severity: 'critical',
+      billAmount: 95000,
+      badge: { th: 'ผ่าตัดฉุกเฉิน', en: 'Emergency Surgery' },
+      title: {
+        th: 'ไส้ติ่งอักเสบเฉียบพลัน ต้องผ่าตัดส่องกล้องกลางดึก',
+        en: 'Acute Appendicitis — Late-Night Emergency Surgery',
+      },
+      story: {
+        th: 'ปวดท้องรุนแรงกะทันหันกลางดึก แพทย์วินิจฉัยไส้ติ่งอักเสบใกล้แตกต้องผ่าตัดส่องกล้องทันที ค่ารักษาและห้องพักฟื้นรวม ฿95,000',
+        en: 'Sudden severe abdominal pain at midnight turns out to be acute appendicitis needing immediate surgery. Total bill: ฿95,000.',
+      },
+    },
+    {
+      id: 'slip-fracture-110k',
+      category: 'accident',
+      severity: 'critical',
+      billAmount: 110000,
+      badge: { th: 'อุบัติเหตุหนัก', en: 'Severe Injury Shock' },
+      title: {
+        th: 'ลื่นล้มรุนแรง / เอ็นหัวเข่าฉีกขาด ต้องผ่าตัดและกายภาพ',
+        en: 'Severe Fall / Torn Knee Ligament Surgery & Rehab',
+      },
+      story: {
+        th: 'พื้นเปียกช่วงฝนตกทำให้ลื่นล้มเข่าบิดรุนแรง เอ็นไขว้หน้าขาดต้องผ่าตัดส่องกล้องและทำกายภาพต่อ รวมค่ารักษา ฿110,000',
+        en: 'A bad slip on wet pavement tears your knee ligament, requiring surgical reconstruction and follow-up rehab totaling ฿110,000.',
+      },
+    },
+  ];
+
+  const MEDICAL_POOL = [
+    {
+      id: 'medical-45k',
+      category: 'medical',
+      severity: 'high',
+      billAmount: 45000,
+      badge: { th: 'เหตุฉุกเฉินสุขภาพ', en: 'Medical Shock' },
+      title: {
+        th: 'อาหารเป็นพิษรุนแรง / ไข้เลือดออก ต้องแอดมิตด่วน',
+        en: 'Severe Food Poisoning / Dengue — Urgent Hospital Admission',
+      },
+      story: {
+        th: 'คุณไข้สูงเฉียบพลันตอนตี 2 ต้องเข้าโรงพยาบาลเอกชนใกล้บ้านและนอนพักรักษาตัว 3 คืน บิลค่ารักษาและค่าห้องรวมทั้งสิ้น ฿45,000',
+        en: 'A sudden high fever at 2 AM sends you to the nearest private hospital for 3 nights. Total medical and room charges come to ฿45,000.',
+      },
+    },
+    {
+      id: 'flu-pneumonia-38k',
+      category: 'medical',
+      severity: 'high',
+      billAmount: 38000,
+      badge: { th: 'เจ็บป่วยเฉียบพลัน', en: 'Acute Illness' },
+      title: {
+        th: 'ไข้หวัดใหญ่สายพันธุ์ใหม่แทรกซ้อน นอน รพ. 2 คืน',
+        en: 'Severe Influenza Complication — 2-Night Hospital Stay',
+      },
+      story: {
+        th: 'พักผ่อนน้อยสะสมจนติดไข้หวัดใหญ่และมีภาวะหลอดลมอักเสบ ต้องพ่นยาและให้น้ำเกลือที่ รพ. 2 คืน ค่าใช้จ่ายรวม ฿38,000',
+        en: 'Exhaustion leads to severe influenza with bronchitis requiring IV fluids and 2 nights of inpatient care totaling ฿38,000.',
+      },
+    },
+    {
+      id: 'allergy-er-32k',
+      category: 'medical',
+      severity: 'high',
+      billAmount: 32000,
+      badge: { th: 'เข้าห้องฉุกเฉิน', en: 'ER Admission' },
+      title: {
+        th: 'แพ้อาหารเฉียบพลัน หายใจติดขัด ต้องเข้าห้องฉุกเฉิน',
+        en: 'Severe Allergic Reaction — Emergency Room Overnight',
+      },
+      story: {
+        th: 'เกิดอาการแพ้รุนแรงหลังมื้อเย็นจนผื่นขึ้นและหายใจติดขัด ต้องรีบเข้าห้องฉุกเฉินฉีดยาและนอนดูอาการ 1 คืน บิลรวม ฿32,000',
+        en: 'An unexpected allergic reaction triggers breathing difficulty, requiring urgent ER treatment and overnight monitoring for ฿32,000.',
+      },
+    },
+    {
+      id: 'seasonal-22k',
+      category: 'medical',
+      severity: 'medium',
+      billAmount: 22000,
+      badge: { th: 'เจ็บป่วยตามฤดูกาล', en: 'Seasonal Illness' },
+      title: {
+        th: 'ติดเชื้อทางเดินอาหาร / ให้น้ำเกลือพักฟื้น (฿22,000)',
+        en: 'Acute Gastroenteritis — Short Hospital Recovery (฿22,000)',
+      },
+      story: {
+        th: 'อาการปวดท้องและขาดน้ำรุนแรงทำให้ต้องแอดมิตให้น้ำเกลือและยาฆ่าเชื้อ 1 คืน รวมค่ารักษา ฿22,000',
+        en: 'Severe dehydration from gastroenteritis requires an overnight IV drip and medication totaling ฿22,000.',
+      },
+    },
+  ];
+
+  const INCOME_POOL = [
+    {
       id: 'income-drop',
       category: 'income',
       severity: 'medium',
@@ -236,7 +336,25 @@ export function buildEventDeck(totalTurns, persona) {
         en: `A temporary slowdown cuts overtime and shift allowances, reducing your cash inflow by ฿${incomeDropAmount.toLocaleString('en-US')} this period.`,
       },
     },
-    lifestyle18k: {
+    {
+      id: 'commission-delay',
+      category: 'income',
+      severity: 'medium',
+      billAmount: incomeDropAmount,
+      badge: { th: 'รายได้สะดุด', en: 'Cashflow Delay' },
+      title: {
+        th: 'ค่าคอมมิชชัน / งานเสริมถูกเลื่อนจ่ายออกไป 20%',
+        en: 'Bonus / Side-Income Payout Delayed (-20% Cashflow)',
+      },
+      story: {
+        th: `โปรเจกต์ของทีมถูกเลื่อนปิดงบ ทำให้เงินส่วนเพิ่มที่คาดว่าจะได้รับช่วงนี้หายไป ฿${incomeDropAmount.toLocaleString('en-US')}`,
+        en: `A delayed project sign-off pushes back your expected payout, creating a ฿${incomeDropAmount.toLocaleString('en-US')} cashflow gap this period.`,
+      },
+    },
+  ];
+
+  const LIFESTYLE_POOL = [
+    {
       id: 'lifestyle-18k',
       category: 'lifestyle',
       severity: 'medium',
@@ -251,22 +369,25 @@ export function buildEventDeck(totalTurns, persona) {
         en: 'Your main smartphone screen shatters right as friends invite you on a recharge trip. Total cost is ฿18,000 — how do you handle it?',
       },
     },
-    windfall8k: {
-      id: 'windfall-8k',
-      category: 'windfall',
-      severity: 'positive',
-      billAmount: 8000,
-      badge: { th: 'ข่าวดีทางการเงิน', en: 'Positive Windfall' },
+    {
+      id: 'concert-gadget-15k',
+      category: 'lifestyle',
+      severity: 'medium',
+      billAmount: 15000,
+      badge: { th: 'สิ่งล่อใจรายทาง', en: 'Impulse Temptation' },
       title: {
-        th: 'ได้รับเงินคืนภาษี / โบนัสพิเศษ +฿8,000',
-        en: 'Tax Refund / Spot Performance Bonus +฿8,000',
+        th: 'บัตรคอนเสิร์ตวงโปรด + โปรลดแรงแก็ดเจ็ต (฿15,000)',
+        en: 'Dream Concert Tickets + Flash Gadget Sale (฿15,000)',
       },
       story: {
-        th: 'การยื่นภาษีตรงเวลาและผลงานที่โดดเด่นทำให้คุณได้รับเงินพิเศษเข้าบัญชี ฿8,000 คุณจะนำเงินก้อนนี้ไปเสริมจุดไหน?',
-        en: 'Filing taxes cleanly and solid work performance earns you an unexpected ฿8,000 cash inflow. Where will you direct it?',
+        th: 'ศิลปินที่ชอบมาไทยรอบพิเศษ แถมโปรลดราคาหูฟัง/แท็บเล็ตวันสุดท้ายพอดี รวมงบ ฿15,000 คุณจะตัดสินใจอย่างไร?',
+        en: 'Your favorite artist announces a one-night Bangkok show alongside a flash gadget deal totaling ฿15,000. What is your move?',
       },
     },
-    commuteRepair: {
+  ];
+
+  const EXPENSE_POOL = [
+    {
       id: 'commute-14k',
       category: 'expense',
       severity: 'medium',
@@ -281,70 +402,108 @@ export function buildEventDeck(totalTurns, persona) {
         en: 'Essential work/commute gear breaks down suddenly and needs an immediate ฿14,000 repair so your work stays on track.',
       },
     },
-    seasonalOpd: {
-      id: 'seasonal-22k',
-      category: 'medical',
+    {
+      id: 'home-appliance-12k',
+      category: 'expense',
       severity: 'medium',
-      billAmount: 22000,
-      badge: { th: 'เจ็บป่วยตามฤดูกาล', en: 'Seasonal Illness' },
+      billAmount: 12000,
+      badge: { th: 'ค่าซ่อมฉุกเฉิน', en: 'Urgent Home Bill' },
       title: {
-        th: 'ไข้หวัดใหญ่สายพันธุ์ใหม่ นอนสังเกตอาการ (฿22,000)',
-        en: 'Severe Influenza — Short Hospital Stay (฿22,000)',
+        th: 'แอร์ห้องพักเสีย + ช่วยค่าซ่อมฉุกเฉินที่บ้าน (฿12,000)',
+        en: 'Broken A/C Unit & Urgent Family Home Repair (฿12,000)',
       },
       story: {
-        th: 'ช่วงฤดูฝนคุณติดไข้หวัดใหญ่สายพันธุ์รุนแรง ต้องให้น้ำเกลือและพักฟื้นที่โรงพยาบาล 1 คืน รวมค่ารักษา ฿22,000',
-        en: 'Seasonal influenza hits hard, requiring IV fluids and an overnight hospital stay totaling ฿22,000.',
+        th: 'หน้าร้อนจัดแอร์เสียพร้อมกับที่บ้านมีค่าซ่อมหลังคารั่วกะทันหัน ต้องช่วยออกค่าใช้จ่ายรวม ฿12,000',
+        en: 'Peak summer heat breaks your A/C just as a leak at home needs fixing, requiring ฿12,000 in sudden repair cash.',
       },
     },
-    yearEndBonus: {
+  ];
+
+  const WINDFALL_POOL = [
+    {
+      id: 'windfall-8k',
+      category: 'windfall',
+      severity: 'positive',
+      billAmount: 8000,
+      badge: { th: 'ข่าวดีทางการเงิน', en: 'Positive Windfall' },
+      title: {
+        th: 'ได้รับเงินคืนภาษี / โบนัสพิเศษ +฿8,000',
+        en: 'Tax Refund / Spot Performance Bonus +฿8,000',
+      },
+      story: {
+        th: 'การยื่นภาษีตรงเวลาและผลงานที่โดดเด่นทำให้คุณได้รับเงินพิเศษเข้าบัญชี ฿8,000 คุณจะนำเงินก้อนนี้ไปเสริมจุดไหน?',
+        en: 'Filing taxes cleanly and solid work performance earns you an unexpected ฿8,000 cash inflow. Where will you direct it?',
+      },
+    },
+    {
       id: 'windfall-12k',
       category: 'windfall',
       severity: 'positive',
       billAmount: 12000,
-      badge: { th: 'โบนัสปลายรอบ', en: 'Year-End Windfall' },
+      badge: { th: 'โบนัสพิเศษ', en: 'Extra Windfall' },
       title: {
-        th: 'รับเงินปันผลสหกรณ์ / โบนัสปลายปี +฿12,000',
-        en: 'Co-op Dividend / Year-End Bonus +฿12,000',
+        th: 'รับเงินปันผล / ค่าตอบแทนงานเสริมพิเศษ +฿12,000',
+        en: 'Dividend / Freelance Project Payout +฿12,000',
       },
       story: {
-        th: 'ใกล้ครบรอบปี คุณได้รับโบนัสพิเศษและเงินคืนสะสมอีก ฿12,000 เป็นโอกาสทองในการเสริมความแข็งแกร่งทางการเงิน',
-        en: 'Near the end of the cycle, you receive a ฿12,000 year-end bonus — a prime opportunity to strengthen your safety net.',
+        th: 'งานเสริมที่ตั้งใจทำและเงินคืนสะสมโอนเข้าบัญชีเพิ่ม ฿12,000 เป็นจังหวะดีในการเสริมเกราะทางการเงินของคุณ',
+        en: 'A completed side project and annual rebate land ฿12,000 in your account — a great chance to strengthen your safety net.',
       },
     },
-  };
+  ];
+
+  const avoidIds = new Set(Array.isArray(previousEventIds) ? previousEventIds : []);
+  const usedIds = new Set();
+
+  // Always pick 1 critical ~100k shock so every run tests risk transfer meaningfully
+  const [criticalEvent] = pickFromPool(CRITICAL_POOL, 1, avoidIds, usedIds);
 
   if (totalTurns <= 3) {
-    return [EVENTS.medical45k, EVENTS.lifestyle18k, EVENTS.accident100k];
+    const [med] = pickFromPool(MEDICAL_POOL, 1, avoidIds, usedIds);
+    const [mid] = pickFromPool(
+      [...LIFESTYLE_POOL, ...EXPENSE_POOL, ...INCOME_POOL],
+      1,
+      avoidIds,
+      usedIds
+    );
+    const early = shuffleArray([med, mid]);
+    return [...early, criticalEvent];
   }
+
   if (totalTurns === 5) {
-    return [
-      EVENTS.medical45k,
-      EVENTS.windfall8k,
-      EVENTS.lifestyle18k,
-      EVENTS.accident100k,
-      EVENTS.incomeDrop,
-    ];
+    const [med] = pickFromPool(MEDICAL_POOL, 1, avoidIds, usedIds);
+    const [wind] = pickFromPool(WINDFALL_POOL, 1, avoidIds, usedIds);
+    const [life] = pickFromPool([...LIFESTYLE_POOL, ...EXPENSE_POOL], 1, avoidIds, usedIds);
+    const [inc] = pickFromPool(INCOME_POOL, 1, avoidIds, usedIds);
+    const beforeCritical = shuffleArray([med, wind, life]);
+    const insertIdx = Math.random() < 0.5 ? 3 : 4;
+    const result = [...beforeCritical, inc];
+    result.splice(insertIdx, 0, criticalEvent);
+    return result;
   }
+
   if (totalTurns === 6) {
-    return [
-      EVENTS.lifestyle18k,
-      EVENTS.medical45k,
-      EVENTS.windfall8k,
-      EVENTS.incomeDrop,
-      EVENTS.accident100k,
-      EVENTS.commuteRepair,
-    ];
+    const [med] = pickFromPool(MEDICAL_POOL, 1, avoidIds, usedIds);
+    const [wind] = pickFromPool(WINDFALL_POOL, 1, avoidIds, usedIds);
+    const [life] = pickFromPool(LIFESTYLE_POOL, 1, avoidIds, usedIds);
+    const [exp] = pickFromPool(EXPENSE_POOL, 1, avoidIds, usedIds);
+    const [inc] = pickFromPool(INCOME_POOL, 1, avoidIds, usedIds);
+    const others = shuffleArray([med, wind, life, exp, inc]);
+    const insertIdx = 3 + Math.floor(Math.random() * 2); // turn 4 or 5
+    others.splice(insertIdx, 0, criticalEvent);
+    return others;
   }
-  return [
-    EVENTS.medical45k,
-    EVENTS.lifestyle18k,
-    EVENTS.windfall8k,
-    EVENTS.commuteRepair,
-    EVENTS.incomeDrop,
-    EVENTS.accident100k,
-    EVENTS.seasonalOpd,
-    EVENTS.yearEndBonus,
-  ];
+
+  // 8-turn full year: rich randomized sequence covering all 6 event types
+  const meds = pickFromPool(MEDICAL_POOL, 2, avoidIds, usedIds);
+  const winds = pickFromPool(WINDFALL_POOL, 2, avoidIds, usedIds);
+  const [life] = pickFromPool(LIFESTYLE_POOL, 1, avoidIds, usedIds);
+  const [exp] = pickFromPool(EXPENSE_POOL, 1, avoidIds, usedIds);
+  const [inc] = pickFromPool(INCOME_POOL, 1, avoidIds, usedIds);
+  const others = shuffleArray([...meds, ...winds, life, exp, inc]);
+  const insertIdx = 4 + Math.floor(Math.random() * 3); // turn 5, 6, or 7
+  others.splice(insertIdx, 0, criticalEvent);
+  return others;
 }
 
 /**
@@ -563,11 +722,14 @@ export function getChoicesForEvent(event, state) {
   if (event.category === 'lifestyle') {
     const cost = event.billAmount;
     const frugalFix = 2500;
+    const savedCash = Math.max(0, cost - frugalFix);
     const cashFrugal = Math.min(cash, frugalFix);
     const debtFrugal = Math.max(0, frugalFix - cashFrugal);
 
     const cashBuy = Math.min(cash, cost);
     const debtBuy = Math.max(0, cost - cashBuy);
+    const installmentStep = Math.min(3000, cost);
+    const installmentRemainder = Math.max(0, cost - installmentStep);
 
     return [
       {
@@ -575,12 +737,12 @@ export function getChoicesForEvent(event, state) {
         recommended: true,
         tone: 'blue',
         title: {
-          th: 'เลื่อนทริป + ซ่อมหน้าจอแบบประหยัด (฿2,500)',
-          en: 'Skip Trip + Budget Screen Repair (฿2,500)',
+          th: `อดใจข้ามไปก่อน / แก้ขัดแบบประหยัด (฿${frugalFix.toLocaleString('en-US')})`,
+          en: `Skip & Choose Low-Cost Alternative (฿${frugalFix.toLocaleString('en-US')})`,
         },
         subtitle: {
-          th: `ประหยัดเงินสดได้ถึง ฿${(cost - frugalFix).toLocaleString('en-US')} • ความสบายใจลดเล็กน้อย (-4%)`,
-          en: `Saves ฿${(cost - frugalFix).toLocaleString('en-US')} cash • Small mood dip (-4%)`,
+          th: `ประหยัดเงินสดได้ถึง ฿${savedCash.toLocaleString('en-US')} • ความสบายใจลดเล็กน้อย (-4%)`,
+          en: `Saves ฿${savedCash.toLocaleString('en-US')} cash • Small mood dip (-4%)`,
         },
         tag: { th: 'รักษากันชน', en: 'Protect Cash' },
         effects: {
@@ -591,16 +753,16 @@ export function getChoicesForEvent(event, state) {
           installmentAdd: 0,
         },
         feedback: {
-          th: `การแยก "ของจำเป็น" ออกจาก "ของอยากได้" ช่วยเก็บเงินสด ฿15,500 ไว้เป็นเกราะป้องกันเหตุไม่คาดฝันที่ใหญ่กว่า`,
-          en: `Separating needs from wants preserved ฿15,500 in liquid cash — crucial armor for bigger financial shocks ahead.`,
+          th: `การแยก "ของจำเป็น" ออกจาก "ของอยากได้" ช่วยเก็บเงินสด ฿${savedCash.toLocaleString('en-US')} ไว้เป็นเกราะป้องกันเหตุไม่คาดฝันที่ใหญ่กว่า`,
+          en: `Separating needs from wants preserved ฿${savedCash.toLocaleString('en-US')} in liquid cash — crucial armor for bigger financial shocks ahead.`,
         },
       },
       {
         id: 'pay-lifestyle-cash',
         tone: 'neutral',
         title: {
-          th: 'จ่ายเงินสดเต็ม ฿18,000 เพื่อความสุขเต็มที่',
-          en: 'Pay Full ฿18,000 in Cash',
+          th: `จ่ายเงินสดเต็ม ฿${cost.toLocaleString('en-US')} เพื่อความสุขเต็มที่`,
+          en: `Pay Full ฿${cost.toLocaleString('en-US')} in Cash`,
         },
         subtitle: {
           th: `หักเงินสด ฿${cashBuy.toLocaleString('en-US')}${debtBuy > 0 ? ` • ส่วนขาดเป็นหนี้ ฿${debtBuy.toLocaleString('en-US')}` : ' • ความสบายใจพุ่ง +10%'}`,
@@ -617,32 +779,32 @@ export function getChoicesForEvent(event, state) {
         feedback:
           debtBuy > 0
             ? {
-                th: `เงินสำรองมีไม่พอสำหรับรายจ่ายไลฟ์สไตล์ ฿18,000 ทำให้เกิดหนี้ดอกเบี้ยสูงโดยไม่จำเป็น`,
-                en: `Your cash buffer couldn't absorb the ฿18,000 lifestyle spend, unintentionally creating high-interest debt.`,
+                th: `เงินสำรองมีไม่พอสำหรับรายจ่ายไลฟ์สไตล์ ฿${cost.toLocaleString('en-US')} ทำให้เกิดหนี้ดอกเบี้ยสูงโดยไม่จำเป็น`,
+                en: `Your cash buffer couldn't absorb the ฿${cost.toLocaleString('en-US')} lifestyle spend, unintentionally creating high-interest debt.`,
               }
             : {
-                th: `คุณได้พักใจเต็มที่โดยไม่เป็นหนี้ แต่เงินสำรองลดลง ฿18,000 ต้องลุ้นว่าเทิร์นถัดไปจะไม่มีเหตุฉุกเฉินใหญ่`,
-                en: `You enjoyed the recharge debt-free, though spending ฿18,000 in cash lowers your buffer if a major emergency hits next.`,
+                th: `คุณได้พักใจเต็มที่โดยไม่เป็นหนี้ แต่เงินสำรองลดลง ฿${cost.toLocaleString('en-US')} ต้องลุ้นว่าเทิร์นถัดไปจะไม่มีเหตุฉุกเฉินใหญ่`,
+                en: `You enjoyed the recharge debt-free, though spending ฿${cost.toLocaleString('en-US')} in cash lowers your buffer if a major emergency hits next.`,
               },
       },
       {
         id: 'zero-pct-installment',
         tone: 'neutral',
         title: {
-          th: 'เลือกผ่อน 0% (ตัด ฿3,000/เทิร์น จนครบ ฿18,000)',
-          en: 'Use 0% Installment (฿3,000/turn up to ฿18,000)',
+          th: `เลือกผ่อน 0% (ตัด ฿${installmentStep.toLocaleString('en-US')}/เทิร์น จนครบ ฿${cost.toLocaleString('en-US')})`,
+          en: `Use 0% Installment (฿${installmentStep.toLocaleString('en-US')}/turn up to ฿${cost.toLocaleString('en-US')})`,
         },
         subtitle: {
-          th: 'ยังไม่ดึงเงินสดก้อนใหญ่ตอนนี้ • ผูกภาระผ่อนเทิร์นละ ฿3,000 • ความสบายใจ +5%',
-          en: 'Preserves cash now • Adds ฿3,000/turn installment • Mood +5%',
+          th: `ยังไม่ดึงเงินสดก้อนใหญ่ตอนนี้ • ผูกภาระผ่อนเทิร์นละ ฿${installmentStep.toLocaleString('en-US')} • ความสบายใจ +5%`,
+          en: `Preserves cash now • Adds ฿${installmentStep.toLocaleString('en-US')}/turn installment • Mood +5%`,
         },
         tag: { th: 'ผ่อน 0%', en: '0% Plan' },
         effects: {
-          cashDelta: -3000,
-          debtDelta: cash < 3000 ? 3000 - cash : 0,
+          cashDelta: -installmentStep,
+          debtDelta: cash < installmentStep ? installmentStep - cash : 0,
           protectionUsed: 0,
           peaceDelta: +5,
-          installmentAdd: 15000,
+          installmentAdd: installmentRemainder,
         },
         feedback: {
           th: `ผ่อน 0% ช่วยรักษาสภาพคล่องระยะสั้นได้ดี แต่จะเป็นรายจ่ายคงที่ที่ลดความคล่องตัวในเทิร์นถัดไป`,
@@ -666,8 +828,8 @@ export function getChoicesForEvent(event, state) {
         recommended: true,
         tone: 'blue',
         title: {
-          th: 'ใช้เงินสำรองซ่อมศูนย์มาตรฐาน (฿14,000)',
-          en: 'Pay Certified Repair from Emergency Fund (฿14,000)',
+          th: `ใช้เงินสำรองซ่อมมาตรฐานทันที (฿${cost.toLocaleString('en-US')})`,
+          en: `Pay Standard Repair from Reserve (฿${cost.toLocaleString('en-US')})`,
         },
         subtitle: {
           th: `เงินสำรอง -฿${cashPay.toLocaleString('en-US')}${debtPay > 0 ? ` • กู้เพิ่ม ฿${debtPay.toLocaleString('en-US')}` : ' • จบปัญหาขาด ไม่กระทบงาน'}`,
@@ -690,8 +852,8 @@ export function getChoicesForEvent(event, state) {
         id: 'repair-budget-shop',
         tone: 'neutral',
         title: {
-          th: 'ซ่อมอู่นอก / อะไหล่เทียบประหยัดงบ (฿7,700)',
-          en: 'Budget Local Repair Option (฿7,700)',
+          th: `เลือกซ่อมทางเลือกประหยัดงบ (฿${diyCost.toLocaleString('en-US')})`,
+          en: `Budget Local Repair Option (฿${diyCost.toLocaleString('en-US')})`,
         },
         subtitle: {
           th: `จ่ายเพียง ฿${cashDiy.toLocaleString('en-US')}${debtDiy > 0 ? ` • กู้ ฿${debtDiy.toLocaleString('en-US')}` : ''} • ความสบายใจลดเล็กน้อย (-3%)`,

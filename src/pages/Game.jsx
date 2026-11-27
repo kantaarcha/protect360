@@ -8,7 +8,6 @@ import {
   CheckCircle2,
   Clock,
   FastForward,
-  Gamepad2,
   HeartPulse,
   Info,
   MessageSquareCheck,
@@ -41,6 +40,11 @@ import {
   getTurnCountForDuration,
   resolveTurn,
 } from '../utils/gameEngine';
+
+function getRangePct(value, min, max) {
+  if (max <= min) return 0;
+  return clamp(Math.round(((value - min) / (max - min)) * 100), 0, 100);
+}
 
 function getInitialAllocations(persona) {
   const surplus = Math.max(0, persona.monthlyIncome - persona.monthlyExpenses);
@@ -106,6 +110,7 @@ export default function Game({ onNavigate }) {
   // Active Game Run State
   const [runConfig, setRunConfig] = useState(null);
   const [deck, setDeck] = useState([]);
+  const [lastRunEventIds, setLastRunEventIds] = useState([]);
   const [gameState, setGameState] = useState(null);
   const [lastTurnResult, setLastTurnResult] = useState(null);
   const [hudPulseKey, setHudPulseKey] = useState(0);
@@ -219,7 +224,7 @@ export default function Game({ onNavigate }) {
       startingProtectionPool: previewProtectionPool,
     };
 
-    const eventDeck = buildEventDeck(turns, activePersona);
+    const eventDeck = buildEventDeck(turns, activePersona, lastRunEventIds);
     const initialPeace = clamp(
       70 + (activePersona.emergencyFund >= activePersona.monthlyExpenses ? 8 : 0) + (askedHr ? 5 : 0),
       55,
@@ -228,6 +233,7 @@ export default function Game({ onNavigate }) {
 
     setRunConfig(config);
     setDeck(eventDeck);
+    setLastRunEventIds(eventDeck.map((ev) => ev.id));
     setGameState({
       turnIndex: 0,
       cash: activePersona.emergencyFund,
@@ -299,8 +305,8 @@ export default function Game({ onNavigate }) {
 
   const unitTabItems = useMemo(
     () => [
-      { id: 'days', label: lang === 'TH' ? 'เลือกเป็นวัน (Days)' : 'By Days' },
-      { id: 'months', label: lang === 'TH' ? 'เลือกเป็นเดือน (Months)' : 'By Months' },
+      { id: 'days', label: lang === 'TH' ? 'รายวัน' : 'Days' },
+      { id: 'months', label: lang === 'TH' ? 'รายเดือน' : 'Months' },
     ],
     [lang]
   );
@@ -359,36 +365,19 @@ export default function Game({ onNavigate }) {
 
   return (
     <div className="gm-page">
-      {/* Top Neutral Education Strip & Phase Stepper */}
-      <section className="bento-card inv-top-strip gm-top-strip" aria-label="Simulation stage">
-        <div className="inv-top-copy">
-          <div className="inv-badge-row">
-            <span className="inv-step-pill">
-              <Gamepad2 size={13} strokeWidth={2.3} aria-hidden="true" />
-              {lang === 'TH'
-                ? 'Survival Lab • ทดสอบแผนรับมือวิกฤตการเงิน'
-                : 'Survival Lab • Financial Shock Simulator'}
-            </span>
-            <span className="inv-neutral-badge">
-              <ShieldCheck size={13} strokeWidth={2.3} aria-hidden="true" />
-              {lang === 'TH'
-                ? 'เกมจำลองเพื่อการศึกษา • ไม่ขายประกัน'
-                : 'Educational Simulation Only • Zero Sales'}
-            </span>
-          </div>
-
-          <p className="inv-step-desc">
-            {lang === 'TH'
-              ? 'ลองจัดสรรเงินออมและการโอนย้ายความเสี่ยงล่วงหน้า แล้วทดสอบเอาตัวรอดจากเหตุไม่คาดฝันจริง ตั้งค่าได้ตั้งแต่โหมดด่วน 30 วัน จนถึงเต็มปี 365 วัน'
-              : 'Allocate your monthly surplus before shocks hit, then survive realistic Thai First Jobber events — from a 45-second 30-day express demo to a full 365-day year.'}
-          </p>
-        </div>
+      {/* Compact 3-Step Phase Bar */}
+      <section className="bento-card gm-top-strip" aria-label="Simulation stage">
+        <p className="gm-stage-hint">
+          {lang === 'TH'
+            ? 'เลือกระยะเวลาและแบ่งงบให้พร้อม แล้วลองรับมือเหตุการณ์สุ่มจริง'
+            : 'Set your duration and budget split, then navigate randomized life events.'}
+        </p>
 
         <div className="gm-phase-stepper" role="list" aria-label="Game phases">
           {[
-            { id: 'lobby', num: 1, th: 'ตั้งค่า & วางแผน', en: 'Setup & Plan' },
-            { id: 'playing', num: 2, th: 'เผชิญเหตุการณ์', en: 'Live Arena' },
-            { id: 'results', num: 3, th: 'สรุปคะแนน', en: 'Scorecard' },
+            { id: 'lobby', num: 1, th: 'ตั้งค่าเกม', en: 'Setup' },
+            { id: 'playing', num: 2, th: 'เผชิญเหตุการณ์', en: 'Play' },
+            { id: 'results', num: 3, th: 'สรุปคะแนน', en: 'Results' },
           ].map((step) => {
             const isActive = phase === step.id;
             const isDone =
@@ -507,11 +496,18 @@ export default function Game({ onNavigate }) {
 
                 <input
                   type="range"
-                  className="inv-range gm-range"
+                  className="inv-range gm-range tone-blue"
                   min={durationUnit === 'days' ? 15 : 1}
                   max={durationUnit === 'days' ? 365 : 12}
                   step={durationUnit === 'days' ? 5 : 1}
                   value={durationValue}
+                  style={{
+                    '--range-pct': `${getRangePct(
+                      durationValue,
+                      durationUnit === 'days' ? 15 : 1,
+                      durationUnit === 'days' ? 365 : 12
+                    )}%`,
+                  }}
                   onChange={(e) => setDurationValue(Number(e.target.value))}
                   aria-label="Custom simulation duration"
                 />
@@ -729,12 +725,13 @@ export default function Game({ onNavigate }) {
                 <input
                   id="gm-alloc-emergency"
                   type="range"
-                  className="inv-range gm-range"
+                  className="inv-range gm-range tone-blue"
                   min={0}
                   max={monthlySurplus}
                   step={100}
                   disabled={monthlySurplus <= 0}
                   value={allocations.emergency}
+                  style={{ '--range-pct': `${getRangePct(allocations.emergency, 0, monthlySurplus)}%` }}
                   onChange={(e) => handleAllocationChange('emergency', e.target.value)}
                 />
                 <p className="gm-slider-hint">
@@ -752,7 +749,7 @@ export default function Game({ onNavigate }) {
                       ? '2. โอนย้ายความเสี่ยงพื้นฐาน'
                       : '2. Basic Health/Accident Transfer'}
                   </label>
-                  <strong className="gm-slider-val tabular-nums">
+                  <strong className="gm-slider-val text-navy tabular-nums">
                     {formatTHB(allocations.protection)}
                     <small>{lang === 'TH' ? '/ด.' : '/mo'}</small>
                   </strong>
@@ -760,12 +757,13 @@ export default function Game({ onNavigate }) {
                 <input
                   id="gm-alloc-protection"
                   type="range"
-                  className="inv-range gm-range"
+                  className="inv-range gm-range tone-navy"
                   min={0}
                   max={safeProtectionCap}
                   step={100}
                   disabled={safeProtectionCap <= 0}
                   value={allocations.protection}
+                  style={{ '--range-pct': `${getRangePct(allocations.protection, 0, safeProtectionCap)}%` }}
                   onChange={(e) => handleAllocationChange('protection', e.target.value)}
                 />
                 <p className="gm-slider-hint tabular-nums">
@@ -791,12 +789,13 @@ export default function Game({ onNavigate }) {
                 <input
                   id="gm-alloc-lifestyle"
                   type="range"
-                  className="inv-range gm-range"
+                  className="inv-range gm-range tone-green"
                   min={0}
                   max={monthlySurplus}
                   step={100}
                   disabled={monthlySurplus <= 0}
                   value={allocations.lifestyle}
+                  style={{ '--range-pct': `${getRangePct(allocations.lifestyle, 0, monthlySurplus)}%` }}
                   onChange={(e) => handleAllocationChange('lifestyle', e.target.value)}
                 />
                 <p className="gm-slider-hint">
@@ -872,7 +871,7 @@ export default function Game({ onNavigate }) {
                 <button
                   type="button"
                   id="gm-start-simulation-btn"
-                  className="btn-primary gm-start-btn"
+                  className="btn-primary-gradient gm-start-btn"
                   onClick={handleStartGame}
                 >
                   <Play size={17} strokeWidth={2.3} />
@@ -1159,7 +1158,7 @@ export default function Game({ onNavigate }) {
                 <button
                   type="button"
                   id="gm-next-turn-btn"
-                  className="btn-primary gm-next-btn"
+                  className="btn-primary-gradient gm-next-btn"
                   onClick={handleNextTurn}
                 >
                   <span>
@@ -1179,7 +1178,7 @@ export default function Game({ onNavigate }) {
 
           {/* Arena Utility Footer (Reset + Fast-Forward for Live Demos) */}
           <div className="gm-arena-footer">
-            <button type="button" className="btn-outline gm-util-btn" onClick={handleBackToLobby}>
+            <button type="button" className="btn-soft-gray gm-util-btn" onClick={handleBackToLobby}>
               <RotateCcw size={15} />
               <span>{lang === 'TH' ? 'กลับไปปรับตั้งค่าเกม' : 'Back to Setup Lobby'}</span>
             </button>
@@ -1187,7 +1186,7 @@ export default function Game({ onNavigate }) {
             <button
               type="button"
               id="gm-fast-forward-btn"
-              className="btn-outline gm-ff-btn"
+              className="btn-soft-gray gm-ff-btn"
               onClick={handleFastForward}
             >
               <FastForward size={15} />
@@ -1402,21 +1401,21 @@ export default function Game({ onNavigate }) {
               <button
                 type="button"
                 id="gm-play-again-btn"
-                className="btn-outline gm-action-btn"
+                className="btn-soft-gray gm-action-btn"
                 onClick={handleBackToLobby}
               >
                 <RotateCcw size={16} />
                 <span>
                   {lang === 'TH'
-                    ? 'เล่นอีกครั้ง (เปลี่ยนจำนวนวัน/เดือน)'
-                    : 'Play Again (Change Days/Months)'}
+                    ? 'เล่นอีกครั้ง (สุ่มเหตุการณ์ใหม่)'
+                    : 'Play Again (New Random Run)'}
                 </span>
               </button>
 
               <button
                 type="button"
                 id="gm-apply-risk-btn"
-                className="btn-primary gm-action-btn"
+                className="btn-primary-gradient gm-action-btn"
                 onClick={() => onNavigate && onNavigate('risk-analysis')}
               >
                 <span>

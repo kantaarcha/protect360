@@ -10612,6 +10612,332 @@ p {
   }
 }
 
+/* ==========================================================================
+   PATCH 5.1 — IPHONE LIQUIDTABS CONTAINMENT, SOFT GRADIENT BARS & SLIDERS
+   ========================================================================== */
+
+/* 1. Bulletproof LiquidTabs containment across all pages & iPhone widths */
+.liquid-tabs-surface,
+.liquid-tabs-segmented {
+  width: 100%;
+  max-width: 100%;
+  overflow: hidden;
+}
+
+.liquid-tabs-compact {
+  max-width: 100%;
+}
+
+.liquid-tab-btn {
+  min-width: 0;
+  max-width: 100%;
+  overflow: hidden;
+}
+
+.liquid-tab-btn svg {
+  flex-shrink: 0;
+}
+
+.liquid-tab-btn > span:not(.liquid-tab-badge) {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.liquid-tab-badge {
+  flex-shrink: 0;
+}
+
+@media (max-width: 640px) {
+  .liquid-tabs-surface {
+    gap: 4px;
+    padding: 4px;
+  }
+
+  .liquid-tabs-surface .liquid-tab-btn,
+  .liquid-tabs-segmented .liquid-tab-btn {
+    padding: 8px 8px;
+    font-size: 0.75rem;
+    gap: 5px;
+  }
+
+  .liquid-tabs-compact .liquid-tab-btn {
+    padding: 6px 10px;
+    font-size: 0.73rem;
+    gap: 4px;
+  }
+}
+
+@media (max-width: 420px) {
+  .liquid-tabs-surface .liquid-tab-btn,
+  .liquid-tabs-segmented .liquid-tab-btn {
+    padding: 7px 6px;
+    font-size: 0.72rem;
+    gap: 4px;
+  }
+
+  .liquid-tabs-surface .liquid-tab-btn svg {
+    width: 13px;
+    height: 13px;
+  }
+}
+
+/* 2. Eye-friendly, comfortable gradients across ALL progress & breakdown bars */
+.progress-fill,
+.ak-bar-fill.saving,
+.ak-cat-bar-item.type-saving .ak-bar-fill-cat,
+.gm-hud-bar-fill.blue,
+.gm-split-seg.blue {
+  background: linear-gradient(90deg, #2563eb 0%, #5298f5 100%);
+}
+
+[data-theme='dark'] .progress-fill,
+[data-theme='dark'] .ak-bar-fill.saving,
+[data-theme='dark'] .ak-cat-bar-item.type-saving .ak-bar-fill-cat,
+[data-theme='dark'] .gm-hud-bar-fill.blue,
+[data-theme='dark'] .gm-split-seg.blue {
+  background: linear-gradient(90deg, #3b82f6 0%, #6cb2fb 100%);
+}
+
+.gm-split-seg.navy {
+  background: linear-gradient(90deg, #1b4275 0%, #3778c8 100%);
+}
+
+[data-theme='dark'] .gm-split-seg.navy {
+  background: linear-gradient(90deg, #2b6cb0 0%, #5a9be8 100%);
+}
+
+.ak-bar-fill.income,
+.ak-cat-bar-item.type-income .ak-bar-fill-cat,
+.ra-level-bar-low,
+.gm-hud-bar-fill.teal,
+.gm-split-seg.teal {
+  background: linear-gradient(90deg, #1b9662 0%, #3bb884 100%);
+}
+
+[data-theme='dark'] .ak-bar-fill.income,
+[data-theme='dark'] .ak-cat-bar-item.type-income .ak-bar-fill-cat,
+[data-theme='dark'] .ra-level-bar-low,
+[data-theme='dark'] .gm-hud-bar-fill.teal,
+[data-theme='dark'] .gm-split-seg.teal {
+  background: linear-gradient(90deg, #24b074 0%, #50cf9a 100%);
+}
+
+.ak-bar-fill.expense,
+.ak-cat-bar-item.type-expense .ak-bar-fill-cat,
+.ra-level-bar-high,
+.gm-hud-bar-fill.red {
+  background: linear-gradient(90deg, #cf4646 0%, #e77373 100%);
+}
+
+[data-theme='dark'] .ak-bar-fill.expense,
+[data-theme='dark'] .ak-cat-bar-item.type-expense .ak-bar-fill-cat,
+[data-theme='dark'] .ra-level-bar-high,
+[data-theme='dark'] .gm-hud-bar-fill.red {
+  background: linear-gradient(90deg, #dc5c5c 0%, #f08a8a 100%);
+}
+
+.ra-level-bar-moderate,
+.gm-hud-bar-fill.amber {
+  background: linear-gradient(90deg, #cb8218 0%, #e5a943 100%);
+}
+
+[data-theme='dark'] .ra-level-bar-moderate,
+[data-theme='dark'] .gm-hud-bar-fill.amber {
+  background: linear-gradient(90deg, #d9942a 0%, #f0bd62 100%);
+}
+
+/* 3. Custom cross-browser soft-gradient Range Sliders (Invest + Survival Lab) */
+.inv-range,
+.gm-range {
+  --slider-start: #2563eb;
+  --slider-end: #5298f5;
+  --slider-track: rgba(20, 43, 74, 0.12);
+  --range-pct: 50%;
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 8px;
+  border-radius: 999px;
+  background: linear-gradient(
+    90deg,
+    var(--slider-start) 0%,
+    var(--slider-end) var(--range-pct),
+    var(--slider-track) var(--range-pct),
+    var(--slider-track) 100%
+  );
+  outline: none;
+  cursor: pointer;
+  transition: opacity 0.16s var(--ease);
+}
+
+[data-theme='dark'] .inv-range,
+[data-theme='dark'] .gm-range {
+  --slider-start: #3b82f6;
+  --slider-end: #6cb2fb;
+  --slider-track: rgba(148, 179, 219, 0.22);
+}
+
+.inv-range:disabled,
+.gm-range:disabled {
+  opacity: 0.42;
+  cursor: not-allowed;
+}
+
+/* Semantic Slider Tones (matching each metric's bar & value color) */
+.inv-range.tone-navy,
+.gm-range.tone-navy {
+  --slider-start: #1b4275;
+  --slider-end: #3778c8;
+}
+
+[data-theme='dark'] .inv-range.tone-navy,
+[data-theme='dark'] .gm-range.tone-navy {
+  --slider-start: #2b6cb0;
+  --slider-end: #5a9be8;
+}
+
+.inv-range.tone-green,
+.gm-range.tone-green {
+  --slider-start: #1b9662;
+  --slider-end: #3bb884;
+}
+
+[data-theme='dark'] .inv-range.tone-green,
+[data-theme='dark'] .gm-range.tone-green {
+  --slider-start: #24b074;
+  --slider-end: #50cf9a;
+}
+
+.inv-range.tone-red,
+.inv-range.expense,
+.gm-range.tone-red {
+  --slider-start: #cf4646;
+  --slider-end: #e77373;
+}
+
+[data-theme='dark'] .inv-range.tone-red,
+[data-theme='dark'] .inv-range.expense,
+[data-theme='dark'] .gm-range.tone-red {
+  --slider-start: #dc5c5c;
+  --slider-end: #f08a8a;
+}
+
+.inv-range.tone-amber,
+.gm-range.tone-amber {
+  --slider-start: #cb8218;
+  --slider-end: #e5a943;
+}
+
+[data-theme='dark'] .inv-range.tone-amber,
+[data-theme='dark'] .gm-range.tone-amber {
+  --slider-start: #d9942a;
+  --slider-end: #f0bd62;
+}
+
+.inv-range::-webkit-slider-runnable-track,
+.gm-range::-webkit-slider-runnable-track {
+  height: 8px;
+  border-radius: 999px;
+  background: transparent;
+}
+
+.inv-range::-webkit-slider-thumb,
+.gm-range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 19px;
+  height: 19px;
+  margin-top: -5.5px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, var(--slider-start), var(--slider-end));
+  border: 2.5px solid #ffffff;
+  box-shadow: 0 2px 7px rgba(20, 43, 74, 0.25);
+  transition: transform 0.14s var(--ease), box-shadow 0.14s var(--ease);
+}
+
+.inv-range:hover:not(:disabled)::-webkit-slider-thumb,
+.gm-range:hover:not(:disabled)::-webkit-slider-thumb {
+  transform: scale(1.1);
+  box-shadow: 0 3px 10px rgba(20, 43, 74, 0.34);
+}
+
+.inv-range::-moz-range-track,
+.gm-range::-moz-range-track {
+  height: 8px;
+  border-radius: 999px;
+  background: var(--slider-track);
+}
+
+.inv-range::-moz-range-progress,
+.gm-range::-moz-range-progress {
+  height: 8px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--slider-start) 0%, var(--slider-end) 100%);
+}
+
+.inv-range::-moz-range-thumb,
+.gm-range::-moz-range-thumb {
+  width: 19px;
+  height: 19px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, var(--slider-start), var(--slider-end));
+  border: 2.5px solid #ffffff;
+  box-shadow: 0 2px 7px rgba(20, 43, 74, 0.25);
+}
+
+/* 4. Compact Game top stage bar & navy value helper */
+.gm-top-strip {
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding: 13px 18px;
+}
+
+.gm-stage-hint {
+  margin: 0;
+  font-size: 0.84rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.gm-page .text-navy {
+  color: #1b4275;
+}
+
+[data-theme='dark'] .gm-page .text-navy {
+  color: #7cc0ff;
+}
+
+.gm-dot.teal {
+  background: #1b9662;
+}
+
+.gm-dot.navy {
+  background: #1b4275;
+}
+
+[data-theme='dark'] .gm-dot.navy {
+  background: #5a9be8;
+}
+
+/* Ensure secondary action buttons in Game look crisp in both Light & Dark mode */
+.gm-arena-footer .btn-soft-gray,
+.gm-debrief-actions .btn-soft-gray {
+  border-radius: 14px;
+  padding: 10px 16px;
+}
+
+.gm-arena-footer .btn-soft-gray:hover,
+.gm-debrief-actions .btn-soft-gray:hover {
+  background: var(--accent-blue-bg);
+  color: var(--accent-blue-text);
+  border-color: rgba(40, 120, 200, 0.32);
+}
+
 
 
 

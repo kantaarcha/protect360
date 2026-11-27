@@ -147,12 +147,12 @@ export default function RiskAnalysis({ onNavigate }) {
   const mainTabs = [
     {
       id: 'input',
-      label: lang === 'TH' ? 'กรอกข้อมูล & สวัสดิการ' : 'Profile & Coverage Input',
+      label: lang === 'TH' ? 'ข้อมูล & สิทธิ' : 'Profile & Rights',
       icon: SlidersHorizontal,
     },
     {
       id: 'results',
-      label: lang === 'TH' ? 'ผลวิเคราะห์ & แผนจัดการความเสี่ยง' : 'Gap Analysis & Action Plan',
+      label: lang === 'TH' ? 'ผลวิเคราะห์ & แผน' : 'Gap & Plan',
       icon: ClipboardCheck,
       badge: riskAssessment.highRiskCount > 0 ? riskAssessment.highRiskCount : undefined,
     },

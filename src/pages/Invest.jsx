@@ -142,18 +142,12 @@ export default function Invest({ onNavigate }) {
   const calculatorTabs = [
     {
       id: 'transfer',
-      label:
-        lang === 'TH'
-          ? 'เทียบโอนย้ายความเสี่ยง vs จ่ายเอง'
-          : 'Risk Transfer vs. Self-Insure',
+      label: lang === 'TH' ? 'โอนเสี่ยง vs จ่ายเอง' : 'Transfer vs Self',
       icon: Scale,
     },
     {
       id: 'irr',
-      label:
-        lang === 'TH'
-          ? 'คำนวณ IRR เงินเฟ้อ & ลดหย่อนภาษี'
-          : 'True IRR, Inflation & Tax',
+      label: lang === 'TH' ? 'คำนวณ IRR & ภาษี' : 'True IRR & Tax',
       icon: Calculator,
     },
   ];
@@ -315,11 +309,28 @@ export default function Invest({ onNavigate }) {
                       min="2000"
                       max={Math.max(45000, transferResult.safeAnnualMax || 45000)}
                       step="1000"
-                      className="inv-range"
+                      className="inv-range tone-blue"
                       value={Math.min(
                         annualBudget,
                         Math.max(45000, transferResult.safeAnnualMax || 45000)
                       )}
+                      style={{
+                        '--range-pct': `${Math.min(
+                          100,
+                          Math.max(
+                            0,
+                            Math.round(
+                              ((Math.min(
+                                annualBudget,
+                                Math.max(45000, transferResult.safeAnnualMax || 45000)
+                              ) -
+                                2000) /
+                                (Math.max(45000, transferResult.safeAnnualMax || 45000) - 2000)) *
+                                100
+                            )
+                          )
+                        )}%`,
+                      }}
                       onChange={(e) => setAnnualBudget(Number(e.target.value))}
                       aria-label={lang === 'TH' ? 'ปรับงบต่อปี' : 'Adjust annual budget'}
                     />
@@ -370,8 +381,17 @@ export default function Invest({ onNavigate }) {
                       min="10000"
                       max="500000"
                       step="10000"
-                      className="inv-range expense"
+                      className="inv-range expense tone-red"
                       value={Math.min(emergencyBill, 500000)}
+                      style={{
+                        '--range-pct': `${Math.min(
+                          100,
+                          Math.max(
+                            0,
+                            Math.round(((Math.min(emergencyBill, 500000) - 10000) / 490000) * 100)
+                          )
+                        )}%`,
+                      }}
                       onChange={(e) => setEmergencyBill(Number(e.target.value))}
                       aria-label={lang === 'TH' ? 'ปรับค่ารักษาฉุกเฉิน' : 'Adjust shock bill'}
                     />
@@ -408,8 +428,14 @@ export default function Invest({ onNavigate }) {
                       min="0"
                       max="28"
                       step="1"
-                      className="inv-range"
+                      className="inv-range tone-amber"
                       value={Math.min(loanAprPct, 28)}
+                      style={{
+                        '--range-pct': `${Math.min(
+                          100,
+                          Math.max(0, Math.round((Math.min(loanAprPct, 28) / 28) * 100))
+                        )}%`,
+                      }}
                       onChange={(e) => setLoanAprPct(Number(e.target.value))}
                       aria-label={lang === 'TH' ? 'ปรับอัตราดอกเบี้ย' : 'Adjust APR'}
                     />

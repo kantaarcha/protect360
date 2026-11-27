@@ -716,12 +716,12 @@ export default function AutoKey({ onNavigate }) {
   const inputModeTabs = [
     {
       id: 'slip',
-      label: lang === 'TH' ? 'สแกนสลิปอัตโนมัติ' : 'Smart Slip Reader',
+      label: lang === 'TH' ? 'สแกนสลิป' : 'Scan Slip',
       icon: ScanLine,
     },
     {
       id: 'manual',
-      label: lang === 'TH' ? 'กรอกรายการด่วน' : 'Quick Manual Entry',
+      label: lang === 'TH' ? 'กรอกด่วน' : 'Quick Entry',
       icon: PenLine,
     },
   ];
@@ -729,7 +729,7 @@ export default function AutoKey({ onNavigate }) {
   const manualTypeTabs = [
     { id: 'income', label: lang === 'TH' ? 'รายรับ' : 'Income' },
     { id: 'expense', label: lang === 'TH' ? 'รายจ่าย' : 'Expense' },
-    { id: 'saving', label: lang === 'TH' ? 'เติมเงินสำรอง' : 'Emergency Fund' },
+    { id: 'saving', label: lang === 'TH' ? 'เงินสำรอง' : 'Reserve' },
   ];
 
   const ledgerFilterTabs = [
@@ -738,7 +738,7 @@ export default function AutoKey({ onNavigate }) {
     { id: 'expense', label: lang === 'TH' ? 'รายจ่าย' : 'Expenses', badge: ledgerCounts.expense },
     {
       id: 'saving',
-      label: lang === 'TH' ? 'เงินออมฉุกเฉิน' : 'Emergency Savings',
+      label: lang === 'TH' ? 'เงินสำรอง' : 'Reserve',
       badge: ledgerCounts.saving,
     },
   ];

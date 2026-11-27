@@ -41,13 +41,13 @@ export default function CustomCategoryModal({
   const modalTabs = [
     {
       id: 'browse',
-      label: lang === 'TH' ? 'หมวดที่สร้างเอง' : 'My Categories',
+      label: lang === 'TH' ? 'หมวดของฉัน' : 'My List',
       icon: Layers,
       badge: customCategories.length,
     },
     {
       id: 'create',
-      label: lang === 'TH' ? 'สร้างหมวดใหม่' : 'Create New',
+      label: lang === 'TH' ? 'สร้างใหม่' : 'Create',
       icon: FolderPlus,
     },
   ];
