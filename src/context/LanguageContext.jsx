@@ -243,7 +243,7 @@ const TRANSLATIONS = {
     header: {
       greeting: 'Hello, First Jobber',
       philosophy: 'See your money and protection clearly, so you can plan ahead with quiet confidence.',
-      profileChip: 'Sample Profile: Sommut Prakanphai (25k THB/mo)',
+      profileChip: 'Sample Profile: Sam Insure (25k THB/mo)',
       savedLocally: 'Saved locally',
       savedLocallyTitle: 'All data stays 100% on your device (PDPA-Safe / Zero-Login). Click to manage data.',
       editProfile: 'Edit Profile',

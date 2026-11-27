@@ -203,8 +203,8 @@ function AppShellContent() {
   };
 
   const greetingHeading = getGreetingText(userProfile, lang, clockState.hour);
-  const cardHolderName = getCardHolderDisplay(userProfile);
-  const userInitials = getUserInitials(userProfile.firstName, userProfile.lastName);
+  const cardHolderName = getCardHolderDisplay(userProfile, lang);
+  const userInitials = getUserInitials(userProfile.firstName, userProfile.lastName, lang);
   const occupationLabel = getOccupationLabel(userProfile.occupation, lang);
   const userPillLabel = getProfilePillLabel(userProfile, lang);
   const targetMonths = userProfile.emergencyTargetMonths || 3;

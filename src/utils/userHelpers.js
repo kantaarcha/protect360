@@ -78,9 +78,23 @@ function extractLeadingInitial(text) {
   return (chars[0] || '').toUpperCase();
 }
 
-export function getUserInitials(firstName, lastName) {
+function resolveSampleNamePair(firstName, lastName, lang = 'TH') {
   const f = String(firstName || '').trim();
   const l = String(lastName || '').trim();
+  const isThaiSample = f === 'สมมติ' && l === 'ประกันภัย';
+  const isEnSample = f.toLowerCase() === 'sam' && l.toLowerCase() === 'insure';
+
+  if (lang === 'EN' && isThaiSample) {
+    return { first: 'Sam', last: 'Insure' };
+  }
+  if (lang === 'TH' && isEnSample) {
+    return { first: 'สมมติ', last: 'ประกันภัย' };
+  }
+  return { first: f, last: l };
+}
+
+export function getUserInitials(firstName, lastName, lang = 'TH') {
+  const { first: f, last: l } = resolveSampleNamePair(firstName, lastName, lang);
   if (!f && !l) return 'FJ';
 
   const firstInit = extractLeadingInitial(f);
@@ -94,14 +108,13 @@ export function getUserInitials(firstName, lastName) {
   return `${firstInit}${lastInit}`.slice(0, 2) || 'FJ';
 }
 
-export function getFullName(userProfile) {
-  const first = String(userProfile?.firstName || '').trim();
-  const last = String(userProfile?.lastName || '').trim();
+export function getFullName(userProfile, lang = 'TH') {
+  const { first, last } = resolveSampleNamePair(userProfile?.firstName, userProfile?.lastName, lang);
   return [first, last].filter(Boolean).join(' ');
 }
 
 export function formatNameWithTitle(userProfile, lang = 'TH') {
-  const fullName = getFullName(userProfile);
+  const fullName = getFullName(userProfile, lang);
   if (!fullName) return '';
 
   const normalizedTitle = normalizeTitle(userProfile?.title);
@@ -188,7 +201,7 @@ export async function syncReferenceHour() {
 
 export function getGreetingText(userProfile, lang = 'TH', dateOrHour = new Date()) {
   const salutation = getTimeOfDayGreeting(lang, dateOrHour);
-  const fullName = getFullName(userProfile);
+  const fullName = getFullName(userProfile, lang);
 
   if (!fullName) {
     return `${salutation}, First Jobber`;
@@ -209,24 +222,25 @@ export function getGreetingText(userProfile, lang = 'TH', dateOrHour = new Date(
 }
 
 export function getProfilePillLabel(userProfile, lang = 'TH') {
-  const first = String(userProfile?.firstName || '').trim();
+  const { first, last } = resolveSampleNamePair(userProfile?.firstName, userProfile?.lastName, lang);
   if (!first) return 'First Jobber';
 
+  const isSampleEn = lang === 'EN' && first === 'Sam' && last === 'Insure';
   const normalizedTitle = normalizeTitle(userProfile?.title);
   if (normalizedTitle) {
     const useEnglishPrefix = lang === 'EN' || isLatinName(first);
     const prefix = getTitleLabel(normalizedTitle, useEnglishPrefix ? 'EN' : 'TH');
-    return useEnglishPrefix ? `${prefix} ${first}` : `${prefix}${first}`;
+    return useEnglishPrefix ? `${prefix} ${isSampleEn ? 'Sam Insure' : first}` : `${prefix}${first}`;
   }
 
   if (lang === 'TH') {
     return isLatinName(first) ? `คุณ ${first}` : `คุณ${first}`;
   }
-  return first;
+  return isSampleEn ? 'Sam Insure' : first;
 }
 
-export function getCardHolderDisplay(userProfile) {
-  const fullName = getFullName(userProfile);
+export function getCardHolderDisplay(userProfile, lang = 'TH') {
+  const fullName = getFullName(userProfile, lang);
   if (!fullName) return 'FIRST JOBBER';
 
   const normalizedTitle = normalizeTitle(userProfile?.title);

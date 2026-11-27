@@ -49,7 +49,7 @@ const DEMO_USER_PROFILE = {
 };
 
 const DEMO_FINANCIALS = {
-  personaName: { th: 'สมมติ ประกันภัย', en: 'Sommut Prakanphai' },
+  personaName: { th: 'สมมติ ประกันภัย', en: 'Sam Insure' },
   monthlyIncome: 25000,
   monthlyExpenses: 20000,
   monthlySavings: 5000,

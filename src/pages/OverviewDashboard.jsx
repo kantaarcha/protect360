@@ -76,7 +76,7 @@ export default function OverviewDashboard({ onNavigate, onOpenProfile }) {
   };
 
   const targetMonths = userProfile.emergencyTargetMonths || 3;
-  const cardHolderName = getCardHolderDisplay(userProfile);
+  const cardHolderName = getCardHolderDisplay(userProfile, lang);
 
   const dynamicGoalTitle =
     lang === 'TH'

@@ -33,7 +33,7 @@ export default function CoverageModal({ editingCoverage, onClose }) {
     isEditing ? String(editingCoverage.monthlyPremium ?? 0) : '0'
   );
 
-  const cardHolderName = getCardHolderDisplay(userProfile);
+  const cardHolderName = getCardHolderDisplay(userProfile, lang);
   const previewPolicyTitle =
     name.trim() ||
     (isEditing

@@ -108,7 +108,7 @@ const SETTINGS_COPY = {
     sampleTitle: 'Try Hypothetical Sample Scenario',
     sampleBadge: 'Hypothetical Preview Only',
     sampleDesc:
-      'Loads simulated numbers for Sommut Prakanphai (฿25,000 income, ฿20,000 expenses, ฿15,000 reserve, SSO Sec. 33 + group cover, 6 sample 360Flow entries) so you can preview how every module calculates.',
+      'Loads simulated numbers for Sam Insure (฿25,000 income, ฿20,000 expenses, ฿15,000 reserve, SSO Sec. 33 + group cover, 6 sample 360Flow entries) so you can preview how every module calculates.',
     sampleBtn: 'Load Sample',
     sampleLoadedMsg: 'Loaded hypothetical sample scenario (simulated numbers for calculation preview only).',
     excelTitle: 'Export 360Flow Cashbook as Excel (.xlsx)',
@@ -264,7 +264,7 @@ export default function SettingsPage({
   };
 
   const greetingNow = getGreetingText(userProfile, lang, referenceHour);
-  const initials = getUserInitials(userProfile.firstName, userProfile.lastName);
+  const initials = getUserInitials(userProfile.firstName, userProfile.lastName, lang);
   const profileLabel = getProfilePillLabel(userProfile, lang);
   const occupationLabel = getOccupationLabel(userProfile.occupation, lang);
   const timeText = formatClock24(referenceHour);

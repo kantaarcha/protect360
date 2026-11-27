@@ -107,8 +107,8 @@ export default function UserProfileModal({ initialTab = 'profile', onClose }) {
     emergencyTargetMonths,
   };
 
-  const previewCardHolder = getCardHolderDisplay(draftProfile);
-  const previewInitials = getUserInitials(firstName, lastName);
+  const previewCardHolder = getCardHolderDisplay(draftProfile, lang);
+  const previewInitials = getUserInitials(firstName, lastName, lang);
   const previewOccupation = getOccupationLabel(occupation, lang);
   const target3Amt = monthlyExpenses * 3;
   const target6Amt = monthlyExpenses * 6;
@@ -539,7 +539,7 @@ export default function UserProfileModal({ initialTab = 'profile', onClose }) {
                     <p className="data-action-desc">
                       {lang === 'TH'
                         ? 'จำลองข้อมูล “สมมติ ประกันภัย” (รายได้สมมติ ฿25,000/ด. • รายจ่าย ฿20,000/ด. • สำรอง ฿15,000 • ประกันสังคม ม.33 + ประกันกลุ่ม • 6 รายการรับ-จ่าย) เพื่อดูผลลัพธ์การคำนวณทุกหน้าก่อนกรอกข้อมูลจริง'
-                        : 'Loads a simulated sample scenario for Sommut Prakanphai (hypothetical ฿25,000/mo income, ฿20,000 expenses, ฿15,000 reserve, SSO Sec. 33 + group cover, 6 sample logs) so you can preview how every module calculates.'}
+                        : 'Loads a simulated sample scenario for Sam Insure (hypothetical ฿25,000/mo income, ฿20,000 expenses, ฿15,000 reserve, SSO Sec. 33 + group cover, 6 sample logs) so you can preview how every module calculates.'}
                     </p>
                   </div>
                 </div>
