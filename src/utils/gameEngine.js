@@ -162,7 +162,7 @@ export function buildUserPersona({
     };
   } else if (hasUnknownGroupLimit) {
     coverageSummary = {
-      th: 'มีประกันกลุ่มแต่ยังไม่ทราบวงเงิน (นับเป็น ฿0 ตามหลัก Conservative)',
+      th: 'มีประกันกลุ่มแต่ยังไม่ทราบวงเงิน (นับเป็น ฿0 ตามหลักประเมินแบบรอบคอบ)',
       en: 'Employer group insurance limit unknown (counted as ฿0 conservatively)',
     };
   } else if (hasStatutory) {

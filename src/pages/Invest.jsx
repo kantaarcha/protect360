@@ -685,12 +685,12 @@ export default function Invest({ onNavigate }) {
                   <div>
                     <strong>
                       {lang === 'TH'
-                        ? 'หลักคณิตศาสตร์ประกันภัย: ความถี่ต่ำ แต่ความเสียหายสูง (Low Frequency, High Severity)'
-                        : 'Actuarial Principle: Low Frequency, High Severity'}
+                        ? 'หลักคิดสำคัญ: เหตุเกิดไม่บ่อย แต่ถ้าเกิดแล้วจ่ายหนัก'
+                        : 'Key Principle: Rare Events, Heavy Bills (Low Frequency, High Severity)'}
                     </strong>
                     <p>
                       {lang === 'TH'
-                        ? 'ค่าใช้จ่ายเล็กน้อยที่เกิดบ่อยควรใช้ "เงินสำรองฉุกเฉิน" รับความเสี่ยงไว้เอง (Self-Insure) แต่เหตุไม่คาดฝันก้อนใหญ่ที่อาจทำให้เงินเก็บหมดและต้องก่อหนี้ดอกเบี้ยสูง ควรโอนย้ายความเสี่ยงออกไปด้วยงบคงที่ที่ไม่เกิน 10%–15% ของรายได้'
+                        ? 'ค่าใช้จ่ายเล็กน้อยที่เกิดบ่อยควรใช้ "เงินสำรองฉุกเฉิน" รับความเสี่ยงไว้เอง แต่เหตุไม่คาดฝันก้อนใหญ่ที่อาจทำให้เงินเก็บหมดและต้องก่อหนี้ดอกเบี้ยสูง ควรโอนย้ายความเสี่ยงออกไปด้วยงบคงที่ที่ไม่เกิน 10%–15% ของรายได้'
                         : 'Use your liquid emergency fund to self-insure small, frequent expenses—and transfer rare, catastrophic bills that could wipe out savings or force high-APR debt, while keeping total budget within 10%–15% of income.'}
                     </p>
                   </div>
@@ -704,6 +704,25 @@ export default function Invest({ onNavigate }) {
       {/* ================= TAB 2: TRUE IRR, INFLATION & TAX DEDUCTION CALCULATOR ================= */}
       {activeTab === 'irr' && (
         <div className="inv-stage">
+          {/* Plain-Language IRR Explainer Card */}
+          <div className="bento-card inv-irr-explainer" role="note" aria-label="What is IRR">
+            <span className="inv-irr-explainer-icon" aria-hidden="true">
+              <Info size={18} strokeWidth={2.2} />
+            </span>
+            <div className="inv-irr-explainer-copy">
+              <strong>
+                {lang === 'TH'
+                  ? 'IRR คืออะไร? (อัตราผลตอบแทนทบต้นที่แท้จริงต่อปี)'
+                  : 'What is IRR? (Internal Rate of Return)'}
+              </strong>
+              <p>
+                {lang === 'TH'
+                  ? 'IRR คือ "อัตราดอกเบี้ยที่แท้จริงต่อปี" ที่คำนวณจากเงินที่เราทยอยจ่ายออกและรับคืนจริงตลอดสัญญา ใช้เปรียบเทียบกับดอกเบี้ยเงินฝากหรือการลงทุนอื่นได้ตรง ๆ โดยไม่สับสนกับตัวเลขการตลาดอย่าง "เงินคืน 5% ของทุนประกัน"'
+                  : 'IRR is your true annualized compound interest rate across every baht paid in and returned over the full contract — letting you compare plans directly against bank deposits or investments instead of headline cashback percentages.'}
+              </p>
+            </div>
+          </div>
+
           {/* 1) Top 4 Bento Result KPI Cards */}
           <section className="inv-kpi-grid" aria-label="IRR and Tax Return KPIs">
             {/* Card 1: Nominal IRR */}

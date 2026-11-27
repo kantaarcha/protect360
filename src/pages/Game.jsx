@@ -1329,7 +1329,7 @@ export default function Game({ onNavigate }) {
 
             <div className="gm-score-dial tabular-nums">
               <span className="gm-score-caption">
-                {lang === 'TH' ? 'Resilience Score' : 'Resilience Score'}
+                {lang === 'TH' ? 'คะแนนความพร้อม' : 'Resilience Score'}
               </span>
               <strong className="gm-score-big">{scorecard.resilienceScore}</strong>
               <span className="gm-score-max">/ 100</span>
