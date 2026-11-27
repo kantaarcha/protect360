@@ -1,5 +1,9 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { DEFAULT_OCCUPATION_TH, normalizeOccupation, normalizeTitle } from '../utils/userHelpers';
+import {
+  buildInstantBilingualText,
+  translateBilingualAsync,
+} from '../utils/bilingualTranslate';
 
 const STORAGE_KEY = 'protect360_data_v1';
 
@@ -258,14 +262,27 @@ function sanitizeCoverages(raw) {
 
 function sanitizeTransactions(raw) {
   if (!Array.isArray(raw)) return INITIAL_TRANSACTIONS;
-  const valid = raw.filter(
-    (item) =>
-      item &&
-      typeof item === 'object' &&
-      typeof item.id === 'string' &&
-      item.title &&
-      Number.isFinite(Number(item.amount))
-  );
+  const valid = raw
+    .filter(
+      (item) =>
+        item &&
+        typeof item === 'object' &&
+        typeof item.id === 'string' &&
+        item.title &&
+        Number.isFinite(Number(item.amount))
+    )
+    .map((item) => {
+      if (
+        item.title &&
+        typeof item.title === 'object' &&
+        item.title.th &&
+        item.title.th === item.title.en
+      ) {
+        const instant = buildInstantBilingualText(item.title.th);
+        return { ...item, title: instant.obj };
+      }
+      return item;
+    });
   return valid;
 }
 
@@ -292,13 +309,29 @@ function sanitizeCustomCategories(raw) {
         item.name.trim().length > 0
     )
     .slice(0, 40)
-    .map((item) => ({
-      id: item.id,
-      name: item.name.trim().slice(0, 28),
-      type: allowedTypes.includes(item.type) ? item.type : 'expense',
-      iconName: typeof item.iconName === 'string' ? item.iconName : 'tag',
-      color: typeof item.color === 'string' ? item.color : '#2878C8',
-    }));
+    .map((item) => {
+      const cleanName = item.name.trim().slice(0, 28);
+      const hasBilingualLabel =
+        item.label &&
+        typeof item.label === 'object' &&
+        typeof item.label.th === 'string' &&
+        typeof item.label.en === 'string' &&
+        item.label.th.trim() &&
+        item.label.en.trim();
+      const label = hasBilingualLabel
+        ? item.label.th === item.label.en
+          ? buildInstantBilingualText(item.label.th).obj
+          : { th: item.label.th.trim(), en: item.label.en.trim() }
+        : buildInstantBilingualText(cleanName).obj;
+      return {
+        id: item.id,
+        name: cleanName,
+        label,
+        type: allowedTypes.includes(item.type) ? item.type : 'expense',
+        iconName: typeof item.iconName === 'string' ? item.iconName : 'tag',
+        color: typeof item.color === 'string' ? item.color : '#2878C8',
+      };
+    });
 }
 
 function loadInitialState() {
@@ -657,8 +690,28 @@ export function FinanceProvider({ children }) {
         tx.category === 'expense'
           ? -Math.abs(Number(tx.amount) || 0)
           : Math.abs(Number(tx.amount) || 0);
+
+      // Check if user entered single-language text (th === en) that needs bilingual translation
+      let resolvedTitle = tx.title;
+      let asyncSourceText = null;
+      if (typeof tx.title === 'string') {
+        const instant = buildInstantBilingualText(tx.title);
+        resolvedTitle = instant.obj;
+        if (instant.needsAsync) asyncSourceText = tx.title.trim();
+      } else if (
+        tx.title &&
+        typeof tx.title === 'object' &&
+        tx.title.th &&
+        tx.title.th === tx.title.en
+      ) {
+        const instant = buildInstantBilingualText(tx.title.th);
+        resolvedTitle = instant.obj;
+        if (instant.needsAsync) asyncSourceText = tx.title.th.trim();
+      }
+
       const newTx = {
         ...tx,
+        title: resolvedTitle,
         amount: normalizedAmount,
         status: tx.status || 'completed',
         id: `tx-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
@@ -674,24 +727,64 @@ export function FinanceProvider({ children }) {
           en: 'Transaction saved and financial dashboard updated',
         });
       }
+
+      // Non-blocking background TH <-> EN translation for free-form user input
+      if (asyncSourceText) {
+        const txId = newTx.id;
+        translateBilingualAsync(asyncSourceText).then((bilingualTitle) => {
+          if (!bilingualTitle || bilingualTitle.th === bilingualTitle.en) return;
+          setStore((prev) => ({
+            ...prev,
+            transactions: prev.transactions.map((item) =>
+              item.id === txId &&
+              item.title?.th === asyncSourceText &&
+              item.title?.en === asyncSourceText
+                ? { ...item, title: bilingualTitle }
+                : item
+            ),
+          }));
+        });
+      }
+
       return newTx;
     },
     [showToast]
   );
 
   const updateTransaction = useCallback(
-    (id, patch) => {
+    (id, patch, { silent = false } = {}) => {
+      let resolvedPatch = patch;
+      let asyncSourceText = null;
+
+      if (
+        !silent &&
+        patch?.title &&
+        typeof patch.title === 'object' &&
+        patch.title.th &&
+        patch.title.th === patch.title.en
+      ) {
+        const instant = buildInstantBilingualText(patch.title.th);
+        resolvedPatch = { ...patch, title: instant.obj };
+        if (instant.needsAsync) asyncSourceText = patch.title.th.trim();
+      }
+
       setStore((prev) => {
         const existing = prev.transactions.find((t) => t.id === id);
         if (!existing) return prev;
         const reverted = applyTransactionDelta(prev.financials, existing, -1);
-        const nextCategory = patch.category || existing.category;
-        const rawAmount = patch.amount !== undefined ? patch.amount : existing.amount;
+        const nextCategory = resolvedPatch.category || existing.category;
+        const rawAmount =
+          resolvedPatch.amount !== undefined ? resolvedPatch.amount : existing.amount;
         const normalizedAmount =
           nextCategory === 'expense'
             ? -Math.abs(Number(rawAmount) || 0)
             : Math.abs(Number(rawAmount) || 0);
-        const updatedTx = { ...existing, ...patch, category: nextCategory, amount: normalizedAmount };
+        const updatedTx = {
+          ...existing,
+          ...resolvedPatch,
+          category: nextCategory,
+          amount: normalizedAmount,
+        };
         const applied = applyTransactionDelta(reverted, updatedTx, 1);
         return {
           ...prev,
@@ -699,10 +792,29 @@ export function FinanceProvider({ children }) {
           transactions: prev.transactions.map((t) => (t.id === id ? updatedTx : t)),
         };
       });
-      showToast('success', {
-        th: 'อัปเดตรายการเรียบร้อยแล้ว',
-        en: 'Transaction updated',
-      });
+
+      if (!silent) {
+        showToast('success', {
+          th: 'อัปเดตรายการเรียบร้อยแล้ว',
+          en: 'Transaction updated',
+        });
+      }
+
+      if (asyncSourceText) {
+        translateBilingualAsync(asyncSourceText).then((bilingualTitle) => {
+          if (!bilingualTitle || bilingualTitle.th === bilingualTitle.en) return;
+          setStore((prev) => ({
+            ...prev,
+            transactions: prev.transactions.map((item) =>
+              item.id === id &&
+              item.title?.th === asyncSourceText &&
+              item.title?.en === asyncSourceText
+                ? { ...item, title: bilingualTitle }
+                : item
+            ),
+          }));
+        });
+      }
     },
     [showToast]
   );
@@ -766,9 +878,12 @@ export function FinanceProvider({ children }) {
     ({ name, type = 'expense', iconName = 'tag', color = '#2878C8' }) => {
       const trimmed = String(name || '').trim().slice(0, 28);
       if (!trimmed) return null;
+
+      const instant = buildInstantBilingualText(trimmed);
       const newCat = {
         id: `ccat-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
         name: trimmed,
+        label: instant.obj,
         type: ['expense', 'income', 'saving'].includes(type) ? type : 'expense',
         iconName: iconName || 'tag',
         color: color || '#2878C8',
@@ -778,9 +893,26 @@ export function FinanceProvider({ children }) {
         customCategories: [newCat, ...(prev.customCategories || [])].slice(0, 40),
       }));
       showToast('success', {
-        th: `สร้างหมวดหมู่ "${trimmed}" เรียบร้อยแล้ว`,
-        en: `Created custom category "${trimmed}"`,
+        th: `สร้างหมวดหมู่ "${instant.obj.th}" เรียบร้อยแล้ว`,
+        en: `Created custom category "${instant.obj.en}"`,
       });
+
+      if (instant.needsAsync) {
+        const catId = newCat.id;
+        translateBilingualAsync(trimmed).then((bilingualLabel) => {
+          if (!bilingualLabel || bilingualLabel.th === bilingualLabel.en) return;
+          setStore((prev) => ({
+            ...prev,
+            customCategories: (prev.customCategories || []).map((c) =>
+              c.id === catId ? { ...c, label: bilingualLabel } : c
+            ),
+            transactions: prev.transactions.map((tx) =>
+              tx.iconKey === catId ? { ...tx, categoryLabel: bilingualLabel } : tx
+            ),
+          }));
+        });
+      }
+
       return newCat;
     },
     [showToast]

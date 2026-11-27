@@ -7163,6 +7163,127 @@ p {
   }
 }
 
+/* ==========================================================================
+   Round 2.9.5: Crafted Bento Header Card for SmartLog (Replaces Plain Text)
+   ========================================================================== */
+
+.smartlog-header-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  padding: 18px 22px;
+  border-radius: 22px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  box-shadow: var(--shadow-card);
+}
+
+.smartlog-header-left {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-width: 0;
+  flex: 1 1 320px;
+}
+
+.smartlog-header-icon {
+  width: 46px;
+  height: 46px;
+  border-radius: 15px;
+  background: var(--accent-blue-bg);
+  color: #1d63d8;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+}
+
+[data-theme='dark'] .smartlog-header-icon {
+  background: rgba(96, 165, 250, 0.16);
+  color: #7cc0ff;
+}
+
+.smartlog-header-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+
+.smartlog-header-title {
+  margin: 0;
+  font-size: clamp(1.22rem, 1.85vw, 1.48rem);
+  font-weight: 800;
+  letter-spacing: -0.022em;
+  color: var(--text-primary);
+  line-height: 1.2;
+}
+
+.smartlog-header-sub {
+  margin: 0;
+  font-size: 0.84rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  line-height: 1.42;
+}
+
+.smartlog-header-chips {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.smartlog-stat-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: var(--radius-pill);
+  font-size: 0.76rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.smartlog-stat-chip.neutral {
+  background: var(--bg-subtle);
+  color: var(--text-secondary);
+}
+
+.smartlog-stat-chip.blue {
+  background: var(--accent-blue-bg);
+  color: var(--accent-blue-text);
+}
+
+[data-theme='dark'] .smartlog-stat-chip.blue {
+  color: #7cc0ff;
+}
+
+.smartlog-stat-chip.danger {
+  background: var(--danger-bg);
+  color: var(--danger-text);
+}
+
+@media (max-width: 640px) {
+  .smartlog-header-card {
+    padding: 15px 16px;
+    gap: 12px;
+  }
+
+  .smartlog-header-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 13px;
+  }
+
+  .smartlog-stat-chip {
+    font-size: 0.72rem;
+    padding: 5px 10px;
+  }
+}
+
+
 
 
 

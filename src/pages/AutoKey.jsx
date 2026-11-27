@@ -232,7 +232,7 @@ export default function AutoKey({ onNavigate }) {
         type: c.type,
         iconName: c.iconName,
         icon: CUSTOM_ICON_MAP[c.iconName] || CORE_CATEGORY_MAP.lifestyle.icon,
-        label: { th: c.name, en: c.name },
+        label: c.label || { th: c.name, en: c.name },
         barColor: colorMeta.hex,
         barColorDark: colorMeta.darkHex,
         isCustom: true,
@@ -521,9 +521,13 @@ export default function AutoKey({ onNavigate }) {
 
     const catMeta = allCategoryMap[extractedSlip.iconKey] || CORE_CATEGORY_MAP.lifestyle;
     const trimmedTitle = extractedSlip.titleText.trim();
-    const titleObj = trimmedTitle
-      ? { th: trimmedTitle, en: trimmedTitle }
-      : extractedSlip.titleObj;
+    const isUnchangedPresetTitle =
+      extractedSlip.titleObj &&
+      (trimmedTitle === extractedSlip.titleObj.th || trimmedTitle === extractedSlip.titleObj.en);
+    const titleObj =
+      !trimmedTitle || isUnchangedPresetTitle
+        ? extractedSlip.titleObj
+        : { th: trimmedTitle, en: trimmedTitle };
 
     addTransaction({
       title: titleObj,
@@ -661,26 +665,34 @@ export default function AutoKey({ onNavigate }) {
     setEditingTxId(null);
   };
 
-  // Export currently filtered ledger to UTF-8 BOM CSV (Excel/Sheets Thai-safe)
+  // Export currently filtered ledger to UTF-8 BOM CSV with both TH & EN columns
   const handleExportCsv = () => {
     if (filteredTransactions.length === 0) return;
-    const headers =
-      lang === 'TH'
-        ? ['วันที่', 'ประเภท', 'หมวดหมู่', 'รายการ', 'รายละเอียด', 'จำนวนเงิน (บาท)']
-        : ['Date', 'Type', 'Category', 'Title', 'Note', 'Amount (THB)'];
+    const headers = [
+      'วันที่ (TH)',
+      'Date (EN)',
+      'ประเภท / Type',
+      'หมวดหมู่ (TH)',
+      'Category (EN)',
+      'รายการ (TH)',
+      'Title (EN)',
+      'จำนวนเงิน (THB)',
+    ];
 
     const typeMap = {
-      income: lang === 'TH' ? 'รายรับ' : 'Income',
-      expense: lang === 'TH' ? 'รายจ่าย' : 'Expense',
-      saving: lang === 'TH' ? 'เงินออมฉุกเฉิน' : 'Emergency Fund',
+      income: 'รายรับ / Income',
+      expense: 'รายจ่าย / Expense',
+      saving: 'เงินออมฉุกเฉิน / Emergency Fund',
     };
 
     const rows = filteredTransactions.map((tx) => [
-      t(tx.date),
+      tx.date?.th || t(tx.date),
+      tx.date?.en || t(tx.date),
       typeMap[tx.category] || tx.category,
-      t(tx.categoryLabel),
-      t(tx.title),
-      t(tx.note),
+      tx.categoryLabel?.th || t(tx.categoryLabel),
+      tx.categoryLabel?.en || t(tx.categoryLabel),
+      tx.title?.th || t(tx.title),
+      tx.title?.en || t(tx.title),
       tx.category === 'saving' ? Math.abs(Number(tx.amount) || 0) : Number(tx.amount) || 0,
     ]);
 
@@ -696,8 +708,8 @@ export default function AutoKey({ onNavigate }) {
     window.URL.revokeObjectURL(url);
 
     showToast('success', {
-      th: `ส่งออกไฟล์ CSV (${filteredTransactions.length} รายการ) เรียบร้อยแล้ว`,
-      en: `Exported ${filteredTransactions.length} entries to CSV`,
+      th: `ส่งออกไฟล์ CSV 2 ภาษา (${filteredTransactions.length} รายการ) เรียบร้อยแล้ว`,
+      en: `Exported bilingual CSV (${filteredTransactions.length} entries)`,
     });
   };
 
@@ -1262,7 +1274,7 @@ export default function AutoKey({ onNavigate }) {
                               >
                                 {customCategories.map((cat) => (
                                   <option key={cat.id} value={cat.id}>
-                                    {cat.name}
+                                    {t(cat.label || { th: cat.name, en: cat.name })}
                                   </option>
                                 ))}
                               </optgroup>
@@ -1873,7 +1885,7 @@ export default function AutoKey({ onNavigate }) {
                             ))}
                             {customCategories.map((c) => (
                               <option key={c.id} value={c.id}>
-                                {c.name}
+                                {t(c.label || { th: c.name, en: c.name })}
                               </option>
                             ))}
                           </select>
@@ -2066,7 +2078,7 @@ export default function AutoKey({ onNavigate }) {
                           ))}
                           {customCategories.map((c) => (
                             <option key={c.id} value={c.id}>
-                              {c.name}
+                              {t(c.label || { th: c.name, en: c.name })}
                             </option>
                           ))}
                         </select>

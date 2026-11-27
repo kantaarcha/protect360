@@ -171,7 +171,9 @@ export default function CustomCategoryModal({
                             <Icon size={17} strokeWidth={2.1} />
                           </span>
                           <div className="cc-item-text">
-                            <span className="cc-item-name">{cat.name}</span>
+                            <span className="cc-item-name">
+                              {t(cat.label || { th: cat.name, en: cat.name })}
+                            </span>
                             <span className={`cc-item-type ${cat.type}`}>
                               {t(TYPE_META[cat.type] || TYPE_META.expense)}
                             </span>
@@ -208,7 +210,11 @@ export default function CustomCategoryModal({
                             type="button"
                             className="cc-item-delete"
                             onClick={() => setConfirmDeleteId(cat.id)}
-                            aria-label={lang === 'TH' ? `ลบหมวด ${cat.name}` : `Delete ${cat.name}`}
+                            aria-label={
+                              lang === 'TH'
+                                ? `ลบหมวด ${t(cat.label || { th: cat.name, en: cat.name })}`
+                                : `Delete ${t(cat.label || { th: cat.name, en: cat.name })}`
+                            }
                             title={lang === 'TH' ? 'ลบหมวดหมู่' : 'Delete category'}
                           >
                             <Trash2 size={14} strokeWidth={2.1} />

@@ -6,6 +6,7 @@ import {
   Info,
   Pencil,
   PlusCircle,
+  Wallet,
   X,
 } from 'lucide-react';
 import { ThemeProvider } from './context/ThemeContext';
@@ -32,12 +33,12 @@ import {
 const PAGE_TITLES = {
   overview: null,
   smartlog: {
-    th: 'SmartLog — บันทึกรายรับ-รายจ่าย & เงินสำรองฉุกเฉิน',
-    en: 'SmartLog — Cashflow & Emergency Tracker',
+    th: 'สมุดบัญชี SmartLog',
+    en: 'SmartLog Cashbook',
   },
   'risk-analysis': { th: 'วิเคราะห์ความเสี่ยง (Risk Analysis)', en: 'Risk Analysis' },
-  invest: { th: 'วางแผนลงทุน (IRR) — เปรียบเทียบผลตอบแทน', en: 'Invest (IRR)' },
-  game: { th: 'เล่นเกมจำลองความเสี่ยง (Risk Game)', en: 'Risk Simulator Game' },
+  invest: { th: 'วางแผนลงทุน (IRR)', en: 'Invest (IRR)' },
+  game: { th: 'เล่นเกมจำลองความเสี่ยง', en: 'Risk Simulator Game' },
   learning: { th: 'คลังความรู้', en: 'Learning Center' },
   about: { th: 'เกี่ยวกับเรา', en: 'About PROTECT360' },
 };
@@ -46,7 +47,14 @@ function AppShellContent() {
   const [activePage, setActivePage] = useState('overview');
   const [profileModal, setProfileModal] = useState({ open: false, tab: 'profile' });
   const { lang, t } = useLanguage();
-  const { userProfile, toast, dismissToast } = useFinance();
+  const {
+    userProfile,
+    transactions,
+    savingsRatio,
+    emergencyRunway,
+    toast,
+    dismissToast,
+  } = useFinance();
 
   const handleNavigate = (pageId) => {
     setActivePage(pageId);
@@ -197,6 +205,48 @@ function AppShellContent() {
               </div>
             </button>
           </header>
+        ) : activePage === 'smartlog' ? (
+          <header className="bento-card smartlog-header-card" aria-label="SmartLog Cashbook">
+            <div className="smartlog-header-left">
+              <span className="smartlog-header-icon" aria-hidden="true">
+                <Wallet size={22} strokeWidth={2.1} />
+              </span>
+              <div className="smartlog-header-copy">
+                <h1 className="smartlog-header-title">
+                  {t(PAGE_TITLES.smartlog)}
+                </h1>
+                <p className="smartlog-header-sub">
+                  {lang === 'TH'
+                    ? 'จดรับ-จ่าย สแกนสลิป และติดตามยอดเงินสำรองฉุกเฉินได้ครบในหน้าเดียว'
+                    : 'Log daily cashflow, scan bank slips, and track your emergency reserve in one place.'}
+                </p>
+              </div>
+            </div>
+
+            <div className="smartlog-header-chips tabular-nums">
+              <span className="smartlog-stat-chip neutral">
+                {lang === 'TH'
+                  ? `${transactions.length} รายการในสมุดบัญชี`
+                  : `${transactions.length} entries logged`}
+              </span>
+              <span
+                className={`smartlog-stat-chip ${savingsRatio < 0 ? 'danger' : 'blue'}`}
+              >
+                {lang === 'TH'
+                  ? `ออมสุทธิ ${savingsRatio}%`
+                  : `Net Savings ${savingsRatio}%`}
+              </span>
+              <span className="smartlog-stat-chip neutral">
+                <span
+                  className={`status-dot ${emergencyRunway >= targetMonths ? 'green' : 'amber'}`}
+                  aria-hidden="true"
+                />
+                {lang === 'TH'
+                  ? `สำรอง ${emergencyRunway.toFixed(2)} / ${targetMonths} ด.`
+                  : `Reserve ${emergencyRunway.toFixed(2)} / ${targetMonths} mo.`}
+              </span>
+            </div>
+          </header>
         ) : (
           <header className="subpage-header">
             <div className="header-greeting-group">
@@ -205,13 +255,7 @@ function AppShellContent() {
                   {t(PAGE_TITLES[activePage] || { th: 'PROTECT360', en: 'PROTECT360' })}
                 </h1>
               </div>
-              <p className="header-philosophy">
-                {activePage === 'smartlog'
-                  ? lang === 'TH'
-                    ? `${userPillLabel} • ขั้นตอนที่ 1: เข้าใจกระแสเงินสดของคุณ ก่อนวางแผนจัดการความเสี่ยง`
-                    : `${userPillLabel} • Step 1: Understand Your Cashflow Before Risk Planning`
-                  : t('header.philosophy')}
-              </p>
+              <p className="header-philosophy">{t('header.philosophy')}</p>
             </div>
           </header>
         )}
