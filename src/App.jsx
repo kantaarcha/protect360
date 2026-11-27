@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import {
   AlertCircle,
+  BookOpen,
   CheckCircle2,
   ChevronRight,
   Gamepad2,
@@ -52,7 +53,10 @@ const PAGE_TITLES = {
     th: 'PROTECT360 Survival Lab — เกมจำลองเอาตัวรอดทางการเงิน',
     en: 'PROTECT360 Survival Lab — Financial Resilience Simulator',
   },
-  learning: { th: 'คลังความรู้', en: 'Learning Center' },
+  learning: {
+    th: 'คลังความรู้ PROTECT360 — ย่อยเรื่องเงินและความเสี่ยงใน 2 นาที',
+    en: 'PROTECT360 Learning Library — 2-Minute Plain-Language Risk Guides',
+  },
   about: { th: 'เกี่ยวกับเรา', en: 'About PROTECT360' },
 };
 
@@ -403,6 +407,39 @@ function AppShellContent() {
               </span>
               <span className="smartlog-stat-chip neutral">
                 {lang === 'TH' ? 'โหมด 30–365 วัน' : '30–365 Day Modes'}
+              </span>
+            </div>
+          </header>
+        ) : activePage === 'learning' ? (
+          <header
+            className="bento-card smartlog-header-card"
+            aria-label="PROTECT360 Learning Center"
+          >
+            <div className="smartlog-header-left">
+              <span className="smartlog-header-icon" aria-hidden="true">
+                <BookOpen size={22} strokeWidth={2.1} />
+              </span>
+              <div className="smartlog-header-copy">
+                <h1 className="smartlog-header-title">
+                  {t(PAGE_TITLES.learning)}
+                </h1>
+                <p className="smartlog-header-sub">
+                  {lang === 'TH'
+                    ? `สำหรับ ${(userProfile?.firstName || '').trim() || 'First Jobber'} • เรียนรู้กติกาสำคัญก่อนตัดสินใจ ไม่ต้องง้อศัพท์เทคนิค`
+                    : `For ${(userProfile?.firstName || '').trim() || 'First Jobber'} • Master key financial & protection rules in plain language.`}
+                </p>
+              </div>
+            </div>
+
+            <div className="smartlog-header-chips tabular-nums">
+              <span className="smartlog-stat-chip blue">
+                {lang === 'TH' ? '6 บทความ 2 นาที' : '6 Micro-Guides'}
+              </span>
+              <span className="smartlog-stat-chip neutral">
+                {lang === 'TH' ? '6 ศัพท์กรมธรรม์' : '6 Key Terms'}
+              </span>
+              <span className="smartlog-stat-chip neutral">
+                {lang === 'TH' ? 'ควิซ 5 ข้อ' : '5-Q Quiz'}
               </span>
             </div>
           </header>
