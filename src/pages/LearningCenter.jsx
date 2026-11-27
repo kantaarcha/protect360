@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import {
+  ArrowLeft,
   ArrowRight,
   Award,
   BookOpen,
@@ -40,19 +41,19 @@ const ARTICLE_ICONS = {
 
 function loadLearningProgress() {
   if (typeof window === 'undefined') {
-    return { readIds: [], quizVerified: false, bestScore: 0 };
+    return { readIds: ['opd-vs-ipd'], quizVerified: false, bestScore: 0 };
   }
   try {
     const raw = window.localStorage.getItem(LEARNING_STORAGE_KEY);
-    if (!raw) return { readIds: [], quizVerified: false, bestScore: 0 };
+    if (!raw) return { readIds: ['opd-vs-ipd'], quizVerified: false, bestScore: 0 };
     const parsed = JSON.parse(raw);
     return {
-      readIds: Array.isArray(parsed?.readIds) ? parsed.readIds : [],
+      readIds: Array.isArray(parsed?.readIds) ? parsed.readIds : ['opd-vs-ipd'],
       quizVerified: Boolean(parsed?.quizVerified),
-      bestScore: Number.isFinite(Number(parsed?.bestScore)) ? Number(parsed.bestScore) : 0,
+      bestScore: Number.isFinite(Number(parsed?.bestScore)) ? Number(parsed?.bestScore) : 0,
     };
   } catch {
-    return { readIds: [], quizVerified: false, bestScore: 0 };
+    return { readIds: ['opd-vs-ipd'], quizVerified: false, bestScore: 0 };
   }
 }
 
@@ -60,17 +61,19 @@ export default function LearningCenter({ onNavigate }) {
   const { lang, t } = useLanguage();
   const { userProfile, monthlyIncome, monthlyExpenses, emergencyFund } = useFinance();
 
+  // Main Tab Window switcher: 'guides' | 'glossary' | 'quiz'
+  const [activeTab, setActiveTab] = useState('guides');
+
   // Persistent local progress (read articles + Literacy Verified badge)
   const [progress, setProgress] = useState(loadLearningProgress);
 
-  // Search & category filter
+  // Guides tab state (in-tab master-detail reader — zero pop-up modals)
   const [searchQuery, setSearchQuery] = useState('');
   const [activeCategory, setActiveCategory] = useState('all');
+  const [selectedArticleId, setSelectedArticleId] = useState(LEARNING_ARTICLES[0].id);
 
-  // Reader modal state
-  const [openArticleId, setOpenArticleId] = useState(null);
-
-  // Quick Jargon Decoder selected term
+  // Glossary tab state
+  const [glossarySearch, setGlossarySearch] = useState('');
   const [selectedJargonId, setSelectedJargonId] = useState(JARGON_TERMS[0].id);
 
   // 5-Question Literacy Quiz state
@@ -85,19 +88,9 @@ export default function LearningCenter({ onNavigate }) {
     try {
       window.localStorage.setItem(LEARNING_STORAGE_KEY, JSON.stringify(progress));
     } catch {
-      // Ignore quota / private browsing storage restrictions
+      // Ignore storage quota / private browsing errors
     }
   }, [progress]);
-
-  // Close Reader Modal on ESC
-  useEffect(() => {
-    if (!openArticleId || typeof window === 'undefined') return undefined;
-    const handleKey = (e) => {
-      if (e.key === 'Escape') setOpenArticleId(null);
-    };
-    window.addEventListener('keydown', handleKey);
-    return () => window.removeEventListener('keydown', handleKey);
-  }, [openArticleId]);
 
   const displayName = (userProfile?.firstName || '').trim() || 'First Jobber';
   const safeCapMin = Math.round((monthlyIncome || 25000) * 0.1);
@@ -105,16 +98,31 @@ export default function LearningCenter({ onNavigate }) {
   const targetMonths = userProfile?.emergencyTargetMonths || 3;
   const emergencyGoal = Math.max(30000, Math.round((monthlyExpenses || 20000) * targetMonths));
 
-  const categoryTabs = useMemo(
-    () =>
-      LEARNING_CATEGORIES.map((cat) => ({
-        id: cat.id,
-        label: t(cat.label),
-      })),
-    [t]
+  // Main 3-tab window bar (compact iPhone-safe labels)
+  const windowTabs = useMemo(
+    () => [
+      {
+        id: 'guides',
+        label: lang === 'TH' ? 'บทความ 2 นาที' : '2-Min Guides',
+        icon: BookOpen,
+        badge: `${progress.readIds.length}/${LEARNING_ARTICLES.length}`,
+      },
+      {
+        id: 'glossary',
+        label: lang === 'TH' ? 'แปลศัพท์' : 'Glossary',
+        icon: Sparkles,
+      },
+      {
+        id: 'quiz',
+        label: lang === 'TH' ? 'ควิซ 5 ข้อ' : '5-Q Quiz',
+        icon: Award,
+        badge: progress.quizVerified ? '✓' : undefined,
+      },
+    ],
+    [lang, progress.readIds.length, progress.quizVerified]
   );
 
-  // Filter 6 articles by category + search query
+  // Filtered articles for the left index
   const filteredArticles = useMemo(() => {
     const q = searchQuery.trim().toLowerCase();
     return LEARNING_ARTICLES.filter((article) => {
@@ -143,32 +151,39 @@ export default function LearningCenter({ onNavigate }) {
     });
   }, [activeCategory, searchQuery]);
 
-  // Filter jargon pills softly when searching (keep all visible if no match, highlight matches)
-  const matchingJargonIds = useMemo(() => {
-    const q = searchQuery.trim().toLowerCase();
-    if (!q) return new Set();
-    return new Set(
-      JARGON_TERMS.filter((item) =>
-        `${item.term.th} ${item.term.en} ${item.plainMeaning.th} ${item.plainMeaning.en}`
-          .toLowerCase()
-          .includes(q)
-      ).map((item) => item.id)
-    );
-  }, [searchQuery]);
+  // Active article shown right inside the Reading Pane
+  const activeArticle =
+    filteredArticles.find((a) => a.id === selectedArticleId) ||
+    filteredArticles[0] ||
+    null;
 
-  const activeJargon =
-    JARGON_TERMS.find((item) => item.id === selectedJargonId) || JARGON_TERMS[0];
+  const activeArticleIdx = activeArticle
+    ? filteredArticles.findIndex((a) => a.id === activeArticle.id)
+    : -1;
 
-  const openArticle =
-    LEARNING_ARTICLES.find((article) => article.id === openArticleId) || null;
-
-  const handleOpenArticle = (articleId) => {
-    setOpenArticleId(articleId);
+  const handleSelectArticle = (articleId) => {
+    setSelectedArticleId(articleId);
     setProgress((prev) => {
       if (prev.readIds.includes(articleId)) return prev;
       return { ...prev, readIds: [...prev.readIds, articleId] };
     });
   };
+
+  // Filtered glossary terms
+  const filteredTerms = useMemo(() => {
+    const q = glossarySearch.trim().toLowerCase();
+    if (!q) return JARGON_TERMS;
+    return JARGON_TERMS.filter((item) =>
+      `${item.term.th} ${item.term.en} ${item.shortTag.th} ${item.shortTag.en} ${item.plainMeaning.th} ${item.plainMeaning.en}`
+        .toLowerCase()
+        .includes(q)
+    );
+  }, [glossarySearch]);
+
+  const activeJargon =
+    filteredTerms.find((item) => item.id === selectedJargonId) ||
+    filteredTerms[0] ||
+    null;
 
   // Quiz handlers
   const currentQuestion = LITERACY_QUIZ[quizIdx];
@@ -212,472 +227,504 @@ export default function LearningCenter({ onNavigate }) {
   return (
     <div className="lc-page">
       {/* ===================================================================== */}
-      {/* 1. SEARCH & CATEGORY FILTER BAR + PERSONALIZED READING PROGRESS       */}
+      {/* UNIFIED TABBED KNOWLEDGE WINDOW                                       */}
       {/* ===================================================================== */}
-      <section className="bento-card lc-filter-card" aria-label="Search and filter learning library">
-        <div className="lc-filter-top">
-          <div className="lc-search-wrap">
-            <Search size={16} className="lc-search-icon" aria-hidden="true" />
-            <input
-              id="lc-search-input"
-              type="search"
-              className="lc-search-input"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder={
-                lang === 'TH'
-                  ? 'ค้นหาคำศัพท์หรือหัวข้อ เช่น ระยะเวลารอคอย, OPD, ประกันกลุ่ม...'
-                  : 'Search terms or topics: Waiting Period, OPD, Deductible...'
-              }
-              aria-label={lang === 'TH' ? 'ค้นหาบทความและคำศัพท์' : 'Search articles and terms'}
+      <section className="bento-card lc-window-shell" aria-label="Learning Center workspace">
+        {/* Window Top Tab Bar */}
+        <div className="lc-window-bar">
+          <div className="lc-window-tabs">
+            <LiquidTabs
+              tabs={windowTabs}
+              activeId={activeTab}
+              onChange={setActiveTab}
+              variant="surface"
+              idPrefix="learning-window"
+              ariaLabel={lang === 'TH' ? 'แท็บคลังความรู้' : 'Learning library tabs'}
             />
-            {searchQuery && (
-              <button
-                type="button"
-                className="lc-search-clear"
-                onClick={() => setSearchQuery('')}
-                aria-label="Clear search"
-              >
-                <X size={14} />
-              </button>
-            )}
           </div>
 
-          <div className="lc-progress-pills tabular-nums">
-            <span className="lc-prog-pill">
-              <BookOpen size={13} aria-hidden="true" />
+          <div className="lc-window-status tabular-nums">
+            <span className="lc-personal-hint">
               {lang === 'TH'
-                ? `อ่านแล้ว ${progress.readIds.length}/${LEARNING_ARTICLES.length}`
-                : `Read ${progress.readIds.length}/${LEARNING_ARTICLES.length}`}
+                ? `กรอบปลอดภัยของ ${displayName}: ไม่เกิน ${formatTHB(safeCapMax)}/ด.`
+                : `${displayName}'s cap: max ${formatTHB(safeCapMax)}/mo`}
             </span>
-            {progress.quizVerified && (
-              <span className="lc-prog-pill verified">
-                <Award size={13} aria-hidden="true" />
-                {lang === 'TH' ? 'ผ่านเกณฑ์โค้ชการเงิน' : 'Literacy Verified'}
-              </span>
-            )}
           </div>
         </div>
 
-        <div className="lc-filter-bottom">
-          <LiquidTabs
-            tabs={categoryTabs}
-            activeId={activeCategory}
-            onChange={setActiveCategory}
-            variant="compact"
-            idPrefix="learning-cat"
-            ariaLabel={lang === 'TH' ? 'กรองหมวดหมู่ความรู้' : 'Filter learning topics'}
-          />
+        {/* =================================================================== */}
+        {/* TAB 1: 2-MINUTE GUIDES — IN-TAB SPLIT READER (NO POPUP MODAL)       */}
+        {/* =================================================================== */}
+        {activeTab === 'guides' && (
+          <div className="lc-guides-workspace">
+            {/* Left Sidebar Index (Topics + Search + Category Filter) */}
+            <aside className="lc-sidebar-index" aria-label="Article topics">
+              <div className="lc-search-wrap">
+                <Search size={15} className="lc-search-icon" aria-hidden="true" />
+                <input
+                  id="lc-search-input"
+                  type="search"
+                  className="lc-search-input"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder={
+                    lang === 'TH'
+                      ? 'ค้นหา เช่น ระยะเวลารอคอย, OPD...'
+                      : 'Search: Waiting Period, OPD...'
+                  }
+                  aria-label={lang === 'TH' ? 'ค้นหาบทความ' : 'Search articles'}
+                />
+                {searchQuery && (
+                  <button
+                    type="button"
+                    className="lc-search-clear"
+                    onClick={() => setSearchQuery('')}
+                    aria-label="Clear search"
+                  >
+                    <X size={13} />
+                  </button>
+                )}
+              </div>
 
-          <span className="lc-personal-hint tabular-nums">
-            {lang === 'TH'
-              ? `กรอบปลอดภัยของ ${displayName}: งบโอนเสี่ยงไม่เกิน ${formatTHB(safeCapMax)}/ด.`
-              : `${displayName}'s guardrail: max ${formatTHB(safeCapMax)}/mo protection`}
-          </span>
-        </div>
-      </section>
+              {/* Compact Category Pills */}
+              <div className="lc-mini-cat-row" role="group" aria-label="Category filter">
+                {LEARNING_CATEGORIES.map((cat) => (
+                  <button
+                    key={cat.id}
+                    type="button"
+                    className={`lc-mini-cat-btn ${activeCategory === cat.id ? 'active' : ''}`}
+                    onClick={() => setActiveCategory(cat.id)}
+                  >
+                    {t(cat.label)}
+                  </button>
+                ))}
+              </div>
 
-      {/* ===================================================================== */}
-      {/* 2. 6 INTERACTIVE "2-MINUTE MICRO-LEARNING" BENTO CARDS                */}
-      {/* ===================================================================== */}
-      <section className="lc-articles-section" aria-label="2-minute micro-learning articles">
-        {filteredArticles.length === 0 ? (
-          <div className="bento-card lc-empty-state">
-            <BookOpen size={26} aria-hidden="true" />
-            <p>
-              {lang === 'TH'
-                ? `ไม่พบบทความที่ตรงกับ "${searchQuery}" ลองค้นหาด้วยคำอื่น หรือดูคำแปลศัพท์ด้านล่าง`
-                : `No articles match "${searchQuery}". Try another keyword or check the Jargon Decoder below.`}
-            </p>
-            <button
-              type="button"
-              className="btn-soft-gray"
-              onClick={() => {
-                setSearchQuery('');
-                setActiveCategory('all');
-              }}
-            >
-              {lang === 'TH' ? 'แสดงทั้งหมด' : 'Show All Topics'}
-            </button>
-          </div>
-        ) : (
-          <div className="lc-articles-grid">
-            {filteredArticles.map((article) => {
-              const Icon = ARTICLE_ICONS[article.iconName] || BookOpen;
-              const isRead = progress.readIds.includes(article.id);
-              return (
-                <article
-                  key={article.id}
-                  className={`bento-card lc-article-card ${isRead ? 'is-read' : ''}`}
-                >
-                  <div className="lc-article-top">
-                    <span className={`lc-cat-pill cat-${article.category}`}>
-                      <Icon size={13} strokeWidth={2.2} aria-hidden="true" />
-                      <span>{t(article.categoryLabel)}</span>
-                    </span>
-
-                    <span className="lc-time-badge tabular-nums">
-                      {isRead ? (
-                        <>
-                          <CheckCircle2 size={13} className="lc-read-check" aria-hidden="true" />
-                          <span>{lang === 'TH' ? 'อ่านแล้ว' : 'Read'}</span>
-                        </>
-                      ) : (
-                        <>
-                          <Clock size={12} aria-hidden="true" />
-                          <span>
-                            {lang === 'TH'
-                              ? `อ่าน ${article.readMinutes} นาที`
-                              : `${article.readMinutes} min read`}
-                          </span>
-                        </>
-                      )}
-                    </span>
-                  </div>
-
-                  <h2 className="lc-article-title">{t(article.title)}</h2>
-                  <p className="lc-article-hook">{t(article.hook)}</p>
-
-                  <div className="lc-article-footer">
+              {/* Topic List (vertical on desktop, compact strip on mobile) */}
+              <div className="lc-topic-list" role="tablist" aria-label="Select topic to read">
+                {filteredArticles.length === 0 ? (
+                  <div className="lc-index-empty">
+                    <p>
+                      {lang === 'TH'
+                        ? `ไม่พบหัวข้อ "${searchQuery}"`
+                        : `No topics matching "${searchQuery}"`}
+                    </p>
                     <button
                       type="button"
-                      id={`lc-read-${article.id}`}
-                      className="lc-read-btn"
-                      onClick={() => handleOpenArticle(article.id)}
+                      className="lc-reset-link"
+                      onClick={() => {
+                        setSearchQuery('');
+                        setActiveCategory('all');
+                      }}
                     >
-                      <span>{lang === 'TH' ? 'อ่านสรุปเข้าใจง่าย' : 'Read Summary'}</span>
-                      <ArrowRight size={15} strokeWidth={2.3} aria-hidden="true" />
+                      {lang === 'TH' ? 'ล้างตัวกรอง' : 'Reset filter'}
                     </button>
                   </div>
-                </article>
-              );
-            })}
+                ) : (
+                  filteredArticles.map((article, idx) => {
+                    const Icon = ARTICLE_ICONS[article.iconName] || BookOpen;
+                    const isSelected = activeArticle?.id === article.id;
+                    const isRead = progress.readIds.includes(article.id);
+                    return (
+                      <button
+                        key={article.id}
+                        id={`lc-topic-${article.id}`}
+                        type="button"
+                        role="tab"
+                        aria-selected={isSelected}
+                        className={`lc-topic-item ${isSelected ? 'active' : ''}`}
+                        onClick={() => handleSelectArticle(article.id)}
+                      >
+                        <span className={`lc-topic-icon cat-${article.category}`} aria-hidden="true">
+                          <Icon size={15} strokeWidth={2.1} />
+                        </span>
+                        <div className="lc-topic-copy">
+                          <div className="lc-topic-meta tabular-nums">
+                            <span>
+                              {String(idx + 1).padStart(2, '0')} • {t(article.categoryLabel)}
+                            </span>
+                            {isRead && (
+                              <CheckCircle2 size={13} className="lc-read-check" aria-hidden="true" />
+                            )}
+                          </div>
+                          <strong className="lc-topic-title">{t(article.title)}</strong>
+                        </div>
+                      </button>
+                    );
+                  })
+                )}
+              </div>
+            </aside>
+
+            {/* Right Active Reading Pane (Full Content Directly Inside Tab!) */}
+            <article className="lc-reading-pane" role="tabpanel">
+              {activeArticle ? (
+                <>
+                  <div className="lc-pane-top">
+                    <span className={`lc-cat-pill cat-${activeArticle.category}`}>
+                      {t(activeArticle.categoryLabel)}
+                    </span>
+                    <span className="lc-time-badge tabular-nums">
+                      <Clock size={12} aria-hidden="true" />
+                      {lang === 'TH'
+                        ? `อ่าน ${activeArticle.readMinutes} นาที`
+                        : `${activeArticle.readMinutes} min read`}
+                    </span>
+                  </div>
+
+                  <h2 className="lc-reader-title">{t(activeArticle.title)}</h2>
+                  <p className="lc-reader-intro">{t(activeArticle.intro)}</p>
+
+                  {/* Side-by-Side Policy Jargon vs. Plain Translation */}
+                  <div className="lc-trans-block">
+                    <div className="lc-trans-headers">
+                      <span>{lang === 'TH' ? 'ศัพท์ทางการ (Policy Jargon)' : 'Policy Jargon'}</span>
+                      <span>
+                        {lang === 'TH' ? 'ภาษาคนทั่วไป (Plain Translation)' : 'Plain Translation'}
+                      </span>
+                    </div>
+
+                    <div className="lc-trans-rows">
+                      {activeArticle.translations.map((pair, idx) => (
+                        <div key={idx} className="lc-trans-row">
+                          <div className="lc-trans-jargon">{t(pair.jargon)}</div>
+                          <div className="lc-trans-plain">{t(pair.plain)}</div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Real First Jobber Example (Personalized on Article #6) */}
+                  <div className="lc-example-box tabular-nums">
+                    <strong>{t(activeArticle.example.title)}</strong>
+                    <p>
+                      {activeArticle.example.useDynamicNumbers
+                        ? lang === 'TH'
+                          ? `จากข้อมูลปัจจุบันของ ${displayName} (รายได้ ${formatTHB(monthlyIncome)}/ด. • เงินสำรอง ${formatTHB(emergencyFund)}): เป้าเงินสำรอง ${targetMonths} เดือนคือ ${formatTHB(emergencyGoal)} และกรอบงบโอนย้ายความเสี่ยงที่ปลอดภัยคือ ${formatTHB(safeCapMin)}–${formatTHB(safeCapMax)}/เดือน`
+                          : `Based on ${displayName}'s live profile (Income ${formatTHB(monthlyIncome)}/mo • Reserve ${formatTHB(emergencyFund)}): your ${targetMonths}-month emergency goal is ${formatTHB(emergencyGoal)}, and your safe risk-transfer cap is ${formatTHB(safeCapMin)}–${formatTHB(safeCapMax)}/mo.`
+                        : t(activeArticle.example.body)}
+                    </p>
+                  </div>
+
+                  {/* Key Takeaway */}
+                  <div className="lc-takeaway-box">
+                    <Lightbulb size={17} className="lc-tip-icon" aria-hidden="true" />
+                    <p>{t(activeArticle.takeaway)}</p>
+                  </div>
+
+                  {/* In-Tab Prev / Next Navigation + Tool Bridge */}
+                  <div className="lc-pane-footer">
+                    <div className="lc-pane-nav-btns">
+                      <button
+                        type="button"
+                        className="btn-soft-gray lc-pane-nav-btn"
+                        disabled={activeArticleIdx <= 0}
+                        onClick={() => {
+                          if (activeArticleIdx > 0) {
+                            handleSelectArticle(filteredArticles[activeArticleIdx - 1].id);
+                          }
+                        }}
+                      >
+                        <ArrowLeft size={14} />
+                        <span>{lang === 'TH' ? 'บทก่อนหน้า' : 'Previous'}</span>
+                      </button>
+
+                      <button
+                        type="button"
+                        className="btn-soft-gray lc-pane-nav-btn"
+                        disabled={
+                          activeArticleIdx < 0 || activeArticleIdx >= filteredArticles.length - 1
+                        }
+                        onClick={() => {
+                          if (activeArticleIdx < filteredArticles.length - 1) {
+                            handleSelectArticle(filteredArticles[activeArticleIdx + 1].id);
+                          }
+                        }}
+                      >
+                        <span>{lang === 'TH' ? 'บทถัดไป' : 'Next Guide'}</span>
+                        <ArrowRight size={14} />
+                      </button>
+                    </div>
+
+                    {activeArticle.bridgeAction && (
+                      <button
+                        type="button"
+                        className="btn-primary-gradient lc-pane-cta"
+                        onClick={() => onNavigate?.(activeArticle.bridgeAction.page)}
+                      >
+                        <span>{t(activeArticle.bridgeAction.label)}</span>
+                        <ArrowRight size={15} />
+                      </button>
+                    )}
+                  </div>
+                </>
+              ) : (
+                <div className="lc-empty-state">
+                  <BookOpen size={24} aria-hidden="true" />
+                  <p>
+                    {lang === 'TH'
+                      ? 'เลือกบทความจากรายการด้านซ้ายเพื่ออ่านสรุปเข้าใจง่าย'
+                      : 'Select any topic from the index to read its plain-language summary.'}
+                  </p>
+                </div>
+              )}
+            </article>
           </div>
         )}
-      </section>
 
-      {/* ===================================================================== */}
-      {/* 3. INTERACTIVE SPLIT: JARGON DECODER (LEFT) & 5-QUESTION QUIZ (RIGHT) */}
-      {/* ===================================================================== */}
-      <section className="lc-split-grid" aria-label="Jargon decoder and literacy quiz">
-        {/* LEFT CARD: Quick Jargon Decoder */}
-        <article className="bento-card lc-jargon-card">
-          <div className="lc-card-head">
-            <span className="gm-icon-badge blue" aria-hidden="true">
-              <Sparkles size={18} strokeWidth={2.1} />
-            </span>
-            <div>
-              <h2 className="lc-card-title">
-                {lang === 'TH' ? 'ตัวแปลศัพท์กรมธรรม์ทันใจ' : 'Quick Jargon Decoder'}
-              </h2>
-              <p className="lc-card-sub">
-                {lang === 'TH'
-                  ? 'กดเลือกคำศัพท์ที่เจอบ่อย เพื่อดูความหมายภาษาคนทั่วไปและทริคใช้งานจริง'
-                  : 'Tap any confusing policy term for an instant plain-language translation.'}
-              </p>
-            </div>
-          </div>
+        {/* =================================================================== */}
+        {/* TAB 2: QUICK JARGON DECODER — DEDICATED GLOSSARY WINDOW             */}
+        {/* =================================================================== */}
+        {activeTab === 'glossary' && (
+          <div className="lc-glossary-workspace">
+            <div className="lc-glossary-left">
+              <div className="lc-search-wrap">
+                <Search size={15} className="lc-search-icon" aria-hidden="true" />
+                <input
+                  id="lc-glossary-search"
+                  type="search"
+                  className="lc-search-input"
+                  value={glossarySearch}
+                  onChange={(e) => setGlossarySearch(e.target.value)}
+                  placeholder={
+                    lang === 'TH'
+                      ? 'ค้นหาคำศัพท์ เช่น ทุนประกัน, ข้อยกเว้น, IRR...'
+                      : 'Search term: Sum Insured, Rider, IRR...'
+                  }
+                  aria-label={lang === 'TH' ? 'ค้นหาคำศัพท์กรมธรรม์' : 'Search policy terms'}
+                />
+                {glossarySearch && (
+                  <button
+                    type="button"
+                    className="lc-search-clear"
+                    onClick={() => setGlossarySearch('')}
+                    aria-label="Clear search"
+                  >
+                    <X size={13} />
+                  </button>
+                )}
+              </div>
 
-          <div className="lc-jargon-pills" role="tablist" aria-label="Jargon terms">
-            {JARGON_TERMS.map((item) => {
-              const isSelected = activeJargon.id === item.id;
-              const isSearchHit = matchingJargonIds.has(item.id);
-              return (
-                <button
-                  key={item.id}
-                  type="button"
-                  role="tab"
-                  aria-selected={isSelected}
-                  className={`lc-jargon-pill ${isSelected ? 'active' : ''} ${
-                    isSearchHit ? 'search-hit' : ''
-                  }`}
-                  onClick={() => setSelectedJargonId(item.id)}
-                >
-                  {t(item.term)}
-                </button>
-              );
-            })}
-          </div>
-
-          <div className="lc-jargon-output" role="tabpanel">
-            <div className="lc-jargon-out-head">
-              <h3>{t(activeJargon.term)}</h3>
-              <span className="lc-jargon-short-tag">{t(activeJargon.shortTag)}</span>
-            </div>
-
-            <p className="lc-jargon-meaning">{t(activeJargon.plainMeaning)}</p>
-
-            <div className="lc-jargon-tip">
-              <Lightbulb size={16} className="lc-tip-icon" aria-hidden="true" />
-              <div>
-                <strong>
-                  {lang === 'TH' ? 'ทริคสำหรับ First Jobber' : 'Practical First Jobber Tip'}
-                </strong>
-                <p>{t(activeJargon.tip)}</p>
+              <div className="lc-glossary-list" role="tablist" aria-label="Jargon terms">
+                {filteredTerms.length === 0 ? (
+                  <div className="lc-index-empty">
+                    <p>
+                      {lang === 'TH'
+                        ? `ไม่พบคำศัพท์ "${glossarySearch}"`
+                        : `No terms matching "${glossarySearch}"`}
+                    </p>
+                  </div>
+                ) : (
+                  filteredTerms.map((item) => {
+                    const isSelected = activeJargon?.id === item.id;
+                    return (
+                      <button
+                        key={item.id}
+                        type="button"
+                        role="tab"
+                        aria-selected={isSelected}
+                        className={`lc-glossary-item ${isSelected ? 'active' : ''}`}
+                        onClick={() => setSelectedJargonId(item.id)}
+                      >
+                        <strong>{t(item.term)}</strong>
+                        <span>{t(item.shortTag)}</span>
+                      </button>
+                    );
+                  })
+                )}
               </div>
             </div>
-          </div>
-        </article>
 
-        {/* RIGHT CARD: 5-Question Risk & Policy Literacy Quiz */}
-        <article className="bento-card lc-quiz-card">
-          <div className="lc-card-head lc-quiz-head">
-            <div className="lc-card-head-left">
-              <span className="gm-icon-badge teal" aria-hidden="true">
-                <Award size={18} strokeWidth={2.1} />
-              </span>
+            <div className="lc-glossary-pane" role="tabpanel">
+              {activeJargon ? (
+                <>
+                  <div className="lc-jargon-out-head">
+                    <h2 className="lc-reader-title">{t(activeJargon.term)}</h2>
+                    <span className="lc-jargon-short-tag">{t(activeJargon.shortTag)}</span>
+                  </div>
+
+                  <p className="lc-jargon-meaning">{t(activeJargon.plainMeaning)}</p>
+
+                  <div className="lc-jargon-tip">
+                    <Lightbulb size={16} className="lc-tip-icon" aria-hidden="true" />
+                    <div>
+                      <strong>
+                        {lang === 'TH' ? 'ทริคสำหรับ First Jobber' : 'Practical First Jobber Tip'}
+                      </strong>
+                      <p>{t(activeJargon.tip)}</p>
+                    </div>
+                  </div>
+
+                  <div className="lc-glossary-all-note">
+                    <span>
+                      {lang === 'TH'
+                        ? 'อยากทดสอบว่าเข้าใจคำศัพท์เหล่านี้จริงไหม?'
+                        : 'Ready to check your understanding?'}
+                    </span>
+                    <button
+                      type="button"
+                      className="btn-soft-gray lc-pane-nav-btn"
+                      onClick={() => setActiveTab('quiz')}
+                    >
+                      <span>{lang === 'TH' ? 'ไปทำควิซ 5 ข้อ →' : 'Take 5-Q Quiz →'}</span>
+                    </button>
+                  </div>
+                </>
+              ) : null}
+            </div>
+          </div>
+        )}
+
+        {/* =================================================================== */}
+        {/* TAB 3: 5-QUESTION RISK & POLICY LITERACY QUIZ WINDOW                */}
+        {/* =================================================================== */}
+        {activeTab === 'quiz' && (
+          <div className="lc-quiz-workspace">
+            <div className="lc-quiz-top-row">
               <div>
-                <h2 className="lc-card-title">
+                <h2 className="lc-reader-title">
                   {lang === 'TH'
                     ? 'ควิซเช็กภูมิคุ้มกันความรู้ 5 ข้อ'
-                    : '5-Question Literacy Check'}
+                    : '5-Question Risk & Policy Literacy Quiz'}
                 </h2>
                 <p className="lc-card-sub">
                   {lang === 'TH'
-                    ? 'ทดสอบกับดักจริงที่มือใหม่มักพลาด ตอบถูก 4/5 ข้อรับป้ายผ่านเกณฑ์'
-                    : 'Test 5 common real-world traps — score 4/5+ to earn Literacy Verified.'}
+                    ? 'ทดสอบกับดักจริงที่มือใหม่มักพลาด ตอบถูก 4/5 ข้อรับป้ายผ่านเกณฑ์โค้ชการเงิน'
+                    : 'Test 5 common real-world traps — score 4/5+ to earn your Literacy Verified badge.'}
                 </p>
               </div>
+
+              <span className="lc-quiz-step-pill tabular-nums">
+                {quizFinished
+                  ? `${quizScore} / ${LITERACY_QUIZ.length}`
+                  : lang === 'TH'
+                    ? `ข้อที่ ${quizIdx + 1}/${LITERACY_QUIZ.length}`
+                    : `Q ${quizIdx + 1}/${LITERACY_QUIZ.length}`}
+              </span>
             </div>
 
-            <span className="lc-quiz-step-pill tabular-nums">
-              {quizFinished
-                ? `${quizScore} / ${LITERACY_QUIZ.length}`
-                : lang === 'TH'
-                  ? `ข้อที่ ${quizIdx + 1}/${LITERACY_QUIZ.length}`
-                  : `Q ${quizIdx + 1}/${LITERACY_QUIZ.length}`}
-            </span>
-          </div>
+            <div className="gm-hud-bar-track">
+              <div
+                className={`gm-hud-bar-fill ${quizFinished && quizScore >= 4 ? 'teal' : 'blue'}`}
+                style={{ width: `${quizProgressPct}%` }}
+              />
+            </div>
 
-          {/* Soft Gradient Progress Bar */}
-          <div className="gm-hud-bar-track">
-            <div
-              className={`gm-hud-bar-fill ${quizFinished && quizScore >= 4 ? 'teal' : 'blue'}`}
-              style={{ width: `${quizProgressPct}%` }}
-            />
-          </div>
+            {!quizFinished && currentQuestion ? (
+              <div className="lc-quiz-body">
+                <h3 className="lc-quiz-question">{t(currentQuestion.question)}</h3>
 
-          {!quizFinished && currentQuestion ? (
-            <div className="lc-quiz-body">
-              <h3 className="lc-quiz-question">{t(currentQuestion.question)}</h3>
+                <div className="lc-quiz-options">
+                  {currentQuestion.options.map((opt, idx) => {
+                    const isPicked = selectedOptionId === opt.id;
+                    const isRightOpt = opt.id === currentQuestion.correctId;
+                    let stateClass = '';
+                    if (isAnswered) {
+                      if (isRightOpt) stateClass = 'correct';
+                      else if (isPicked) stateClass = 'wrong';
+                      else stateClass = 'muted';
+                    }
 
-              <div className="lc-quiz-options">
-                {currentQuestion.options.map((opt, idx) => {
-                  const isPicked = selectedOptionId === opt.id;
-                  const isRightOpt = opt.id === currentQuestion.correctId;
-                  let stateClass = '';
-                  if (isAnswered) {
-                    if (isRightOpt) stateClass = 'correct';
-                    else if (isPicked) stateClass = 'wrong';
-                    else stateClass = 'muted';
-                  }
+                    return (
+                      <button
+                        key={opt.id}
+                        type="button"
+                        disabled={isAnswered}
+                        className={`lc-quiz-opt ${stateClass}`}
+                        onClick={() => handleSelectQuizOption(opt.id)}
+                      >
+                        <span className="lc-opt-letter">{String.fromCharCode(65 + idx)}</span>
+                        <span className="lc-opt-text">{t(opt.label)}</span>
+                        {isAnswered && isRightOpt && (
+                          <CheckCircle2 size={17} className="lc-opt-icon ok" aria-hidden="true" />
+                        )}
+                        {isAnswered && isPicked && !isRightOpt && (
+                          <XCircle size={17} className="lc-opt-icon err" aria-hidden="true" />
+                        )}
+                      </button>
+                    );
+                  })}
+                </div>
 
-                  return (
+                {isAnswered && (
+                  <div className={`lc-quiz-feedback ${isCorrectAnswer ? 'ok' : 'warn'}`}>
+                    <p>{t(currentQuestion.explanation)}</p>
                     <button
-                      key={opt.id}
                       type="button"
-                      disabled={isAnswered}
-                      className={`lc-quiz-opt ${stateClass}`}
-                      onClick={() => handleSelectQuizOption(opt.id)}
+                      id="lc-quiz-next-btn"
+                      className="btn-primary-gradient lc-quiz-next-btn"
+                      onClick={handleNextQuestion}
                     >
-                      <span className="lc-opt-letter">{String.fromCharCode(65 + idx)}</span>
-                      <span className="lc-opt-text">{t(opt.label)}</span>
-                      {isAnswered && isRightOpt && (
-                        <CheckCircle2 size={17} className="lc-opt-icon ok" aria-hidden="true" />
-                      )}
-                      {isAnswered && isPicked && !isRightOpt && (
-                        <XCircle size={17} className="lc-opt-icon err" aria-hidden="true" />
-                      )}
+                      <span>
+                        {quizIdx + 1 >= LITERACY_QUIZ.length
+                          ? lang === 'TH'
+                            ? 'ดูผลคะแนนควิซ'
+                            : 'See Quiz Result'
+                          : lang === 'TH'
+                            ? 'ข้อถัดไป'
+                            : 'Next Question'}
+                      </span>
+                      <ArrowRight size={15} />
                     </button>
-                  );
-                })}
+                  </div>
+                )}
               </div>
+            ) : (
+              <div className="lc-quiz-result">
+                <div className={`lc-result-badge ${quizScore >= 4 ? 'verified' : 'retry'}`}>
+                  <Award size={24} aria-hidden="true" />
+                  <div>
+                    <strong className="tabular-nums">
+                      {quizScore >= 4
+                        ? lang === 'TH'
+                          ? `ผ่านเกณฑ์โค้ชการเงิน! (${quizScore}/${LITERACY_QUIZ.length})`
+                          : `Literacy Verified! (${quizScore}/${LITERACY_QUIZ.length})`
+                        : lang === 'TH'
+                          ? `ได้คะแนน ${quizScore}/${LITERACY_QUIZ.length} — ลองทบทวนอีกนิด!`
+                          : `Scored ${quizScore}/${LITERACY_QUIZ.length} — Almost There!`}
+                    </strong>
+                    <p>
+                      {quizScore >= 4
+                        ? lang === 'TH'
+                          ? 'คุณเข้าใจกติกาสำคัญทั้งระยะเวลารอคอย สวัสดิการ และกรอบงบปลอดภัยพร้อมลุยสนามจำลองแล้ว'
+                          : 'You mastered waiting periods, conservative benefit checks, and safe budgeting — ready for the game!'
+                        : lang === 'TH'
+                          ? 'ลองสลับไปอ่านแท็บ "บทความ 2 นาที" เพิ่มเติม แล้วกลับมาทำควิซใหม่ได้ตลอดเวลา'
+                          : 'Switch to the 2-Min Guides tab to review and retake the quiz anytime.'}
+                    </p>
+                  </div>
+                </div>
 
-              {isAnswered && (
-                <div className={`lc-quiz-feedback ${isCorrectAnswer ? 'ok' : 'warn'}`}>
-                  <p>{t(currentQuestion.explanation)}</p>
+                <div className="lc-quiz-result-actions">
                   <button
                     type="button"
-                    id="lc-quiz-next-btn"
-                    className="btn-primary-gradient lc-quiz-next-btn"
-                    onClick={handleNextQuestion}
+                    className="btn-soft-gray lc-quiz-act-btn"
+                    onClick={handleRestartQuiz}
                   >
+                    <RotateCcw size={15} />
+                    <span>{lang === 'TH' ? 'ทำควิซใหม่' : 'Retake Quiz'}</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    id="lc-goto-game-btn"
+                    className="btn-primary-gradient lc-quiz-act-btn"
+                    onClick={() => onNavigate && onNavigate('game')}
+                  >
+                    <Gamepad2 size={16} />
                     <span>
-                      {quizIdx + 1 >= LITERACY_QUIZ.length
-                        ? lang === 'TH'
-                          ? 'ดูผลคะแนนควิซ'
-                          : 'See Quiz Result'
-                        : lang === 'TH'
-                          ? 'ข้อถัดไป'
-                          : 'Next Question'}
+                      {lang === 'TH'
+                        ? 'นำความรู้ไปทดสอบในเกมเอาตัวรอด'
+                        : 'Test in Survival Game'}
                     </span>
                     <ArrowRight size={15} />
                   </button>
                 </div>
-              )}
-            </div>
-          ) : (
-            /* Quiz Completion State */
-            <div className="lc-quiz-result">
-              <div
-                className={`lc-result-badge ${quizScore >= 4 ? 'verified' : 'retry'}`}
-              >
-                <Award size={24} aria-hidden="true" />
-                <div>
-                  <strong className="tabular-nums">
-                    {quizScore >= 4
-                      ? lang === 'TH'
-                        ? `ผ่านเกณฑ์โค้ชการเงิน! (${quizScore}/${LITERACY_QUIZ.length})`
-                        : `Literacy Verified! (${quizScore}/${LITERACY_QUIZ.length})`
-                      : lang === 'TH'
-                        ? `ได้คะแนน ${quizScore}/${LITERACY_QUIZ.length} — ลองทบทวนอีกนิด!`
-                        : `Scored ${quizScore}/${LITERACY_QUIZ.length} — Almost There!`}
-                  </strong>
-                  <p>
-                    {quizScore >= 4
-                      ? lang === 'TH'
-                        ? 'คุณเข้าใจกติกาสำคัญทั้งระยะเวลารอคอย สวัสดิการ และกรอบงบปลอดภัยพร้อมลุยสนามจำลองแล้ว'
-                        : 'You mastered waiting periods, conservative benefit checks, and safe budgeting — ready for the game!'
-                      : lang === 'TH'
-                        ? 'ลองอ่านสรุป 2 นาทีด้านบนเพิ่มเติม แล้วกลับมาลองทำควิซใหม่ได้ตลอดเวลา'
-                        : 'Skim the 2-minute summaries above and retake the quiz anytime to earn your badge.'}
-                  </p>
-                </div>
               </div>
-
-              <div className="lc-quiz-result-actions">
-                <button
-                  type="button"
-                  className="btn-soft-gray lc-quiz-act-btn"
-                  onClick={handleRestartQuiz}
-                >
-                  <RotateCcw size={15} />
-                  <span>{lang === 'TH' ? 'ทำควิซใหม่' : 'Retake Quiz'}</span>
-                </button>
-
-                <button
-                  type="button"
-                  id="lc-goto-game-btn"
-                  className="btn-primary-gradient lc-quiz-act-btn"
-                  onClick={() => onNavigate && onNavigate('game')}
-                >
-                  <Gamepad2 size={16} />
-                  <span>
-                    {lang === 'TH'
-                      ? 'นำความรู้ไปทดสอบในเกมเอาตัวรอด'
-                      : 'Test in Survival Game'}
-                  </span>
-                  <ArrowRight size={15} />
-                </button>
-              </div>
-            </div>
-          )}
-        </article>
-      </section>
-
-      {/* ===================================================================== */}
-      {/* BENTO READER MODAL (JARGON vs PLAIN TRANSLATION + FIRST JOBBER CASE)  */}
-      {/* ===================================================================== */}
-      {openArticle && (
-        <div
-          className="modal-backdrop"
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby="lc-reader-title"
-          onClick={(e) => {
-            if (e.target === e.currentTarget) setOpenArticleId(null);
-          }}
-        >
-          <div className="modal-card lc-reader-modal">
-            <div className="lc-reader-head">
-              <div className="lc-reader-meta">
-                <span className={`lc-cat-pill cat-${openArticle.category}`}>
-                  {t(openArticle.categoryLabel)}
-                </span>
-                <span className="lc-time-badge tabular-nums">
-                  <Clock size={12} aria-hidden="true" />
-                  {lang === 'TH'
-                    ? `อ่าน ${openArticle.readMinutes} นาที`
-                    : `${openArticle.readMinutes} min read`}
-                </span>
-              </div>
-              <button
-                type="button"
-                className="modal-close-btn"
-                onClick={() => setOpenArticleId(null)}
-                aria-label={lang === 'TH' ? 'ปิดหน้าต่างอ่าน' : 'Close reader'}
-              >
-                <X size={18} />
-              </button>
-            </div>
-
-            <h2 id="lc-reader-title" className="lc-reader-title">
-              {t(openArticle.title)}
-            </h2>
-            <p className="lc-reader-intro">{t(openArticle.intro)}</p>
-
-            {/* Side-by-Side Policy Jargon vs. Plain Translation */}
-            <div className="lc-trans-block">
-              <div className="lc-trans-headers">
-                <span>{lang === 'TH' ? 'ศัพท์ทางการ (Policy Jargon)' : 'Policy Jargon'}</span>
-                <span>{lang === 'TH' ? 'ภาษาคนทั่วไป (Plain Translation)' : 'Plain Translation'}</span>
-              </div>
-
-              <div className="lc-trans-rows">
-                {openArticle.translations.map((pair, idx) => (
-                  <div key={idx} className="lc-trans-row">
-                    <div className="lc-trans-jargon">{t(pair.jargon)}</div>
-                    <div className="lc-trans-plain">{t(pair.plain)}</div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Real First Jobber Example (Personalized on Article #6) */}
-            <div className="lc-example-box tabular-nums">
-              <strong>{t(openArticle.example.title)}</strong>
-              <p>
-                {openArticle.example.useDynamicNumbers
-                  ? lang === 'TH'
-                    ? `จากข้อมูลปัจจุบันของ ${displayName} (รายได้ ${formatTHB(monthlyIncome)}/ด. • เงินสำรอง ${formatTHB(emergencyFund)}): เป้าเงินสำรอง ${targetMonths} เดือนคือ ${formatTHB(emergencyGoal)} และกรอบงบโอนย้ายความเสี่ยงที่ปลอดภัยคือ ${formatTHB(safeCapMin)}–${formatTHB(safeCapMax)}/เดือน`
-                    : `Based on ${displayName}'s live profile (Income ${formatTHB(monthlyIncome)}/mo • Reserve ${formatTHB(emergencyFund)}): your ${targetMonths}-month emergency goal is ${formatTHB(emergencyGoal)}, and your safe risk-transfer cap is ${formatTHB(safeCapMin)}–${formatTHB(safeCapMax)}/mo.`
-                  : t(openArticle.example.body)}
-              </p>
-            </div>
-
-            {/* Actionable Takeaway */}
-            <div className="lc-takeaway-box">
-              <Lightbulb size={17} className="lc-tip-icon" aria-hidden="true" />
-              <p>{t(openArticle.takeaway)}</p>
-            </div>
-
-            <div className="lc-reader-footer">
-              <button
-                type="button"
-                className="btn-soft-gray"
-                onClick={() => setOpenArticleId(null)}
-              >
-                {lang === 'TH' ? 'ปิดหน้าต่าง' : 'Close'}
-              </button>
-
-              {openArticle.bridgeAction && (
-                <button
-                  type="button"
-                  className="btn-primary-gradient"
-                  onClick={() => {
-                    const targetPage = openArticle.bridgeAction.page;
-                    setOpenArticleId(null);
-                    onNavigate?.(targetPage);
-                  }}
-                >
-                  <span>{t(openArticle.bridgeAction.label)}</span>
-                  <ArrowRight size={15} />
-                </button>
-              )}
-            </div>
+            )}
           </div>
-        </div>
-      )}
+        )}
+      </section>
     </div>
   );
 }
