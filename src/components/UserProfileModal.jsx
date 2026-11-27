@@ -149,8 +149,8 @@ export default function UserProfileModal({ initialTab = 'profile', onClose }) {
     loadDemoSample();
     applyProfileToDraft({
       title: '',
-      firstName: 'สมมติ (First Jobber)',
-      lastName: '',
+      firstName: 'สมมติ',
+      lastName: 'ประกันภัย',
       age: 25,
       occupation: OCCUPATION_OPTIONS[0].th,
       dependents: 0,
@@ -319,7 +319,7 @@ export default function UserProfileModal({ initialTab = 'profile', onClose }) {
                     aria-pressed={title === opt.value}
                     onClick={() => setTitle(opt.value)}
                   >
-                    {lang === 'EN' ? opt.en : lang === 'ZH' ? opt.zh : opt.th}
+                    {lang === 'EN' ? opt.en : opt.th}
                   </button>
                 ))}
               </div>
@@ -387,7 +387,7 @@ export default function UserProfileModal({ initialTab = 'profile', onClose }) {
                 >
                   {OCCUPATION_OPTIONS.map((opt) => (
                     <option key={opt.id} value={opt.th}>
-                      {lang === 'EN' ? opt.en : lang === 'ZH' ? opt.zh : opt.th}
+                      {lang === 'EN' ? opt.en : opt.th}
                     </option>
                   ))}
                 </select>
@@ -538,8 +538,8 @@ export default function UserProfileModal({ initialTab = 'profile', onClose }) {
                     </div>
                     <p className="data-action-desc">
                       {lang === 'TH'
-                        ? 'จำลองข้อมูล First Jobber (รายได้สมมติ ฿25,000/ด. • รายจ่าย ฿20,000/ด. • สำรอง ฿15,000 • ประกันสังคม ม.33 + ประกันกลุ่ม • 6 รายการรับ-จ่าย) เพื่อดูผลลัพธ์การคำนวณทุกหน้าก่อนกรอกข้อมูลจริง'
-                        : 'Loads a simulated First Jobber scenario (hypothetical ฿25,000/mo income, ฿20,000 expenses, ฿15,000 reserve, SSO Sec. 33 + group cover, 6 sample logs) so you can preview how every module calculates.'}
+                        ? 'จำลองข้อมูล “สมมติ ประกันภัย” (รายได้สมมติ ฿25,000/ด. • รายจ่าย ฿20,000/ด. • สำรอง ฿15,000 • ประกันสังคม ม.33 + ประกันกลุ่ม • 6 รายการรับ-จ่าย) เพื่อดูผลลัพธ์การคำนวณทุกหน้าก่อนกรอกข้อมูลจริง'
+                        : 'Loads a simulated sample scenario for Sommut Prakanphai (hypothetical ฿25,000/mo income, ฿20,000 expenses, ฿15,000 reserve, SSO Sec. 33 + group cover, 6 sample logs) so you can preview how every module calculates.'}
                     </p>
                   </div>
                 </div>

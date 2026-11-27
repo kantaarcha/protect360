@@ -299,27 +299,33 @@ const TOP_FEARED_RISKS = [
 const VERBATIM_VOICES = [
   {
     id: 'no-sales',
+    colorKey: 'blue',
+    tag: { th: 'เสียงเรียกร้อง #1 · ความเป็นกลาง', en: 'Driver #1 · Zero Sales Pressure' },
     quote: {
       th: '“อยากคุยกับคนที่ไม่เน้นขายบริการ ประกัน สินค้า (มันทำให้ไม่อยากฟัง)”',
       en: '“I want guidance from someone who isn’t pushing insurance or products to sell (sales pitches turn me off).”',
     },
-    mappedTo: { th: 'ที่มาของหลักการ ไม่ขายประกัน 100%', en: 'Led to our 100% Zero-Sales Charter' },
+    mappedTo: { th: 'แรงผลักดันสู่หลักการ ไม่ขายประกัน 100%', en: 'Drove our 100% Zero-Sales Charter' },
   },
   {
     id: 'real-irr',
+    colorKey: 'teal',
+    tag: { th: 'เสียงเรียกร้อง #2 · ความคุ้มค่าจริง', en: 'Driver #2 · Real Inflation-Adjusted Value' },
     quote: {
       th: '“อยากรู้ว่าเงินที่ตอบแทนเมื่อครบกำหนด เมื่อเทียบกับเงินที่ลงทุนไปคุ้มค่าแค่ไหน โดยพิจารณาจากเงินเฟ้อและ Future Value”',
       en: '“I want to see whether maturity returns are truly worth it compared to investing, factoring in inflation and Future Value.”',
     },
-    mappedTo: { th: 'ที่มาของหน้าคำนวณ Invest & IRR', en: 'Led to our Invest & IRR Lab' },
+    mappedTo: { th: 'แรงผลักดันสู่เครื่องคำนวณ Invest & IRR', en: 'Drove our Invest & IRR Lab' },
   },
   {
     id: 'balanced-plan',
+    colorKey: 'amber',
+    tag: { th: 'เสียงเรียกร้อง #3 · งบสมดุลไม่ตึงตัว', en: 'Driver #3 · Balanced Cashflow First' },
     quote: {
       th: '“อยากวางแผนการเงินให้มีเงินเก็บมากขึ้น และทราบว่าควรมีความคุ้มครองด้านไหนที่จำเป็นโดยไม่เป็นภาระค่าใช้จ่ายมากเกินไป”',
       en: '“I want to build savings while knowing which protection is truly necessary without overburdening my budget.”',
     },
-    mappedTo: { th: 'ที่มาของ 360Flow และกรอบงบ 10–15%', en: 'Led to 360Flow + 10–15% Guardrail' },
+    mappedTo: { th: 'แรงผลักดันสู่สมุดบัญชี 360Flow และกรอบงบ 10–15%', en: 'Drove 360Flow + 10–15% Guardrail' },
   },
 ];
 
@@ -675,25 +681,49 @@ export default function LandingAbout() {
         </div>
       </section>
 
-      {/* Companion Block 02C: Editorial Pull-Quotes Band */}
-      <section className="ab-ed-subblock ab-ed-quotes-section" aria-label="Verbatim survey voices">
-        <div className="ab-ed-quotes-kicker">
-          {lang === 'TH'
-            ? 'เสียงสะท้อนตรงจากผู้ตอบแบบสอบถาม (ไม่ระบุตัวตน)'
-            : 'Selected verbatim responses (anonymized)'}
+      {/* Companion Block 02C: Prominent Verbatim Voices Spotlight (Core Web Motivation) */}
+      <section
+        id="ab-block-voices"
+        className="ab-ed-voices-showcase"
+        aria-labelledby="ab-voices-heading"
+      >
+        <div className="ab-ed-voices-head">
+          <span className="ab-ed-voices-eyebrow">
+            {lang === 'TH'
+              ? 'แรงผลักดันหลักในการสร้าง PROTECT360'
+              : 'THE DRIVING FORCE BEHIND PROTECT360'}
+          </span>
+          <h3 id="ab-voices-heading" className="ab-ed-voices-title">
+            {lang === 'TH'
+              ? 'เสียงสะท้อนตรงจากผู้ตอบแบบสอบถาม (ไม่ระบุตัวตน)'
+              : 'Direct Voices From Early-Career Respondents'}
+          </h3>
+          <p className="ab-ed-voices-sub">
+            {lang === 'TH'
+              ? 'ข้อความจริงเหล่านี้คือเหตุผลตั้งต้นที่เราสร้างพื้นที่กลางที่ไม่เร่งขาย คำนวณความคุ้มค่าตามหลักคณิตศาสตร์ และเคารพงบประมาณของผู้ใช้'
+              : 'These unfiltered voices directly sparked why this site exists: zero sales pitches, transparent compounding math, and realistic budget guardrails.'}
+          </p>
         </div>
-        <div className="ab-ed-quotes-grid">
+
+        <div className="ab-ed-voices-grid">
           {VERBATIM_VOICES.map((voice) => (
-            <blockquote key={voice.id} className="ab-ed-quote">
-              <p>{t(voice.quote)}</p>
-              <footer>{t(voice.mappedTo)}</footer>
+            <blockquote key={voice.id} className={`ab-ed-voice-card tone-${voice.colorKey}`}>
+              <div className="ab-ed-voice-top">
+                <span className={`ab-ed-voice-tag tone-${voice.colorKey}`}>{t(voice.tag)}</span>
+                <span className="ab-ed-voice-glyph" aria-hidden="true">“</span>
+              </div>
+              <p className="ab-ed-voice-text">{t(voice.quote)}</p>
+              <footer className="ab-ed-voice-foot">
+                <span className="ab-ed-voice-arrow" aria-hidden="true">→</span>
+                <span>{t(voice.mappedTo)}</span>
+              </footer>
             </blockquote>
           ))}
         </div>
       </section>
 
       {/* ===================================================================== */}
-      {/* 03. FEATURE DEMAND — CLEAN NON-CLICKABLE MULTI-COLOR INFO CHART       */}
+      {/* 03. FEATURE DEMAND — VISUAL RING CARDS & TACTILE MATRIX (NON-CLICK)   */}
       {/* ===================================================================== */}
       <section id="ab-block-features" className="ab-ed-section" aria-labelledby="ab-sec-features">
         <div className="ab-ed-section-head split">
@@ -703,12 +733,12 @@ export default function LandingAbout() {
               <h2 id="ab-sec-features" className="ab-ed-sec-title">
                 {lang === 'TH'
                   ? 'ฟีเจอร์ที่กลุ่มตัวอย่างอยากให้มีในแอป'
-                  : 'What features did respondents ask for?'}
+                  : 'What capabilities did respondents ask for?'}
               </h2>
               <p className="ab-ed-sec-sub">
                 {lang === 'TH'
-                  ? 'จัดอันดับความต้องการจากผู้ตอบแบบสอบถาม (เลือกได้มากกว่า 1 ข้อ) แยกสีตามแต่ละหมวดหมู่เพื่อให้อ่านเปรียบเทียบได้ชัดเจน'
-                  : 'Color-coded demand ranking (multi-select) arranged cleanly for quick side-by-side comparison.'}
+                  ? 'สรุปภาพรวมความต้องการตามกลุ่มน้ำหนักความสำคัญ (ตอบได้มากกว่า 1 ข้อ) จัดวางเพื่ออ่านเปรียบเทียบได้เร็วโดยไม่ซ้ำรูปแบบกราฟแท่ง'
+                  : 'Priority tiers highlighting top consensus needs alongside complementary tools requested in the survey.'}
               </p>
             </div>
           </div>
@@ -725,40 +755,131 @@ export default function LandingAbout() {
           </div>
         </div>
 
-        <div className="ab-ed-demand-list" role="list">
-          {visibleFindings.map((item, idx) => (
-            <div
-              key={item.id}
-              id={`ab-survey-bar-${item.id}`}
-              role="listitem"
-              className="ab-ed-demand-row is-static"
-            >
-              <div className="ab-ed-demand-top">
-                <div className="ab-ed-demand-left">
-                  <span className="ab-ed-demand-rank tabular-nums">
-                    {String(idx + 1).padStart(2, '0')}
-                  </span>
-                  <span className={`ab-ed-swatch tone-${item.colorKey}`} aria-hidden="true" />
-                  <strong className="ab-ed-demand-label">{t(item.label)}</strong>
-                </div>
+        {(() => {
+          const primaryItems =
+            researchFilter === 'all'
+              ? visibleFindings.filter((item) => item.pct >= 50)
+              : visibleFindings.slice(0, 2);
+          const secondaryItems = visibleFindings.filter(
+            (item) => !primaryItems.some((p) => p.id === item.id)
+          );
+          const ringRadius = 28;
+          const ringCircumference = 2 * Math.PI * ringRadius;
 
-                <div className="ab-ed-demand-right tabular-nums">
-                  <span className="ab-ed-demand-count">
-                    {lang === 'TH' ? `${item.count} คน` : `${item.count}`}
-                  </span>
-                  <strong className="ab-ed-demand-pct">{item.pct.toFixed(1)}%</strong>
-                </div>
-              </div>
+          return (
+            <div className="ab-ed-demand-tiers">
+              {primaryItems.length > 0 && (
+                <div className="ab-ed-tier-block">
+                  <div className="ab-ed-tier-caption">
+                    {lang === 'TH'
+                      ? researchFilter === 'all'
+                        ? 'เสียงส่วนใหญ่ต้องการอันดับต้น (>50%)'
+                        : 'ความต้องการเด่นในหมวดนี้'
+                      : researchFilter === 'all'
+                        ? 'Top Majority Consensus (>50%)'
+                        : 'Leading Requests in This Focus'}
+                  </div>
 
-              <div className="ab-ed-demand-track" aria-hidden="true">
-                <div
-                  className={`ab-ed-fill tone-${item.colorKey}`}
-                  style={{ width: `${Math.min(100, (item.pct / 62) * 100)}%` }}
-                />
-              </div>
+                  <div
+                    className={`ab-ed-ring-grid ${primaryItems.length === 2 ? 'cols-2' : ''}`}
+                    role="list"
+                  >
+                    {primaryItems.map((item) => {
+                      const dashOffset = ringCircumference * (1 - Math.min(1, item.pct / 100));
+                      return (
+                        <div
+                          key={item.id}
+                          id={`ab-survey-bar-${item.id}`}
+                          role="listitem"
+                          className={`ab-ed-ring-card tone-${item.colorKey}`}
+                        >
+                          <div className="ab-ed-ring-top">
+                            <div className="ab-ed-ring-gauge" aria-hidden="true">
+                              <svg viewBox="0 0 68 68" className="ab-ed-ring-svg">
+                                <circle cx="34" cy="34" r={ringRadius} className="ab-ed-ring-track" />
+                                <circle
+                                  cx="34"
+                                  cy="34"
+                                  r={ringRadius}
+                                  className={`ab-ed-ring-arc tone-${item.colorKey}`}
+                                  strokeDasharray={ringCircumference}
+                                  strokeDashoffset={dashOffset}
+                                />
+                              </svg>
+                              <span className="ab-ed-ring-pct tabular-nums">
+                                {item.pct.toFixed(0)}%
+                              </span>
+                            </div>
+
+                            <div className="ab-ed-ring-stats tabular-nums">
+                              <span className="ab-ed-ring-exact">{item.pct.toFixed(1)}%</span>
+                              <span className="ab-ed-ring-people">
+                                {lang === 'TH' ? `${item.count} จาก 57 คน` : `${item.count} respondents`}
+                              </span>
+                            </div>
+                          </div>
+
+                          <h3 className="ab-ed-ring-title">{t(item.label)}</h3>
+                          <p className="ab-ed-ring-solution">{t(item.solution)}</p>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+
+              {secondaryItems.length > 0 && (
+                <div className="ab-ed-tier-block">
+                  <div className="ab-ed-tier-caption">
+                    {lang === 'TH'
+                      ? 'ความสามารถสนับสนุนที่ผู้ตอบต้องการเพิ่มเติม'
+                      : 'Supporting Capabilities Requested'}
+                  </div>
+
+                  <div className="ab-ed-dot-grid" role="list">
+                    {secondaryItems.map((item) => {
+                      const activeDots = Math.max(1, Math.min(10, Math.round(item.pct / 10)));
+                      return (
+                        <div
+                          key={item.id}
+                          id={`ab-survey-bar-${item.id}`}
+                          role="listitem"
+                          className="ab-ed-dot-card"
+                        >
+                          <div className="ab-ed-dot-head tabular-nums">
+                            <div className="ab-ed-dot-identity">
+                              <span className={`ab-ed-swatch tone-${item.colorKey}`} aria-hidden="true" />
+                              <span className="ab-ed-dot-solution">{t(item.solution)}</span>
+                            </div>
+                            <div className="ab-ed-dot-numwrap">
+                              <span className="ab-ed-dot-count">
+                                {lang === 'TH' ? `${item.count} คน` : `${item.count}`}
+                              </span>
+                              <strong className="ab-ed-dot-pct">{item.pct.toFixed(1)}%</strong>
+                            </div>
+                          </div>
+
+                          <strong className="ab-ed-dot-label">{t(item.label)}</strong>
+
+                          <div className="ab-ed-dot-pips" aria-hidden="true">
+                            {Array.from({ length: 10 }, (_, dotIdx) => (
+                              <span
+                                key={dotIdx}
+                                className={`ab-ed-pip ${
+                                  dotIdx < activeDots ? `filled tone-${item.colorKey}` : ''
+                                }`}
+                              />
+                            ))}
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
             </div>
-          ))}
-        </div>
+          );
+        })()}
       </section>
 
       {/* ===================================================================== */}

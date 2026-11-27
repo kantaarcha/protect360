@@ -3,6 +3,7 @@ import {
   ArrowLeft,
   ArrowRight,
   CheckCircle2,
+  Info,
   Lock,
   Moon,
   ShieldCheck,
@@ -35,15 +36,15 @@ const OB_COPY = {
     trust3Desc: 'หรือทดลองใส่สถานการณ์สมมติได้ทุกเมื่อในหน้าตั้งค่า',
     stepLabel: 'ขั้นตอนที่ 2 จาก 2',
     step2Title: 'แนะนำตัวสั้น ๆ เพื่อให้ PROTECT360 ทักทายและคำนวณให้เหมาะกับคุณ',
-    step2Sub:
-      'ข้อมูลนี้บันทึกเฉพาะในอุปกรณ์ของคุณเท่านั้น และสามารถแก้ไขหรือเว้นว่างได้ทุกเมื่อ',
+    step2Sub: 'ข้อมูลนี้บันทึกเฉพาะในอุปกรณ์ของคุณเท่านั้น จะกรอกหรือเว้นว่างไว้ก็ได้',
     previewLabel: 'ตัวอย่างคำทักทายตามเวลาจริงของคุณ',
     titleLabel: 'คำนำหน้า',
     firstNameLabel: 'ชื่อ หรือชื่อเล่น',
-    firstNamePlaceholder: 'เช่น กันต์, พลอย หรือชื่อภาษาอังกฤษ',
     lastNameLabel: 'นามสกุล (ไม่บังคับ)',
-    lastNamePlaceholder: 'เว้นว่างได้',
     occupationLabel: 'อาชีพปัจจุบัน',
+    ageLabel: 'อายุ (ปี)',
+    ageHint: '15–99 ปี',
+    editLaterNote: 'ทุกข้อมูลในหน้านี้ปรับเปลี่ยนได้ภายหลังที่เมนู “ตั้งค่า” → โปรไฟล์',
     goalLabel: 'เป้าหมายเงินสำรองฉุกเฉินเริ่มต้น',
     goal3: '3 เดือน',
     goal3Sub: 'มาตรฐานวัยเริ่มทำงาน',
@@ -68,14 +69,15 @@ const OB_COPY = {
     trust3Desc: 'Enter your real numbers or try a sample anytime in Settings',
     stepLabel: 'Step 2 of 2',
     step2Title: 'Tell us what to call you so PROTECT360 can personalize your dashboard',
-    step2Sub: 'Saved only on this device. You can edit or leave any field blank anytime.',
+    step2Sub: 'Saved only on this device. Fill in what you like or leave fields blank.',
     previewLabel: 'Your live time-aware greeting preview',
     titleLabel: 'Title',
     firstNameLabel: 'First name or nickname',
-    firstNamePlaceholder: 'e.g., Alex, Ploy, or your nickname',
     lastNameLabel: 'Last name (optional)',
-    lastNamePlaceholder: 'Optional',
     occupationLabel: 'Current occupation',
+    ageLabel: 'Age (years)',
+    ageHint: '15–99 years',
+    editLaterNote: 'Everything here can be changed later in Settings → Profile.',
     goalLabel: 'Starting emergency reserve goal',
     goal3: '3 Months',
     goal3Sub: 'Standard First Jobber buffer',
@@ -84,38 +86,6 @@ const OB_COPY = {
     backBtn: 'Back',
     skipBtn: 'Skip for now',
     finishBtn: 'Save & Enter Overview',
-  },
-  ZH: {
-    kicker: '中立金融与风险科普平台 · 100% 零保险推销',
-    headline: '看清你的应急储备与保障缺口 — 全程零推销压力',
-    subhead:
-      '专为职场新人打造：使用 360Flow 记录日常收支，量化 6 大风险保障缺口，计算真实 IRR 回报率，并模拟应对突发财务危机。',
-    startBtn: '开始使用',
-    skipWelcome: '直接进入总览',
-    trust1Title: '100% 零推销',
-    trust1Desc: '中立精算模型，绝无代理人推销',
-    trust2Title: '数据仅存本机',
-    trust2Desc: '无需注册登录，不收集手机号或邮箱 (PDPA 安全)',
-    trust3Title: '从 0 开始真实规划',
-    trust3Desc: '随时可在“设置”中一键体验假设模拟数据',
-    stepLabel: '第 2 步，共 2 步',
-    step2Title: '填写你的称呼，让 PROTECT360 为你定制专属总览',
-    step2Sub: '信息仅保存在本设备，随时可在设置或个人档案中修改。',
-    previewLabel: '实时问候语预览',
-    titleLabel: '称谓',
-    firstNameLabel: '名字或昵称',
-    firstNamePlaceholder: '例如：小明、Alex 或你的昵称',
-    lastNameLabel: '姓氏（选填）',
-    lastNamePlaceholder: '可留空',
-    occupationLabel: '当前职业',
-    goalLabel: '初始应急储备目标',
-    goal3: '3 个月',
-    goal3Sub: '职场新人标准缓冲',
-    goal6: '6 个月',
-    goal6Sub: '更充足保障 / 弹性收入',
-    backBtn: '返回',
-    skipBtn: '暂时跳过',
-    finishBtn: '保存并进入总览',
   },
 };
 
@@ -129,6 +99,7 @@ export default function OnboardingFlow({ referenceHour, onComplete }) {
   const [firstName, setFirstName] = useState(userProfile.firstName || '');
   const [lastName, setLastName] = useState(userProfile.lastName || '');
   const [occupation, setOccupation] = useState(userProfile.occupation || OCCUPATION_OPTIONS[0].th);
+  const [age, setAge] = useState('');
   const [emergencyTargetMonths, setEmergencyTargetMonths] = useState(
     userProfile.emergencyTargetMonths === 6 ? 6 : 3
   );
@@ -145,6 +116,12 @@ export default function OnboardingFlow({ referenceHour, onComplete }) {
     }
     return undefined;
   }, [step]);
+
+  const parsedAge = Number(age);
+  const resolvedAge =
+    age.trim() !== '' && Number.isFinite(parsedAge)
+      ? Math.min(99, Math.max(15, Math.round(parsedAge)))
+      : userProfile.age;
 
   const draftProfile = {
     ...userProfile,
@@ -165,6 +142,7 @@ export default function OnboardingFlow({ referenceHour, onComplete }) {
       firstName: firstName.trim(),
       lastName: lastName.trim(),
       occupation,
+      age: resolvedAge,
       emergencyTargetMonths,
     });
     onComplete();
@@ -172,7 +150,7 @@ export default function OnboardingFlow({ referenceHour, onComplete }) {
 
   return (
     <div className="ob-screen" role="main" aria-label="PROTECT360 Welcome">
-      {/* Subtle Top Utility Bar: Brand + Quick Language (TH/EN/中文) + Theme */}
+      {/* Subtle Top Utility Bar: Brand + Quick Language (TH/EN) + Theme */}
       <header className="ob-topbar">
         <div className="ob-topbar-brand">
           <span className="ob-topbar-logo-wrap" aria-hidden="true">
@@ -186,7 +164,6 @@ export default function OnboardingFlow({ referenceHour, onComplete }) {
             {[
               { code: 'TH', label: 'TH' },
               { code: 'EN', label: 'EN' },
-              { code: 'ZH', label: '中文' },
             ].map((item) => (
               <button
                 key={item.code}
@@ -329,7 +306,7 @@ export default function OnboardingFlow({ referenceHour, onComplete }) {
                       aria-pressed={title === opt.value}
                       onClick={() => setTitle(opt.value)}
                     >
-                      {lang === 'EN' ? opt.en : lang === 'ZH' ? opt.zh : opt.th}
+                      {lang === 'EN' ? opt.en : opt.th}
                     </button>
                   ))}
                 </div>
@@ -348,7 +325,6 @@ export default function OnboardingFlow({ referenceHour, onComplete }) {
                     maxLength={60}
                     autoComplete="given-name"
                     className="form-input"
-                    placeholder={copy.firstNamePlaceholder}
                     value={firstName}
                     onChange={(e) => setFirstName(e.target.value)}
                   />
@@ -364,30 +340,52 @@ export default function OnboardingFlow({ referenceHour, onComplete }) {
                     maxLength={60}
                     autoComplete="family-name"
                     className="form-input"
-                    placeholder={copy.lastNamePlaceholder}
                     value={lastName}
                     onChange={(e) => setLastName(e.target.value)}
                   />
                 </div>
               </div>
 
-              {/* Occupation */}
-              <div className="form-field">
-                <label htmlFor="onboarding-occupation" className="form-label">
-                  {copy.occupationLabel}
-                </label>
-                <select
-                  id="onboarding-occupation"
-                  className="form-select"
-                  value={occupation}
-                  onChange={(e) => setOccupation(e.target.value)}
-                >
-                  {OCCUPATION_OPTIONS.map((opt) => (
-                    <option key={opt.id} value={opt.th}>
-                      {lang === 'EN' ? opt.en : lang === 'ZH' ? opt.zh : opt.th}
-                    </option>
-                  ))}
-                </select>
+              {/* Age & Occupation */}
+              <div className="form-grid-2 ob-age-occ-grid">
+                <div className="form-field">
+                  <label htmlFor="onboarding-age" className="form-label">
+                    {copy.ageLabel}
+                  </label>
+                  <input
+                    id="onboarding-age"
+                    type="number"
+                    inputMode="numeric"
+                    min={15}
+                    max={99}
+                    step={1}
+                    className="form-input tabular-nums"
+                    value={age}
+                    aria-describedby="onboarding-age-hint"
+                    onChange={(e) => setAge(e.target.value.replace(/[^0-9]/g, '').slice(0, 2))}
+                  />
+                  <span id="onboarding-age-hint" className="ob-field-hint">
+                    {copy.ageHint}
+                  </span>
+                </div>
+
+                <div className="form-field">
+                  <label htmlFor="onboarding-occupation" className="form-label">
+                    {copy.occupationLabel}
+                  </label>
+                  <select
+                    id="onboarding-occupation"
+                    className="form-select"
+                    value={occupation}
+                    onChange={(e) => setOccupation(e.target.value)}
+                  >
+                    {OCCUPATION_OPTIONS.map((opt) => (
+                      <option key={opt.id} value={opt.th}>
+                        {lang === 'EN' ? opt.en : opt.th}
+                      </option>
+                    ))}
+                  </select>
+                </div>
               </div>
 
               {/* Emergency Target Choice */}
@@ -416,6 +414,11 @@ export default function OnboardingFlow({ referenceHour, onComplete }) {
                   </button>
                 </div>
               </div>
+
+              <p id="onboarding-edit-later-note" className="ob-edit-later-note">
+                <Info size={15} strokeWidth={2.2} aria-hidden="true" />
+                <span>{copy.editLaterNote}</span>
+              </p>
 
               <div className="ob-form-actions">
                 <button

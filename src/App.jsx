@@ -48,33 +48,27 @@ const PAGE_TITLES = {
   smartlog: {
     th: 'สมุดบัญชี 360Flow',
     en: '360Flow Cashbook',
-    zh: '360Flow 收支账本',
   },
   'risk-analysis': {
     th: 'วิเคราะห์ความเสี่ยง & ช่องว่างความคุ้มครอง',
     en: 'Risk & Protection Gap Analysis',
-    zh: '风险评估与保障缺口分析',
   },
   invest: {
     th: 'วางแผนลงทุน & คำนวณ IRR (Value Lab)',
     en: 'Invest & Value Lab (True IRR)',
-    zh: '投资规划与真实 IRR 计算',
   },
   game: {
     th: 'PROTECT360 Survival Lab — เกมจำลองเอาตัวรอดทางการเงิน',
     en: 'PROTECT360 Survival Lab — Financial Resilience Simulator',
-    zh: 'PROTECT360 生存实验室 — 财务韧性模拟器',
   },
   learning: {
     th: 'คลังความรู้ PROTECT360 — ย่อยเรื่องเงินและความเสี่ยงใน 2 นาที',
     en: 'PROTECT360 Learning Library — 2-Minute Plain-Language Risk Guides',
-    zh: 'PROTECT360 知识库 — 2 分钟看懂理财与风险',
   },
-  about: { th: 'เกี่ยวกับเรา', en: 'About PROTECT360', zh: '关于我们' },
+  about: { th: 'เกี่ยวกับเรา', en: 'About PROTECT360' },
   settings: {
     th: 'ตั้งค่า & ข้อมูลในเครื่อง',
     en: 'Settings & Local Privacy',
-    zh: '设置与本地数据管理',
   },
 };
 
@@ -217,9 +211,7 @@ function AppShellContent() {
   const dependentsLabel =
     lang === 'TH'
       ? `ดูแล ${userProfile.dependents >= 3 ? '3+' : userProfile.dependents} คน`
-      : lang === 'ZH'
-        ? `扶养 ${userProfile.dependents >= 3 ? '3+' : userProfile.dependents} 人`
-        : `${userProfile.dependents >= 3 ? '3+' : userProfile.dependents} dep.`;
+      : `${userProfile.dependents >= 3 ? '3+' : userProfile.dependents} dep.`;
 
   return (
     <div className="app-shell">
@@ -274,15 +266,11 @@ function AppShellContent() {
                 <strong>
                   {lang === 'TH'
                     ? 'โหมดตัวอย่างคำนวณ:'
-                    : lang === 'ZH'
-                      ? '假设模拟计算模式：'
-                      : 'Sample Preview Mode:'}
+                    : 'Sample Preview Mode:'}
                 </strong>{' '}
                 {lang === 'TH'
                   ? 'ตัวเลขที่แสดงเป็นเงินและสถานการณ์สมมติเพื่อทดลองคำนวณเท่านั้น (ไม่ใช่ข้อมูลจริงของคุณ)'
-                  : lang === 'ZH'
-                    ? '当前展示的金额与情景均为模拟演示数据，非您的真实个人财务数据。'
-                    : 'All figures shown are hypothetical money & scenario values for calculation preview only (not your real data).'}
+                  : 'All figures shown are hypothetical money & scenario values for calculation preview only (not your real data).'}
               </span>
             </div>
             <button
@@ -295,9 +283,7 @@ function AppShellContent() {
               <span>
                 {lang === 'TH'
                   ? 'ล้างกลับเป็น 0 เพื่อกรอกเอง'
-                  : lang === 'ZH'
-                    ? '清空归零并自行填写'
-                    : 'Clear back to 0'}
+                  : 'Clear back to 0'}
               </span>
             </button>
           </div>
@@ -346,16 +332,12 @@ function AppShellContent() {
                 <span className="member-meta-chip">
                   {lang === 'TH'
                     ? `อายุ ${userProfile.age} ปี`
-                    : lang === 'ZH'
-                      ? `${userProfile.age} 岁`
-                      : `Age ${userProfile.age}`}
+                    : `Age ${userProfile.age}`}
                 </span>
                 <span className="member-meta-chip">
                   {lang === 'TH'
                     ? `เป้าสำรอง ${targetMonths} ด.`
-                    : lang === 'ZH'
-                      ? `${targetMonths} 个月目标`
-                      : `${targetMonths}-Mo Goal`}
+                    : `${targetMonths}-Mo Goal`}
                 </span>
                 {userProfile.dependents > 0 && (
                   <span className="member-meta-chip">{dependentsLabel}</span>
@@ -384,9 +366,7 @@ function AppShellContent() {
                 <p className="smartlog-header-sub">
                   {lang === 'TH'
                     ? 'จดรับ-จ่าย สแกนสลิป และติดตามยอดเงินสำรองฉุกเฉินได้ครบในหน้าเดียว'
-                    : lang === 'ZH'
-                      ? '在同一页面轻松记录日常收支、扫描转账凭证并追踪应急储备金。'
-                      : 'Log daily cashflow, scan bank slips, and track your emergency reserve in one place.'}
+                    : 'Log daily cashflow, scan bank slips, and track your emergency reserve in one place.'}
                 </p>
               </div>
             </div>
@@ -606,9 +586,7 @@ function AppShellContent() {
                 <p className="smartlog-header-sub">
                   {lang === 'TH'
                     ? 'รวมการตั้งค่าภาษา ธีมสี ขนาดตัวอักษร และการจัดการข้อมูลที่บันทึกในเครื่อง (PDPA-Safe) ไว้ในหน้าเดียว'
-                    : lang === 'ZH'
-                      ? '在一个页面集中管理语言、深浅主题、字号大小以及所有本机隐私数据 (PDPA 安全)。'
-                      : 'Manage language, light/dark theme, text scale, and all local PDPA-safe data controls in one place.'}
+                    : 'Manage language, light/dark theme, text scale, and all local PDPA-safe data controls in one place.'}
                 </p>
               </div>
             </div>

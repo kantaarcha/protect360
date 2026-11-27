@@ -618,7 +618,7 @@ export default function AutoKey({ onNavigate }) {
       manualType === 'saving'
         ? { th: 'เติมเงินเข้ากองทุนสำรองฉุกเฉิน', en: 'Added to Liquid Emergency Fund' }
         : manualType === 'income'
-          ? { th: 'บันทึกรายรับผ่าน 360Flow', en: 'Logged income via 360Flow', zh: '通过 360Flow 记录收入' }
+          ? { th: 'บันทึกรายรับผ่าน 360Flow', en: 'Logged income via 360Flow' }
           : { th: `รายจ่ายหมวด${catMeta.label.th}`, en: `${catMeta.label.en} expense` };
 
     addTransaction({
@@ -1905,32 +1905,38 @@ export default function AutoKey({ onNavigate }) {
               ariaLabel="Filter ledger"
             />
 
-            <button
-              id="smartlog-export-excel-btn"
-              type="button"
-              className="ak-excel-btn"
-              onClick={handleExportExcel}
-              title={
-                lang === 'TH'
-                  ? 'ส่งออกเป็นไฟล์ Excel (.xlsx) รูปแบบตาราง 2 ชีต (สมุดบัญชี + สรุปภาพรวม พร้อมสูตร SUM)'
-                  : 'Export as a 2-sheet Excel (.xlsx) spreadsheet with live SUM formulas & Summary'
-              }
+            <div
+              className="ak-export-pair"
+              role="group"
+              aria-label={lang === 'TH' ? 'ส่งออกไฟล์ตาราง' : 'Export spreadsheets'}
             >
-              <FileSpreadsheet size={14} strokeWidth={2.2} aria-hidden="true" />
-              <span>{lang === 'TH' ? 'ส่งออก Excel (.xlsx)' : 'Export Excel (.xlsx)'}</span>
-            </button>
+              <button
+                id="smartlog-export-excel-btn"
+                type="button"
+                className="ak-csv-btn ak-export-btn"
+                onClick={handleExportExcel}
+                title={
+                  lang === 'TH'
+                    ? 'ส่งออกเป็นไฟล์ Excel (.xlsx) รูปแบบตาราง 2 ชีต (สมุดบัญชี + สรุปภาพรวม พร้อมสูตร SUM)'
+                    : 'Export as a 2-sheet Excel (.xlsx) spreadsheet with live SUM formulas & Summary'
+                }
+              >
+                <FileSpreadsheet size={14} strokeWidth={2.2} aria-hidden="true" />
+                <span>{lang === 'TH' ? 'ส่งออก Excel (.xlsx)' : 'Export Excel (.xlsx)'}</span>
+              </button>
 
-            <button
-              id="smartlog-export-csv-btn"
-              type="button"
-              className="ak-csv-btn"
-              disabled={filteredTransactions.length === 0}
-              onClick={handleExportCsv}
-              title={lang === 'TH' ? 'ดาวน์โหลดรายการที่แสดงเป็นไฟล์ CSV' : 'Export visible rows to CSV'}
-            >
-              <Download size={14} strokeWidth={2.2} aria-hidden="true" />
-              <span>{lang === 'TH' ? 'ส่งออก CSV' : 'Export CSV'}</span>
-            </button>
+              <button
+                id="smartlog-export-csv-btn"
+                type="button"
+                className="ak-csv-btn ak-export-btn"
+                disabled={filteredTransactions.length === 0}
+                onClick={handleExportCsv}
+                title={lang === 'TH' ? 'ดาวน์โหลดรายการที่แสดงเป็นไฟล์ CSV' : 'Export visible rows to CSV'}
+              >
+                <Download size={14} strokeWidth={2.2} aria-hidden="true" />
+                <span>{lang === 'TH' ? 'ส่งออก CSV' : 'Export CSV'}</span>
+              </button>
+            </div>
           </div>
         </div>
 

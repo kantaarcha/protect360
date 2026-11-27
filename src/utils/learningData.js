@@ -400,7 +400,7 @@ export const LEARNING_ARTICLES = [
     ],
     bridgeAction: {
       page: 'smartlog',
-      label: { th: 'กลับไปติดตามเงินสำรองใน 360Flow', en: 'Track Your Reserve in 360Flow', zh: '在 360Flow 追踪应急备用金' },
+      label: { th: 'กลับไปติดตามเงินสำรองใน 360Flow', en: 'Track Your Reserve in 360Flow' },
     },
   },
   // ==================== NEW PURPLE CATEGORY: รู้ไว้ใช่ว่า? ====================

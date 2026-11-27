@@ -17106,4 +17106,502 @@ p {
   }
 }
 
+/* ========================================================================== */
+/* PATCH 8.1 — ONBOARDING AGE/HINT, PAIRED EXPORT BUTTONS, VOICES, ABOUT 03  */
+/* ========================================================================== */
+
+/* 1) Onboarding Step 2: Age + Occupation grid & editable-later helper banner */
+.ob-age-occ-grid {
+  grid-template-columns: minmax(120px, 0.72fr) minmax(0, 1.28fr);
+  align-items: start;
+}
+
+.ob-field-hint {
+  font-size: 0.73rem;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
+.ob-edit-later-note {
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 13px;
+  border-radius: 12px;
+  background: rgba(40, 120, 200, 0.08);
+  border: 1px solid rgba(40, 120, 200, 0.2);
+  color: var(--royal-deep);
+  font-size: 0.79rem;
+  font-weight: 600;
+  line-height: 1.45;
+}
+
+.ob-edit-later-note svg {
+  flex-shrink: 0;
+}
+
+[data-theme='dark'] .ob-edit-later-note {
+  background: rgba(96, 165, 250, 0.12);
+  border-color: rgba(96, 165, 250, 0.28);
+  color: #bfdbfe;
+}
+
+@media (max-width: 560px) {
+  .ob-age-occ-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* 2) Paired Excel (.xlsx) & CSV Buttons (Identical look, always side-by-side) */
+.ak-export-pair {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: nowrap;
+  flex-shrink: 0;
+}
+
+.ak-export-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+@media (max-width: 480px) {
+  .ak-export-pair {
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .ak-export-btn {
+    width: 100%;
+    padding-left: 10px;
+    padding-right: 10px;
+    font-size: 0.74rem;
+  }
+}
+
+/* 3) About — Elevated Verbatim Voices Spotlight (Core Web Motivation) */
+.ab-ed-voices-showcase {
+  padding: clamp(22px, 3vw, 32px);
+  border-radius: 20px;
+  background: linear-gradient(155deg, rgba(20, 43, 74, 0.045) 0%, rgba(40, 120, 200, 0.065) 100%);
+  border: 1px solid rgba(40, 120, 200, 0.22);
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+[data-theme='dark'] .ab-ed-voices-showcase {
+  background: linear-gradient(155deg, rgba(30, 58, 138, 0.22) 0%, rgba(15, 23, 42, 0.6) 100%);
+  border-color: rgba(96, 165, 250, 0.26);
+}
+
+.ab-ed-voices-head {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-width: 720px;
+}
+
+.ab-ed-voices-eyebrow {
+  display: inline-flex;
+  align-self: flex-start;
+  padding: 4px 11px;
+  border-radius: 999px;
+  background: var(--navy);
+  color: #ffffff;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+[data-theme='dark'] .ab-ed-voices-eyebrow {
+  background: var(--royal);
+}
+
+.ab-ed-voices-title {
+  margin: 2px 0 0;
+  font-size: clamp(1.16rem, 2.2vw, 1.42rem);
+  font-weight: 800;
+  line-height: 1.3;
+  color: var(--text-primary);
+}
+
+.ab-ed-voices-sub {
+  margin: 0;
+  font-size: 0.86rem;
+  line-height: 1.62;
+  color: var(--text-secondary);
+}
+
+.ab-ed-voices-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.ab-ed-voice-card {
+  margin: 0;
+  padding: 18px 18px 16px;
+  border-radius: 16px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-top: 4px solid var(--royal-deep);
+  box-shadow: 0 8px 22px rgba(15, 31, 61, 0.05);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.ab-ed-voice-card.tone-teal {
+  border-top-color: #1c8c82;
+}
+
+.ab-ed-voice-card.tone-amber {
+  border-top-color: #c47a1c;
+}
+
+[data-theme='dark'] .ab-ed-voice-card {
+  border-top-color: #60a5fa;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.28);
+}
+
+[data-theme='dark'] .ab-ed-voice-card.tone-teal {
+  border-top-color: #2dd4bf;
+}
+
+[data-theme='dark'] .ab-ed-voice-card.tone-amber {
+  border-top-color: #fbbf24;
+}
+
+.ab-ed-voice-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.ab-ed-voice-tag {
+  font-size: 0.72rem;
+  font-weight: 800;
+  padding: 3px 9px;
+  border-radius: 999px;
+  background: rgba(37, 99, 171, 0.1);
+  color: #1e4d8c;
+}
+
+.ab-ed-voice-tag.tone-teal {
+  background: rgba(28, 140, 130, 0.12);
+  color: #0f766e;
+}
+
+.ab-ed-voice-tag.tone-amber {
+  background: rgba(196, 122, 28, 0.12);
+  color: #a15c07;
+}
+
+[data-theme='dark'] .ab-ed-voice-tag {
+  background: rgba(96, 165, 250, 0.16);
+  color: #93c5fd;
+}
+
+[data-theme='dark'] .ab-ed-voice-tag.tone-teal {
+  background: rgba(45, 212, 191, 0.16);
+  color: #5eead4;
+}
+
+[data-theme='dark'] .ab-ed-voice-tag.tone-amber {
+  background: rgba(251, 191, 36, 0.16);
+  color: #fcd34d;
+}
+
+.ab-ed-voice-glyph {
+  font-family: Georgia, serif;
+  font-size: 2rem;
+  line-height: 0.7;
+  color: var(--royal);
+  opacity: 0.35;
+  user-select: none;
+}
+
+.ab-ed-voice-text {
+  margin: 0;
+  font-size: 0.96rem;
+  font-weight: 700;
+  line-height: 1.6;
+  color: var(--text-primary);
+}
+
+.ab-ed-voice-foot {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding-top: 10px;
+  border-top: 1px dashed var(--border-subtle);
+  font-size: 0.77rem;
+  font-weight: 700;
+  color: var(--royal-deep);
+}
+
+[data-theme='dark'] .ab-ed-voice-foot {
+  color: #93c5fd;
+}
+
+.ab-ed-voice-arrow {
+  font-weight: 800;
+}
+
+@media (max-width: 960px) {
+  .ab-ed-voices-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* 4) About Section 03 — Visual Donut Rings + Tactile 10-Pip Matrix (Non-clickable) */
+.ab-ed-demand-tiers {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.ab-ed-tier-block {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.ab-ed-tier-caption {
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.03em;
+  color: var(--text-muted);
+}
+
+.ab-ed-ring-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.ab-ed-ring-grid.cols-2 {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.ab-ed-ring-card {
+  padding: 18px;
+  border-radius: 16px;
+  background: var(--bg-canvas);
+  border: 1px solid var(--border-subtle);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  cursor: default;
+}
+
+.ab-ed-ring-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.ab-ed-ring-gauge {
+  position: relative;
+  width: 68px;
+  height: 68px;
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ab-ed-ring-svg {
+  width: 68px;
+  height: 68px;
+  transform: rotate(-90deg);
+}
+
+.ab-ed-ring-track {
+  fill: none;
+  stroke: var(--border-subtle);
+  stroke-width: 6;
+}
+
+.ab-ed-ring-arc {
+  fill: none;
+  stroke: #2563ab;
+  stroke-width: 6;
+  stroke-linecap: round;
+  transition: stroke-dashoffset 0.35s ease;
+}
+
+.ab-ed-ring-arc.tone-indigo { stroke: #4f5d95; }
+.ab-ed-ring-arc.tone-teal { stroke: #1c8c82; }
+.ab-ed-ring-arc.tone-emerald { stroke: #2e7d5b; }
+.ab-ed-ring-arc.tone-sky { stroke: #2f7fa8; }
+.ab-ed-ring-arc.tone-amber { stroke: #c47a1c; }
+.ab-ed-ring-arc.tone-violet { stroke: #74548c; }
+.ab-ed-ring-arc.tone-rose { stroke: #b84a58; }
+
+[data-theme='dark'] .ab-ed-ring-arc { stroke: #60a5fa; }
+[data-theme='dark'] .ab-ed-ring-arc.tone-indigo { stroke: #818cf8; }
+[data-theme='dark'] .ab-ed-ring-arc.tone-teal { stroke: #2dd4bf; }
+[data-theme='dark'] .ab-ed-ring-arc.tone-emerald { stroke: #34d399; }
+[data-theme='dark'] .ab-ed-ring-arc.tone-sky { stroke: #38bdf8; }
+[data-theme='dark'] .ab-ed-ring-arc.tone-amber { stroke: #fbbf24; }
+[data-theme='dark'] .ab-ed-ring-arc.tone-violet { stroke: #c084fc; }
+[data-theme='dark'] .ab-ed-ring-arc.tone-rose { stroke: #fb7185; }
+
+.ab-ed-ring-pct {
+  position: absolute;
+  font-size: 0.86rem;
+  font-weight: 800;
+  color: var(--text-primary);
+}
+
+.ab-ed-ring-stats {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+}
+
+.ab-ed-ring-exact {
+  font-size: 1.24rem;
+  font-weight: 800;
+  color: var(--text-primary);
+}
+
+.ab-ed-ring-people {
+  font-size: 0.74rem;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.ab-ed-ring-title {
+  margin: 0;
+  font-size: 0.92rem;
+  font-weight: 700;
+  line-height: 1.42;
+  color: var(--text-primary);
+}
+
+.ab-ed-ring-solution {
+  margin: 0;
+  margin-top: auto;
+  font-size: 0.76rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.ab-ed-dot-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.ab-ed-dot-card {
+  padding: 15px 16px;
+  border-radius: 14px;
+  background: var(--bg-canvas);
+  border: 1px solid var(--border-subtle);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  cursor: default;
+}
+
+.ab-ed-dot-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.ab-ed-dot-identity {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-width: 0;
+}
+
+.ab-ed-dot-solution {
+  font-size: 0.74rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ab-ed-dot-numwrap {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.ab-ed-dot-count {
+  font-size: 0.74rem;
+  color: var(--text-muted);
+}
+
+.ab-ed-dot-pct {
+  font-size: 0.92rem;
+  font-weight: 800;
+  color: var(--text-primary);
+}
+
+.ab-ed-dot-label {
+  font-size: 0.86rem;
+  font-weight: 700;
+  line-height: 1.45;
+  color: var(--text-primary);
+}
+
+.ab-ed-dot-pips {
+  display: grid;
+  grid-template-columns: repeat(10, minmax(0, 1fr));
+  gap: 4px;
+  margin-top: auto;
+}
+
+.ab-ed-pip {
+  height: 7px;
+  border-radius: 999px;
+  background: var(--border-subtle);
+}
+
+.ab-ed-pip.filled.tone-blue { background: #2563ab; }
+.ab-ed-pip.filled.tone-indigo { background: #4f5d95; }
+.ab-ed-pip.filled.tone-teal { background: #1c8c82; }
+.ab-ed-pip.filled.tone-emerald { background: #2e7d5b; }
+.ab-ed-pip.filled.tone-sky { background: #2f7fa8; }
+.ab-ed-pip.filled.tone-amber { background: #c47a1c; }
+.ab-ed-pip.filled.tone-violet { background: #74548c; }
+.ab-ed-pip.filled.tone-rose { background: #b84a58; }
+
+[data-theme='dark'] .ab-ed-pip.filled.tone-blue { background: #60a5fa; }
+[data-theme='dark'] .ab-ed-pip.filled.tone-indigo { background: #818cf8; }
+[data-theme='dark'] .ab-ed-pip.filled.tone-teal { background: #2dd4bf; }
+[data-theme='dark'] .ab-ed-pip.filled.tone-emerald { background: #34d399; }
+[data-theme='dark'] .ab-ed-pip.filled.tone-sky { background: #38bdf8; }
+[data-theme='dark'] .ab-ed-pip.filled.tone-amber { background: #fbbf24; }
+[data-theme='dark'] .ab-ed-pip.filled.tone-violet { background: #c084fc; }
+[data-theme='dark'] .ab-ed-pip.filled.tone-rose { background: #fb7185; }
+
+@media (max-width: 960px) {
+  .ab-ed-ring-grid,
+  .ab-ed-ring-grid.cols-2,
+  .ab-ed-dot-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+
 

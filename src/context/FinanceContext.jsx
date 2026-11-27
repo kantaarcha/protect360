@@ -40,8 +40,8 @@ const INITIAL_TRANSACTIONS = [];
 // Optional hypothetical sample scenario (explicitly labeled as simulated numbers in Local Storage mode)
 const DEMO_USER_PROFILE = {
   title: '',
-  firstName: 'สมมติ (First Jobber)',
-  lastName: '',
+  firstName: 'สมมติ',
+  lastName: 'ประกันภัย',
   age: 25,
   occupation: DEFAULT_OCCUPATION_TH,
   dependents: 0,
@@ -49,7 +49,7 @@ const DEMO_USER_PROFILE = {
 };
 
 const DEMO_FINANCIALS = {
-  personaName: { th: 'สถานการณ์สมมติ (First Jobber)', en: 'Hypothetical First Jobber' },
+  personaName: { th: 'สมมติ ประกันภัย', en: 'Sommut Prakanphai' },
   monthlyIncome: 25000,
   monthlyExpenses: 20000,
   monthlySavings: 5000,

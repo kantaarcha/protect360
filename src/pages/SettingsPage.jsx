@@ -57,7 +57,7 @@ const SETTINGS_COPY = {
     sampleTitle: 'ทดลองใส่ค่าและสถานการณ์สมมติ',
     sampleBadge: 'เงินและสถานการณ์สมมติคำนวณ',
     sampleDesc:
-      'จำลองข้อมูล First Jobber (รายได้สมมติ ฿25,000/ด. · รายจ่าย ฿20,000/ด. · สำรอง ฿15,000 · ประกันสังคม ม.33 + ประกันกลุ่ม · 6 รายการ 360Flow) เพื่อดูผลลัพธ์การคำนวณทุกหน้าก่อนกรอกข้อมูลจริง',
+      'จำลองข้อมูล “สมมติ ประกันภัย” (รายได้สมมติ ฿25,000/ด. · รายจ่าย ฿20,000/ด. · สำรอง ฿15,000 · ประกันสังคม ม.33 + ประกันกลุ่ม · 6 รายการ 360Flow) เพื่อดูผลลัพธ์การคำนวณทุกหน้าก่อนกรอกข้อมูลจริง',
     sampleBtn: 'ใส่ค่าสมมติคำนวณ',
     sampleLoadedMsg: 'ใส่ค่าและสถานการณ์สมมติเรียบร้อยแล้ว (ตัวเลขสมมติเพื่อทดลองคำนวณเท่านั้น)',
     excelTitle: 'ส่งออกบัญชี 360Flow เป็นไฟล์ Excel (.xlsx)',
@@ -108,7 +108,7 @@ const SETTINGS_COPY = {
     sampleTitle: 'Try Hypothetical Sample Scenario',
     sampleBadge: 'Hypothetical Preview Only',
     sampleDesc:
-      'Loads simulated First Jobber numbers (฿25,000 income, ฿20,000 expenses, ฿15,000 reserve, SSO Sec. 33 + group cover, 6 sample 360Flow entries) so you can preview how every module calculates.',
+      'Loads simulated numbers for Sommut Prakanphai (฿25,000 income, ฿20,000 expenses, ฿15,000 reserve, SSO Sec. 33 + group cover, 6 sample 360Flow entries) so you can preview how every module calculates.',
     sampleBtn: 'Load Sample',
     sampleLoadedMsg: 'Loaded hypothetical sample scenario (simulated numbers for calculation preview only).',
     excelTitle: 'Export 360Flow Cashbook as Excel (.xlsx)',
@@ -132,57 +132,6 @@ const SETTINGS_COPY = {
     charterBullet1: 'No phone number, email, national ID, or password ever collected',
     charterBullet2: '100% local-first computation on your device without an account',
     charterBullet3: 'For official Thailand insurance inquiries, contact OIC Hotline 1186',
-  },
-  ZH: {
-    displayTitle: '显示、语言与无障碍设置',
-    displaySub: '自由切换泰语、英语或中文，调整浅色/深色主题与全站字号。',
-    langLabel: '界面语言 (Language)',
-    themeLabel: '界面主题 (Theme)',
-    themeLight: '浅色模式',
-    themeDark: '深色模式',
-    fontLabel: '全站字体缩放',
-    fontReset: '重置 100%',
-    profileTitle: '个人档案与 24 小时实时问候',
-    profileSub: '自定义姓名、职业与应急目标，并查看实时时段问候状态。',
-    clockSourceInternet: '已同步网络 24 小时时钟',
-    clockSourceDevice: '使用本机 24 小时时钟',
-    greetingSchedule: '05:00–11:59 早上好 · 12:00–15:59 下午好 · 16:00–18:59 傍晚好 · 19:00–04:59 晚上好',
-    editProfileBtn: '编辑个人档案',
-    replayWelcomeBtn: '重新打开欢迎引导页',
-    dataTitle: '本地保存与数据管理 (PDPA 安全)',
-    dataSub: '所有数据仅存于当前设备浏览器 (localStorage)，无需登录，绝不上传服务器。',
-    localStatusActive: '已自动保存在本机',
-    entriesUnit: '条 360Flow 记录',
-    coveragesUnit: '张保障卡',
-    modeReal: '真实数据模式',
-    modeSample: '假设模拟情景模式',
-    sampleTitle: '加载假设模拟情景（体验计算效果）',
-    sampleBadge: '仅供模拟计算的假设情景',
-    sampleDesc:
-      '一键填入职场新人假设数据（月收入 ฿25,000 · 月支出 ฿20,000 · 应急金 ฿15,000 · 社保与团险 · 6 条 360Flow 账目），方便体验各模块计算方式。',
-    sampleBtn: '加载模拟数据',
-    sampleLoadedMsg: '已加载假设模拟情景（仅作计算演示，非真实个人数据）。',
-    excelTitle: '导出 360Flow 收支账本为 Excel (.xlsx)',
-    excelDesc: '生成双工作表（明细账本 + 总览汇总），可直接用 Excel 或 Google Sheets 打开。',
-    excelBtn: '导出 .xlsx',
-    excelToast: '已成功导出 360Flow Excel (.xlsx) 文件。',
-    exportTitle: '备份全部数据 (导出 .json)',
-    exportDesc: '将个人档案、360Flow 账本及保障计划下载为 JSON 文件保存或迁移。',
-    exportBtn: '下载 .json',
-    importTitle: '从备份恢复数据 (导入 .json)',
-    importDesc: '上传 PROTECT360 备份文件 (.json) 立即恢复全部记录。',
-    importBtn: '选择 .json 文件',
-    resetTitle: '将所有数据清零重置为 0 / 00.00',
-    resetDesc: '清空所有收支、应急储备、账本记录与保障卡片，回归 0 重新填写真实情况。',
-    resetBtn: '清空归零',
-    resetConfirmBtn: '确认清空归零',
-    resetCancel: '取消',
-    charterTitle: '零推销中立原则声明',
-    charterDesc:
-      'PROTECT360 仅用于中立金融科普与精算风险评估，不销售保险、不收佣金，也不偏袒任何商业保险品牌。',
-    charterBullet1: '绝不收集手机号、邮箱、身份证号或密码',
-    charterBullet2: '无需账号，100% 在本设备完成全部精算计算',
-    charterBullet3: '如需泰国官方保险咨询或申诉，可联系 OIC 热线 1186',
   },
 };
 
@@ -250,7 +199,6 @@ export default function SettingsPage({
     () => [
       { id: 'TH', label: 'ไทย (TH)' },
       { id: 'EN', label: 'English (EN)' },
-      { id: 'ZH', label: '中文 (ZH)' },
     ],
     []
   );
@@ -292,7 +240,7 @@ export default function SettingsPage({
     link.click();
     link.remove();
     window.URL.revokeObjectURL(url);
-    showToast('success', { th: copy.excelToast, en: copy.excelToast, zh: copy.excelToast });
+    showToast('success', { th: copy.excelToast, en: copy.excelToast });
   };
 
   const handleImportFile = async (e) => {
@@ -340,7 +288,7 @@ export default function SettingsPage({
           </div>
 
           <div className="st-controls-stack">
-            {/* Language Switcher: TH / EN / ZH */}
+            {/* Language Switcher: TH / EN */}
             <div className="st-control-block">
               <div className="st-control-label-row">
                 <span className="st-control-label">{copy.langLabel}</span>
@@ -433,9 +381,7 @@ export default function SettingsPage({
               <span className="st-font-hint tabular-nums">
                 {lang === 'TH'
                   ? `ขนาดปัจจุบัน: ${fontScaleLabel}`
-                  : lang === 'ZH'
-                    ? `当前字号比例：${fontScaleLabel}`
-                    : `Current scale: ${fontScaleLabel}`}
+                  : `Current scale: ${fontScaleLabel}`}
               </span>
             </div>
           </div>
@@ -466,9 +412,7 @@ export default function SettingsPage({
                 {occupationLabel} ·{' '}
                 {lang === 'TH'
                   ? `เป้าสำรอง ${userProfile.emergencyTargetMonths || 3} เดือน`
-                  : lang === 'ZH'
-                    ? `应急目标 ${userProfile.emergencyTargetMonths || 3} 个月`
-                    : `${userProfile.emergencyTargetMonths || 3}-mo goal`}
+                  : `${userProfile.emergencyTargetMonths || 3}-mo goal`}
               </span>
             </div>
           </div>
