@@ -6,12 +6,13 @@ import {
   Info,
   Pencil,
   PlusCircle,
+  ShieldAlert,
   Wallet,
   X,
 } from 'lucide-react';
 import { ThemeProvider } from './context/ThemeContext';
 import { LanguageProvider, useLanguage } from './context/LanguageContext';
-import { FinanceProvider, useFinance } from './context/FinanceContext';
+import { FinanceProvider, formatTHB, useFinance } from './context/FinanceContext';
 import SidebarNav from './components/SidebarNav';
 import TopControlBar from './components/TopControlBar';
 import UserProfileModal from './components/UserProfileModal';
@@ -36,7 +37,10 @@ const PAGE_TITLES = {
     th: 'สมุดบัญชี SmartLog',
     en: 'SmartLog Cashbook',
   },
-  'risk-analysis': { th: 'วิเคราะห์ความเสี่ยง (Risk Analysis)', en: 'Risk Analysis' },
+  'risk-analysis': {
+    th: 'วิเคราะห์ความเสี่ยง & ช่องว่างความคุ้มครอง',
+    en: 'Risk & Protection Gap Analysis',
+  },
   invest: { th: 'วางแผนลงทุน (IRR)', en: 'Invest (IRR)' },
   game: { th: 'เล่นเกมจำลองความเสี่ยง', en: 'Risk Simulator Game' },
   learning: { th: 'คลังความรู้', en: 'Learning Center' },
@@ -52,6 +56,7 @@ function AppShellContent() {
     transactions,
     savingsRatio,
     emergencyRunway,
+    riskAssessment,
     toast,
     dismissToast,
   } = useFinance();
@@ -244,6 +249,64 @@ function AppShellContent() {
                 {lang === 'TH'
                   ? `สำรอง ${emergencyRunway.toFixed(2)} / ${targetMonths} ด.`
                   : `Reserve ${emergencyRunway.toFixed(2)} / ${targetMonths} mo.`}
+              </span>
+            </div>
+          </header>
+        ) : activePage === 'risk-analysis' ? (
+          <header
+            className="bento-card smartlog-header-card"
+            aria-label="Risk and Protection Gap Analysis"
+          >
+            <div className="smartlog-header-left">
+              <span className="smartlog-header-icon" aria-hidden="true">
+                <ShieldAlert size={22} strokeWidth={2.1} />
+              </span>
+              <div className="smartlog-header-copy">
+                <h1 className="smartlog-header-title">
+                  {t(PAGE_TITLES['risk-analysis'])}
+                </h1>
+                <p className="smartlog-header-sub">
+                  {lang === 'TH'
+                    ? 'ตรวจเช็กสวัสดิการ ประเมินช่องว่างความคุ้มครอง 6 ด้าน และวางแผนจัดการความเสี่ยงอย่างเป็นกลาง'
+                    : 'Audit existing benefits, quantify 6-pillar protection gaps, and plan neutrally with zero sales bias.'}
+                </p>
+              </div>
+            </div>
+
+            <div className="smartlog-header-chips tabular-nums">
+              <span
+                className={`smartlog-stat-chip ${
+                  riskAssessment?.overallRiskLevel === 'high'
+                    ? 'danger'
+                    : riskAssessment?.overallRiskLevel === 'low'
+                      ? 'blue'
+                      : 'neutral'
+                }`}
+              >
+                {lang === 'TH'
+                  ? `ความเสี่ยงรวม: ${
+                      riskAssessment?.overallRiskLevel === 'high'
+                        ? 'สูง'
+                        : riskAssessment?.overallRiskLevel === 'moderate'
+                          ? 'ปานกลาง'
+                          : 'ต่ำ'
+                    }`
+                  : `Risk: ${
+                      riskAssessment?.overallRiskLevel === 'high'
+                        ? 'High'
+                        : riskAssessment?.overallRiskLevel === 'moderate'
+                          ? 'Moderate'
+                          : 'Low'
+                    }`}
+              </span>
+              <span className="smartlog-stat-chip neutral">
+                {lang === 'TH'
+                  ? `ช่องว่างรวม ${formatTHB(riskAssessment?.totalProtectionGap || 0)}`
+                  : `Gap ${formatTHB(riskAssessment?.totalProtectionGap || 0)}`}
+              </span>
+              <span className="smartlog-stat-chip blue">
+                {lang === 'TH' ? 'ครอบคลุมแล้ว' : 'Covered'}{' '}
+                {riskAssessment?.overallCoveragePct || 0}%
               </span>
             </div>
           </header>

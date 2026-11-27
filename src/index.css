@@ -7305,6 +7305,1038 @@ p {
   }
 }
 
+/* ==========================================================================
+   Round 3 (Patch 3.0): Risk Analysis & Protection Gap Module Styles
+   ========================================================================== */
+
+.ra-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+/* 4-Stage Workflow Card */
+.ra-workflow-card {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 16px 20px;
+}
+
+.ra-workflow-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.ra-stepper {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.ra-step-wrap {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.ra-step-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 6px 11px;
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--border-subtle);
+  background: var(--bg-muted);
+  color: var(--text-secondary);
+  font-size: 0.76rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.16s var(--ease), border-color 0.16s var(--ease), color 0.16s var(--ease);
+}
+
+.ra-step-btn:hover {
+  background: var(--bg-subtle);
+  color: var(--text-primary);
+}
+
+.ra-step-btn.current {
+  background: var(--accent-blue-bg);
+  border-color: rgba(40, 120, 200, 0.3);
+  color: var(--accent-blue-text);
+  font-weight: 700;
+}
+
+[data-theme='dark'] .ra-step-btn.current {
+  color: #7cc0ff;
+}
+
+.ra-step-btn.done {
+  background: var(--success-bg);
+  border-color: rgba(49, 168, 121, 0.25);
+  color: var(--success-text);
+}
+
+.ra-step-num {
+  width: 20px;
+  height: 20px;
+  border-radius: 999px;
+  background: var(--bg-surface);
+  display: inline-grid;
+  place-items: center;
+  font-size: 0.7rem;
+  font-weight: 800;
+  flex-shrink: 0;
+}
+
+.ra-step-arrow {
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+
+.ra-actuarial-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: var(--radius-pill);
+  background: var(--accent-teal-bg);
+  color: #137a6e;
+  font-size: 0.74rem;
+  font-weight: 700;
+}
+
+[data-theme='dark'] .ra-actuarial-pill {
+  color: #5eead4;
+}
+
+/* Tab 1: 2-Column Input Grid */
+.ra-input-stage,
+.ra-results-stage {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.ra-input-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+  align-items: start;
+}
+
+.ra-card {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.ra-card-head {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.ra-card-icon {
+  width: 38px;
+  height: 38px;
+  border-radius: 13px;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+}
+
+.ra-card-icon.blue {
+  background: var(--accent-blue-bg);
+  color: #1d63d8;
+}
+
+[data-theme='dark'] .ra-card-icon.blue {
+  color: #7cc0ff;
+}
+
+.ra-card-icon.navy {
+  background: rgba(20, 43, 74, 0.1);
+  color: var(--navy);
+}
+
+[data-theme='dark'] .ra-card-icon.navy {
+  background: rgba(124, 192, 255, 0.16);
+  color: #8cc4ff;
+}
+
+.ra-card-icon.teal {
+  background: var(--accent-teal-bg);
+  color: #137a6e;
+}
+
+[data-theme='dark'] .ra-card-icon.teal {
+  color: #5eead4;
+}
+
+.ra-form-section {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+/* Dependents Pill Selector */
+.ra-dep-pills {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  flex-wrap: wrap;
+}
+
+.ra-dep-btn {
+  padding: 7px 13px;
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--border-subtle);
+  background: var(--bg-muted);
+  color: var(--text-secondary);
+  font-size: 0.78rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background-color 0.16s var(--ease), border-color 0.16s var(--ease), color 0.16s var(--ease);
+}
+
+.ra-dep-btn:hover {
+  background: var(--bg-subtle);
+  color: var(--text-primary);
+}
+
+.ra-dep-btn.active {
+  background: var(--accent-blue-bg);
+  border-color: var(--royal);
+  color: var(--accent-blue-text);
+}
+
+[data-theme='dark'] .ra-dep-btn.active {
+  color: #7cc0ff;
+}
+
+/* Live DTI & Safe Budget Sync Strip */
+.ra-sync-summary {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  padding: 12px 14px;
+  border-radius: 16px;
+  background: var(--bg-muted);
+  border: 1px solid var(--border-subtle);
+}
+
+.ra-sync-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.ra-sync-stat span {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.ra-sync-stat strong {
+  font-size: 0.96rem;
+  font-weight: 800;
+}
+
+.text-red {
+  color: var(--danger-text);
+}
+
+.text-amber {
+  color: var(--warning-text);
+}
+
+.text-green {
+  color: var(--success-text);
+}
+
+.text-blue {
+  color: #1d63d8;
+}
+
+[data-theme='dark'] .text-blue {
+  color: #7cc0ff;
+}
+
+/* Government Baseline Selector Cards */
+.ra-gov-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.ra-gov-card {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 10px 11px;
+  border-radius: 14px;
+  border: 1.5px solid var(--border-subtle);
+  background: var(--bg-muted);
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 0.18s var(--ease), background-color 0.18s var(--ease);
+}
+
+.ra-gov-card:hover {
+  background: var(--bg-subtle);
+}
+
+.ra-gov-card.active {
+  border-color: var(--royal);
+  background: var(--accent-blue-bg);
+}
+
+.ra-gov-title {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1.25;
+}
+
+.ra-gov-desc {
+  font-size: 0.7rem;
+  color: var(--text-secondary);
+  line-height: 1.35;
+}
+
+/* Policy Toggle Rows (Group & Personal Policies) */
+.ra-policy-block {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.ra-policy-block-label {
+  font-size: 0.74rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.ra-personal-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.ra-policy-row {
+  padding: 12px 14px;
+  border-radius: 16px;
+  border: 1px solid var(--border-subtle);
+  background: var(--bg-muted);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  transition: border-color 0.18s var(--ease), background-color 0.18s var(--ease);
+}
+
+.ra-policy-row.compact {
+  padding: 10px 12px;
+}
+
+.ra-policy-row.active {
+  border-color: rgba(40, 120, 200, 0.28);
+  background: var(--bg-surface);
+}
+
+.ra-policy-row-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.ra-toggle-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  min-width: 0;
+  flex: 1 1 180px;
+}
+
+.ra-switch-input {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.ra-switch-track {
+  width: 38px;
+  height: 22px;
+  border-radius: var(--radius-pill);
+  background: var(--border-strong);
+  position: relative;
+  flex-shrink: 0;
+  transition: background-color 0.2s var(--ease);
+}
+
+.ra-switch-track::after {
+  content: '';
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 16px;
+  height: 16px;
+  border-radius: 999px;
+  background: #ffffff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.22);
+  transition: transform 0.2s var(--ease);
+}
+
+.ra-switch-input:checked + .ra-switch-track {
+  background: var(--royal);
+}
+
+.ra-switch-input:checked + .ra-switch-track::after {
+  transform: translateX(16px);
+}
+
+.ra-switch-input:focus-visible + .ra-switch-track {
+  outline: 2px solid var(--royal);
+  outline-offset: 2px;
+}
+
+.ra-policy-title-group {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+}
+
+.ra-policy-name {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.84rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.ra-policy-hint {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+}
+
+.ra-unknown-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 11px;
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--border-strong);
+  background: var(--bg-subtle);
+  color: var(--text-secondary);
+  font-size: 0.74rem;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background-color 0.16s var(--ease), border-color 0.16s var(--ease), color 0.16s var(--ease);
+}
+
+.ra-unknown-pill:hover {
+  background: var(--bg-subtle-hover);
+  color: var(--text-primary);
+}
+
+.ra-unknown-pill.active {
+  background: var(--warning-bg);
+  border-color: rgba(244, 183, 64, 0.55);
+  color: var(--warning-text);
+}
+
+.ra-policy-row-controls {
+  padding-left: 48px;
+}
+
+.ra-unknown-zero-chip {
+  font-size: 0.76rem;
+  font-weight: 700;
+  color: var(--warning-text);
+  background: var(--warning-bg);
+  border: 1px dashed rgba(244, 183, 64, 0.5);
+  border-radius: 11px;
+  padding: 7px 11px;
+}
+
+.ra-limit-input-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.ra-limit-prefix {
+  position: absolute;
+  left: 12px;
+  font-size: 0.84rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  pointer-events: none;
+}
+
+.ra-limit-suffix {
+  position: absolute;
+  right: 12px;
+  font-size: 0.74rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  pointer-events: none;
+}
+
+.ra-limit-input {
+  padding-left: 28px !important;
+  padding-right: 46px !important;
+  font-weight: 700;
+}
+
+/* Conservative Actuarial Callout */
+.ra-conservative-callout {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 12px 14px;
+  border-radius: 15px;
+  background: var(--warning-bg);
+  border: 1px solid rgba(244, 183, 64, 0.42);
+  color: var(--warning-text);
+}
+
+.ra-callout-icon {
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.ra-conservative-callout p {
+  margin: 0;
+  font-size: 0.78rem;
+  font-weight: 600;
+  line-height: 1.48;
+}
+
+/* Seamless Bottom CTA Bar on Input Tab */
+.ra-bottom-cta-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  flex-wrap: wrap;
+  padding: 16px 20px;
+  border-radius: 22px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  box-shadow: var(--shadow-card);
+}
+
+.ra-bottom-cta-meta {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  flex-wrap: wrap;
+  font-size: 0.86rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.ra-bottom-cta-meta strong {
+  font-size: 1.15rem;
+  font-weight: 800;
+}
+
+.ra-view-results-btn {
+  padding: 11px 20px;
+}
+
+/* Tab 2: Top 3 Summary KPI Cards */
+.ra-kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.ra-kpi-card {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.metric-icon-badge.warn {
+  background: var(--warning-bg);
+  color: var(--warning-text);
+}
+
+.ra-risk-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px 11px;
+  border-radius: var(--radius-pill);
+  font-size: 0.72rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.ra-risk-badge.high {
+  background: var(--danger-bg);
+  color: var(--danger-text);
+}
+
+.ra-risk-badge.moderate {
+  background: var(--warning-bg);
+  color: var(--warning-text);
+}
+
+.ra-risk-badge.low {
+  background: var(--success-bg);
+  color: var(--success-text);
+}
+
+.ra-risk-text-high {
+  color: var(--danger-text);
+}
+
+.ra-risk-text-moderate {
+  color: var(--warning-text);
+}
+
+.ra-risk-text-low {
+  color: var(--success-text);
+}
+
+.ra-kpi-footnote {
+  margin-top: auto;
+  font-size: 0.74rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.ra-unit-sm {
+  font-size: 0.88rem;
+  font-weight: 700;
+}
+
+/* 6 Expandable Plain-Language Risk Cards */
+.ra-pillars-section {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.ra-section-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.ra-section-title {
+  font-size: 1.08rem;
+}
+
+.ra-edit-inputs-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.ra-pillars-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+  align-items: start;
+}
+
+.ra-pillar-card {
+  padding: 0;
+  overflow: hidden;
+  transition: border-color 0.18s var(--ease), box-shadow 0.18s var(--ease);
+}
+
+.ra-pillar-card.expanded {
+  border-color: rgba(40, 120, 200, 0.34);
+}
+
+.ra-pillar-trigger {
+  width: 100%;
+  border: none;
+  background: transparent;
+  padding: 16px 18px;
+  text-align: left;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.ra-pillar-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.ra-pillar-title-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  min-width: 0;
+}
+
+.ra-pillar-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+}
+
+.ra-pillar-icon.high {
+  background: var(--danger-bg);
+  color: var(--danger-text);
+}
+
+.ra-pillar-icon.moderate {
+  background: var(--warning-bg);
+  color: var(--warning-text);
+}
+
+.ra-pillar-icon.low {
+  background: var(--success-bg);
+  color: var(--success-text);
+}
+
+.ra-pillar-heading-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.ra-pillar-title {
+  margin: 0;
+  font-size: 0.94rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  line-height: 1.25;
+}
+
+.ra-pillar-formula {
+  font-size: 0.72rem;
+  font-weight: 500;
+  color: var(--text-muted);
+  line-height: 1.35;
+}
+
+.ra-pillar-right-badges {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.ra-chevron {
+  color: var(--text-muted);
+  transition: transform 0.2s var(--ease);
+}
+
+.ra-chevron.open {
+  transform: rotate(180deg);
+  color: var(--royal);
+}
+
+.ra-pillar-metrics {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  padding: 9px 11px;
+  border-radius: 13px;
+  background: var(--bg-muted);
+}
+
+.ra-pillar-metric {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.ra-pillar-metric span {
+  font-size: 0.69rem;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.ra-pillar-metric strong {
+  font-size: 0.86rem;
+  font-weight: 800;
+  color: var(--text-primary);
+}
+
+.ra-pillar-bar-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.ra-pillar-pct {
+  font-size: 0.74rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+  min-width: 34px;
+  text-align: right;
+}
+
+.ra-level-bar-high {
+  background: linear-gradient(90deg, #e05252 0%, #f87171 100%);
+}
+
+.ra-level-bar-moderate {
+  background: linear-gradient(90deg, #d98a16 0%, #f4b740 100%);
+}
+
+.ra-level-bar-low {
+  background: linear-gradient(90deg, #1fa86b 0%, #34c785 100%);
+}
+
+.ra-pillar-detail {
+  padding: 0 18px 18px;
+  border-top: 1px solid var(--border-subtle);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding-top: 14px;
+  background: var(--bg-muted);
+}
+
+.ra-detail-block {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.ra-detail-block.mechanism {
+  padding: 10px 12px;
+  border-radius: 13px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+}
+
+.ra-detail-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.75rem;
+  font-weight: 800;
+  color: var(--text-primary);
+}
+
+.ra-detail-block p {
+  margin: 0;
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+/* Bottom 2-Column Row: Action Plan & .ics Reminder */
+.ra-bottom-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.25fr) minmax(0, 0.95fr);
+  gap: 18px;
+  align-items: start;
+}
+
+.ra-action-card,
+.ra-calendar-card {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.ra-action-steps {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.ra-action-step {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 13px 14px;
+  border-radius: 16px;
+  background: var(--bg-muted);
+  border: 1px solid var(--border-subtle);
+}
+
+.ra-action-step.done {
+  border-color: rgba(49, 168, 121, 0.28);
+}
+
+.ra-action-num {
+  width: 28px;
+  height: 28px;
+  border-radius: 999px;
+  background: var(--accent-blue-bg);
+  color: #1d63d8;
+  display: grid;
+  place-items: center;
+  font-size: 0.82rem;
+  font-weight: 800;
+  flex-shrink: 0;
+}
+
+[data-theme='dark'] .ra-action-num {
+  color: #7cc0ff;
+}
+
+.ra-action-step.done .ra-action-num {
+  background: var(--success-bg);
+  color: var(--success-text);
+}
+
+.ra-action-body {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  min-width: 0;
+}
+
+.ra-action-title {
+  font-size: 0.88rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  line-height: 1.3;
+}
+
+.ra-action-desc {
+  margin: 0;
+  font-size: 0.79rem;
+  color: var(--text-secondary);
+  line-height: 1.48;
+}
+
+.ra-inline-link-btn {
+  margin-top: 3px;
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  border: none;
+  background: transparent;
+  padding: 2px 0;
+  color: var(--accent-blue-text);
+  font-size: 0.76rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+[data-theme='dark'] .ra-inline-link-btn {
+  color: #7cc0ff;
+}
+
+.ra-inline-link-btn:hover {
+  text-decoration: underline;
+}
+
+/* .ics Calendar Reminder Form */
+.ra-calendar-form {
+  display: flex;
+  flex-direction: column;
+  gap: 13px;
+}
+
+.ra-reminder-presets {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+
+.ra-reminder-chip {
+  padding: 6px 11px;
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--border-subtle);
+  background: var(--bg-muted);
+  color: var(--text-secondary);
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.16s var(--ease), border-color 0.16s var(--ease), color 0.16s var(--ease);
+}
+
+.ra-reminder-chip:hover {
+  background: var(--bg-subtle);
+  color: var(--text-primary);
+}
+
+.ra-reminder-chip.active {
+  background: var(--accent-blue-bg);
+  border-color: var(--royal);
+  color: var(--accent-blue-text);
+  font-weight: 700;
+}
+
+[data-theme='dark'] .ra-reminder-chip.active {
+  color: #7cc0ff;
+}
+
+.ra-ics-btn {
+  width: 100%;
+  justify-content: center;
+}
+
+/* Responsive Breakpoints for RiskAnalysis */
+@media (max-width: 1040px) {
+  .ra-input-grid,
+  .ra-bottom-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 820px) {
+  .ra-kpi-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .ra-pillars-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .ra-gov-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 560px) {
+  .ra-policy-row-controls {
+    padding-left: 0;
+  }
+
+  .ra-sync-summary {
+    grid-template-columns: 1fr;
+  }
+
+  .ra-step-arrow {
+    display: none;
+  }
+}
+
+
 
 
 

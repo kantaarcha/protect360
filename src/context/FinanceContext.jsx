@@ -4,6 +4,12 @@ import {
   buildInstantBilingualText,
   translateBilingualAsync,
 } from '../utils/bilingualTranslate';
+import {
+  INITIAL_RISK_PROFILE_DATA,
+  computeActuarialRiskAssessment,
+  getGovSchemeMeta,
+  sanitizeRiskProfileData,
+} from '../utils/riskActuarial';
 
 const STORAGE_KEY = 'protect360_data_v1';
 
@@ -25,11 +31,7 @@ const INITIAL_FINANCIALS = {
   liquidEmergencyFund: 15000,
 };
 
-const INITIAL_RISK_PROFILE = {
-  riskTolerance: 'moderate',
-  assessmentCompleted: false,
-  lastAssessedAt: null,
-};
+const INITIAL_RISK_PROFILE = INITIAL_RISK_PROFILE_DATA;
 
 const INITIAL_COVERAGES = [
   {
@@ -151,70 +153,6 @@ const INITIAL_TRANSACTIONS = [
   },
 ];
 
-// Needed coverage benchmarks for a First Jobber (transparent actuarial assumptions)
-const BASE_RISK_BENCHMARKS = [
-  {
-    id: 'medical',
-    label: { th: 'ค่ารักษาพยาบาล', en: 'Medical' },
-    shortLabel: { th: 'รักษาพยาบาล', en: 'Medical' },
-    needed: 500000,
-    rationale: {
-      th: 'ค่ารักษาผู้ป่วยในเอกชนเฉลี่ยต่อครั้งและโรคทั่วไป',
-      en: 'Private IPD hospitalization benchmark in Thailand',
-    },
-  },
-  {
-    id: 'accident',
-    label: { th: 'อุบัติเหตุ', en: 'Accident' },
-    shortLabel: { th: 'อุบัติเหตุ', en: 'Accident' },
-    needed: 300000,
-    rationale: {
-      th: 'วงเงินคุ้มครองอุบัติเหตุและการสูญเสียอวัยวะ (1× รายได้ต่อปี)',
-      en: 'Personal accident & dismemberment buffer (1× annual income)',
-    },
-  },
-  {
-    id: 'criticalIllness',
-    label: { th: 'โรคร้ายแรง', en: 'Critical Illness' },
-    shortLabel: { th: 'โรคร้ายแรง', en: 'Critical Ill.' },
-    needed: 600000,
-    rationale: {
-      th: 'งบรักษาและพักฟื้นโรคร้ายแรง (2× รายได้ต่อปี)',
-      en: 'Targeted care & recovery reserve (2× annual income)',
-    },
-  },
-  {
-    id: 'disability',
-    label: { th: 'ทุพพลภาพ', en: 'Disability' },
-    shortLabel: { th: 'ทุพพลภาพ', en: 'Disability' },
-    needed: 900000,
-    rationale: {
-      th: 'เงินทดแทนกรณีสูญเสียความสามารถในการทำงาน (3× รายได้ต่อปี)',
-      en: 'Long-term loss-of-earning cushion (3× annual income)',
-    },
-  },
-  {
-    id: 'incomeComp',
-    label: { th: 'ชดเชยรายได้', en: 'Income Comp.' },
-    shortLabel: { th: 'ชดเชยรายได้', en: 'Income' },
-    needed: 180000,
-    rationale: {
-      th: 'ชดเชยรายได้ช่วงพักรักษาตัวหรือว่างงาน 6 เดือน',
-      en: '6-month income continuity during recovery',
-    },
-  },
-  {
-    id: 'family',
-    label: { th: 'ภาระครอบครัว', en: 'Family Support' },
-    shortLabel: { th: 'ครอบครัว', en: 'Family' },
-    needed: 400000,
-    rationale: {
-      th: 'เงินสำรองดูแลพ่อแม่และค่าใช้จ่ายฉุกเฉินสุดท้าย',
-      en: 'Parental support & final expense reserve',
-    },
-  },
-];
-
 // Strictly whitelist non-sensitive PDPA-safe userProfile fields (never accept email/phone/ID/password)
 function sanitizeNameText(value) {
   if (typeof value !== 'string') return '';
@@ -287,13 +225,151 @@ function sanitizeTransactions(raw) {
 }
 
 function sanitizeRiskProfile(raw) {
-  if (!raw || typeof raw !== 'object') return { ...INITIAL_RISK_PROFILE };
-  const allowedTolerance = ['low', 'moderate', 'high'];
-  return {
-    riskTolerance: allowedTolerance.includes(raw.riskTolerance) ? raw.riskTolerance : 'moderate',
-    assessmentCompleted: Boolean(raw.assessmentCompleted),
-    lastAssessedAt: typeof raw.lastAssessedAt === 'string' ? raw.lastAssessedAt : null,
+  return sanitizeRiskProfileData(raw);
+}
+
+// Synchronize Overview virtual coverage cards when RiskAnalysis inputs change
+function syncCoveragesWithRiskProfile(prevCoverages, nextRisk) {
+  const govMeta = getGovSchemeMeta(nextRisk.govScheme);
+  const baseList = Array.isArray(prevCoverages) ? [...prevCoverages] : [];
+
+  const upsert = (list, item) => {
+    const idx = list.findIndex((c) => c.id === item.id);
+    if (idx >= 0) {
+      const next = [...list];
+      next[idx] = { ...next[idx], ...item };
+      return next;
+    }
+    return [...list, item];
   };
+
+  let updated = upsert(baseList, {
+    id: 'sso-33',
+    type: 'statutory',
+    name: govMeta.label,
+    providerTag: { th: 'สิทธิภาครัฐ', en: 'Statutory' },
+    cardNumberMask:
+      nextRisk.govScheme === 'uc'
+        ? 'UC •••• 3000'
+        : nextRisk.govScheme === 'civil'
+          ? 'GOV •••• 0100'
+          : 'SSO •••• 3301',
+    subtitle: govMeta.desc,
+    status: 'active',
+    limitKnown: true,
+    monthlyPremium: 0,
+    theme: 'navy',
+    benefits: { ...govMeta.benefits },
+  });
+
+  // Sync Employer Group Insurance card
+  if (nextRisk.groupInsurance.active) {
+    const isUnknown = nextRisk.groupInsurance.unknownLimit;
+    const grpLimit = isUnknown ? 0 : Number(nextRisk.groupInsurance.limit) || 0;
+    updated = upsert(updated, {
+      id: 'group-ins',
+      type: 'employer',
+      name: { th: 'ประกันกลุ่มบริษัท', en: 'Employer Group Insurance' },
+      providerTag: { th: 'สวัสดิการบริษัท', en: 'Employer' },
+      cardNumberMask: 'GRP •••• 0000',
+      subtitle: isUnknown
+        ? { th: 'ไม่ทราบวงเงิน → นับเป็น ฿0', en: 'Unknown Limit → Counted as ฿0' }
+        : {
+            th: `วงเงินค่ารักษา ฿${grpLimit.toLocaleString('en-US')}`,
+            en: `Medical Limit ฿${grpLimit.toLocaleString('en-US')}`,
+          },
+      status: isUnknown ? 'unknown_limit' : 'active',
+      limitKnown: !isUnknown,
+      monthlyPremium: 0,
+      theme: 'royal',
+      benefits: {
+        medical: grpLimit,
+        accident: 0,
+        criticalIllness: 0,
+        disability: 0,
+        incomeComp: 0,
+        family: 0,
+      },
+    });
+  } else {
+    updated = updated.filter((c) => c.id !== 'group-ins');
+  }
+
+  // Sync 4 structured personal policy rows from RiskAnalysis
+  const personalSpecs = [
+    {
+      key: 'health',
+      id: 'ra-personal-health',
+      name: { th: 'ประกันสุขภาพส่วนตัว', en: 'Personal Health Insurance' },
+      mask: 'HLT •••• 1001',
+      benefitKey: 'medical',
+    },
+    {
+      key: 'accident',
+      id: 'ra-personal-accident',
+      name: { th: 'ประกันอุบัติเหตุ (PA)', en: 'Personal Accident (PA)' },
+      mask: 'PA •••• 2002',
+      benefitKey: 'accident',
+    },
+    {
+      key: 'criticalIllness',
+      id: 'ra-personal-ci',
+      name: { th: 'ประกันโรคร้ายแรง (CI)', en: 'Critical Illness (CI)' },
+      mask: 'CI •••• 3003',
+      benefitKey: 'criticalIllness',
+    },
+    {
+      key: 'lifeDisability',
+      id: 'ra-personal-life',
+      name: { th: 'ประกันชีวิต & ทุพพลภาพ', en: 'Life & Disability Policy' },
+      mask: 'LIF •••• 4004',
+      benefitKey: 'lifeDisability',
+    },
+  ];
+
+  for (const spec of personalSpecs) {
+    const row = nextRisk.personalPolicies?.[spec.key];
+    if (row?.active) {
+      const isUnknown = row.unknownLimit;
+      const amt = isUnknown ? 0 : Number(row.limit) || 0;
+      const benefits = {
+        medical: 0,
+        accident: 0,
+        criticalIllness: 0,
+        disability: 0,
+        incomeComp: 0,
+        family: 0,
+      };
+      if (spec.benefitKey === 'lifeDisability') {
+        benefits.disability = amt;
+        benefits.family = amt;
+      } else {
+        benefits[spec.benefitKey] = amt;
+      }
+      updated = upsert(updated, {
+        id: spec.id,
+        type: 'personal',
+        name: spec.name,
+        providerTag: { th: 'ประกันส่วนตัว', en: 'Personal' },
+        cardNumberMask: spec.mask,
+        subtitle: isUnknown
+          ? { th: 'ไม่ทราบวงเงิน → นับเป็น ฿0', en: 'Unknown Limit → Counted as ฿0' }
+          : {
+              th: `ทุนคุ้มครอง ฿${amt.toLocaleString('en-US')}`,
+              en: `Coverage ฿${amt.toLocaleString('en-US')}`,
+            },
+        status: isUnknown ? 'unknown_limit' : 'active',
+        limitKnown: !isUnknown,
+        monthlyPremium: 0,
+        theme: 'teal',
+        benefits,
+      });
+    } else {
+      updated = updated.filter((c) => c.id !== spec.id);
+    }
+  }
+
+  return updated;
 }
 
 function sanitizeCustomCategories(raw) {
@@ -478,67 +554,26 @@ export function FinanceProvider({ children }) {
     );
 
     const personalPoliciesCount = coverages.filter((c) => c.type === 'personal').length;
-    const hasUnknownCoverage = coverages.some((c) => !c.limitKnown);
 
-    // Adjust family benchmark smoothly if user has dependents (+200,000 THB per dependent)
-    const dependentsCount = Number(userProfile.dependents) || 0;
-    const activeBenchmarks = BASE_RISK_BENCHMARKS.map((cat) => {
-      if (cat.id === 'family' && dependentsCount > 0) {
-        return {
-          ...cat,
-          needed: cat.needed + dependentsCount * 200000,
-          rationale: {
-            th: `เงินสำรองดูแลคนในความดูแล ${dependentsCount} คน และค่าใช้จ่ายฉุกเฉินครอบครัว`,
-            en: `Family reserve tailored for ${dependentsCount} dependent${dependentsCount > 1 ? 's' : ''} & final expenses`,
-          },
-        };
-      }
-      return cat;
+    const riskAssessment = computeActuarialRiskAssessment({
+      monthlyIncome: profile.monthlyIncome,
+      monthlyExpenses: profile.monthlyExpenses,
+      emergencyFund: profile.liquidEmergencyFund,
+      dependents: userProfile.dependents,
+      riskProfile,
+      coverages,
     });
 
-    // Conservative Estimation: any coverage with limitKnown === false contributes 0 THB
-    const protectionComparison = activeBenchmarks.map((cat) => {
-      const fromPolicies = coverages.reduce((sum, cov) => {
-        if (!cov.limitKnown) return sum;
-        return sum + (Number(cov.benefits?.[cat.id]) || 0);
-      }, 0);
+    const protectionComparison = riskAssessment.categories;
+    const hasUnknownCoverage = riskAssessment.hasAnyUnknownLimit;
+    const totalNeededCoverage = riskAssessment.totalNeededCoverage;
+    const totalEffectiveCoverage = riskAssessment.totalEffectiveCoverage;
+    const totalProtectionGap = riskAssessment.totalProtectionGap;
 
-      // For income compensation, liquid emergency fund also helps cushion short-term income stop
-      const effectiveAvailable =
-        cat.id === 'incomeComp'
-          ? fromPolicies + profile.liquidEmergencyFund
-          : fromPolicies;
-
-      const gap = Math.max(0, cat.needed - effectiveAvailable);
-      const coveragePct =
-        cat.needed > 0
-          ? Math.min(100, Math.round((effectiveAvailable / cat.needed) * 100))
-          : 100;
-
-      return {
-        ...cat,
-        effectiveAvailable,
-        gap,
-        coveragePct,
-      };
-    });
-
-    const totalNeededCoverage = protectionComparison.reduce((s, c) => s + c.needed, 0);
-    const totalEffectiveCoverage = protectionComparison.reduce(
-      (s, c) => s + Math.min(c.effectiveAvailable, c.needed),
-      0
-    );
-    const totalProtectionGap = protectionComparison.reduce((s, c) => s + c.gap, 0);
-
-    // Dynamic Risk Status Indicators for Card 6
+    // Dynamic Risk Status Indicators for Overview Card 6
     const medicalCat = protectionComparison.find((c) => c.id === 'medical');
     const medicalPct = medicalCat ? medicalCat.coveragePct : 0;
-    const healthLevel =
-      hasUnknownCoverage || medicalPct < 50
-        ? 'high'
-        : medicalPct < 80
-          ? 'moderate'
-          : 'low';
+    const healthLevel = medicalCat ? medicalCat.level : 'high';
 
     const incomeLevel =
       emergencyRunway < targetMonths * 0.5
@@ -547,7 +582,8 @@ export function FinanceProvider({ children }) {
           ? 'moderate'
           : 'low';
 
-    const assetsLevel = 'moderate';
+    const familyCat = protectionComparison.find((c) => c.id === 'family');
+    const assetsLevel = familyCat ? familyCat.level : 'moderate';
 
     const riskStatuses = [
       {
@@ -591,7 +627,7 @@ export function FinanceProvider({ children }) {
         level: assetsLevel,
         titleKey: 'overview.riskAssetsTitle',
         descKey: 'overview.riskAssetsDesc',
-        metric: '50%',
+        metric: `${familyCat ? familyCat.coveragePct : 50}%`,
       },
     ];
 
@@ -607,9 +643,10 @@ export function FinanceProvider({ children }) {
       totalNeededCoverage,
       totalEffectiveCoverage,
       totalProtectionGap,
+      riskAssessment,
       riskStatuses,
     };
-  }, [profile, coverages, userProfile.emergencyTargetMonths, userProfile.dependents]);
+  }, [profile, coverages, riskProfile, userProfile.emergencyTargetMonths, userProfile.dependents]);
 
   const updateUserProfile = useCallback(
     (patch, { silent = false } = {}) => {
@@ -638,10 +675,18 @@ export function FinanceProvider({ children }) {
             }
           : prev.userProfile;
       const { emergencyTargetMonths: _ignored, ...financialPatch } = patch;
-      const nextFinancials =
+      const mergedFinancials =
         Object.keys(financialPatch).length > 0
           ? { ...prev.financials, ...financialPatch }
           : prev.financials;
+      const nextFinancials = {
+        ...mergedFinancials,
+        monthlySavings: Math.max(
+          0,
+          (Number(mergedFinancials.monthlyIncome) || 0) -
+            (Number(mergedFinancials.monthlyExpenses) || 0)
+        ),
+      };
       return {
         ...prev,
         userProfile: nextUserProfile,
@@ -651,10 +696,37 @@ export function FinanceProvider({ children }) {
   }, []);
 
   const updateRiskProfile = useCallback((patch) => {
-    setStore((prev) => ({
-      ...prev,
-      riskProfile: sanitizeRiskProfile({ ...prev.riskProfile, ...patch }),
-    }));
+    if (!patch || typeof patch !== 'object') return;
+    setStore((prev) => {
+      const merged = {
+        ...prev.riskProfile,
+        ...patch,
+        groupInsurance: patch.groupInsurance
+          ? { ...prev.riskProfile.groupInsurance, ...patch.groupInsurance }
+          : prev.riskProfile.groupInsurance,
+        personalPolicies: patch.personalPolicies
+          ? {
+              ...prev.riskProfile.personalPolicies,
+              ...Object.fromEntries(
+                Object.entries(patch.personalPolicies).map(([k, v]) => [
+                  k,
+                  { ...(prev.riskProfile.personalPolicies?.[k] || {}), ...v },
+                ])
+              ),
+            }
+          : prev.riskProfile.personalPolicies,
+      };
+      const nextRisk = sanitizeRiskProfile(merged);
+      const shouldSyncCards =
+        'govScheme' in patch || 'groupInsurance' in patch || 'personalPolicies' in patch;
+      return {
+        ...prev,
+        riskProfile: nextRisk,
+        coverages: shouldSyncCards
+          ? syncCoveragesWithRiskProfile(prev.coverages, nextRisk)
+          : prev.coverages,
+      };
+    });
   }, []);
 
   const applyTransactionDelta = (prevFinancials, tx, direction) => {
@@ -852,20 +924,89 @@ export function FinanceProvider({ children }) {
   }, []);
 
   const updateCoverage = useCallback((id, patch) => {
-    setStore((prev) => ({
-      ...prev,
-      coverages: prev.coverages.map((item) =>
+    setStore((prev) => {
+      const nextCoverages = prev.coverages.map((item) =>
         item.id === id ? { ...item, ...patch } : item
-      ),
-    }));
+      );
+      let nextRisk = prev.riskProfile;
+      if (id === 'group-ins') {
+        const updatedItem = nextCoverages.find((c) => c.id === 'group-ins');
+        if (updatedItem) {
+          nextRisk = {
+            ...prev.riskProfile,
+            groupInsurance: {
+              active: true,
+              unknownLimit: !updatedItem.limitKnown,
+              limit: Number(updatedItem.benefits?.medical) || 0,
+            },
+          };
+        }
+      }
+      return {
+        ...prev,
+        coverages: nextCoverages,
+        riskProfile: nextRisk,
+      };
+    });
   }, []);
 
   const removeCoverage = useCallback(
     (id) => {
-      setStore((prev) => ({
-        ...prev,
-        coverages: prev.coverages.filter((item) => item.id !== id),
-      }));
+      setStore((prev) => {
+        let nextRisk = prev.riskProfile;
+        if (id === 'group-ins') {
+          nextRisk = {
+            ...prev.riskProfile,
+            groupInsurance: {
+              ...prev.riskProfile.groupInsurance,
+              active: false,
+            },
+          };
+        } else if (id === 'ra-personal-health') {
+          nextRisk = {
+            ...prev.riskProfile,
+            personalPolicies: {
+              ...prev.riskProfile.personalPolicies,
+              health: { ...prev.riskProfile.personalPolicies.health, active: false },
+            },
+          };
+        } else if (id === 'ra-personal-accident') {
+          nextRisk = {
+            ...prev.riskProfile,
+            personalPolicies: {
+              ...prev.riskProfile.personalPolicies,
+              accident: { ...prev.riskProfile.personalPolicies.accident, active: false },
+            },
+          };
+        } else if (id === 'ra-personal-ci') {
+          nextRisk = {
+            ...prev.riskProfile,
+            personalPolicies: {
+              ...prev.riskProfile.personalPolicies,
+              criticalIllness: {
+                ...prev.riskProfile.personalPolicies.criticalIllness,
+                active: false,
+              },
+            },
+          };
+        } else if (id === 'ra-personal-life') {
+          nextRisk = {
+            ...prev.riskProfile,
+            personalPolicies: {
+              ...prev.riskProfile.personalPolicies,
+              lifeDisability: {
+                ...prev.riskProfile.personalPolicies.lifeDisability,
+                active: false,
+              },
+            },
+          };
+        }
+        return {
+          ...prev,
+          coverages: prev.coverages.filter((item) => item.id !== id),
+          riskProfile: nextRisk,
+        };
+      });
       showToast('info', {
         th: 'ลบสิทธิความคุ้มครองเรียบร้อยแล้ว',
         en: 'Coverage item removed',
