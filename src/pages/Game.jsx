@@ -1,15 +1,18 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import {
   AlertTriangle,
   ArrowRight,
   Award,
   Briefcase,
   Calendar,
+  Check,
   CheckCircle2,
+  ChevronDown,
   Clock,
   FastForward,
   HeartPulse,
   Info,
+  Lock,
   MessageSquareCheck,
   Minus,
   Play,
@@ -22,20 +25,25 @@ import {
   TrendingUp,
   User,
   Wallet,
+  X,
 } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import { formatTHB, useFinance } from '../context/FinanceContext';
 import LiquidTabs from '../components/LiquidTabs';
 import PixelAvatarStage from '../components/PixelAvatarStage';
 import {
+  ACCESSORY_BY_ID,
   ACCESSORY_OPTIONS,
+  ACCESSORY_SLOTS,
   deriveAvatarSceneAndState,
   GENDER_OPTIONS,
+  getAccessoryConflict,
   HAIR_PALETTES,
   HAIR_STYLE_OPTIONS,
   loadSavedAvatarConfig,
   OUTFIT_PALETTES,
   ROOM_THEMES,
+  sanitizeAccessories,
   saveAvatarConfig,
   SKIN_PALETTES,
 } from '../utils/pixelAvatar';
@@ -115,9 +123,46 @@ export default function Game({ onNavigate }) {
   // Stardew-style Paper-Doll Pixel Character state (persisted locally under protect360_avatar_v1)
   const [avatarConfig, setAvatarConfig] = useState(() => loadSavedAvatarConfig());
   const [avatarPreviewMood, setAvatarPreviewMood] = useState('steady'); // 'steady' | 'struggling' | 'cast' | 'prosperous'
+  const [openStudioMenu, setOpenStudioMenu] = useState(null); // null | 'hair' | 'accessories' | 'theme'
+  const studioRef = useRef(null);
+
+  useEffect(() => {
+    if (!openStudioMenu) return undefined;
+    const handleOutside = (e) => {
+      if (studioRef.current && !studioRef.current.contains(e.target)) {
+        setOpenStudioMenu(null);
+      }
+    };
+    const handleEsc = (e) => {
+      if (e.key === 'Escape') setOpenStudioMenu(null);
+    };
+    document.addEventListener('mousedown', handleOutside);
+    document.addEventListener('keydown', handleEsc);
+    return () => {
+      document.removeEventListener('mousedown', handleOutside);
+      document.removeEventListener('keydown', handleEsc);
+    };
+  }, [openStudioMenu]);
+
   const updateAvatarConfig = (patch) => {
     setAvatarConfig((prev) => {
       const next = { ...prev, ...patch };
+      saveAvatarConfig(next);
+      return next;
+    });
+  };
+
+  const toggleAvatarAccessory = (accId) => {
+    setAvatarConfig((prev) => {
+      const current = sanitizeAccessories(prev.accessories || []);
+      let nextAcc;
+      if (current.includes(accId)) {
+        nextAcc = current.filter((id) => id !== accId);
+      } else {
+        if (getAccessoryConflict(current, accId)) return prev;
+        nextAcc = [...current, accId];
+      }
+      const next = { ...prev, accessories: nextAcc };
       saveAvatarConfig(next);
       return next;
     });
@@ -873,7 +918,7 @@ export default function Game({ onNavigate }) {
                 </div>
               </div>
 
-              <div className="gm-avatar-controls-split">
+              <div ref={studioRef} className="gm-avatar-controls-split">
                 <div className="gm-avatar-subcol">
                   {/* Gender / Silhouette */}
                   <div className="gm-avatar-ctrl-row">
@@ -916,27 +961,58 @@ export default function Game({ onNavigate }) {
                     </div>
                   </div>
 
-                  {/* Hair Style */}
-                  <div className="gm-avatar-ctrl-row">
+                  {/* Hair Style Dropdown (9 Styles) */}
+                  <div className="gm-avatar-ctrl-row gm-dd-wrap">
                     <span className="gm-avatar-ctrl-label">
-                      {lang === 'TH' ? 'ทรงผม' : 'Hairstyle'}
+                      {lang === 'TH' ? `ทรงผม (${HAIR_STYLE_OPTIONS.length} ทรง)` : `Hairstyle (${HAIR_STYLE_OPTIONS.length})`}
                     </span>
-                    <div className="gm-avatar-pill-group">
-                      {HAIR_STYLE_OPTIONS.map((h) => (
-                        <button
-                          key={h.id}
-                          id={`gm-avatar-hair-${h.id}`}
-                          type="button"
-                          className={`gm-avatar-opt-pill ${avatarConfig.hairStyle === h.id ? 'active' : ''}`}
-                          onClick={() => updateAvatarConfig({ hairStyle: h.id })}
-                        >
-                          {lang === 'TH' ? h.th : h.en}
-                        </button>
-                      ))}
-                    </div>
+                    {(() => {
+                      const activeHair =
+                        HAIR_STYLE_OPTIONS.find((h) => h.id === avatarConfig.hairStyle) ||
+                        HAIR_STYLE_OPTIONS[0];
+                      const isOpen = openStudioMenu === 'hair';
+                      return (
+                        <>
+                          <button
+                            id="gm-dd-hair-btn"
+                            type="button"
+                            className={`gm-dd-trigger ${isOpen ? 'open' : ''}`}
+                            aria-expanded={isOpen}
+                            onClick={() => setOpenStudioMenu(isOpen ? null : 'hair')}
+                          >
+                            <span className="gm-dd-trigger-text">
+                              {lang === 'TH' ? activeHair.th : activeHair.en}
+                            </span>
+                            <ChevronDown size={15} className="gm-dd-chevron" aria-hidden="true" />
+                          </button>
+                          {isOpen && (
+                            <div className="gm-dd-menu" role="listbox" aria-label="Hairstyle options">
+                              {HAIR_STYLE_OPTIONS.map((h) => {
+                                const selected = avatarConfig.hairStyle === h.id;
+                                return (
+                                  <button
+                                    key={h.id}
+                                    id={`gm-avatar-hair-${h.id}`}
+                                    type="button"
+                                    className={`gm-dd-item ${selected ? 'selected' : ''}`}
+                                    onClick={() => {
+                                      updateAvatarConfig({ hairStyle: h.id });
+                                      setOpenStudioMenu(null);
+                                    }}
+                                  >
+                                    <span>{lang === 'TH' ? h.th : h.en}</span>
+                                    {selected && <Check size={14} className="gm-dd-check" aria-hidden="true" />}
+                                  </button>
+                                );
+                              })}
+                            </div>
+                          )}
+                        </>
+                      );
+                    })()}
                   </div>
 
-                  {/* Hair Color */}
+                  {/* Hair Color (7 Swatches) */}
                   <div className="gm-avatar-ctrl-row">
                     <span className="gm-avatar-ctrl-label">
                       {lang === 'TH' ? 'สีผม' : 'Hair Color'}
@@ -980,45 +1056,189 @@ export default function Game({ onNavigate }) {
                     </div>
                   </div>
 
-                  {/* Fun Accessories */}
-                  <div className="gm-avatar-ctrl-row">
+                  {/* Multi-Select Accessories Dropdown with Overlap Slot Guard */}
+                  <div className="gm-avatar-ctrl-row gm-dd-wrap">
                     <span className="gm-avatar-ctrl-label">
-                      {lang === 'TH' ? 'ของแต่งตัวสนุก ๆ' : 'Fun Accessories'}
+                      {lang === 'TH'
+                        ? `ของแต่งตัว (${ACCESSORY_OPTIONS.length} ชิ้น • ใส่พร้อมกันได้)`
+                        : `Accessories (${ACCESSORY_OPTIONS.length} • Multi-Wear)`}
                     </span>
-                    <div className="gm-avatar-pill-group">
-                      {ACCESSORY_OPTIONS.map((acc) => (
-                        <button
-                          key={acc.id}
-                          id={`gm-avatar-acc-${acc.id}`}
-                          type="button"
-                          className={`gm-avatar-opt-pill ${(avatarConfig.accessory || 'none') === acc.id ? 'active' : ''}`}
-                          onClick={() => updateAvatarConfig({ accessory: acc.id })}
-                        >
-                          {lang === 'TH' ? acc.th : acc.en}
-                        </button>
-                      ))}
-                    </div>
+                    {(() => {
+                      const equipped = sanitizeAccessories(avatarConfig.accessories || []);
+                      const isOpen = openStudioMenu === 'accessories';
+                      const triggerLabel =
+                        equipped.length === 0
+                          ? lang === 'TH'
+                            ? 'เลือกของแต่งตัว (ใส่ได้หลายชิ้น)'
+                            : 'Select accessories (multi-wear)'
+                          : equipped
+                              .map((id) => {
+                                const item = ACCESSORY_BY_ID[id];
+                                return lang === 'TH' ? item?.th : item?.en;
+                              })
+                              .filter(Boolean)
+                              .join(', ');
+                      return (
+                        <>
+                          <button
+                            id="gm-dd-acc-btn"
+                            type="button"
+                            className={`gm-dd-trigger ${isOpen ? 'open' : ''}`}
+                            aria-expanded={isOpen}
+                            onClick={() => setOpenStudioMenu(isOpen ? null : 'accessories')}
+                          >
+                            <span className="gm-dd-trigger-text">{triggerLabel}</span>
+                            {equipped.length > 0 && (
+                              <span className="gm-dd-count">{equipped.length}</span>
+                            )}
+                            <ChevronDown size={15} className="gm-dd-chevron" aria-hidden="true" />
+                          </button>
+
+                          {equipped.length > 0 && (
+                            <div className="gm-acc-active-chips">
+                              {equipped.map((id) => {
+                                const item = ACCESSORY_BY_ID[id];
+                                if (!item) return null;
+                                return (
+                                  <button
+                                    key={id}
+                                    type="button"
+                                    className="gm-acc-tag"
+                                    onClick={() => toggleAvatarAccessory(id)}
+                                    title={lang === 'TH' ? 'คลิกเพื่อถอดออก' : 'Click to remove'}
+                                  >
+                                    <span>{lang === 'TH' ? item.th : item.en}</span>
+                                    <X size={11} aria-hidden="true" />
+                                  </button>
+                                );
+                              })}
+                            </div>
+                          )}
+
+                          {isOpen && (
+                            <div className="gm-dd-menu gm-dd-menu-tall" role="group" aria-label="Accessories menu">
+                              <div className="gm-dd-note">
+                                {lang === 'TH'
+                                  ? 'ใส่หลายชิ้นพร้อมกันได้ ยกเว้นตำแหน่งที่ซ้อนทับกัน'
+                                  : 'Equip multiple items together unless slots overlap'}
+                              </div>
+                              {Object.entries(ACCESSORY_SLOTS).map(([slotKey, slotMeta]) => {
+                                const itemsInSlot = ACCESSORY_OPTIONS.filter((a) => a.slot === slotKey);
+                                return (
+                                  <div key={slotKey} className="gm-dd-group">
+                                    <div className="gm-dd-group-title">
+                                      {lang === 'TH' ? slotMeta.th : slotMeta.en}
+                                    </div>
+                                    {itemsInSlot.map((acc) => {
+                                      const selected = equipped.includes(acc.id);
+                                      const conflict = selected
+                                        ? null
+                                        : getAccessoryConflict(equipped, acc.id);
+                                      return (
+                                        <button
+                                          key={acc.id}
+                                          id={`gm-avatar-acc-${acc.id}`}
+                                          type="button"
+                                          disabled={Boolean(conflict)}
+                                          className={`gm-dd-item ${selected ? 'selected' : ''} ${conflict ? 'locked' : ''}`}
+                                          title={
+                                            conflict
+                                              ? lang === 'TH'
+                                                ? conflict.reasonTh
+                                                : conflict.reasonEn
+                                              : undefined
+                                          }
+                                          onClick={() => toggleAvatarAccessory(acc.id)}
+                                        >
+                                          <span className="gm-dd-item-main">
+                                            <span>{lang === 'TH' ? acc.th : acc.en}</span>
+                                            {conflict && (
+                                              <small className="gm-dd-conflict-note">
+                                                {lang === 'TH' ? conflict.reasonTh : conflict.reasonEn}
+                                              </small>
+                                            )}
+                                          </span>
+                                          {selected ? (
+                                            <Check size={14} className="gm-dd-check" aria-hidden="true" />
+                                          ) : conflict ? (
+                                            <Lock size={13} className="gm-dd-lock" aria-hidden="true" />
+                                          ) : null}
+                                        </button>
+                                      );
+                                    })}
+                                  </div>
+                                );
+                              })}
+                            </div>
+                          )}
+                        </>
+                      );
+                    })()}
                   </div>
 
-                  {/* Festive & Studio Room Themes */}
-                  <div className="gm-avatar-ctrl-row">
+                  {/* Festive & Studio Room Themes Dropdown (12 Themes) */}
+                  <div className="gm-avatar-ctrl-row gm-dd-wrap">
                     <span className="gm-avatar-ctrl-label">
-                      {lang === 'TH' ? 'ธีมห้องพัก & เทศกาล' : 'Room & Festive Themes'}
+                      {lang === 'TH'
+                        ? `ธีมห้องพัก & เทศกาล (${Object.keys(ROOM_THEMES).length} ธีม)`
+                        : `Room & Festive Themes (${Object.keys(ROOM_THEMES).length})`}
                     </span>
-                    <div className="gm-room-chip-group">
-                      {Object.values(ROOM_THEMES).map((rt) => (
-                        <button
-                          key={rt.id}
-                          id={`gm-avatar-room-${rt.id}`}
-                          type="button"
-                          className={`gm-room-chip ${avatarConfig.roomTheme === rt.id ? 'active' : ''}`}
-                          onClick={() => updateAvatarConfig({ roomTheme: rt.id })}
-                        >
-                          <span className="gm-room-dot" style={{ backgroundColor: rt.swatch }} aria-hidden="true" />
-                          <span>{lang === 'TH' ? rt.th : rt.en}</span>
-                        </button>
-                      ))}
-                    </div>
+                    {(() => {
+                      const activeRoom = ROOM_THEMES[avatarConfig.roomTheme] || ROOM_THEMES.sky;
+                      const isOpen = openStudioMenu === 'theme';
+                      return (
+                        <>
+                          <button
+                            id="gm-dd-theme-btn"
+                            type="button"
+                            className={`gm-dd-trigger ${isOpen ? 'open' : ''}`}
+                            aria-expanded={isOpen}
+                            onClick={() => setOpenStudioMenu(isOpen ? null : 'theme')}
+                          >
+                            <span className="gm-dd-trigger-inner">
+                              <span
+                                className="gm-room-dot"
+                                style={{ backgroundColor: activeRoom.swatch }}
+                                aria-hidden="true"
+                              />
+                              <span className="gm-dd-trigger-text">
+                                {lang === 'TH' ? activeRoom.th : activeRoom.en}
+                              </span>
+                            </span>
+                            <ChevronDown size={15} className="gm-dd-chevron" aria-hidden="true" />
+                          </button>
+                          {isOpen && (
+                            <div className="gm-dd-menu gm-dd-menu-tall" role="listbox" aria-label="Room themes">
+                              {Object.values(ROOM_THEMES).map((rt) => {
+                                const selected = avatarConfig.roomTheme === rt.id;
+                                return (
+                                  <button
+                                    key={rt.id}
+                                    id={`gm-avatar-room-${rt.id}`}
+                                    type="button"
+                                    className={`gm-dd-item ${selected ? 'selected' : ''}`}
+                                    onClick={() => {
+                                      updateAvatarConfig({ roomTheme: rt.id });
+                                      setOpenStudioMenu(null);
+                                    }}
+                                  >
+                                    <span className="gm-dd-trigger-inner">
+                                      <span
+                                        className="gm-room-dot"
+                                        style={{ backgroundColor: rt.swatch }}
+                                        aria-hidden="true"
+                                      />
+                                      <span>{lang === 'TH' ? rt.th : rt.en}</span>
+                                    </span>
+                                    {selected && <Check size={14} className="gm-dd-check" aria-hidden="true" />}
+                                  </button>
+                                );
+                              })}
+                            </div>
+                          )}
+                        </>
+                      );
+                    })()}
                   </div>
                 </div>
               </div>

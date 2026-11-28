@@ -3,11 +3,11 @@ export const AVATAR_STORAGE_KEY = 'protect360_avatar_v1';
 export const DEFAULT_AVATAR_CONFIG = {
   gender: 'neutral', // 'neutral' | 'masculine' | 'feminine'
   skinTone: 'warm', // 'fair' | 'warm' | 'honey' | 'tan' | 'deep'
-  hairStyle: 'short', // 'short' | 'bob' | 'ponytail' | 'curly'
-  hairColor: 'espresso', // 'espresso' | 'chestnut' | 'navy' | 'caramel' | 'ash'
-  outfitColor: 'royal', // 'royal' | 'teal' | 'plum' | 'graphite' | 'sand'
-  accessory: 'none', // 'none' | 'glasses' | 'headphones' | 'cap'
-  roomTheme: 'sky', // 'sky' | 'midnight' | 'christmas' | 'halloween' | 'songkran' | 'valentine' | 'chinese_new_year'
+  hairStyle: 'short',
+  hairColor: 'espresso',
+  outfitColor: 'royal',
+  accessories: [], // Multi-select array with overlap slot protection
+  roomTheme: 'sky',
 };
 
 export const GENDER_OPTIONS = [
@@ -25,10 +25,15 @@ export const SKIN_PALETTES = {
 };
 
 export const HAIR_STYLE_OPTIONS = [
-  { id: 'short', th: 'สั้น', en: 'Short' },
-  { id: 'bob', th: 'บ็อบ', en: 'Bob' },
-  { id: 'ponytail', th: 'หางม้า', en: 'Ponytail' },
-  { id: 'curly', th: 'ลอนฟู', en: 'Curly' },
+  { id: 'short', th: 'ผมสั้นคลาสสิก', en: 'Classic Short' },
+  { id: 'bob', th: 'ผมบ็อบประบ่า', en: 'Cozy Bob' },
+  { id: 'ponytail', th: 'มัดหางม้า', en: 'Ponytail' },
+  { id: 'curly', th: 'ลอนฟูสไตล์อาร์ต', en: 'Fluffy Curly' },
+  { id: 'spiky', th: 'ผมตั้งอนิเมะ', en: 'Anime Spiky' },
+  { id: 'side_part', th: 'แสกข้างเนี้ยบ', en: 'Clean Side Part' },
+  { id: 'twin_tails', th: 'มัดแกละคู่สุดคิวต์', en: 'Twin Tails' },
+  { id: 'long_straight', th: 'ผมยาวตรงสลวย', en: 'Long Straight' },
+  { id: 'bun', th: 'มวยผมดังโงะ', en: 'Top Bun' },
 ];
 
 export const HAIR_PALETTES = {
@@ -37,14 +42,89 @@ export const HAIR_PALETTES = {
   navy: { id: 'navy', base: '#1E3A5F', shine: '#356099', th: 'กรมท่า P360', en: 'P360 Navy' },
   caramel: { id: 'caramel', base: '#B57B45', shine: '#D49A60', th: 'คาราเมล', en: 'Caramel' },
   ash: { id: 'ash', base: '#64748B', shine: '#94A3B8', th: 'เทาหม่น', en: 'Ash Slate' },
+  blossom: { id: 'blossom', base: '#C02674', shine: '#F472B6', th: 'ชมพูพาสเทล', en: 'Blossom Pink' },
+  blonde: { id: 'blonde', base: '#D99B26', shine: '#FDE047', th: 'บลอนด์สว่าง', en: 'Warm Blonde' },
+};
+
+export const ACCESSORY_SLOTS = {
+  eyes: { th: 'ดวงตา', en: 'Eyes' },
+  ears: { th: 'หู & ศีรษะ', en: 'Ears & Band' },
+  head: { th: 'หมวก & ศีรษะ', en: 'Headwear' },
+  neck: { th: 'รอบคอ', en: 'Neck' },
+  companion: { th: 'พกพา & คู่หู', en: 'Carry & Buddy' },
 };
 
 export const ACCESSORY_OPTIONS = [
-  { id: 'none', th: 'ไม่ใส่เพิ่ม', en: 'None' },
-  { id: 'glasses', th: 'แว่นตา', en: 'Glasses' },
-  { id: 'headphones', th: 'หูฟัง', en: 'Headset' },
-  { id: 'cap', th: 'หมวกแก๊ป', en: 'Cap' },
+  { id: 'glasses', slot: 'eyes', conflicts: [], th: 'แว่นตาใส', en: 'Classic Glasses' },
+  { id: 'sunglasses', slot: 'eyes', conflicts: [], th: 'แว่นกันแดดเท่ ๆ', en: 'Cool Shades' },
+  { id: 'cyber_visor', slot: 'eyes', conflicts: [], th: 'แว่นไซเบอร์นีออน', en: 'Cyber Visor' },
+
+  {
+    id: 'headphones',
+    slot: 'ears',
+    conflicts: ['cap', 'beanie', 'santa_hat', 'crown'],
+    th: 'หูฟังเกมมิง',
+    en: 'Gaming Headset',
+  },
+  { id: 'earrings', slot: 'ears', conflicts: [], th: 'ต่างหูเพชรวิบวับ', en: 'Sparkle Studs' },
+
+  { id: 'cap', slot: 'head', conflicts: ['headphones'], th: 'หมวกแก๊ปสตรีท', en: 'Street Cap' },
+  { id: 'beanie', slot: 'head', conflicts: ['headphones'], th: 'หมวกไหมพรม', en: 'Cozy Beanie' },
+  { id: 'santa_hat', slot: 'head', conflicts: ['headphones'], th: 'หมวกซานต้า / ปาร์ตี้', en: 'Festive Hat' },
+  { id: 'crown', slot: 'head', conflicts: ['headphones'], th: 'มงกุฎทอง', en: 'Golden Crown' },
+
+  { id: 'scarf', slot: 'neck', conflicts: [], th: 'ผ้าพันคออบอุ่น', en: 'Warm Scarf' },
+  { id: 'bowtie', slot: 'neck', conflicts: [], th: 'โบว์หูกระต่าย', en: 'Dapper Bowtie' },
+
+  { id: 'backpack', slot: 'companion', conflicts: [], th: 'กระเป๋าเป้', en: 'Daypack' },
+  { id: 'boba_tea', slot: 'companion', conflicts: [], th: 'ชานมไข่มุก', en: 'Boba Tea' },
+  { id: 'mini_shiba', slot: 'companion', conflicts: [], th: 'น้องหมาชิบะคู่ใจ', en: 'Pocket Shiba' },
 ];
+
+export const ACCESSORY_BY_ID = Object.fromEntries(ACCESSORY_OPTIONS.map((a) => [a.id, a]));
+
+export function getAccessoryConflict(selectedList, candidateId) {
+  const active = Array.isArray(selectedList) ? selectedList : [];
+  if (active.includes(candidateId)) return null;
+  const candidate = ACCESSORY_BY_ID[candidateId];
+  if (!candidate) return { reasonTh: 'ไม่พบไอเทมนี้', reasonEn: 'Unavailable' };
+
+  for (const equippedId of active) {
+    const equipped = ACCESSORY_BY_ID[equippedId];
+    if (!equipped) continue;
+    if (equipped.slot === candidate.slot) {
+      const slotMeta = ACCESSORY_SLOTS[candidate.slot];
+      return {
+        blockerId: equippedId,
+        reasonTh: `ใส่ได้ 1 ชิ้นในช่อง${slotMeta?.th || candidate.slot} (ใส่${equipped.th}อยู่)`,
+        reasonEn: `Slot ${slotMeta?.en || candidate.slot} occupied by ${equipped.en}`,
+      };
+    }
+    if (
+      (candidate.conflicts && candidate.conflicts.includes(equippedId)) ||
+      (equipped.conflicts && equipped.conflicts.includes(candidateId))
+    ) {
+      return {
+        blockerId: equippedId,
+        reasonTh: `ใส่ทับกับ "${equipped.th}" ไม่ได้`,
+        reasonEn: `Overlaps with "${equipped.en}"`,
+      };
+    }
+  }
+  return null;
+}
+
+export function sanitizeAccessories(list) {
+  if (!Array.isArray(list)) return [];
+  const next = [];
+  for (const id of list) {
+    if (!ACCESSORY_BY_ID[id] || next.includes(id)) continue;
+    if (!getAccessoryConflict(next, id)) {
+      next.push(id);
+    }
+  }
+  return next;
+}
 
 export const OUTFIT_PALETTES = {
   royal: {
@@ -117,7 +197,7 @@ export const OUTFIT_PALETTES = {
 export const ROOM_THEMES = {
   sky: {
     id: 'sky',
-    swatch: '#93C5FD',
+    swatch: '#60A5FA',
     wall: '#F1F6FC',
     floor: '#E2EBF6',
     trim: '#CBD8EA',
@@ -142,6 +222,76 @@ export const ROOM_THEMES = {
     lamp: true,
     th: 'เนวีกลางคืน',
     en: 'Midnight Desk',
+  },
+  gaming_rgb: {
+    id: 'gaming_rgb',
+    swatch: '#A855F7',
+    wall: '#18102D',
+    floor: '#110A21',
+    trim: '#3B1E6E',
+    windowBg: '#0B0618',
+    desk: '#312E81',
+    deskTop: '#1E1B4B',
+    plant: '#22D3EE',
+    lamp: true,
+    th: 'เกมมิ่ง RGB นีออน',
+    en: 'Neon Gaming RGB',
+  },
+  sakura_spring: {
+    id: 'sakura_spring',
+    swatch: '#F9A8D4',
+    wall: '#FFF5F9',
+    floor: '#FCE7F3',
+    trim: '#FBCFE8',
+    windowBg: '#E0F2FE',
+    desk: '#A47551',
+    deskTop: '#7D5436',
+    plant: '#EC4899',
+    lamp: false,
+    th: 'ฤดูใบไม้ผลิซากุระ',
+    en: 'Sakura Spring',
+  },
+  cozy_cafe: {
+    id: 'cozy_cafe',
+    swatch: '#B45309',
+    wall: '#FAF3E6',
+    floor: '#EADBC8',
+    trim: '#D6C0A1',
+    windowBg: '#DBEAFE',
+    desk: '#784E2C',
+    deskTop: '#56361C',
+    plant: '#15803D',
+    lamp: true,
+    th: 'มุมคาเฟ่ไม้มินิมอล',
+    en: 'Warm Cozy Cafe',
+  },
+  beach_summer: {
+    id: 'beach_summer',
+    swatch: '#06B6D4',
+    wall: '#ECFEFF',
+    floor: '#FEF3C7',
+    trim: '#A5F3FC',
+    windowBg: '#38BDF8',
+    desk: '#C28B56',
+    deskTop: '#9A6838',
+    plant: '#16A34A',
+    lamp: false,
+    th: 'บ้านพักริมทะเล',
+    en: 'Beach Getaway',
+  },
+  space_observatory: {
+    id: 'space_observatory',
+    swatch: '#38BDF8',
+    wall: '#0B1120',
+    floor: '#111827',
+    trim: '#1E3A8A',
+    windowBg: '#030712',
+    desk: '#334155',
+    deskTop: '#1E293B',
+    plant: '#38BDF8',
+    lamp: true,
+    th: 'หอดูดาวอวกาศ',
+    en: 'Space Observatory',
   },
   christmas: {
     id: 'christmas',
@@ -173,28 +323,28 @@ export const ROOM_THEMES = {
   },
   songkran: {
     id: 'songkran',
-    swatch: '#06B6D4',
-    wall: '#ECFEFF',
-    floor: '#E0F2FE',
-    trim: '#A5F3FC',
+    swatch: '#0EA5E9',
+    wall: '#E0F7FF',
+    floor: '#BAE6FD',
+    trim: '#7DD3FC',
     windowBg: '#38BDF8',
-    desk: '#9A6B42',
-    deskTop: '#78502E',
-    plant: '#14B8A6',
+    desk: '#9C6B3B',
+    deskTop: '#784E28',
+    plant: '#10B981',
     lamp: false,
     th: 'สงกรานต์',
-    en: 'Songkran',
+    en: 'Songkran Festival',
   },
   valentine: {
     id: 'valentine',
-    swatch: '#F472B6',
-    wall: '#FFF1F2',
-    floor: '#FFE4E6',
-    trim: '#FECDD3',
-    windowBg: '#FBCFE8',
-    desk: '#9D6B6E',
-    deskTop: '#7F5053',
-    plant: '#EC4899',
+    swatch: '#EC4899',
+    wall: '#FFF1F5',
+    floor: '#FFE4EC',
+    trim: '#FBCFE8',
+    windowBg: '#FDE8F0',
+    desk: '#A86472',
+    deskTop: '#824653',
+    plant: '#F43F5E',
     lamp: false,
     th: 'วาเลนไทน์',
     en: 'Valentine',
@@ -203,149 +353,208 @@ export const ROOM_THEMES = {
     id: 'chinese_new_year',
     swatch: '#DC2626',
     wall: '#FEF2F2',
-    floor: '#FEE2E2',
+    floor: '#FECACA',
     trim: '#FCA5A5',
-    windowBg: '#991B1B',
+    windowBg: '#7F1D1D',
     desk: '#7F1D1D',
-    deskTop: '#5C1212',
+    deskTop: '#5C1111',
     plant: '#F59E0B',
     lamp: false,
     th: 'ตรุษจีน',
-    en: 'Chinese NY',
+    en: 'Chinese New Year',
   },
 };
 
 export function loadSavedAvatarConfig() {
-  if (typeof window === 'undefined') return { ...DEFAULT_AVATAR_CONFIG };
   try {
-    const raw = window.localStorage.getItem(AVATAR_STORAGE_KEY);
-    if (!raw) return { ...DEFAULT_AVATAR_CONFIG };
+    const raw = localStorage.getItem(AVATAR_STORAGE_KEY);
+    if (!raw) return DEFAULT_AVATAR_CONFIG;
     const parsed = JSON.parse(raw);
+    const mergedAcc = Array.isArray(parsed.accessories)
+      ? parsed.accessories
+      : parsed.accessory && parsed.accessory !== 'none'
+        ? [parsed.accessory]
+        : [];
     return {
-      gender: ['neutral', 'masculine', 'feminine'].includes(parsed?.gender)
-        ? parsed.gender
-        : DEFAULT_AVATAR_CONFIG.gender,
-      skinTone: SKIN_PALETTES[parsed?.skinTone] ? parsed.skinTone : DEFAULT_AVATAR_CONFIG.skinTone,
-      hairStyle: HAIR_STYLE_OPTIONS.some((h) => h.id === parsed?.hairStyle)
+      gender: GENDER_OPTIONS.some((g) => g.id === parsed.gender) ? parsed.gender : DEFAULT_AVATAR_CONFIG.gender,
+      skinTone: SKIN_PALETTES[parsed.skinTone] ? parsed.skinTone : DEFAULT_AVATAR_CONFIG.skinTone,
+      hairStyle: HAIR_STYLE_OPTIONS.some((h) => h.id === parsed.hairStyle)
         ? parsed.hairStyle
         : DEFAULT_AVATAR_CONFIG.hairStyle,
-      hairColor: HAIR_PALETTES[parsed?.hairColor] ? parsed.hairColor : DEFAULT_AVATAR_CONFIG.hairColor,
-      outfitColor: OUTFIT_PALETTES[parsed?.outfitColor]
-        ? parsed.outfitColor
-        : DEFAULT_AVATAR_CONFIG.outfitColor,
-      accessory: ACCESSORY_OPTIONS.some((a) => a.id === parsed?.accessory)
-        ? parsed.accessory
-        : DEFAULT_AVATAR_CONFIG.accessory,
-      roomTheme: ROOM_THEMES[parsed?.roomTheme] ? parsed.roomTheme : DEFAULT_AVATAR_CONFIG.roomTheme,
+      hairColor: HAIR_PALETTES[parsed.hairColor] ? parsed.hairColor : DEFAULT_AVATAR_CONFIG.hairColor,
+      outfitColor: OUTFIT_PALETTES[parsed.outfitColor] ? parsed.outfitColor : DEFAULT_AVATAR_CONFIG.outfitColor,
+      accessories: sanitizeAccessories(mergedAcc),
+      roomTheme: ROOM_THEMES[parsed.roomTheme] ? parsed.roomTheme : DEFAULT_AVATAR_CONFIG.roomTheme,
     };
   } catch {
-    return { ...DEFAULT_AVATAR_CONFIG };
+    return DEFAULT_AVATAR_CONFIG;
   }
 }
 
-export function saveAvatarConfig(cfg) {
-  if (typeof window === 'undefined') return;
+export function saveAvatarConfig(config) {
   try {
-    window.localStorage.setItem(AVATAR_STORAGE_KEY, JSON.stringify(cfg));
+    localStorage.setItem(AVATAR_STORAGE_KEY, JSON.stringify(config));
   } catch {
-    // Ignore storage quota errors
+    // Ignore storage quota errors cleanly
   }
 }
 
+/**
+ * Derive rich visual state (wealthTier, injury, and dynamic event sceneType across 14 bespoke backdrops).
+ */
 export function deriveAvatarSceneAndState({
-  event = null,
-  lastTurnResult = null,
-  cash = 15000,
-  debt = 0,
+  event,
+  activeEvent,
+  lastTurnResult,
+  gameState,
+  cash,
+  debt,
   peace = 70,
   monthlyExpenses = 20000,
-  injuryType = 'none',
-  injuryTurnsLeft = 0,
-  phase = 'playing',
-  isResilient = true,
+  injuryType,
+  injuryTurnsLeft,
+  phase,
+  isResilient,
 }) {
+  const effectiveCash = Number(cash ?? gameState?.cash ?? 0);
+  const effectiveDebt = Number(debt ?? gameState?.debt ?? 0);
+  const effectiveMonthlyExp = Math.max(10000, Number(monthlyExpenses) || 20000);
+  const effectiveInjType = injuryType ?? gameState?.injuryType ?? 'none';
+  const effectiveInjTurns = Number(injuryTurnsLeft ?? gameState?.injuryTurnsLeft ?? 0);
+  const ev = event || activeEvent || null;
+
   let wealthTier = 'steady';
-  if (phase === 'results') {
-    wealthTier = isResilient && cash >= monthlyExpenses ? 'prosperous' : debt > 0 ? 'struggling' : 'steady';
-  } else if (debt > 0 || cash < Math.max(2000, monthlyExpenses * 0.35) || peace < 42) {
+  if (effectiveDebt > 0 || effectiveCash < 3000 || (phase === 'results' && !isResilient)) {
     wealthTier = 'struggling';
-  } else if (debt === 0 && cash >= monthlyExpenses * 3) {
+  } else if (
+    (effectiveCash >= Math.max(30000, effectiveMonthlyExp * 2) && effectiveDebt === 0 && peace >= 65) ||
+    (phase === 'results' && isResilient)
+  ) {
     wealthTier = 'prosperous';
   }
 
-  // Expressive scene backdrop selector across 9 scenes matching specific events
+  let injury = 'none';
+  if (effectiveInjTurns > 0 && effectiveInjType && effectiveInjType !== 'none') {
+    injury = effectiveInjType;
+  }
+
+  const eventCategory = ev?.category || lastTurnResult?.eventCategory || '';
+  const eventId = ev?.id || lastTurnResult?.eventId || '';
+
+  if (injury === 'none') {
+    if (/accident|moto|ankle|burn|fracture|sprain/.test(eventId)) {
+      injury = /ankle|slip|fracture|sprain/.test(eventId) ? 'leg_cast' : 'arm_cast';
+    } else if (/medical|flu|dengue|appendic|kidney|pneu|allergy|poison|stomach|migraine|uti/.test(eventId)) {
+      injury = 'medical_mask';
+    } else if (eventCategory === 'windfall' || (lastTurnResult && lastTurnResult.netCashChange > 0 && lastTurnResult.netDebtChange <= 0)) {
+      injury = 'windfall';
+    }
+  }
+
   let sceneType = 'office_room';
-  const cat = event?.category || lastTurnResult?.eventCategory || '';
-  const evId = event?.id || lastTurnResult?.eventId || '';
 
   if (phase === 'results') {
     sceneType = isResilient ? 'celebration' : 'rainy_street';
+  } else if (lastTurnResult && lastTurnResult.netCashChange > 0 && lastTurnResult.netDebtChange <= 0) {
+    sceneType = 'celebration';
+  } else if (eventCategory === 'windfall') {
+    sceneType = 'celebration';
   } else if (
-    evId.includes('vehicle') ||
-    evId.includes('tire') ||
-    evId.includes('car-battery') ||
-    evId.includes('moto-') ||
-    evId === 'accident-100k'
+    eventId === 'family-pet-2600' ||
+    eventId === 'life-pet-groom' ||
+    eventId === 'family-vet-4900' ||
+    eventId === 'opd-rabies-1400'
+  ) {
+    sceneType = 'pet_care';
+  } else if (eventId === 'life-game-console') {
+    sceneType = 'gaming_room';
+  } else if (
+    eventId === 'phone-trip-9500' ||
+    eventId === 'life-staycation' ||
+    eventId === 'life-luggage' ||
+    eventId === 'unpaid-leave-3200'
+  ) {
+    sceneType = 'beach_travel';
+  } else if (
+    eventId === 'life-gym-annual' ||
+    eventId === 'life-shoes' ||
+    eventId === 'opd-ear-1300' ||
+    eventId === 'opd-physio-2200'
+  ) {
+    sceneType = 'gym_sport';
+  } else if (
+    eventId === 'life-buffet' ||
+    eventId === 'life-reunion' ||
+    eventId === 'life-movie-date'
+  ) {
+    sceneType = 'restaurant_feast';
+  } else if (
+    eventId === 'accident-100k' ||
+    eventId === 'moto-crash-98k' ||
+    eventId === 'vehicle-prb-1800' ||
+    eventId === 'exp-tire' ||
+    eventId === 'exp-moto-brake' ||
+    eventId === 'car-battery-4600' ||
+    eventId === 'exp-shipping-dmg' ||
+    eventId === 'exp-cloud-doc'
   ) {
     sceneType = 'road_car';
-  } else if (cat === 'medical' || cat === 'accident') {
-    sceneType = 'hospital';
   } else if (
-    evId.includes('concert') ||
-    evId.includes('wedding') ||
-    evId.includes('staycation') ||
-    evId.includes('idol') ||
-    evId.includes('bday') ||
-    evId.includes('buffet') ||
-    evId.includes('reunion') ||
-    evId.includes('movie') ||
-    evId.includes('festival') ||
-    evId.includes('housewarm')
+    eventId === 'concert-6500' ||
+    eventId === 'social-wedding-3200' ||
+    eventId === 'life-idol-merch' ||
+    eventId === 'life-bday-pool' ||
+    eventId === 'life-festival'
   ) {
     sceneType = 'party';
   } else if (
-    evId.includes('laptop') ||
-    evId.includes('screen-crack') ||
-    evId.includes('gear-fix') ||
-    evId.includes('game-console') ||
-    evId.includes('course') ||
-    evId.includes('earbuds') ||
-    evId.includes('scam') ||
-    evId.includes('router')
+    eventId === 'gear-fix-2200' ||
+    eventId === 'laptop-repair-6500' ||
+    eventId === 'opd-eye-2400' ||
+    eventId === 'exp-router' ||
+    eventId === 'exp-phone-bat' ||
+    eventId === 'exp-scam-fee' ||
+    eventId === 'screen-crack-6200' ||
+    eventId === 'exp-tax-gap' ||
+    eventId === 'life-earbuds' ||
+    eventId === 'life-course'
   ) {
     sceneType = 'cyber_desk';
   } else if (
-    evId.includes('ac-repair') ||
-    evId.includes('fridge') ||
-    evId.includes('water-leak') ||
-    evId.includes('fan-ac') ||
-    evId.includes('locksmith') ||
-    evId.includes('flood') ||
-    evId.includes('utility')
+    eventId === 'utility-surge-1600' ||
+    eventId === 'ac-repair-4800' ||
+    eventId === 'exp-water-leak' ||
+    eventId === 'exp-locksmith' ||
+    eventId === 'exp-pest' ||
+    eventId === 'exp-home-aid' ||
+    eventId === 'exp-key-deposit' ||
+    eventId === 'exp-air-filter' ||
+    eventId === 'exp-fan-ac-clean' ||
+    eventId === 'fridge-fix-5200' ||
+    eventId === 'flood-room-5900' ||
+    eventId === 'life-housewarm' ||
+    eventId === 'life-desk-lamp' ||
+    eventId === 'life-chair-upgrade' ||
+    eventId === 'life-baking-hobby'
   ) {
     sceneType = 'home_repair';
-  } else if (cat === 'income' || (debt > 0 && cat !== 'windfall' && cat !== 'lifestyle')) {
+  } else if (
+    eventId === 'slip-fracture-100k' ||
+    eventId === 'minor-sprain-2800' ||
+    eventId === 'exp-rain-gear' ||
+    eventId === 'exp-laundry-dryer' ||
+    eventCategory === 'income'
+  ) {
     sceneType = 'rainy_street';
-  } else if (cat === 'lifestyle') {
+  } else if (eventCategory === 'medical' || eventCategory === 'accident') {
+    sceneType = 'hospital';
+  } else if (eventCategory === 'lifestyle') {
     sceneType = 'cafe_mall';
-  } else if (cat === 'windfall') {
-    sceneType = 'celebration';
+  } else if (eventCategory === 'expense') {
+    sceneType = 'home_repair';
+  } else if (wealthTier === 'struggling') {
+    sceneType = 'rainy_street';
   }
 
-  let activeInjury = injuryTurnsLeft > 0 ? injuryType : 'none';
-  if (phase === 'playing' && activeInjury === 'none') {
-    if (evId.includes('fracture') || evId.includes('sprain') || evId.includes('ankle')) {
-      activeInjury = 'leg_cast';
-    } else if (cat === 'accident') {
-      activeInjury = 'arm_cast';
-    } else if (cat === 'medical') {
-      activeInjury = 'medical_mask';
-    } else if (cat === 'windfall') {
-      activeInjury = 'windfall';
-    }
-  } else if (phase === 'results' && isResilient) {
-    activeInjury = 'windfall';
-  }
-
-  return { wealthTier, sceneType, injury: activeInjury };
+  return { sceneType, wealthTier, injury };
 }

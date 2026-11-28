@@ -18775,65 +18775,93 @@ p {
 
 .px-canvas-frame {
   position: relative;
-  width: min(440px, 100%);
+  width: min(560px, 100%);
   aspect-ratio: 220 / 112;
   margin: 0 auto;
-  border-radius: 16px;
+  border-radius: 18px;
   overflow: hidden;
   border: 1px solid var(--border-subtle);
   background: transparent;
-  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.25), 0 8px 20px rgba(15, 23, 42, 0.08);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.25), 0 10px 24px rgba(15, 23, 42, 0.09);
 }
 
 .px-react-bubble {
   position: absolute;
-  top: 8px;
-  left: 10px;
+  top: 9px;
+  left: 11px;
   z-index: 2;
-  padding: 3px 9px;
+  padding: 4px 10px;
   border-radius: 999px;
-  font-size: 0.72rem;
+  font-size: 0.74rem;
   font-weight: 800;
   line-height: 1.25;
-  background: rgba(255, 255, 255, 0.92);
+  background: rgba(255, 255, 255, 0.94);
   color: #0f172a;
-  border: 1px solid rgba(15, 23, 42, 0.12);
-  box-shadow: 0 4px 10px rgba(15, 23, 42, 0.12);
+  border: 1px solid rgba(15, 23, 42, 0.14);
+  box-shadow: 0 4px 10px rgba(15, 23, 42, 0.14);
   pointer-events: none;
 }
 
 .px-react-bubble.warn {
-  background: rgba(254, 243, 199, 0.95);
+  background: rgba(254, 243, 199, 0.96);
   color: #92400e;
   border-color: rgba(217, 119, 6, 0.35);
 }
 
 .px-react-bubble.red {
-  background: rgba(254, 226, 226, 0.95);
+  background: rgba(254, 226, 226, 0.96);
   color: #991b1b;
   border-color: rgba(220, 38, 38, 0.35);
 }
 
 .px-react-bubble.teal {
-  background: rgba(209, 250, 229, 0.95);
+  background: rgba(209, 250, 229, 0.96);
   color: #065f46;
   border-color: rgba(16, 185, 129, 0.35);
 }
 
 .px-react-bubble.blue {
-  background: rgba(219, 234, 254, 0.95);
+  background: rgba(219, 234, 254, 0.96);
   color: #1e3a8a;
   border-color: rgba(37, 99, 235, 0.32);
 }
 
-[data-theme='dark'] .px-react-bubble {
-  background: rgba(15, 23, 42, 0.88);
+[data-theme='dark'] .px-react-bubble,
+[data-theme='dark'] .px-react-bubble.warn,
+[data-theme='dark'] .px-react-bubble.red,
+[data-theme='dark'] .px-react-bubble.teal,
+[data-theme='dark'] .px-react-bubble.blue {
+  background: rgba(15, 23, 42, 0.92);
   color: #f8fafc;
-  border-color: rgba(148, 163, 184, 0.32);
+  border-color: rgba(148, 163, 184, 0.4);
+}
+
+[data-theme='dark'] .px-react-bubble.warn {
+  background: rgba(120, 53, 15, 0.92);
+  color: #fde68a;
+  border-color: rgba(251, 191, 36, 0.45);
+}
+
+[data-theme='dark'] .px-react-bubble.red {
+  background: rgba(127, 29, 29, 0.92);
+  color: #fecaca;
+  border-color: rgba(248, 113, 113, 0.45);
+}
+
+[data-theme='dark'] .px-react-bubble.teal {
+  background: rgba(6, 78, 59, 0.92);
+  color: #6ee7b7;
+  border-color: rgba(52, 211, 153, 0.45);
+}
+
+[data-theme='dark'] .px-react-bubble.blue {
+  background: rgba(30, 58, 138, 0.92);
+  color: #bfdbfe;
+  border-color: rgba(96, 165, 250, 0.45);
 }
 
 .px-stage-wrap.is-compact .px-canvas-frame {
-  width: min(370px, 100%);
+  width: min(540px, 100%);
 }
 
 [data-theme='dark'] .px-canvas-frame {
@@ -18918,6 +18946,7 @@ p {
 
 .px-stage-chip.blue {
   background: rgba(37, 99, 235, 0.1);
+  border-color: rgba(37, 99, 235, 0.24);
   color: #1d4ed8;
 }
 
@@ -18941,37 +18970,86 @@ p {
   color: #b91c1c;
 }
 
-[data-theme='dark'] .px-stage-chip.scene {
-  background: rgba(59, 130, 246, 0.18);
-  color: #93c5fd;
+[data-theme='dark'] .px-stage-chip.scene,
+[data-theme='dark'] .px-stage-chip.blue {
+  background: rgba(30, 58, 138, 0.52);
+  border-color: rgba(96, 165, 250, 0.42);
+  color: #bfdbfe;
 }
 
 [data-theme='dark'] .px-stage-chip.teal,
 [data-theme='dark'] .px-stage-chip.green {
+  background: rgba(6, 78, 59, 0.56);
+  border-color: rgba(52, 211, 153, 0.42);
   color: #6ee7b7;
 }
 
 [data-theme='dark'] .px-stage-chip.warn,
 [data-theme='dark'] .px-stage-chip.amber {
-  color: #fcd34d;
+  background: rgba(120, 53, 15, 0.56);
+  border-color: rgba(251, 191, 36, 0.42);
+  color: #fde68a;
 }
 
 [data-theme='dark'] .px-stage-chip.red {
-  color: #fca5a5;
+  background: rgba(127, 29, 29, 0.58);
+  border-color: rgba(248, 113, 113, 0.44);
+  color: #fecaca;
+}
+
+/* Explicit Dark Mode High-Contrast Guard on Green Pills, Badges & Outcome Chips */
+[data-theme='dark'] .gm-choice-tag.tone-green,
+[data-theme='dark'] .gm-impact-pill.pos,
+[data-theme='dark'] .gm-delta-chip.pos,
+[data-theme='dark'] .gm-receipt-chip.green,
+[data-theme='dark'] .gm-phase-pill.done {
+  background: rgba(6, 78, 59, 0.68);
+  border: 1px solid rgba(52, 211, 153, 0.42);
+  color: #6ee7b7;
+}
+
+[data-theme='dark'] .gm-choice-tag.tone-danger,
+[data-theme='dark'] .gm-impact-pill.neg,
+[data-theme='dark'] .gm-delta-chip.neg,
+[data-theme='dark'] .gm-receipt-chip.red {
+  background: rgba(127, 29, 29, 0.66);
+  border: 1px solid rgba(248, 113, 113, 0.42);
+  color: #fecaca;
+}
+
+[data-theme='dark'] .gm-hr-toggle {
+  background: rgba(15, 38, 46, 0.72);
+  border-color: rgba(45, 212, 191, 0.42);
+}
+
+[data-theme='dark'] .gm-hr-toggle.active {
+  background: rgba(6, 78, 59, 0.45);
+  border-color: rgba(52, 211, 153, 0.65);
+}
+
+[data-theme='dark'] .gm-hr-pill {
+  background: rgba(15, 23, 42, 0.85);
+  border-color: rgba(45, 212, 191, 0.45);
+  color: #5eead4;
 }
 
 /* Lobby Character Studio Layout */
+#gm-avatar-studio {
+  position: relative;
+  z-index: 6;
+}
+
 .gm-avatar-studio-grid {
   display: grid;
-  grid-template-columns: minmax(280px, 0.9fr) minmax(0, 1.15fr);
-  gap: 20px;
+  grid-template-columns: minmax(340px, 1.08fr) minmax(0, 1fr);
+  gap: 24px;
   align-items: center;
 }
 
 .gm-avatar-preview-col {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 11px;
 }
 
 .gm-mood-preview-row {
@@ -18982,7 +19060,7 @@ p {
 }
 
 .gm-mood-chip {
-  padding: 5px 10px;
+  padding: 5px 11px;
   border-radius: 999px;
   border: 1px solid var(--border-subtle);
   background: var(--bg-canvas);
@@ -19002,7 +19080,7 @@ p {
 .gm-avatar-controls-split {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 16px 20px;
+  gap: 14px 18px;
   align-items: start;
 }
 
@@ -19054,37 +19132,219 @@ p {
   background: rgba(59, 130, 246, 0.22);
 }
 
-.gm-room-chip-group {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
+/* Patch 10.4 — Studio Dropdown Controls & Conflict Guard */
+.gm-dd-wrap {
+  position: relative;
 }
 
-.gm-room-chip {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 5px 10px;
-  border-radius: 999px;
-  border: 1px solid var(--border-subtle);
+.gm-dd-trigger {
+  width: 100%;
+  min-height: 38px;
+  padding: 7px 11px;
+  border-radius: 12px;
+  border: 1.5px solid var(--border-subtle);
   background: var(--bg-canvas);
   color: var(--text-primary);
-  font-size: 0.76rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.gm-dd-trigger:hover,
+.gm-dd-trigger.open {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.14);
+}
+
+.gm-dd-trigger-inner {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-width: 0;
+  flex: 1;
+}
+
+.gm-dd-trigger-text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex: 1;
+  min-width: 0;
+}
+
+.gm-dd-count {
+  padding: 1px 7px;
+  border-radius: 999px;
+  background: rgba(37, 99, 235, 0.14);
+  color: #1d4ed8;
+  font-size: 0.7rem;
+  font-weight: 800;
+  flex-shrink: 0;
+}
+
+[data-theme='dark'] .gm-dd-count {
+  background: rgba(59, 130, 246, 0.28);
+  color: #93c5fd;
+}
+
+.gm-dd-chevron {
+  flex-shrink: 0;
+  color: var(--text-muted);
+  transition: transform 0.16s ease;
+}
+
+.gm-dd-trigger.open .gm-dd-chevron {
+  transform: rotate(180deg);
+}
+
+.gm-dd-menu {
+  position: absolute;
+  top: calc(100% + 5px);
+  left: 0;
+  right: 0;
+  z-index: 40;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-strong);
+  border-radius: 14px;
+  box-shadow: 0 14px 32px rgba(15, 23, 42, 0.18);
+  padding: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  max-height: 250px;
+  overflow-y: auto;
+}
+
+[data-theme='dark'] .gm-dd-menu {
+  box-shadow: 0 18px 36px rgba(0, 0, 0, 0.55);
+}
+
+.gm-dd-menu-tall {
+  max-height: 290px;
+}
+
+.gm-dd-note {
+  padding: 5px 8px;
+  border-radius: 8px;
+  background: var(--accent-blue-bg);
+  color: var(--accent-blue-text);
+  font-size: 0.7rem;
+  font-weight: 700;
+  margin-bottom: 3px;
+}
+
+.gm-dd-group {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding-top: 4px;
+}
+
+.gm-dd-group-title {
+  padding: 2px 8px;
+  font-size: 0.69rem;
+  font-weight: 800;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.gm-dd-item {
+  width: 100%;
+  padding: 7px 9px;
+  border-radius: 9px;
+  border: none;
+  background: transparent;
+  color: var(--text-primary);
+  font-size: 0.79rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  text-align: left;
+  cursor: pointer;
+  transition: background-color 0.12s ease;
+}
+
+.gm-dd-item:hover:not(:disabled) {
+  background: var(--bg-subtle);
+}
+
+.gm-dd-item.selected {
+  background: rgba(37, 99, 235, 0.13);
+  color: var(--royal-deep);
+}
+
+[data-theme='dark'] .gm-dd-item.selected {
+  background: rgba(59, 130, 246, 0.24);
+  color: #93c5fd;
+}
+
+.gm-dd-item.locked {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.gm-dd-item-main {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+}
+
+.gm-dd-conflict-note {
+  font-size: 0.67rem;
+  font-weight: 600;
+  color: var(--danger-text);
+  line-height: 1.25;
+}
+
+.gm-dd-check {
+  color: #2563eb;
+  flex-shrink: 0;
+}
+
+[data-theme='dark'] .gm-dd-check {
+  color: #93c5fd;
+}
+
+.gm-dd-lock {
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+
+.gm-acc-active-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin-top: 2px;
+}
+
+.gm-acc-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 8px;
+  border-radius: 999px;
+  border: 1px solid rgba(37, 99, 235, 0.28);
+  background: rgba(37, 99, 235, 0.1);
+  color: var(--royal-deep);
+  font-size: 0.71rem;
   font-weight: 700;
   cursor: pointer;
-  transition: all 0.15s ease;
 }
 
-.gm-room-chip.active {
-  background: rgba(37, 99, 235, 0.14);
-  border-color: #2563eb;
-  color: var(--royal-deep);
-  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.16);
-}
-
-[data-theme='dark'] .gm-room-chip.active {
-  color: #93c5fd;
+[data-theme='dark'] .gm-acc-tag {
   background: rgba(59, 130, 246, 0.22);
+  border-color: rgba(96, 165, 250, 0.36);
+  color: #bfdbfe;
 }
 
 .gm-room-dot {
@@ -19118,7 +19378,7 @@ p {
 }
 
 .gm-arena-pixel-wrap {
-  margin: 4px 0 6px;
+  margin: 4px 0 8px;
 }
 
 .gm-avatar-preview-col .px-stage-badges,
@@ -19127,7 +19387,7 @@ p {
 }
 
 .gm-results-avatar-wrap {
-  width: min(300px, 100%);
+  width: min(390px, 100%);
   flex-shrink: 0;
 }
 
@@ -19136,12 +19396,40 @@ p {
 }
 
 .gm-outcome-banner .px-stage-chip {
-  background: rgba(255, 255, 255, 0.92);
-  border-color: rgba(255, 255, 255, 0.45);
+  background: rgba(255, 255, 255, 0.94);
+  border-color: rgba(20, 43, 74, 0.14);
   color: #0f172a;
 }
 
-@media (max-width: 980px) {
+[data-theme='dark'] .gm-outcome-banner .px-stage-chip,
+[data-theme='dark'] .gm-outcome-banner .px-stage-chip.scene,
+[data-theme='dark'] .gm-outcome-banner .px-stage-chip.blue {
+  background: rgba(15, 23, 42, 0.86);
+  border-color: rgba(96, 165, 250, 0.42);
+  color: #bfdbfe;
+}
+
+[data-theme='dark'] .gm-outcome-banner .px-stage-chip.teal,
+[data-theme='dark'] .gm-outcome-banner .px-stage-chip.green {
+  background: rgba(6, 78, 59, 0.85);
+  border-color: rgba(52, 211, 153, 0.48);
+  color: #6ee7b7;
+}
+
+[data-theme='dark'] .gm-outcome-banner .px-stage-chip.warn,
+[data-theme='dark'] .gm-outcome-banner .px-stage-chip.amber {
+  background: rgba(120, 53, 15, 0.86);
+  border-color: rgba(251, 191, 36, 0.48);
+  color: #fde68a;
+}
+
+[data-theme='dark'] .gm-outcome-banner .px-stage-chip.red {
+  background: rgba(127, 29, 29, 0.86);
+  border-color: rgba(248, 113, 113, 0.48);
+  color: #fecaca;
+}
+
+@media (max-width: 1020px) {
   .gm-avatar-studio-grid {
     grid-template-columns: minmax(0, 1fr);
     gap: 16px;

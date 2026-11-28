@@ -5,6 +5,7 @@ import {
   OUTFIT_PALETTES,
   ROOM_THEMES,
   SKIN_PALETTES,
+  sanitizeAccessories,
 } from '../utils/pixelAvatar';
 
 function PixelBackdrop({ sceneType, wealthTier, roomTheme = 'sky' }) {
@@ -38,28 +39,160 @@ function PixelBackdrop({ sceneType, wealthTier, roomTheme = 'sky' }) {
     );
   }
 
+  if (sceneType === 'pet_care') {
+    return (
+      <g>
+        {/* Cozy Pet Backyard / Rug Care Scene */}
+        <rect x="0" y="0" width="220" height="82" fill="#FEF9EE" />
+        <rect x="0" y="82" width="220" height="30" fill="#FDE68A" />
+        <rect x="0" y="80" width="220" height="3" fill="#F59E0B" />
+        <ellipse cx="110" cy="96" rx="58" ry="8" fill="#FDBA74" opacity="0.45" />
+        {/* Wooden Pet House Left */}
+        <polygon points="16,44 38,28 60,44" fill="#B45309" />
+        <rect x="20" y="44" width="36" height="36" fill="#FDE68A" stroke="#92400E" strokeWidth="1.5" />
+        <rect x="30" y="56" width="16" height="24" rx="5" fill="#451A03" />
+        {/* Cute Pixel Shiba Inu on Right */}
+        <g>
+          <rect x="150" y="64" width="24" height="16" rx="3" fill="#F59E0B" />
+          <rect x="153" y="70" width="18" height="10" fill="#FEF3C7" />
+          <rect x="166" y="54" width="15" height="14" rx="2" fill="#F59E0B" />
+          <rect x="168" y="61" width="11" height="7" fill="#FEF3C7" />
+          <polygon points="166,54 169,48 172,54" fill="#D97706" />
+          <polygon points="175,54 178,48 181,54" fill="#D97706" />
+          <rect x="170" y="57" width="2" height="2" fill="#0F172A" />
+          <rect x="176" y="57" width="2" height="2" fill="#0F172A" />
+          <rect x="173" y="61" width="3" height="2" fill="#0F172A" />
+          <rect x="145" y="62" width="6" height="4" fill="#D97706" />
+          <rect x="152" y="79" width="4" height="6" fill="#F59E0B" />
+          <rect x="167" y="79" width="4" height="6" fill="#F59E0B" />
+          {/* Food bowl & Pink Heart */}
+          <rect x="184" y="78" width="14" height="6" rx="2" fill="#EF4444" />
+          <rect x="186" y="76" width="10" height="2" fill="#92400E" />
+          <g className="px-sparkle-float" fill="#F43F5E">
+            <rect x="170" y="40" width="6" height="5" />
+            <rect x="172" y="45" width="2" height="2" />
+          </g>
+        </g>
+      </g>
+    );
+  }
+
+  if (sceneType === 'gaming_room') {
+    return (
+      <g>
+        {/* RGB Console & Big TV Gaming Setup */}
+        <rect x="0" y="0" width="220" height="82" fill="#170E2E" />
+        <rect x="0" y="82" width="220" height="30" fill="#1E1342" />
+        <rect x="0" y="80" width="220" height="3" fill="#A855F7" />
+        {/* RGB Neon Strip + Big Console TV */}
+        <rect x="18" y="14" width="68" height="4" rx="2" fill="#22D3EE" />
+        <rect x="134" y="14" width="68" height="4" rx="2" fill="#EC4899" />
+        <rect x="138" y="24" width="62" height="34" fill="#0F172A" stroke="#A855F7" strokeWidth="2" />
+        <rect x="142" y="28" width="54" height="26" fill="#1E1B4B" />
+        <rect x="148" y="34" width="14" height="10" fill="#22D3EE" />
+        <rect x="166" y="38" width="22" height="6" fill="#F43F5E" />
+        <rect x="150" y="60" width="38" height="22" fill="#312E81" />
+        {/* Retro Arcade Shelf Left */}
+        <rect x="18" y="32" width="32" height="50" fill="#2E1065" stroke="#8B5CF6" strokeWidth="1.5" />
+        <rect x="22" y="36" width="24" height="16" fill="#090D16" />
+        <rect x="25" y="40" width="6" height="6" fill="#FACC15" />
+        <rect x="35" y="42" width="6" height="4" fill="#34D399" />
+        {/* Controller on Desk */}
+        <rect x="156" y="54" width="16" height="6" rx="2" fill="#CBD5E1" />
+        <rect x="159" y="56" width="3" height="2" fill="#2563EB" />
+        <rect x="166" y="56" width="3" height="2" fill="#EF4444" />
+      </g>
+    );
+  }
+
+  if (sceneType === 'beach_travel') {
+    return (
+      <g>
+        {/* Sunny Beach / Travel Vacation Scene */}
+        <rect x="0" y="0" width="220" height="54" fill="#BAE6FD" />
+        <rect x="0" y="54" width="220" height="24" fill="#0EA5E9" />
+        <rect x="0" y="78" width="220" height="34" fill="#FDE68A" />
+        <circle cx="34" cy="22" r="10" fill="#FACC15" />
+        {/* Sea Waves */}
+        <rect x="18" y="60" width="24" height="3" fill="#E0F2FE" />
+        <rect x="152" y="64" width="30" height="3" fill="#E0F2FE" />
+        {/* Beach Umbrella & Palm Tree */}
+        <rect x="172" y="42" width="4" height="44" fill="#78350F" />
+        <polygon points="150,42 174,26 198,42" fill="#F43F5E" />
+        <polygon points="162,42 174,26 186,42" fill="#FFFFFF" />
+        {/* Suitcase Left */}
+        <rect x="26" y="64" width="20" height="22" rx="2" fill="#2563EB" stroke="#1E3A8A" strokeWidth="1.2" />
+        <rect x="32" y="58" width="8" height="6" fill="none" stroke="#1E3A8A" strokeWidth="2" />
+        <rect x="30" y="68" width="12" height="3" fill="#FACC15" />
+      </g>
+    );
+  }
+
+  if (sceneType === 'gym_sport') {
+    return (
+      <g>
+        {/* Fitness & Workout Gym Studio */}
+        <rect x="0" y="0" width="220" height="82" fill="#EFF6FF" />
+        <rect x="0" y="82" width="220" height="30" fill="#334155" />
+        <rect x="0" y="80" width="220" height="3" fill="#3B82F6" />
+        {/* Mirror & Motivational Frame */}
+        <rect x="20" y="14" width="48" height="44" fill="#DBEAFE" stroke="#64748B" strokeWidth="2" />
+        <path d="M26 24 L36 18 M28 38 L44 26" stroke="#FFFFFF" strokeWidth="2" opacity="0.7" />
+        {/* Barbell Rack Right */}
+        <rect x="148" y="48" width="52" height="4" fill="#475569" />
+        <rect x="152" y="38" width="8" height="24" rx="2" fill="#0F172A" />
+        <rect x="188" y="38" width="8" height="24" rx="2" fill="#0F172A" />
+        <rect x="158" y="62" width="4" height="20" fill="#64748B" />
+        <rect x="186" y="62" width="4" height="20" fill="#64748B" />
+        {/* Gym Water Bottle */}
+        <rect x="36" y="66" width="10" height="16" rx="2" fill="#06B6D4" />
+        <rect x="38" y="62" width="6" height="4" fill="#0F172A" />
+      </g>
+    );
+  }
+
+  if (sceneType === 'restaurant_feast') {
+    return (
+      <g>
+        {/* Warm Bistro / Grill Buffet & Friends Feast */}
+        <rect x="0" y="0" width="220" height="82" fill="#431407" />
+        <rect x="0" y="82" width="220" height="30" fill="#7C2D12" />
+        <rect x="0" y="80" width="220" height="3" fill="#F59E0B" />
+        {/* Warm Pendant Bulbs */}
+        <rect x="38" y="0" width="2" height="16" fill="#F59E0B" />
+        <circle cx="39" cy="18" r="5" fill="#FDE047" />
+        <rect x="178" y="0" width="2" height="16" fill="#F59E0B" />
+        <circle cx="179" cy="18" r="5" fill="#FDE047" />
+        {/* Grill / Feast Table Right */}
+        <rect x="144" y="54" width="64" height="28" fill="#9A3412" />
+        <rect x="140" y="50" width="72" height="5" fill="#C2410C" />
+        <rect x="154" y="44" width="22" height="6" fill="#1E293B" />
+        <rect x="158" y="42" width="6" height="4" fill="#EF4444" />
+        <rect x="166" y="42" width="6" height="4" fill="#F59E0B" />
+        <rect x="186" y="42" width="10" height="8" fill="#FFFFFF" />
+        <rect x="188" y="38" width="6" height="4" fill="#FDE047" />
+      </g>
+    );
+  }
+
   if (sceneType === 'party') {
     return (
       <g>
-        {/* Festive Concert / Social Party Stage */}
         <rect x="0" y="0" width="220" height="82" fill="#1E1B4B" />
         <rect x="0" y="82" width="220" height="30" fill="#312E81" />
         <rect x="0" y="80" width="220" height="3" fill="#4338CA" />
-        {/* Spotlights & Disco Ball */}
         <polygon points="110,16 40,82 86,82" fill="#38BDF8" opacity="0.16" />
         <polygon points="110,16 134,82 184,82" fill="#F472B6" opacity="0.16" />
         <rect x="109" y="0" width="2" height="10" fill="#CBD5E1" />
         <circle cx="110" cy="14" r="7" fill="#E2E8F0" />
         <rect x="107" y="11" width="3" height="3" fill="#94A3B8" />
         <rect x="111" y="14" width="3" height="3" fill="#38BDF8" />
-        {/* Speakers Left & Right */}
         <rect x="14" y="42" width="24" height="40" fill="#0F172A" stroke="#475569" strokeWidth="1.5" />
         <circle cx="26" cy="54" r="6" fill="#334155" />
         <circle cx="26" cy="70" r="7" fill="#1E293B" stroke="#64748B" strokeWidth="1" />
         <rect x="182" y="42" width="24" height="40" fill="#0F172A" stroke="#475569" strokeWidth="1.5" />
         <circle cx="194" cy="54" r="6" fill="#334155" />
         <circle cx="194" cy="70" r="7" fill="#1E293B" stroke="#64748B" strokeWidth="1" />
-        {/* Hanging Neon Music Garland */}
         <g className="px-sparkle-float">
           <rect x="46" y="12" width="6" height="6" fill="#F472B6" />
           <rect x="68" y="16" width="6" height="6" fill="#FACC15" />
@@ -73,19 +206,15 @@ function PixelBackdrop({ sceneType, wealthTier, roomTheme = 'sky' }) {
   if (sceneType === 'road_car') {
     return (
       <g>
-        {/* City Road & Parked Vehicle Repair Scene */}
         <rect x="0" y="0" width="220" height="72" fill="#E0F2FE" />
         <rect x="0" y="72" width="220" height="40" fill="#334155" />
         <rect x="0" y="70" width="220" height="4" fill="#94A3B8" />
-        {/* Dashed Road Lane Lines */}
         <rect x="14" y="92" width="28" height="4" fill="#FDE047" />
         <rect x="64" y="92" width="28" height="4" fill="#FDE047" />
         <rect x="128" y="92" width="28" height="4" fill="#FDE047" />
         <rect x="178" y="92" width="28" height="4" fill="#FDE047" />
-        {/* Background Buildings */}
         <rect x="12" y="28" width="32" height="42" fill="#BFDBFE" />
         <rect x="174" y="20" width="36" height="50" fill="#93C5FD" />
-        {/* Cute Parked City Car Right */}
         <rect x="136" y="54" width="58" height="22" rx="3" fill="#2563EB" />
         <rect x="146" y="42" width="36" height="14" rx="2" fill="#3B82F6" />
         <rect x="150" y="45" width="12" height="8" fill="#BAE6FD" />
@@ -94,7 +223,6 @@ function PixelBackdrop({ sceneType, wealthTier, roomTheme = 'sky' }) {
         <circle cx="149" cy="76" r="3" fill="#CBD5E1" />
         <circle cx="182" cy="76" r="7" fill="#0F172A" />
         <circle cx="182" cy="76" r="3" fill="#CBD5E1" />
-        {/* Orange Safety Cone Left */}
         <polygon points="32,78 44,78 40,62 36,62" fill="#F97316" />
         <rect x="35" y="70" width="6" height="3" fill="#FFFFFF" />
         <rect x="30" y="78" width="16" height="3" fill="#EA580C" />
@@ -105,21 +233,17 @@ function PixelBackdrop({ sceneType, wealthTier, roomTheme = 'sky' }) {
   if (sceneType === 'home_repair') {
     return (
       <g>
-        {/* Utility / Appliance Breakdown Scene */}
         <rect x="0" y="0" width="220" height="82" fill="#F8FAFC" />
         <rect x="0" y="82" width="220" height="30" fill="#E2E8F0" />
         <rect x="0" y="80" width="220" height="3" fill="#CBD5E1" />
-        {/* Wall AC / Appliance Unit & Repair Sparks */}
         <rect x="20" y="16" width="56" height="18" rx="2" fill="#FFFFFF" stroke="#94A3B8" strokeWidth="1.5" />
         <rect x="24" y="27" width="48" height="3" fill="#475569" />
         <rect x="32" y="38" width="3" height="6" fill="#38BDF8" />
         <rect x="46" y="42" width="3" height="6" fill="#38BDF8" />
-        {/* Refrigerator Right with Amber Warning */}
         <rect x="152" y="22" width="42" height="60" fill="#F1F5F9" stroke="#64748B" strokeWidth="1.5" />
         <rect x="152" y="46" width="42" height="2" fill="#64748B" />
         <rect x="157" y="34" width="3" height="8" fill="#475569" />
         <rect x="157" y="54" width="3" height="10" fill="#475569" />
-        {/* Repair Toolbox Left */}
         <rect x="22" y="64" width="28" height="18" fill="#DC2626" />
         <rect x="22" y="62" width="28" height="4" fill="#991B1B" />
         <rect x="31" y="58" width="10" height="4" fill="#475569" />
@@ -131,18 +255,15 @@ function PixelBackdrop({ sceneType, wealthTier, roomTheme = 'sky' }) {
   if (sceneType === 'cyber_desk') {
     return (
       <g>
-        {/* Dark Sleek Tech / Gaming / Online Work Desk */}
         <rect x="0" y="0" width="220" height="82" fill="#0F172A" />
         <rect x="0" y="82" width="220" height="30" fill="#1E293B" />
         <rect x="0" y="80" width="220" height="3" fill="#3B82F6" opacity="0.55" />
-        {/* Dual Tech Monitors */}
         <rect x="142" y="54" width="66" height="28" fill="#334155" />
         <rect x="138" y="50" width="74" height="5" fill="#475569" />
         <rect x="148" y="24" width="48" height="24" fill="#1E3A8A" stroke="#60A5FA" strokeWidth="1.5" />
         <rect x="152" y="28" width="40" height="16" fill="#091124" />
         <rect x="156" y="31" width="20" height="3" fill="#22D3EE" />
         <rect x="156" y="37" width="30" height="3" fill="#F43F5E" />
-        {/* Neon RGB Wall Strip */}
         <rect x="18" y="22" width="48" height="6" rx="2" fill="#6366F1" opacity="0.85" />
         <rect x="18" y="22" width="24" height="6" rx="2" fill="#22D3EE" opacity="0.85" />
       </g>
@@ -223,7 +344,7 @@ function PixelBackdrop({ sceneType, wealthTier, roomTheme = 'sky' }) {
     );
   }
 
-  // Customizable Room Backdrop (Sky / Midnight / Christmas / Halloween / Songkran / Valentine / Chinese New Year)
+  // Customizable 12-Theme Studio Room Backdrop
   const isDarkRoom = isDim || room.lamp;
   return (
     <g>
@@ -243,12 +364,66 @@ function PixelBackdrop({ sceneType, wealthTier, roomTheme = 'sky' }) {
       />
       <rect x="46" y="14" width="2" height="42" fill={isDarkRoom ? '#475569' : '#1E3A5F'} />
       <rect x="20" y="34" width="54" height="2" fill={isDarkRoom ? '#475569' : '#1E3A5F'} />
-      {isDarkRoom && <rect x="60" y="20" width="6" height="6" fill="#FDE68A" />}
+      {isDarkRoom && roomTheme !== 'space_observatory' && (
+        <rect x="60" y="20" width="6" height="6" fill="#FDE68A" />
+      )}
 
-      {/* Festive Theme Props inside Window / Walls / Desk */}
+      {/* Festive & Youth Lifestyle Theme Props */}
+      {roomTheme === 'gaming_rgb' && (
+        <g>
+          <rect x="14" y="6" width="66" height="4" rx="2" fill="#EC4899" />
+          <rect x="138" y="6" width="66" height="4" rx="2" fill="#22D3EE" />
+          <rect x="148" y="30" width="12" height="18" fill="#0F172A" stroke="#22D3EE" strokeWidth="1" />
+          <rect x="151" y="33" width="6" height="3" fill="#A855F7" />
+        </g>
+      )}
+
+      {roomTheme === 'sakura_spring' && (
+        <g>
+          <rect x="26" y="20" width="14" height="8" rx="2" fill="#F472B6" />
+          <rect x="52" y="24" width="14" height="8" rx="2" fill="#F9A8D4" />
+          <g className="px-sparkle-float" fill="#EC4899">
+            <rect x="30" y="42" width="4" height="4" />
+            <rect x="84" y="18" width="4" height="4" />
+            <rect x="138" y="24" width="4" height="4" />
+          </g>
+        </g>
+      )}
+
+      {roomTheme === 'cozy_cafe' && (
+        <g>
+          <rect x="86" y="14" width="44" height="4" fill="#92400E" />
+          <rect x="92" y="6" width="8" height="8" fill="#15803D" />
+          <rect x="108" y="8" width="6" height="6" fill="#F59E0B" />
+          <rect x="118" y="6" width="8" height="8" fill="#DC2626" />
+          <rect x="148" y="42" width="12" height="8" fill="#334155" />
+          <rect x="151" y="38" width="6" height="4" fill="#FFFFFF" />
+        </g>
+      )}
+
+      {roomTheme === 'beach_summer' && (
+        <g>
+          <rect x="22" y="40" width="50" height="14" fill="#0EA5E9" />
+          <circle cx="32" cy="24" r="5" fill="#FDE047" />
+          <rect x="138" y="24" width="9" height="56" rx="4" fill="#06B6D4" stroke="#0891B2" strokeWidth="1" />
+          <rect x="141" y="28" width="3" height="48" fill="#FDE047" />
+        </g>
+      )}
+
+      {roomTheme === 'space_observatory' && (
+        <g>
+          <circle cx="36" cy="28" r="7" fill="#F59E0B" />
+          <ellipse cx="36" cy="28" rx="13" ry="3" fill="none" stroke="#FDE68A" strokeWidth="1.5" />
+          <rect x="58" y="22" width="2" height="2" fill="#FFFFFF" />
+          <rect x="26" y="44" width="2" height="2" fill="#38BDF8" />
+          <rect x="64" y="42" width="2" height="2" fill="#FFFFFF" />
+          <rect x="136" y="44" width="12" height="5" fill="#CBD5E1" transform="rotate(-18 142 46)" />
+          <rect x="140" y="49" width="2" height="31" fill="#64748B" />
+        </g>
+      )}
+
       {roomTheme === 'christmas' && (
         <g>
-          {/* Snowflakes outside window + Decorated Pine Tree */}
           <rect x="26" y="20" width="3" height="3" fill="#FFFFFF" />
           <rect x="54" y="26" width="3" height="3" fill="#FFFFFF" />
           <rect x="34" y="42" width="3" height="3" fill="#FFFFFF" />
@@ -264,7 +439,6 @@ function PixelBackdrop({ sceneType, wealthTier, roomTheme = 'sky' }) {
 
       {roomTheme === 'halloween' && (
         <g>
-          {/* Spooky bat in window + Glowing Jack-o'-Lantern */}
           <rect x="28" y="22" width="12" height="4" fill="#0F172A" />
           <rect x="32" y="20" width="4" height="6" fill="#0F172A" />
           <rect x="144" y="36" width="16" height="14" rx="4" fill="#F97316" />
@@ -277,23 +451,19 @@ function PixelBackdrop({ sceneType, wealthTier, roomTheme = 'sky' }) {
 
       {roomTheme === 'songkran' && (
         <g>
-          {/* Festive Summer Garland + Silver Bowl (ขันน้ำดอกมะลิ) + Water Blaster */}
           <rect x="0" y="0" width="220" height="4" fill="#0EA5E9" />
           {[14, 42, 70, 98, 126, 154, 182].map((bx, i) => (
             <rect key={bx} x={bx} y="4" width="14" height="7" fill={['#F43F5E', '#FACC15', '#22C55E', '#06B6D4'][i % 4]} />
           ))}
-          {/* Silver Water Bowl left side */}
           <rect x="34" y="68" width="18" height="10" rx="2" fill="#CBD5E1" stroke="#64748B" strokeWidth="1" />
           <rect x="38" y="65" width="4" height="3" fill="#FFFFFF" />
           <rect x="44" y="65" width="4" height="3" fill="#F472B6" />
-          {/* Sun & Water Splash */}
           <circle cx="32" cy="24" r="6" fill="#FDE047" />
         </g>
       )}
 
       {roomTheme === 'valentine' && (
         <g>
-          {/* Floating Pixel Hearts + Rose Vase on Desk */}
           <g className="px-sparkle-float" fill="#EC4899">
             <rect x="30" y="24" width="8" height="6" />
             <rect x="32" y="30" width="4" height="3" />
@@ -307,7 +477,6 @@ function PixelBackdrop({ sceneType, wealthTier, roomTheme = 'sky' }) {
 
       {roomTheme === 'chinese_new_year' && (
         <g>
-          {/* Twin Hanging Red Lanterns + Gold Ingot (ตำลึงทอง/อั่งเปา) */}
           <rect x="14" y="0" width="2" height="10" fill="#F59E0B" />
           <rect x="8" y="10" width="14" height="16" rx="4" fill="#DC2626" stroke="#FACC15" strokeWidth="1" />
           <rect x="13" y="26" width="4" height="6" fill="#FACC15" />
@@ -318,7 +487,7 @@ function PixelBackdrop({ sceneType, wealthTier, roomTheme = 'sky' }) {
         </g>
       )}
 
-      {/* Desk & PROTECT360 Chart Monitor on Right */}
+      {/* Desk & PROTECT360 Monitor Right */}
       <rect x="148" y="54" width="60" height="28" fill={isDim ? '#475569' : room.desk} />
       <rect x="144" y="50" width="68" height="5" fill={isDim ? '#334155' : room.deskTop} />
       <rect x="164" y="26" width="34" height="22" fill="#142B4A" />
@@ -327,13 +496,12 @@ function PixelBackdrop({ sceneType, wealthTier, roomTheme = 'sky' }) {
       <rect x="177" y="35" width="4" height="8" fill="#3B82F6" />
       <rect x="183" y="31" width="4" height="12" fill="#10B981" />
 
-      {/* Warm Lamp (Midnight) or Classic Plant */}
       {roomTheme === 'midnight' || roomTheme === 'halloween' ? (
         <g>
           <rect x="152" y="42" width="4" height="8" fill="#94A3B8" />
           <rect x="148" y="34" width="12" height="8" fill={roomTheme === 'halloween' ? '#FB923C' : '#FDE047'} />
         </g>
-      ) : roomTheme !== 'christmas' && roomTheme !== 'valentine' && roomTheme !== 'chinese_new_year' ? (
+      ) : roomTheme === 'sky' || roomTheme === 'sakura_spring' || roomTheme === 'songkran' ? (
         <g>
           <rect x="150" y="42" width="10" height="8" fill="#D97706" />
           <rect x="152" y="35" width="6" height="7" fill={room.plant} />
@@ -343,17 +511,20 @@ function PixelBackdrop({ sceneType, wealthTier, roomTheme = 'sky' }) {
   );
 }
 
-function PixelCharacter({
-  avatarConfig,
-  wealthTier,
-  injury,
-}) {
+function PixelCharacter({ avatarConfig, wealthTier, injury }) {
   const skin = SKIN_PALETTES[avatarConfig?.skinTone] || SKIN_PALETTES.warm;
   const hair = HAIR_PALETTES[avatarConfig?.hairColor] || HAIR_PALETTES.espresso;
   const palette = OUTFIT_PALETTES[avatarConfig?.outfitColor] || OUTFIT_PALETTES.royal;
   const gender = avatarConfig?.gender || 'neutral';
   const hairStyle = avatarConfig?.hairStyle || 'short';
-  const accessory = avatarConfig?.accessory || 'none';
+  const accessories = sanitizeAccessories(
+    Array.isArray(avatarConfig?.accessories)
+      ? avatarConfig.accessories
+      : avatarConfig?.accessory && avatarConfig.accessory !== 'none'
+        ? [avatarConfig.accessory]
+        : []
+  );
+  const hasAcc = (id) => accessories.includes(id);
   const outline = '#1E293B';
 
   const outfit =
@@ -388,14 +559,46 @@ function PixelCharacter({
     <g className={`px-char-group state-${wealthTier} injury-${injury}`}>
       <ellipse cx="110" cy="95" rx="16" ry="4" fill="#0F172A" opacity="0.22" />
 
-      {/* Back Hair Layer */}
-      {hairStyle === 'bob' && (
-        <rect x="94" y="32" width="32" height="24" rx="2" fill={hair.base} />
+      {/* Pocket Shiba Buddy standing right beside feet */}
+      {hasAcc('mini_shiba') && (
+        <g>
+          <rect x="76" y="79" width="14" height="10" rx="2" fill="#F59E0B" />
+          <rect x="78" y="83" width="10" height="6" fill="#FEF3C7" />
+          <rect x="83" y="71" width="11" height="10" rx="2" fill="#F59E0B" />
+          <rect x="85" y="76" width="8" height="5" fill="#FEF3C7" />
+          <polygon points="83,71 85,67 87,71" fill="#D97706" />
+          <polygon points="90,71 92,67 94,71" fill="#D97706" />
+          <rect x="87" y="74" width="2" height="2" fill="#0F172A" />
+          <rect x="91" y="74" width="2" height="2" fill="#0F172A" />
+          <rect x="77" y="88" width="3" height="4" fill="#D97706" />
+          <rect x="86" y="88" width="3" height="4" fill="#D97706" />
+        </g>
+      )}
+
+      {/* Daypack straps behind torso */}
+      {hasAcc('backpack') && (
+        <g>
+          <rect x={torsoX - 3} y="53" width={torsoW + 6} height="20" rx="3" fill="#EA580C" stroke={outline} strokeWidth="1.2" />
+        </g>
+      )}
+
+      {/* Back Hair Layer (9 Styles) */}
+      {hairStyle === 'bob' && <rect x="94" y="32" width="32" height="24" rx="2" fill={hair.base} />}
+      {hairStyle === 'long_straight' && (
+        <rect x="93" y="32" width="34" height="34" rx="2" fill={hair.base} />
       )}
       {hairStyle === 'ponytail' && (
         <g>
-          <rect x="123" y="30" width="8" height="20" fill={hair.base} />
+          <rect x="123" y="30" width="8" height="22" fill={hair.base} />
           <rect x="121" y="32" width="4" height="4" fill="#14B8A6" />
+        </g>
+      )}
+      {hairStyle === 'twin_tails' && (
+        <g>
+          <rect x="89" y="30" width="8" height="24" fill={hair.base} />
+          <rect x="123" y="30" width="8" height="24" fill={hair.base} />
+          <rect x="93" y="31" width="4" height="4" fill="#EC4899" />
+          <rect x="123" y="31" width="4" height="4" fill="#EC4899" />
         </g>
       )}
       {hairStyle === 'curly' && (
@@ -405,13 +608,17 @@ function PixelCharacter({
           <rect x="125" y="32" width="6" height="12" />
         </g>
       )}
+      {hairStyle === 'bun' && (
+        <g>
+          <rect x="103" y="13" width="14" height="10" rx="3" fill={hair.base} />
+          <rect x="106" y="14" width="8" height="3" fill={hair.shine} />
+        </g>
+      )}
 
       {/* Shoes & Legs */}
       <rect x="100" y="74" width="8" height="16" fill={outfit.pants} />
       <rect x="112" y="74" width="8" height="16" fill={outfit.pants} />
-      {wealthTier === 'struggling' && (
-        <rect x="113" y="80" width="6" height="5" fill="#D4B483" />
-      )}
+      {wealthTier === 'struggling' && <rect x="113" y="80" width="6" height="5" fill="#D4B483" />}
 
       {injury === 'leg_cast' && (
         <g>
@@ -438,6 +645,13 @@ function PixelCharacter({
       />
       <rect x={torsoX + torsoW - 4} y="53" width="3" height="22" fill={outfit.shirtShade} />
 
+      {hasAcc('backpack') && (
+        <g fill="#C2410C">
+          <rect x={torsoX + 2} y="53" width="3" height="14" />
+          <rect x={torsoX + torsoW - 5} y="53" width="3" height="14" />
+        </g>
+      )}
+
       {wealthTier === 'prosperous' && (
         <g>
           <rect x="106" y="53" width="8" height="12" fill={outfit.collar} />
@@ -459,6 +673,21 @@ function PixelCharacter({
         </g>
       )}
 
+      {/* Neck Accessories: Scarf / Bowtie */}
+      {hasAcc('scarf') && (
+        <g>
+          <rect x={torsoX + 1} y="50" width={torsoW - 2} height="6" rx="1" fill="#EF4444" stroke="#991B1B" strokeWidth="1" />
+          <rect x="112" y="55" width="6" height="11" fill="#DC2626" stroke="#991B1B" strokeWidth="1" />
+        </g>
+      )}
+      {hasAcc('bowtie') && (
+        <g>
+          <polygon points="104,53 110,56 104,59" fill="#EC4899" stroke={outline} strokeWidth="0.8" />
+          <polygon points="116,53 110,56 116,59" fill="#EC4899" stroke={outline} strokeWidth="0.8" />
+          <rect x="109" y="55" width="2" height="2" fill="#FBCFE8" />
+        </g>
+      )}
+
       {/* Arms */}
       <rect x={torsoX - 5} y="53" width="5" height="15" fill={outfit.shirt} stroke={outline} strokeWidth="1.2" />
       <rect x={torsoX - 5} y="67" width="5" height="5" fill={skin.base} />
@@ -472,6 +701,13 @@ function PixelCharacter({
         <g>
           <rect x={torsoX + torsoW} y="53" width="5" height="15" fill={outfit.shirt} stroke={outline} strokeWidth="1.2" />
           <rect x={torsoX + torsoW} y="67" width="5" height="5" fill={skin.base} />
+          {hasAcc('boba_tea') && (
+            <g>
+              <rect x={torsoX + torsoW + 1} y="60" width="7" height="10" rx="1" fill="#FDE68A" stroke="#92400E" strokeWidth="1" />
+              <rect x={torsoX + torsoW + 2} y="66" width="5" height="3" fill="#451A03" />
+              <rect x={torsoX + torsoW + 4} y="55" width="2" height="5" fill="#EC4899" />
+            </g>
+          )}
         </g>
       )}
 
@@ -480,7 +716,15 @@ function PixelCharacter({
       <rect x="96" y="24" width="28" height="25" rx="3" fill={skin.base} stroke={outline} strokeWidth="1.5" />
       <rect x="97" y="45" width="26" height="3" fill={skin.shade} opacity="0.6" />
 
-      {/* Expression */}
+      {/* Sparkle Stud Earrings */}
+      {hasAcc('earrings') && (
+        <g>
+          <rect x="94" y="39" width="3" height="3" fill="#FDE047" stroke="#B45309" strokeWidth="0.6" />
+          <rect x="123" y="39" width="3" height="3" fill="#FDE047" stroke="#B45309" strokeWidth="0.6" />
+        </g>
+      )}
+
+      {/* Facial Expression */}
       {injury === 'medical_mask' ? (
         <g>
           <rect x="102" y="35" width="3" height="3" fill={outline} />
@@ -529,22 +773,50 @@ function PixelCharacter({
         </g>
       )}
 
-      {/* Accessories: Glasses, Headphones, Cap */}
-      {accessory === 'glasses' && (
+      {/* Eye Slot Accessories (Mutually exclusive via slot guard) */}
+      {hasAcc('glasses') && (
         <g>
           <rect x="99" y="33" width="8" height="6" fill="none" stroke="#1E293B" strokeWidth="1.5" />
           <rect x="113" y="33" width="8" height="6" fill="none" stroke="#1E293B" strokeWidth="1.5" />
           <rect x="107" y="35" width="6" height="1.5" fill="#1E293B" />
         </g>
       )}
+      {hasAcc('sunglasses') && (
+        <g>
+          <rect x="98" y="32" width="9" height="7" rx="1" fill="#0F172A" stroke="#334155" strokeWidth="1.2" />
+          <rect x="113" y="32" width="9" height="7" rx="1" fill="#0F172A" stroke="#334155" strokeWidth="1.2" />
+          <rect x="107" y="34" width="6" height="2" fill="#0F172A" />
+          <rect x="100" y="34" width="3" height="2" fill="#94A3B8" opacity="0.7" />
+          <rect x="115" y="34" width="3" height="2" fill="#94A3B8" opacity="0.7" />
+        </g>
+      )}
+      {hasAcc('cyber_visor') && (
+        <g>
+          <rect x="97" y="32" width="26" height="7" rx="2" fill="#06B6D4" stroke="#164E63" strokeWidth="1.2" opacity="0.9" />
+          <rect x="101" y="34" width="18" height="2" fill="#ECFEFF" />
+        </g>
+      )}
 
-      {/* Front Hair */}
+      {/* Front Hair Layer */}
       <rect x="95" y="20" width="30" height="8" rx="2" fill={hair.base} />
       <rect x="95" y="24" width="5" height="9" fill={hair.base} />
       <rect x="120" y="24" width="5" height="9" fill={hair.base} />
       <rect x="102" y="21" width="14" height="3" fill={hair.shine} />
       {hairStyle === 'short' && <rect x="100" y="27" width="8" height="3" fill={hair.base} />}
       {hairStyle === 'bob' && <rect x="98" y="27" width="24" height="3" fill={hair.base} />}
+      {hairStyle === 'side_part' && (
+        <g fill={hair.base}>
+          <rect x="99" y="27" width="14" height="3" />
+          <rect x="102" y="29" width="7" height="2" />
+        </g>
+      )}
+      {hairStyle === 'spiky' && (
+        <g fill={hair.base}>
+          <polygon points="96,21 101,13 106,21" />
+          <polygon points="105,21 111,12 116,21" />
+          <polygon points="114,21 120,14 125,21" />
+        </g>
+      )}
       {hairStyle === 'curly' && (
         <g fill={hair.base}>
           <rect x="98" y="18" width="24" height="5" />
@@ -553,7 +825,8 @@ function PixelCharacter({
         </g>
       )}
 
-      {accessory === 'headphones' && (
+      {/* Ear Band / Over-Head Accessories */}
+      {hasAcc('headphones') && (
         <g>
           <rect x="95" y="18" width="30" height="4" fill="#0F172A" />
           <rect x="92" y="29" width="5" height="10" rx="2" fill="#2563EB" stroke="#0F172A" strokeWidth="1" />
@@ -561,11 +834,32 @@ function PixelCharacter({
         </g>
       )}
 
-      {accessory === 'cap' && (
+      {/* Headwear Slot Accessories (Conflicts with Headphones guarded in UI) */}
+      {hasAcc('cap') && (
         <g>
           <rect x="95" y="17" width="30" height="9" rx="2" fill="#2563EB" stroke="#0F172A" strokeWidth="1.2" />
           <rect x="95" y="24" width="36" height="3" fill="#1D4ED8" stroke="#0F172A" strokeWidth="1" />
           <rect x="106" y="20" width="6" height="3" fill="#FFFFFF" />
+        </g>
+      )}
+      {hasAcc('beanie') && (
+        <g>
+          <rect x="95" y="15" width="30" height="10" rx="4" fill="#F97316" stroke="#9A3412" strokeWidth="1.2" />
+          <rect x="94" y="22" width="32" height="4" rx="1" fill="#EA580C" stroke="#9A3412" strokeWidth="1" />
+          <rect x="107" y="12" width="6" height="4" rx="1" fill="#FEF3C7" />
+        </g>
+      )}
+      {hasAcc('santa_hat') && (
+        <g>
+          <polygon points="96,22 110,8 124,22" fill="#DC2626" stroke="#7F1D1D" strokeWidth="1" />
+          <rect x="94" y="21" width="32" height="5" rx="2" fill="#FFFFFF" stroke="#CBD5E1" strokeWidth="0.8" />
+          <circle cx="110" cy="8" r="3" fill="#FFFFFF" />
+        </g>
+      )}
+      {hasAcc('crown') && (
+        <g>
+          <polygon points="98,21 101,11 106,17 110,9 114,17 119,11 122,21" fill="#FACC15" stroke="#B45309" strokeWidth="1.2" />
+          <rect x="108" y="17" width="4" height="3" fill="#EF4444" />
         </g>
       )}
 
@@ -628,20 +922,29 @@ export default function PixelAvatarStage({
   const sceneLabelMap = {
     office_room: { th: 'ฉาก: ห้องพักตามธีม', en: 'Scene: Custom Room' },
     hospital: { th: 'ฉาก: โรงพยาบาล / ฉุกเฉิน', en: 'Scene: Hospital Room' },
+    pet_care: { th: 'ฉาก: ดูแลน้องหมา / สัตว์เลี้ยง', en: 'Scene: Pet & Vet Care' },
+    gaming_room: { th: 'ฉาก: เกมคอนโซล & บันเทิง', en: 'Scene: Gaming Lounge' },
+    beach_travel: { th: 'ฉาก: ทริปทะเล & เดินทาง', en: 'Scene: Beach Trip' },
+    gym_sport: { th: 'ฉาก: ฟิตเนส & กีฬา', en: 'Scene: Fitness Gym' },
+    restaurant_feast: { th: 'ฉาก: ร้านปิ้งย่าง / งานเลี้ยง', en: 'Scene: Feast & Bistro' },
     party: { th: 'ฉาก: ปาร์ตี้ / คอนเสิร์ต', en: 'Scene: Party & Concert' },
     road_car: { th: 'ฉาก: ถนน & ซ่อมรถ', en: 'Scene: Road & Vehicle' },
     home_repair: { th: 'ฉาก: ซ่อมบำรุงในบ้าน', en: 'Scene: Home Repair' },
-    cyber_desk: { th: 'ฉาก: โต๊ะเทค & ออนไลน์', en: 'Scene: Tech & Gaming' },
+    cyber_desk: { th: 'ฉาก: โต๊ะเทค & ออนไลน์', en: 'Scene: Tech & Setup' },
     rainy_street: { th: 'ฉาก: ถนนฝนตก / กดดัน', en: 'Scene: Rainy Pressure' },
     cafe_mall: { th: 'ฉาก: คาเฟ่ & โซนช้อป', en: 'Scene: Cafe & Shopping' },
     celebration: { th: 'ฉาก: ออฟฟิศรับข่าวดี', en: 'Scene: Sunny Victory' },
   };
 
-  // Expressive mini reaction bubble on top-left of pixel scene
   const bubbleText = (() => {
     if (injury === 'arm_cast' || injury === 'leg_cast') return lang === 'TH' ? 'โอ๊ย เจ็บ!' : 'Ouch!';
     if (injury === 'medical_mask') return lang === 'TH' ? 'พักฟื้นแป๊บ...' : 'Recovering...';
     if (wealthTier === 'struggling') return lang === 'TH' ? 'เงินตึงแล้ว!' : 'Cash tight!';
+    if (sceneType === 'pet_care') return lang === 'TH' ? 'ดูแลน้อง!' : 'Pet care!';
+    if (sceneType === 'gaming_room') return lang === 'TH' ? 'เกมใหม่ออก!' : 'Game night!';
+    if (sceneType === 'beach_travel') return lang === 'TH' ? 'จัดกระเป๋า!' : 'Trip mode!';
+    if (sceneType === 'gym_sport') return lang === 'TH' ? 'ฟิตหุ่น!' : 'Workout!';
+    if (sceneType === 'restaurant_feast') return lang === 'TH' ? 'อิ่มจัง!' : 'Feast time!';
     if (sceneType === 'party') return lang === 'TH' ? 'น่าไปจัง!' : 'Party time!';
     if (sceneType === 'road_car') return lang === 'TH' ? 'รถมีปัญหา!' : 'Car trouble!';
     if (sceneType === 'home_repair') return lang === 'TH' ? 'พังอีกแล้ว!' : 'Needs fixing!';
