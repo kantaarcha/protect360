@@ -82,9 +82,9 @@ const SETTINGS_COPY = {
     sampleTitle: 'ทดลองใส่ค่าและสถานการณ์สมมติ',
     sampleBadge: 'เงินและสถานการณ์สมมติคำนวณ',
     sampleDesc:
-      'จำลองข้อมูล “สมมติ ประกันภัย” (รายได้สมมติ ฿25,000/ด. · รายจ่าย ฿20,000/ด. · สำรอง ฿15,000 · ประกันสังคม ม.33 + ประกันกลุ่ม · 6 รายการ AutoKey) เพื่อดูผลลัพธ์การคำนวณทุกหน้าก่อนกรอกข้อมูลจริง',
+      'จำลองงบจริงเต็มเดือน 1–31 ตุลาคม 2569 ของ “สมมติ ประกันภัย” (รายรับ ฿29,500 · รายจ่าย ฿21,800 · สำรอง ฿43,600 · ประกันสังคม ม.33 + ประกันกลุ่ม ฿150k + สุขภาพ/PA · 24 รายการใน AutoKey) เพื่อเห็นภาพว่าคนส่วนใหญ่รับ-จ่ายเงินทางไหนและเปรียบเทียบได้ครบทุกหน้า',
     sampleBtn: 'ใส่ค่าสมมติคำนวณ',
-    sampleLoadedMsg: 'ใส่ค่าและสถานการณ์สมมติเรียบร้อยแล้ว (ตัวเลขสมมติเพื่อทดลองคำนวณเท่านั้น)',
+    sampleLoadedMsg: 'โหลดงบสมมติ 1–31 ตุลาคม 2569 เรียบร้อยแล้ว (ตัวเลขสมมติเพื่อทดลองคำนวณและเปรียบเทียบเท่านั้น)',
     excelTitle: 'ส่งออกบัญชี AutoKey เป็นไฟล์ Excel (.xlsx)',
     excelDesc: 'ดาวน์โหลดตาราง 2 ชีต (บัญชีรับ-จ่าย + สรุปภาพรวม) สไตล์ Google Forms พร้อมเปิดใน Excel / Sheets',
     excelBtn: 'ส่งออก .xlsx',
@@ -153,9 +153,9 @@ const SETTINGS_COPY = {
     sampleTitle: 'Try Hypothetical Sample Scenario',
     sampleBadge: 'Hypothetical Preview Only',
     sampleDesc:
-      'Loads simulated numbers for Sam Insure (฿25,000 income, ฿20,000 expenses, ฿15,000 reserve, SSO Sec. 33 + group cover, 6 sample AutoKey entries) so you can preview how every module calculates.',
+      'Loads a realistic Oct 1–31, 2026 monthly budget for Sam Insure (฿29,500 income, ฿21,800 expenses, ฿43,600 reserve, SSO Sec. 33 + ฿150k group cover + Health & PA, 24 AutoKey entries) so you can compare how real inflows and outflows stack up across every tab.',
     sampleBtn: 'Load Sample',
-    sampleLoadedMsg: 'Loaded hypothetical sample scenario (simulated numbers for calculation preview only).',
+    sampleLoadedMsg: 'Loaded full Oct 1–31, 2026 sample budget (simulated figures for calculation & comparison preview).',
     excelTitle: 'Export AutoKey Cashbook as Excel (.xlsx)',
     excelDesc: 'Download a clean 2-sheet workbook (Ledger + Summary) ready for Excel or Google Sheets.',
     excelBtn: 'Export .xlsx',

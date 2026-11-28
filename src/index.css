@@ -18604,3 +18604,79 @@ p {
     max-width: 88vw;
   }
 }
+
+/* Patch 9.9 — AutoKey 50/30/20 Budget Benchmark Comparison Strip */
+.ak-benchmark-strip {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 11px 12px;
+  border-radius: 14px;
+  background: var(--bg-canvas);
+  border: 1px solid var(--border-subtle);
+}
+
+.ak-benchmark-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.ak-bm-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 8px 10px;
+  border-radius: 11px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+}
+
+.ak-bm-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--text-muted);
+}
+
+.ak-bm-val {
+  font-size: 0.98rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+
+.ak-bm-val small {
+  font-size: 0.68rem;
+  font-weight: 700;
+}
+
+.ak-bm-val small.ok {
+  color: #059669;
+}
+
+.ak-bm-val small.warn {
+  color: #d97706;
+}
+
+[data-theme='dark'] .ak-bm-val small.ok {
+  color: #34d399;
+}
+
+[data-theme='dark'] .ak-bm-val small.warn {
+  color: #fbbf24;
+}
+
+.ak-bm-sub {
+  font-size: 0.74rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+@media (max-width: 520px) {
+  .ak-benchmark-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

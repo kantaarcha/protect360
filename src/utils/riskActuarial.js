@@ -94,22 +94,22 @@ export const INITIAL_RISK_PROFILE_DATA = {
   },
 };
 
-// Optional hypothetical First Jobber scenario (explicitly labeled as simulated sample)
+// Optional hypothetical First Jobber scenario (1–31 Oct 2569 full realistic sample)
 export const DEMO_RISK_PROFILE_DATA = {
   riskTolerance: 'moderate',
   assessmentCompleted: true,
-  lastAssessedAt: null,
-  monthlyDebt: 0,
-  totalDebt: 0,
+  lastAssessedAt: '2026-10-16T09:30:00.000Z',
+  monthlyDebt: 1800,
+  totalDebt: 36000,
   govScheme: 'sso',
   groupInsurance: {
     active: true,
-    unknownLimit: true,
-    limit: 0,
+    unknownLimit: false,
+    limit: 150000,
   },
   personalPolicies: {
-    health: { active: false, unknownLimit: false, limit: 0 },
-    accident: { active: false, unknownLimit: false, limit: 0 },
+    health: { active: true, unknownLimit: false, limit: 500000 },
+    accident: { active: true, unknownLimit: false, limit: 300000 },
     criticalIllness: { active: false, unknownLimit: false, limit: 0 },
     lifeDisability: { active: false, unknownLimit: false, limit: 0 },
   },

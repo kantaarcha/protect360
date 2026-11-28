@@ -75,16 +75,16 @@ export default function Invest({ onNavigate }) {
   const [activeTab, setActiveTab] = useState('transfer');
 
   // --- TAB 1: Risk Transfer vs. Self-Insure state (0 clean slate by default; hypothetical values only in demo mode) ---
-  const [annualBudget, setAnnualBudget] = useState(() => (isDemoMode ? 12000 : 0));
+  const [annualBudget, setAnnualBudget] = useState(() => (isDemoMode ? 15360 : 0));
   const [emergencyBill, setEmergencyBill] = useState(() => (isDemoMode ? 150000 : 0));
   const [loanAprPct, setLoanAprPct] = useState(() => (isDemoMode ? 20 : 0));
 
   // --- TAB 2: True IRR, Inflation & Tax state (0 clean slate by default) ---
-  const [annualContribution, setAnnualContribution] = useState(() => (isDemoMode ? 30000 : 0));
+  const [annualContribution, setAnnualContribution] = useState(() => (isDemoMode ? 36000 : 0));
   const [paymentYears, setPaymentYears] = useState(() => (isDemoMode ? 10 : 0));
   const [planDuration, setPlanDuration] = useState(() => (isDemoMode ? 20 : 0));
-  const [annualCashback, setAnnualCashback] = useState(() => (isDemoMode ? 3000 : 0));
-  const [maturityLumpSum, setMaturityLumpSum] = useState(() => (isDemoMode ? 330000 : 0));
+  const [annualCashback, setAnnualCashback] = useState(() => (isDemoMode ? 3600 : 0));
+  const [maturityLumpSum, setMaturityLumpSum] = useState(() => (isDemoMode ? 395000 : 0));
   const [inflationRatePct, setInflationRatePct] = useState(() => (isDemoMode ? 2.5 : 0));
   const [annualIncomeOverride, setAnnualIncomeOverride] = useState(null);
   const [selectedTimelineYear, setSelectedTimelineYear] = useState(null);

@@ -272,6 +272,69 @@ export default function AutoKey({ onNavigate }) {
   const remainingEmergency = Math.max(0, emergencyTarget - emergencyFund);
   const isEmergencyReady = emergencyRunway >= targetMonths;
 
+  // 50 / 30 / 20 Peer & Realistic Budget Benchmark Comparison (Needs ≤50%, Wants ≤30%, Savings ≥20%)
+  const budgetBenchmark = useMemo(() => {
+    const NEEDS_KEYS = new Set([
+      'food',
+      'housing',
+      'transport',
+      'ccat-demo-util',
+      'ccat-demo-protect',
+    ]);
+    const NEEDS_ICONS = new Set([
+      'utensils',
+      'coffee',
+      'home',
+      'zap',
+      'wifi',
+      'car',
+      'train',
+      'heart-pulse',
+      'graduation-cap',
+    ]);
+
+    let needsAmt = 0;
+    let wantsAmt = 0;
+    for (const tx of transactions) {
+      if (tx.category !== 'expense') continue;
+      const amt = Math.abs(Number(tx.amount) || 0);
+      if (amt <= 0) continue;
+      const meta = allCategoryMap[tx.iconKey];
+      const iconName = tx.customIcon || meta?.iconName || '';
+      if (NEEDS_KEYS.has(tx.iconKey) || NEEDS_ICONS.has(iconName)) {
+        needsAmt += amt;
+      } else {
+        wantsAmt += amt;
+      }
+    }
+
+    const totalExpenseTracked = needsAmt + wantsAmt;
+    // Scale proportionally if manual balance edit differs from ledger expense sum
+    if (monthlyExpenses > 0 && totalExpenseTracked > 0 && totalExpenseTracked !== monthlyExpenses) {
+      const ratio = monthlyExpenses / totalExpenseTracked;
+      needsAmt = Math.round(needsAmt * ratio);
+      wantsAmt = Math.max(0, monthlyExpenses - needsAmt);
+    } else if (monthlyExpenses > 0 && totalExpenseTracked === 0) {
+      needsAmt = Math.round(monthlyExpenses * 0.72);
+      wantsAmt = Math.max(0, monthlyExpenses - needsAmt);
+    }
+
+    const baseIncome = Math.max(monthlyIncome, 0);
+    const needsPct = baseIncome > 0 ? Math.round((needsAmt / baseIncome) * 100) : 0;
+    const wantsPct = baseIncome > 0 ? Math.round((wantsAmt / baseIncome) * 100) : 0;
+    const savePct = baseIncome > 0 ? Math.max(0, Math.round((netSavings / baseIncome) * 100)) : 0;
+
+    return {
+      hasData: baseIncome > 0 || monthlyExpenses > 0,
+      needsAmt,
+      wantsAmt,
+      savingsAmt: Math.max(0, netSavings),
+      needsPct,
+      wantsPct,
+      savePct,
+    };
+  }, [transactions, allCategoryMap, monthlyIncome, monthlyExpenses, netSavings]);
+
   // Unified Cashflow Breakdown by category across ALL 3 streams: Income (Green), Expense (Red), Saving (Blue)
   const cashflowBreakdown = useMemo(() => {
     const totals = new Map();
@@ -1687,6 +1750,58 @@ export default function AutoKey({ onNavigate }) {
                 </div>
               </div>
             </div>
+
+            {budgetBenchmark.hasData && (
+              <div id="ak-benchmark-strip" className="ak-benchmark-strip">
+                <div className="ak-benchmark-head">
+                  <span className="ak-section-micro-label">
+                    {lang === 'TH'
+                      ? 'เทียบกับเกณฑ์มาตรฐาน 50 / 30 / 20 ของคนวัยทำงาน'
+                      : 'Compare vs. Working-Adult 50 / 30 / 20 Benchmark'}
+                  </span>
+                </div>
+                <div className="ak-benchmark-grid tabular-nums">
+                  <div className="ak-bm-cell">
+                    <span className="ak-bm-label">
+                      {lang === 'TH' ? 'จำเป็น (Needs)' : 'Needs'}
+                    </span>
+                    <strong className="ak-bm-val">
+                      {budgetBenchmark.needsPct}%{' '}
+                      <small className={budgetBenchmark.needsPct > 55 ? 'warn' : 'ok'}>
+                        {lang === 'TH' ? 'เป้า ≤50%' : 'vs ≤50%'}
+                      </small>
+                    </strong>
+                    <span className="ak-bm-sub">{formatTHB(budgetBenchmark.needsAmt)}</span>
+                  </div>
+
+                  <div className="ak-bm-cell">
+                    <span className="ak-bm-label">
+                      {lang === 'TH' ? 'ส่วนตัว/สังคม (Wants)' : 'Wants'}
+                    </span>
+                    <strong className="ak-bm-val">
+                      {budgetBenchmark.wantsPct}%{' '}
+                      <small className={budgetBenchmark.wantsPct > 30 ? 'warn' : 'ok'}>
+                        {lang === 'TH' ? 'เป้า ≤30%' : 'vs ≤30%'}
+                      </small>
+                    </strong>
+                    <span className="ak-bm-sub">{formatTHB(budgetBenchmark.wantsAmt)}</span>
+                  </div>
+
+                  <div className="ak-bm-cell">
+                    <span className="ak-bm-label">
+                      {lang === 'TH' ? 'ออม/สำรอง (Save)' : 'Savings'}
+                    </span>
+                    <strong className="ak-bm-val">
+                      {budgetBenchmark.savePct}%{' '}
+                      <small className={budgetBenchmark.savePct >= 20 ? 'ok' : 'warn'}>
+                        {lang === 'TH' ? 'เป้า ≥20%' : 'vs ≥20%'}
+                      </small>
+                    </strong>
+                    <span className="ak-bm-sub">{formatTHB(budgetBenchmark.savingsAmt)}</span>
+                  </div>
+                </div>
+              </div>
+            )}
 
             <div className="ak-divider" />
 
