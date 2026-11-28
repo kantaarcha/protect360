@@ -26,7 +26,6 @@ import UserProfileModal from './components/UserProfileModal';
 import OnboardingFlow from './components/OnboardingFlow';
 import TutorialOverlay from './components/TutorialOverlay';
 import DemoVideoModal from './components/DemoVideoModal';
-import ChristmasAmbience from './components/ChristmasAmbience';
 import OverviewDashboard from './pages/OverviewDashboard';
 import AutoKey from './pages/AutoKey';
 import RiskAnalysis from './pages/RiskAnalysis';
@@ -366,7 +365,6 @@ function AppShellContent() {
 
   return (
     <div className="app-shell">
-      <ChristmasAmbience />
       <SidebarNav
         activePage={activePage}
         onNavigate={handleNavigate}
