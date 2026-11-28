@@ -332,7 +332,10 @@ export default function OverviewDashboard({ onNavigate, onOpenProfile }) {
               </button>
             </div>
 
-            <div className="virtual-cards-stack">
+            <div
+              className={`virtual-cards-stack ${coverages.length > 2 ? 'is-scrollable' : ''}`}
+              aria-label={t('overview.cardsTitle')}
+            >
               {coverages.length === 0 ? (
                 <div className="coverage-empty-state">
                   <Shield size={24} strokeWidth={1.8} className="coverage-empty-icon" aria-hidden="true" />
@@ -437,6 +440,11 @@ export default function OverviewDashboard({ onNavigate, onOpenProfile }) {
                       'overview.perMonth'
                     )}`}
               </span>
+              {coverages.length > 2 && (
+                <span className="coverage-scroll-hint">
+                  {lang === 'TH' ? 'เลื่อนลงดูทั้งหมด ↕' : 'Scroll for more ↕'}
+                </span>
+              )}
             </div>
           </section>
         </div>

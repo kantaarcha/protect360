@@ -1379,6 +1379,46 @@ p {
   flex: 1;
 }
 
+.virtual-cards-stack.is-scrollable {
+  max-height: 490px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  overscroll-behavior: contain;
+  padding-right: 5px;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(148, 163, 184, 0.45) transparent;
+}
+
+@media (max-width: 900px) {
+  .virtual-cards-stack.is-scrollable {
+    max-height: 380px;
+  }
+}
+
+.virtual-cards-stack.is-scrollable::-webkit-scrollbar {
+  width: 5px;
+}
+
+.virtual-cards-stack.is-scrollable::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.virtual-cards-stack.is-scrollable::-webkit-scrollbar-thumb {
+  background: rgba(148, 163, 184, 0.45);
+  border-radius: 999px;
+}
+
+.virtual-cards-stack.is-scrollable::-webkit-scrollbar-thumb:hover {
+  background: rgba(100, 116, 139, 0.65);
+}
+
+.coverage-scroll-hint {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--accent-blue-text);
+  white-space: nowrap;
+}
+
 .virtual-policy-card {
   position: relative;
   border-radius: 20px;
@@ -1389,6 +1429,7 @@ p {
   display: flex;
   flex-direction: column;
   gap: 12px;
+  flex-shrink: 0;
   border: 1px solid rgba(255, 255, 255, 0.1);
   text-align: left;
   width: 100%;
