@@ -37,7 +37,7 @@ import {
   buildRandomQuizSession,
 } from '../utils/learningData';
 
-const QUIZ_ROUND_SIZE = 5;
+const DEFAULT_QUIZ_LENGTH = 5;
 
 const ARTICLE_ICONS = {
   stethoscope: Stethoscope,
@@ -89,9 +89,10 @@ export default function LearningCenter({ onNavigate }) {
   const [glossarySearch, setGlossarySearch] = useState('');
   const [selectedJargonId, setSelectedJargonId] = useState(JARGON_TERMS[0].id);
 
-  // Randomized 5-Question Literacy Quiz state (drawn from 15-question bank)
+  // Randomized 5 or 10 Question Literacy Quiz state (drawn from 30-question bank)
+  const [quizLength, setQuizLength] = useState(DEFAULT_QUIZ_LENGTH);
   const [quizSession, setQuizSession] = useState(() =>
-    buildRandomQuizSession(QUIZ_ROUND_SIZE, [])
+    buildRandomQuizSession(DEFAULT_QUIZ_LENGTH, [])
   );
   const [quizRound, setQuizRound] = useState(1);
   const [quizIdx, setQuizIdx] = useState(0);
@@ -128,10 +129,11 @@ export default function LearningCenter({ onNavigate }) {
         id: 'glossary',
         label: lang === 'TH' ? 'แปลศัพท์' : 'Glossary',
         icon: Sparkles,
+        badge: `${JARGON_TERMS.length}`,
       },
       {
         id: 'quiz',
-        label: lang === 'TH' ? 'ควิซ 5 ข้อ' : 'Quiz',
+        label: lang === 'TH' ? 'ควิซความรู้' : 'Quiz',
         icon: Award,
         badge: progress.quizVerified ? '✓' : undefined,
       },
@@ -241,10 +243,12 @@ export default function LearningCenter({ onNavigate }) {
     }
   };
 
+  const passThreshold = Math.ceil(quizSession.length * 0.8);
+
   const handleNextQuestion = () => {
     if (quizIdx + 1 >= quizSession.length) {
       setQuizFinished(true);
-      const passed = quizScore >= 4;
+      const passed = quizScore >= passThreshold;
       setProgress((prev) => ({
         ...prev,
         quizVerified: prev.quizVerified || passed,
@@ -256,14 +260,22 @@ export default function LearningCenter({ onNavigate }) {
     }
   };
 
-  const handleRestartQuiz = () => {
+  const handleRestartQuiz = (nextLength = quizLength) => {
     const prevIds = quizSession.map((q) => q.id);
-    setQuizSession(buildRandomQuizSession(QUIZ_ROUND_SIZE, prevIds));
+    setQuizSession(buildRandomQuizSession(nextLength, prevIds));
     setQuizRound((prev) => prev + 1);
     setQuizIdx(0);
     setSelectedOptionId(null);
     setQuizScore(0);
     setQuizFinished(false);
+  };
+
+  const handleChangeQuizLength = (nextLen) => {
+    if (nextLen === quizLength && quizIdx === 0 && !quizFinished && selectedOptionId === null) {
+      return;
+    }
+    setQuizLength(nextLen);
+    handleRestartQuiz(nextLen);
   };
 
   const quizProgressPct = quizFinished
@@ -641,7 +653,7 @@ export default function LearningCenter({ onNavigate }) {
         )}
 
         {/* =================================================================== */}
-        {/* TAB 3: RANDOMIZED 5-QUESTION RISK & POLICY LITERACY QUIZ WINDOW     */}
+        {/* TAB 3: RANDOMIZED 5 OR 10 QUESTION LITERACY QUIZ WINDOW             */}
         {/* =================================================================== */}
         {activeTab === 'quiz' && (
           <div className="lc-quiz-workspace">
@@ -649,22 +661,45 @@ export default function LearningCenter({ onNavigate }) {
               <div>
                 <h2 className="lc-reader-title">
                   {lang === 'TH'
-                    ? 'ควิซเช็กภูมิคุ้มกันความรู้ 5 ข้อ'
-                    : '5-Question Risk & Policy Literacy Quiz'}
+                    ? `ควิซเช็กภูมิคุ้มกันความรู้ (${quizSession.length} ข้อ)`
+                    : `${quizSession.length}-Question Risk & Policy Literacy Quiz`}
                 </h2>
                 <p className="lc-card-sub">
                   {lang === 'TH'
-                    ? `สุ่ม 5 ข้อจากคลัง ${LITERACY_QUIZ_BANK.length} ข้อ (ชุดที่ ${quizRound} • ช้อยส์ความยาวเท่ากันทุกข้อ) ตอบถูก 4/5 ข้อรับป้ายผ่านเกณฑ์`
-                    : `Random 5 questions from a ${LITERACY_QUIZ_BANK.length}-question bank (Set #${quizRound} • balanced option length) — score 4/5+ for badge.`}
+                    ? `สุ่ม ${quizSession.length} ข้อจากคลัง ${LITERACY_QUIZ_BANK.length} ข้อ (ชุดที่ ${quizRound} • ช้อยส์ความยาวเท่ากันทุกข้อ) ตอบถูก ${passThreshold}/${quizSession.length} ข้อรับป้ายผ่านเกณฑ์`
+                    : `Random ${quizSession.length} questions from a ${LITERACY_QUIZ_BANK.length}-question bank (Set #${quizRound} • balanced option length) — score ${passThreshold}/${quizSession.length}+ for badge.`}
                 </p>
               </div>
 
               <div className="lc-quiz-top-actions">
+                <div
+                  className="lc-quiz-len-group"
+                  role="group"
+                  aria-label={lang === 'TH' ? 'เลือกจำนวนข้อควิซ' : 'Choose quiz question count'}
+                >
+                  {[5, 10].map((lenOpt) => (
+                    <button
+                      key={lenOpt}
+                      id={`lc-quiz-len-${lenOpt}`}
+                      type="button"
+                      className={`lc-quiz-len-btn ${quizLength === lenOpt ? 'active' : ''}`}
+                      aria-pressed={quizLength === lenOpt}
+                      onClick={() => handleChangeQuizLength(lenOpt)}
+                    >
+                      {lang === 'TH' ? `${lenOpt} ข้อ` : `${lenOpt} Qs`}
+                    </button>
+                  ))}
+                </div>
+
                 <button
                   type="button"
                   className="btn-soft-gray lc-quiz-shuffle-btn"
-                  onClick={handleRestartQuiz}
-                  title={lang === 'TH' ? 'สุ่มโจทย์ชุดใหม่ 5 ข้อ' : 'Shuffle a new 5-question set'}
+                  onClick={() => handleRestartQuiz(quizLength)}
+                  title={
+                    lang === 'TH'
+                      ? `สุ่มโจทย์ชุดใหม่ ${quizLength} ข้อ`
+                      : `Shuffle a new ${quizLength}-question set`
+                  }
                 >
                   <Shuffle size={13} aria-hidden="true" />
                   <span>{lang === 'TH' ? 'สุ่มชุดใหม่' : 'New Set'}</span>
@@ -681,7 +716,7 @@ export default function LearningCenter({ onNavigate }) {
 
             <div className="gm-hud-bar-track">
               <div
-                className={`gm-hud-bar-fill ${quizFinished && quizScore >= 4 ? 'teal' : 'blue'}`}
+                className={`gm-hud-bar-fill ${quizFinished && quizScore >= passThreshold ? 'teal' : 'blue'}`}
                 style={{ width: `${quizProgressPct}%` }}
               />
             </div>
@@ -800,11 +835,11 @@ export default function LearningCenter({ onNavigate }) {
               </div>
             ) : (
               <div className="lc-quiz-result">
-                <div className={`lc-result-badge ${quizScore >= 4 ? 'verified' : 'retry'}`}>
+                <div className={`lc-result-badge ${quizScore >= passThreshold ? 'verified' : 'retry'}`}>
                   <Award size={24} aria-hidden="true" />
                   <div>
                     <strong className="tabular-nums">
-                      {quizScore >= 4
+                      {quizScore >= passThreshold
                         ? lang === 'TH'
                           ? `ผ่านเกณฑ์โค้ชการเงิน! (${quizScore}/${quizSession.length})`
                           : `Literacy Verified! (${quizScore}/${quizSession.length})`
@@ -813,7 +848,7 @@ export default function LearningCenter({ onNavigate }) {
                           : `Scored ${quizScore}/${quizSession.length} — Almost There!`}
                     </strong>
                     <p>
-                      {quizScore >= 4
+                      {quizScore >= passThreshold
                         ? lang === 'TH'
                           ? 'คุณเข้าใจกติกาสำคัญทั้งระยะเวลารอคอย สวัสดิการ และกรอบงบปลอดภัยพร้อมลุยสนามจำลองแล้ว'
                           : 'You mastered waiting periods, conservative benefit checks, and safe budgeting — ready for the game!'
@@ -828,7 +863,7 @@ export default function LearningCenter({ onNavigate }) {
                   <button
                     type="button"
                     className="btn-soft-gray lc-quiz-act-btn"
-                    onClick={handleRestartQuiz}
+                    onClick={() => handleRestartQuiz(quizLength)}
                   >
                     <RotateCcw size={15} />
                     <span>

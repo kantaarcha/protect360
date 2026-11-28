@@ -13256,6 +13256,39 @@ p {
   flex-wrap: wrap;
 }
 
+.lc-quiz-len-group {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 3px;
+  border-radius: var(--radius-pill);
+  background: var(--bg-canvas);
+  border: 1px solid var(--border-subtle);
+}
+
+.lc-quiz-len-btn {
+  border: none;
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: 0.74rem;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: var(--radius-pill);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background-color 0.16s ease, color 0.16s ease;
+}
+
+.lc-quiz-len-btn.active {
+  background: var(--royal);
+  color: #ffffff;
+}
+
+[data-theme='dark'] .lc-quiz-len-group {
+  background: rgba(255, 255, 255, 0.04);
+  border-color: rgba(255, 255, 255, 0.12);
+}
+
 .lc-quiz-shuffle-btn {
   padding: 6px 11px;
   font-size: 0.75rem;
@@ -18379,9 +18412,9 @@ p {
   }
 
   .tutorial-coach-card {
-    max-height: 46vh;
-    padding: 13px 14px;
-    gap: 7px;
+    max-height: 41vh;
+    padding: 12px 13px;
+    gap: 6px;
     border-radius: 20px;
   }
 
@@ -18407,6 +18440,6 @@ p {
   }
 
   body.tutorial-tour-active .app-main {
-    padding-bottom: 48vh;
+    padding-bottom: 62vh;
   }
 }

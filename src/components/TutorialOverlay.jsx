@@ -31,6 +31,24 @@ function findVisibleTarget(step) {
   return null;
 }
 
+function pickMobileHighlightEl(el, maxAvailableHeight) {
+  if (!el) return null;
+  const r = el.getBoundingClientRect();
+  if (r.height <= maxAvailableHeight) {
+    return el;
+  }
+  const inner = el.querySelector(
+    '.ra-card-head, .gm-card-head, .st-card-head, .gm-strategy-header, .card-header-row, .liquid-tabs-surface, h2, h3, .card-title'
+  );
+  if (inner) {
+    const ir = inner.getBoundingClientRect();
+    if (ir.width > 36 && ir.height > 20 && ir.height <= maxAvailableHeight) {
+      return inner;
+    }
+  }
+  return el;
+}
+
 export default function TutorialOverlay({
   promptOpen,
   tourActive,
@@ -88,33 +106,41 @@ export default function TutorialOverlay({
       return;
     }
 
-    const el = findVisibleTarget(currentStep);
+    const baseEl = findVisibleTarget(currentStep);
     const vw = window.innerWidth;
     const vh = window.innerHeight;
     const isMobile = vw <= 768;
     const margin = isMobile ? 10 : 18;
     const cardEl = cardRef.current;
     const cardW = Math.min(isMobile ? vw - 20 : 390, vw - 20);
-    const cardH = cardEl?.offsetHeight || (isMobile ? 240 : 260);
+    const cardH = cardEl?.offsetHeight || (isMobile ? 235 : 260);
 
     if (isMobile) {
-      // Steady docked bottom-sheet card: thumb position never jumps between steps
+      const mobileBottomOffset = 84;
+      // Steady docked sheet comfortably lifted above bottom navigation / safe-area
       setCardStyle({
         width: `${cardW}px`,
         left: `${Math.round((vw - cardW) / 2)}px`,
-        bottom: '10px',
+        bottom: `${mobileBottomOffset}px`,
         top: 'auto',
         opacity: 1,
       });
 
-      if (!el) {
+      if (!baseEl) {
         setTargetRect(null);
         return;
       }
 
+      const cardTopActual =
+        cardEl && cardEl.getBoundingClientRect().height > 0
+          ? cardEl.getBoundingClientRect().top
+          : vh - mobileBottomOffset - cardH;
+      const upperZoneLimit = Math.max(130, Math.floor(cardTopActual) - 16);
+      const maxSpotHeight = Math.max(80, upperZoneLimit - 68);
+      const el = pickMobileHighlightEl(baseEl, maxSpotHeight);
       const raw = el.getBoundingClientRect();
       const pad = 5;
-      const upperZoneLimit = Math.max(140, vh - cardH - 18);
+
       const spotlightTop = Math.max(8, raw.top - pad);
       const spotlightLeft = Math.max(8, raw.left - pad);
       const spotlightRight = Math.min(vw - 8, raw.right + pad);
@@ -122,8 +148,8 @@ export default function TutorialOverlay({
       const sW = spotlightRight - spotlightLeft;
       const sH = spotlightBottom - spotlightTop;
 
-      // Only show stationary highlight ring when target visibly sits inside upper zone above sheet
-      if (sW >= 36 && sH >= 28 && spotlightTop < upperZoneLimit - 24) {
+      // Strictly only show highlight ring completely above coach card — zero overlap ever
+      if (sW >= 36 && sH >= 24 && spotlightTop < upperZoneLimit - 24 && spotlightBottom <= upperZoneLimit) {
         setTargetRect({
           top: spotlightTop,
           left: spotlightLeft,
@@ -136,6 +162,7 @@ export default function TutorialOverlay({
       return;
     }
 
+    const el = baseEl;
     if (!el) {
       setTargetRect(null);
       setCardStyle({
@@ -207,20 +234,27 @@ export default function TutorialOverlay({
     if (!tourActive || !currentStep || activePage !== currentStep.page) return undefined;
 
     const scrollTimer = window.setTimeout(() => {
-      const el = findVisibleTarget(currentStep);
+      const baseEl = findVisibleTarget(currentStep);
       const isMobile = window.innerWidth <= 768;
-      if (el) {
-        const r = el.getBoundingClientRect();
+      if (baseEl) {
         if (isMobile) {
-          const sheetH = cardRef.current?.offsetHeight || 245;
-          const upperLimit = Math.max(150, window.innerHeight - sheetH - 22);
-          if (r.top < 64 || r.bottom > upperLimit) {
+          const cardEl = cardRef.current;
+          const sheetH = cardEl?.offsetHeight || 235;
+          const cardTopActual =
+            cardEl && cardEl.getBoundingClientRect().height > 0
+              ? cardEl.getBoundingClientRect().top
+              : window.innerHeight - 84 - sheetH;
+          const upperLimit = Math.max(130, Math.floor(cardTopActual) - 18);
+          const el = pickMobileHighlightEl(baseEl, Math.max(80, upperLimit - 68));
+          const r = el.getBoundingClientRect();
+          if (r.top < 64 || r.bottom + 8 > upperLimit) {
             window.scrollBy({ top: r.top - 72, behavior: 'auto' });
           }
         } else {
+          const r = baseEl.getBoundingClientRect();
           const needsScroll = r.top < 72 || r.bottom > window.innerHeight - 110;
           if (needsScroll) {
-            el.scrollIntoView({ block: 'center', behavior: 'auto' });
+            baseEl.scrollIntoView({ block: 'center', behavior: 'auto' });
           }
         }
       }

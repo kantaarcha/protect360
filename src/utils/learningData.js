@@ -864,12 +864,181 @@ export const JARGON_TERMS = [
       en: 'Build at least a 3-month liquid buffer before locking surplus cash into illiquid long-term contracts or retirement funds.',
     },
   },
+  {
+    id: 'protection-gap',
+    term: { th: 'ช่องว่างความคุ้มครอง (Protection Gap)', en: 'Protection Gap' },
+    shortTag: { th: 'ส่วนต่างที่ยังขาด', en: 'Uncovered Shock Risk' },
+    plainMeaning: {
+      th: 'ส่วนต่างระหว่าง "ค่ารักษาหรือความเสียหายที่อาจเกิดขึ้นจริง" กับ "เงินสำรอง + สวัสดิการ/กรมธรรม์ที่มีอยู่แล้ว" ซึ่งเป็นก้อนที่อาจต้องควักเงินเก็บจ่ายเองหรือกู้หนี้ดอกเบี้ยสูง',
+      en: 'The difference between potential emergency bills and your existing cash reserve plus benefits — the exact gap that would force out-of-pocket drain or high-interest debt.',
+    },
+    tip: {
+      th: 'เป้าหมายไม่ได้แปลว่าต้องทำประกันเต็มเพดานทุกอย่าง แค่รู้ตัวเลขส่วนต่างที่แท้จริงเพื่อปิดจุดเสี่ยงใหญ่ที่สุดตามงบที่ไหว',
+      en: 'Closing a Protection Gap means knowing where major exposure lies and covering critical gaps within your safe budget.',
+    },
+  },
+  {
+    id: 'risk-transfer',
+    term: { th: 'การโอนย้ายความเสี่ยง vs รับความเสี่ยงเอง (Risk Transfer)', en: 'Risk Transfer vs Self-Insure' },
+    shortTag: { th: 'โอนความเสี่ยงใหญ่', en: 'Shift Tail Risk' },
+    plainMeaning: {
+      th: 'การจ่ายงบคงที่จำนวนน้อยล่วงหน้า (เช่น เบี้ยประกัน) เพื่อโอนบิลความเสียหายก้อนใหญ่ที่คาดเดาไม่ได้ให้ผู้รับความเสี่ยงแทน ส่วน "รับความเสี่ยงเอง (Self-Insure)" คือการกันเงินสดจ่ายเองทั้งหมด',
+      en: 'Paying a predictable modest budget upfront to shift catastrophic uncertain bills onto an insurer, vs "Self-Insure" where you absorb every shock strictly from your own cash.',
+    },
+    tip: {
+      th: 'หลักปฏิบัติจริง: เหตุการณ์ถี่แต่ยอดเล็กใช้เงินสดรับเอง ส่วนเหตุการณ์ไม่บ่อยแต่ยอดหลักแสน-ล้านให้โอนย้ายความเสี่ยง',
+      en: 'Retain small predictable expenses with savings, and transfer rare high-severity shocks that could wipe out years of saving.',
+    },
+  },
+  {
+    id: 'conservative-baseline',
+    term: { th: 'หลักประเมินแบบรอบคอบ (Conservative Actuary Baseline)', en: 'Conservative Baseline' },
+    shortTag: { th: 'นับเฉพาะยอดที่ยืนยัน', en: 'Confirmed Only' },
+    plainMeaning: {
+      th: 'หลักคณิตศาสตร์ประกันภัยที่นับเฉพาะวงเงินที่ "ยืนยันตัวเลขได้จริง" เท่านั้น หากมีประกันกลุ่มหรือสิทธิแต่ยังไม่รู้วงเงิน ระบบจะตั้งฐานนับเป็น ฿0 ไว้ก่อนเพื่อป้องกันความประมาท',
+      en: 'An actuarial safety principle that counts only verified coverage figures. Any plan whose limit is unknown is treated as ฿0 until confirmed so you never overestimate protection.',
+    },
+    tip: {
+      th: 'หากเห็นตัวเลขความคุ้มครองขึ้น ฿0 ในหน้าวิเคราะห์เพราะยังไม่รู้วงเงินประกันกลุ่ม เพียงทักถามฝ่ายบุคคล (HR) แล้วนำตัวเลขจริงมากรอก ผลลัพธ์จะอัปเดตทันที',
+      en: 'If your group cover shows ฿0 due to an unknown limit, simply verify the number with HR and enter it to update your real score immediately.',
+    },
+  },
+  {
+    id: 'apr-debt-trap',
+    term: { th: 'ดอกเบี้ยต่อปี & กับดักหนี้ฉุกเฉิน (APR & Debt Trap)', en: 'Annual Percentage Rate (APR)' },
+    shortTag: { th: 'ต้นทุนเงินกู้ 16–25%/ปี', en: 'Borrowing Cost' },
+    plainMeaning: {
+      th: 'APR คืออัตราดอกเบี้ยและค่าธรรมเนียมต่อปีที่ต้องจ่ายหากต้องรูดบัตรเครดิตหรือกดเงินสด (ราว 16%–25% ต่อปี) เพื่อหมุนจ่ายบิลฉุกเฉิน ซึ่งกัดกินรายได้ในอนาคตอย่างต่อเนื่อง',
+      en: 'The yearly interest cost (often 16%–25% APR on cards or cash advances) incurred when emergency medical or repair bills force short-term borrowing.',
+    },
+    tip: {
+      th: 'เทียบง่าย ๆ: กู้ ฿100,000 ที่ 20% APR แม้จ่ายคืนครบ 1–2 ปี ยังเสียดอกเบี้ยทิ้งฟรีหลักหมื่นบาทโดยไม่ได้สร้างทรัพย์สินเพิ่มเลย',
+      en: 'Borrowing ฿100,000 at 20% APR adds tens of thousands in deadweight interest — building reserves avoids this compounding trap.',
+    },
+  },
+  {
+    id: 'inflation-real-return',
+    term: { th: 'เงินเฟ้อ & ผลตอบแทนสุทธิหลังหักเงินเฟ้อ (Inflation & Real Return)', en: 'Inflation & Real Return' },
+    shortTag: { th: 'อำนาจซื้อที่แท้จริง', en: 'Purchasing Power' },
+    plainMeaning: {
+      th: 'เงินเฟ้อคือภาวะที่ข้าวของแพงขึ้นทุกปี (เฉลี่ย ~2–3%/ปี) ทำให้เงิน ฿100,000 ในอีก 15 ปีข้างหน้าซื้อของได้น้อยลง ส่วน Real Return คือผลตอบแทนที่เหลือจริงหลังหักเงินเฟ้อออกแล้ว',
+      en: 'Inflation (~2–3% yearly) erodes what money can buy over time. Real Return measures your actual gain in purchasing power after subtracting inflation from nominal returns.',
+    },
+    tip: {
+      th: 'ก่อนเลือกออมระยะยาว 15–20 ปี เช็ก IRR หลังหักเงินเฟ้อในแท็บ "ลงทุน (IRR)" เพื่อไม่ให้หลงตัวเลขเงินคืนที่เป็นตัวเงินล้วน',
+      en: 'Always inspect inflation-adjusted Real IRR in Invest & Value Lab before locking money into 15–20 year contracts.',
+    },
+  },
+  {
+    id: 'cashflow-maturity',
+    term: { th: 'กระแสเงินสด (Cashflow) & เงินครบสัญญา (Maturity)', en: 'Cashflow & Maturity Lump Sum' },
+    shortTag: { th: 'เงินเข้า–ออกรายปี', en: 'Yearly Money Flow' },
+    plainMeaning: {
+      th: 'กระแสเงินสดคือจังหวะที่เงินไหลเข้า (รายรับ/เงินคืน) และไหลออก (รายจ่าย/เบี้ยที่จ่าย) ในแต่ละเดือนหรือแต่ละปี ส่วนเงินครบกำหนดสัญญาคือเงินก้อนสุดท้ายที่ได้รับเมื่อถือครบระยะ',
+      en: 'Cashflow tracks exact timing of inflows (income/cashback) and outflows (expenses/premiums), while Maturity Lump Sum is the final payout at the end of a long-term plan.',
+    },
+    tip: {
+      th: 'การดูไทม์ไลน์กระแสเงินสดรายปีช่วยให้เห็นชัดว่าคุณต้องติดลบเงินสดอยู่กี่ปีก่อนถึงจุดคุ้มทุน',
+      en: 'Reviewing a year-by-year cashflow timeline shows exactly how many years your cash stays tied up before break-even.',
+    },
+  },
+  {
+    id: 'tax-deduction-bracket',
+    term: { th: 'ฐานภาษี & สิทธิลดหย่อนภาษี (Tax Bracket & Deduction)', en: 'Tax Bracket & Relief' },
+    shortTag: { th: 'ประหยัดภาษี 0%–35%', en: 'Income Tax Shield' },
+    plainMeaning: {
+      th: 'ค่าลดหย่อนไม่ใช่การลดเงินภาษีลงตรง ๆ แต่เป็นการนำไป "หักออกจากเงินได้สุทธิ" เพื่อลดภาษีตามอัตราขั้นบันไดของคุณ (เช่น ฐานภาษี 5%, 10%, 20% ตามรายได้ต่อปี)',
+      en: 'Tax deductions subtract from taxable income rather than directly from tax owed — real cash saved depends on your marginal income tax bracket (0% to 35%).',
+    },
+    tip: {
+      th: 'หากรายได้สุทธิยังไม่ถึงเกณฑ์เสียภาษี (ฐาน 0%) การซื้อประกันออมทรัพย์เพื่อหวังลดหย่อนภาษีจะไม่ได้ผลตอบแทนจากภาษีเพิ่มเลย',
+      en: 'If your net taxable income falls in the 0% bracket, tax-deductible policies generate zero extra tax yield.',
+    },
+  },
+  {
+    id: 'savings-ratio',
+    term: { th: 'อัตราการออมสุทธิ & กรอบงบ 10–15% (Net Savings Ratio & Safe Cap)', en: 'Savings Ratio & Safe Cap' },
+    shortTag: { th: 'สัดส่วนออมและงบเสี่ยง', en: 'Budget Guardrail' },
+    plainMeaning: {
+      th: 'อัตราการออมสุทธิคือ (รายรับ − รายจ่าย) ÷ รายรับ × 100% ส่วนกรอบงบจัดการความเสี่ยงปลอดภัย (10–15% ของรายได้) คือเพดานเบี้ยรวมสูงสุดที่ไม่ควรเกินเพื่อไม่ให้ตึงมือจนต้องเวนคืนสัญญา',
+      en: 'Net Savings Ratio = (Income − Expenses) ÷ Income. The 10–15% Safe Cap limits annual protection spending so premiums never squeeze daily living or cause lapses.',
+    },
+    tip: {
+      th: 'แม้กรอบปลอดภัยจะแนะนำไม่เกิน 15% แต่สำหรับวัยเริ่มทำงานที่ยังมีสวัสดิการบริษัท มักใช้งบจริงเพียง 3–8% ก็เพียงพอแล้ว',
+      en: '15% is a strict ceiling — most early-career workers with workplace benefits need only 3–8% for strong essential cover.',
+    },
+  },
+  {
+    id: 'sso-sec33-39',
+    term: { th: 'ประกันสังคม ม.33 vs ม.39 & บัตรทอง (สปสช.)', en: 'SSO Sec. 33 / 39 & Gold Card' },
+    shortTag: { th: 'สิทธิพื้นฐานภาครัฐ', en: 'Statutory Benefits' },
+    plainMeaning: {
+      th: 'ม.33 คือสิทธิของพนักงานประจำ (คุ้มครอง 7 กรณี รวมถึงรักษา รพ.ตามสิทธิและว่างงาน) หากลาออกยังคุ้มครองต่อฟรี 6 เดือน ส่วน ม.39 คือผู้เคยส่ง ม.33 ที่จ่ายสมทบเองต่อ และบัตรทองคือสิทธิหลักประกันสุขภาพถ้วนหน้าสำหรับคนไทยทุกคนที่ไม่มีสิทธิอื่น',
+      en: 'Sec. 33 covers salaried employees (including 6 months free after resignation). Sec. 39 is voluntary continuation, and Universal Coverage (Gold Card) protects citizens without other statutory plans.',
+    },
+    tip: {
+      th: 'จำง่าย ๆ: คนไทยไม่มีวันไร้สิทธิรักษาพยาบาล แต่อาจมีข้อจำกัดเรื่องเลือก รพ. เอกชนและระยะเวลารอคิวในเคสไม่ฉุกเฉิน',
+      en: 'Every Thai citizen holds baseline healthcare rights, though non-emergency private hospital speed & comfort depend on supplemental coverage.',
+    },
+  },
+  {
+    id: 'group-insurance',
+    term: { th: 'ประกันกลุ่มบริษัท (Employer Group Insurance)', en: 'Group Insurance' },
+    shortTag: { th: 'สวัสดิการจากที่ทำงาน', en: 'Workplace Benefit' },
+    plainMeaning: {
+      th: 'แผนคุ้มครองสุขภาพ อุบัติเหตุ หรือชีวิตที่นายจ้างจัดทำให้พนักงานเป็นสวัสดิการ มักคุ้มครองทันทีไม่มีระยะเวลารอคอย แต่จะสิ้นสุดลงทันทีในวันที่ลาออกหรือเปลี่ยนงาน',
+      en: 'Medical, accident, or life protection sponsored by your employer — typically active from day one with no waiting period, but ends immediately if you leave the company.',
+    },
+    tip: {
+      th: 'ใช้ประกันกลุ่มช่วยรับบิล OPD/ค่าห้องก้อนแรก แล้วใช้แผนเสริมแบบมีความรับผิดส่วนแรก (Deductible) เฉพาะยามจำเป็นจะประหยัดงบที่สุด',
+      en: 'Use workplace benefits for initial OPD and room charges, keeping extra personal protection focused only on gaps that follow you across jobs.',
+    },
+  },
+  {
+    id: 'critical-illness-ci',
+    term: { th: 'ประกันโรคร้ายแรง (Critical Illness — CI)', en: 'Critical Illness (CI)' },
+    shortTag: { th: 'เจอ-จ่าย-จบ เงินก้อน', en: 'Lump-Sum Payout' },
+    plainMeaning: {
+      th: 'ความคุ้มครองที่จ่ายเป็น "เงินก้อนสด" เข้าบัญชีทันทีเมื่อแพทย์วินิจฉัยว่าเป็นโรคร้ายแรงตามเงื่อนไข (เช่น มะเร็งระยะลุกลาม โรคหลอดเลือดสมอง หัวใจ) เพื่อใช้เป็นค่าพักฟื้นและชดเชยรายได้ที่หายไป',
+      en: 'Pays an immediate lump-sum cash benefit upon confirmed diagnosis of qualifying severe illnesses (e.g., cancer, stroke, heart attack) to replace lost income and support recovery.',
+    },
+    tip: {
+      th: 'แยกบทบาทให้ชัด: ประกันสุขภาพจ่ายบิลโรงพยาบาล ส่วน CI ให้เงินก้อนไว้เลี้ยงชีวิตและครอบครัวระหว่างหยุดงานพักรักษาตัว',
+      en: 'Health insurance pays the hospital directly; CI pays cash directly to you so living expenses stay covered during recovery.',
+    },
+  },
+  {
+    id: 'sub-limit-per-visit',
+    term: { th: 'วงเงินแยกหมวด/ต่อครั้ง (Sub-limit) vs เหมาจ่าย (Lump Sum)', en: 'Sub-limit vs Lump Sum' },
+    shortTag: { th: 'เพดานค่าห้อง/ต่อครั้ง', en: 'Cap Structure' },
+    plainMeaning: {
+      th: 'แบบ Sub-limit จะล็อกเพดานแยกเป็นข้อ ๆ (เช่น ค่าห้องสูงสุด ฿1,500/คืน ค่าผ่าตัดไม่เกิน ฿30,000) แม้ค่ารักษาจริงพุ่งก็เบิกเกินข้อย่อยไม่ได้ ต่างจากแบบเหมาจ่ายที่รวมวงเงินก้อนใหญ่ให้เบิกตามจริงได้ยืดหยุ่นกว่า',
+      en: 'Sub-limit plans cap each item strictly (e.g., ฿1,500/night room or ฿30,000 surgery ceiling), whereas Lump-Sum / Major Medical plans cover actual bills up to a single overall limit.',
+    },
+    tip: {
+      th: 'เวลาดูสิทธิที่มี อย่าดูแค่ตัวเลขใหญ่หน้าปก ให้เปิดเช็กวงเงิน "ค่าห้องต่อวัน" และ "ค่าผ่าตัดต่อครั้ง" เทียบกับราคา รพ. ใกล้บ้าน',
+      en: 'Check per-day room and per-surgery caps against local private hospital rates instead of reading only the headline total.',
+    },
+  },
+  {
+    id: 'pdpa-localstorage',
+    term: { th: 'PDPA & การเก็บข้อมูลบนเครื่อง (Zero-Login Local Storage)', en: 'PDPA & Local Storage' },
+    shortTag: { th: 'ปลอดภัยบนอุปกรณ์คุณ', en: 'On-Device Privacy' },
+    plainMeaning: {
+      th: 'พ.ร.บ. คุ้มครองข้อมูลส่วนบุคคล (PDPA) คุ้มครองข้อมูลการเงินและสุขภาพของคุณ ระบบ PROTECT360 ออกแบบแบบ Zero-Login ให้ตัวเลขทั้งหมดคำนวณและบันทึกเฉพาะในเบราว์เซอร์เครื่องคุณเท่านั้น ไม่ส่งขึ้นเซิร์ฟเวอร์ภายนอก',
+      en: 'Personal Data Protection Act (PDPA) safeguards your sensitive income and health inputs. PROTECT360 runs 100% locally via browser storage without accounts or external servers.',
+    },
+    tip: {
+      th: 'สามารถส่งออกไฟล์ .json เพื่อสำรองเก็บไว้ส่วนตัว หรือกดปุ่มรีเซ็ตล้างค่าเป็น 0 ได้ตลอดเวลาจากหน้า ตั้งค่า',
+      en: 'Export a private .json backup or reset everything back to 0 anytime from the Settings page.',
+    },
+  },
 ];
 
 // =============================================================================
-// 20-QUESTION RANDOMIZED LITERACY QUIZ BANK
+// 30-QUESTION RANDOMIZED LITERACY QUIZ BANK
 // - Strictly 3 choices (A/B/C) with balanced length to prevent length-guessing
-// - Academic, concise per-option wrongReason + correctReason + extraNote
+// - Supports 5-question (~2 min) or 10-question (challenge) sessions
 // =============================================================================
 export const LITERACY_QUIZ_BANK = [
   {
@@ -1633,6 +1802,386 @@ export const LITERACY_QUIZ_BANK = [
       en: 'To continue SSO afterward, apply for Sec. 39 within 6 months (฿432/mo), and register for unemployment benefits within 30 days of leaving.',
     },
   },
+  {
+    id: 'q21-protection-gap',
+    question: {
+      th: 'คำว่า "ช่องว่างความคุ้มครอง (Protection Gap)" ในการวางแผนการเงินหมายถึงอะไร?',
+      en: 'What does a "Protection Gap" mean in personal risk planning?',
+    },
+    options: [
+      {
+        id: 'a',
+        label: { th: 'ส่วนต่างความเสียหายที่เงินสำรองและสิทธิเดิมยังไม่พอจ่าย', en: 'The remaining shock cost beyond cash reserve and existing cover' },
+      },
+      {
+        id: 'b',
+        label: { th: 'จำนวนวันที่บริษัทประกันใช้เวลาตรวจสอบเอกสารการเคลม', en: 'The number of business days an insurer reviews claim paperwork' },
+        wrongReason: {
+          th: 'ระยะเวลาพิจารณาสินไหมเป็นขั้นตอนบริการหลังเกิดเหตุ ไม่ได้ใช้วัดขนาดความคุ้มครองทางการเงินที่ยังขาดอยู่',
+          en: 'Claim processing duration is a service turnaround metric, not the financial shortfall in your protection.',
+        },
+      },
+      {
+        id: 'c',
+        label: { th: 'วงเงินส่วนเกินที่จะได้รับคืนเป็นโบนัสเงินสดทุกสิ้นปีสัญญา', en: 'Excess cash refunded to policyholders as a yearly cash bonus' },
+        wrongReason: {
+          th: 'ช่องว่างความคุ้มครองคือจุดเสี่ยงที่ยังขาดอยู่ ไม่ใช่เงินโบนัสหรือส่วนลดเบี้ยคืนให้ผู้ถือกรมธรรม์',
+          en: 'A protection gap measures uncovered financial exposure rather than a rebate or annual bonus.',
+        },
+      },
+    ],
+    correctId: 'a',
+    correctReason: {
+      th: 'Protection Gap คือส่วนต่างระหว่างค่ารักษาหรือความเสียหายที่อาจเกิดขึ้นจริง กับยอดเงินสำรอง + สวัสดิการ/ประกันที่มีอยู่แล้ว',
+      en: 'Protection Gap measures the exact deficit between severe emergency costs and your combined cash reserve plus existing benefits.',
+    },
+    extraNote: {
+      th: 'การรู้ขนาดช่องว่างที่แท้จริงช่วยให้คุณอุดเฉพาะจุดเสี่ยงใหญ่โดยไม่เสียเบี้ยเกินจำเป็น',
+      en: 'Knowing your true gap ensures you fix critical exposures without overpaying premiums.',
+    },
+  },
+  {
+    id: 'q22-emergency-reserve-priority',
+    question: {
+      th: 'ลำดับความสำคัญที่แนะนำสำหรับ First Jobber ที่มีรายได้เดือนแรก ๆ ควรเริ่มจากข้อใด?',
+      en: 'What is the safest starter priority order for an early-career First Jobber?',
+    },
+    options: [
+      {
+        id: 'a',
+        label: { th: 'ทำรายรับ-รายจ่ายและสร้างเงินสำรองฉุกเฉินก่อนโอนความเสี่ยง', en: 'Track cashflow and build emergency reserve before risk transfer' },
+      },
+      {
+        id: 'b',
+        label: { th: 'นำเงินออมทั้งหมดไปลงทุนสินทรัพย์ผันผวนสูงตั้งแต่วันแรก', en: 'Invest 100% of every spare baht in volatile assets from day one' },
+        wrongReason: {
+          th: 'หากเกิดเหตุฉุกเฉินช่วงตลาดขาลงโดยไม่มีเงินสดสำรอง อาจต้องขายขาดทุนหรือกู้หนี้ดอกเบี้ยสูงทันที',
+          en: 'Without a cash cushion, an emergency during a market dip forces selling at a loss or borrowing at high APR.',
+        },
+      },
+      {
+        id: 'c',
+        label: { th: 'ซื้อประกันออมทรัพย์ระยะยาวเต็มเพดานก่อนมีเงินสดติดบัญชี', en: 'Max out illiquid long-term savings policies before keeping liquid cash' },
+        wrongReason: {
+          th: 'สัญญาออมทรัพย์ถอนเงินกลางคันไม่ได้เต็มจำนวน จึงไม่ควรนำเงินทั้งหมดมาผูกก่อนมีกันชน 3 เดือน',
+          en: 'Long-term policies penalize early surrender, so liquid reserves must come before multi-year lock-ins.',
+        },
+      },
+    ],
+    correctId: 'a',
+    correctReason: {
+      th: 'กฎ 3 ขั้น PROTECT360 เริ่มจากการคุมกระแสเงินสด (360Flow) → สร้างเงินสำรอง 3–6 เดือน → เช็กสิทธิที่มีฟรี แล้วจึงค่อยโอนย้ายความเสี่ยงส่วนที่ขาด',
+      en: 'The PROTECT360 order builds cash visibility and a 3–6 month emergency buffer first, checks free perks, then transfers major remaining risks.',
+    },
+    extraNote: {
+      th: 'ในสมุดบัญชี 360Flow อย่าลืมบันทึกเงินที่โอนเก็บเข้าบัญชีออมฉุกเฉินในหมวด "เงินสำรอง" ไม่ใช่รายจ่าย',
+      en: 'In 360Flow, log emergency transfers under "Emergency Reserve" rather than regular expenses.',
+    },
+  },
+  {
+    id: 'q23-apr-card-shock',
+    question: {
+      th: 'หากเจอบิลโรงพยาบาลฉุกเฉิน ฿100,000 แล้วต้องกดเงินสด/รูดผ่อนบัตรที่ดอกเบี้ย 20% ต่อปี ปัญหาหลักคืออะไร?',
+      en: 'When a ฿100,000 emergency bill forces a 20% APR card loan, what is the biggest financial danger?',
+    },
+    options: [
+      {
+        id: 'a',
+        label: { th: 'ดอกเบี้ยทบต้นจะดึงเงินออมรายเดือนไปจ่ายหนี้หลายปีติดต่อกัน', en: 'Compounding high interest drains monthly surplus savings for years' },
+      },
+      {
+        id: 'b',
+        label: { th: 'ธนาคารจะโอนเงินค่าบัตรเครดิตกลับมาเป็นเบี้ยลดหย่อนภาษีให้', en: 'Banks automatically convert card interest into income tax relief' },
+        wrongReason: {
+          th: 'ดอกเบี้ยบัตรเครดิตหรือสินเชื่อส่วนบุคคลไม่สามารถนำไปใช้ลดหย่อนภาษีเงินได้บุคคลธรรมดาได้',
+          en: 'Interest paid on credit cards or personal emergency loans carries zero tax-deduction benefit.',
+        },
+      },
+      {
+        id: 'c',
+        label: { th: 'ดอกเบี้ยเงินกู้ฉุกเฉินจะหยุดเดินทันทีเมื่อยอดเกินหนึ่งแสนบาท', en: 'Card interest stops accruing completely above a hundred thousand baht' },
+        wrongReason: {
+          th: 'ดอกเบี้ยยังคงคำนวณต่อตามเงินต้นคงค้างทุกวันจนกว่าจะชำระหนี้หมด หากจ่ายขั้นต่ำหนี้จะยิ่งลากยาว',
+          en: 'Interest accrues daily on remaining principal — paying minimums stretches repayment over years.',
+        },
+      },
+    ],
+    correctId: 'a',
+    correctReason: {
+      th: 'ดอกเบี้ย 20% ต่อปีเปรียบเสมือนการเสียเงินต้นเพิ่มเรื่อย ๆ โดยไม่เกิดผลตอบแทน ทำให้กำลังในการออมฉุกเฉินและการลงทุนหายไปทันที',
+      en: '20% APR debt steadily consumes your monthly cash surplus without creating assets, halting both emergency buffer growth and investing.',
+    },
+    extraNote: {
+      th: 'ลองปรับตัวเลขจำลองในแท็บ "ลงทุน & IRR → โอนเสี่ยง vs จ่ายเอง" เพื่อเห็นผลกระทบดอกเบี้ยจริงเป็นบาท',
+      en: 'Try the "Invest & Value Lab → Transfer vs Self-Insure" simulator to compare exact baht outcomes.',
+    },
+  },
+  {
+    id: 'q24-group-unknown',
+    question: {
+      th: 'รู้ว่าบริษัทมี "ประกันกลุ่ม" แต่ยังจำวงเงินไม่ได้ เหตุใดระบบประเมินแบบรอบคอบจึงนับเป็น ฿0 ชั่วคราว?',
+      en: 'Why does a conservative risk check treat employer group cover with an "unknown limit" as ฿0 temporarily?',
+    },
+    options: [
+      {
+        id: 'a',
+        label: { th: 'เพื่อไม่ให้ประเมินสูงเกินจริงจนชะล่าใจหากวงเงินจริงต่ำกว่าที่คิด', en: 'To prevent overestimating safety if the actual company cap turns out small' },
+      },
+      {
+        id: 'b',
+        label: { th: 'เพราะประกันกลุ่มบริษัทถือเป็นสัญญาผิดกฎหมายสำหรับพนักงานใหม่', en: 'Because employer group plans are invalid for early-career staff' },
+        wrongReason: {
+          th: 'ประกันกลุ่มเป็นสวัสดิการจริงและคุ้มค่ามาก เพียงแต่แต่ละบริษัทให้วงเงินไม่เท่ากัน ตั้งแต่ ฿10,000 จนถึงหลักแสน',
+          en: 'Employer group plans are valid and valuable, though limits vary sharply across companies.',
+        },
+      },
+      {
+        id: 'c',
+        label: { th: 'เพราะพนักงานไม่สามารถสอบถามข้อมูลวงเงินจากฝ่ายบุคคล (HR) ได้', en: 'Because employees are banned from asking HR for benefit limits' },
+        wrongReason: {
+          th: 'คุณสามารถทักแชตหรือเช็กคู่มือสวัสดิการกับฝ่ายบุคคล (HR) เพื่อขอดูตารางผลประโยชน์ได้ตลอดเวลา',
+          en: 'You are always entitled to request your benefit table from HR at any time.',
+        },
+      },
+    ],
+    correctId: 'a',
+    correctReason: {
+      th: 'หลักความระมัดระวังทางคณิตศาสตร์ (Conservatism) จะนับเฉพาะวงเงินที่ยืนยันได้จริง เพื่อกระตุ้นให้เช็กกับ HR แล้วกรอกเลขที่ถูกต้อง',
+      en: 'Conservative actuarial assessment prevents blind optimism — confirming your limit with HR turns uncertainty into exact planning.',
+    },
+    extraNote: {
+      th: 'รู้แค่วงเงินประกันกลุ่มที่มี ก็ช่วยลดการซื้อแผนเสริมซ้ำซ้อนได้หลักพันบาทต่อปี',
+      en: 'Confirming your group limit prevents buying overlapping private riders needlessly.',
+    },
+  },
+  {
+    id: 'q25-inflation-impact',
+    question: {
+      th: 'เหตุใดการเทียบผลตอบแทนแผนออมระยะยาว 20 ปี จึงต้องดู "ผลตอบแทนหลังหักเงินเฟ้อ (Real IRR)" ด้วย?',
+      en: 'Why must you check inflation-adjusted "Real IRR" when evaluating a 20-year savings plan?',
+    },
+    options: [
+      {
+        id: 'a',
+        label: { th: 'เพราะค่าครองชีพแพงขึ้นทุกปี ทำให้มูลค่าซื้อจริงของเงินก้อนในอนาคตลดลง', en: 'Because rising living costs shrink the real buying power of future payouts' },
+      },
+      {
+        id: 'b',
+        label: { th: 'เพราะอัตราเงินเฟ้อจะทำให้จำนวนปีที่จ่ายเบี้ยเพิ่มขึ้นอัตโนมัติทุกปี', en: 'Because inflation automatically extends how many premium years you pay' },
+        wrongReason: {
+          th: 'จำนวนปีที่ชำระเบี้ยถูกกำหนดตายตัวตามสัญญา ไม่ได้ยืดตามเงินเฟ้อ แต่สิ่งที่ลดลงคือมูลค่าแท้จริงของเงินที่ได้รับคืน',
+          en: 'Premium payment duration is fixed by contract; inflation reduces what future payouts can actually buy.',
+        },
+      },
+      {
+        id: 'c',
+        label: { th: 'เพราะระบบภาษีจะบวกอัตราเงินเฟ้อเข้าไปเป็นรายได้พึงประเมินรายปี', en: 'Because tax rules add annual inflation directly onto taxable salary' },
+        wrongReason: {
+          th: 'เงินเฟ้อเป็นดัชนีราคาสินค้าบริโภคในระบบเศรษฐกิจ ไม่ได้ถูกนำไปบวกเป็นฐานเงินเดือนเพื่อคิดภาษี',
+          en: 'Inflation tracks consumer price changes in the economy and is not added onto personal taxable wages.',
+        },
+      },
+    ],
+    correctId: 'a',
+    correctReason: {
+      th: 'หากแผนให้ผลตอบแทนตัวเงิน 2.2%/ปี ในขณะที่เงินเฟ้ออยู่ที่ 2.5%/ปี อำนาจซื้อจริงหลังหักเงินเฟ้อจะติดลบเล็กน้อย (-0.3%)',
+      en: 'If a plan earns 2.2% nominal IRR while inflation averages 2.5%, purchasing power actually edges down (-0.3% real return).',
+    },
+    extraNote: {
+      th: 'หน้า "ลงทุน & IRR" จะแสดงทั้ง IRR ดิบและ Real Return หลังหักเงินเฟ้อเทียบให้อ่านทันที',
+      en: 'Invest & Value Lab shows both nominal IRR and real inflation-adjusted return side by side.',
+    },
+  },
+  {
+    id: 'q26-accident-vs-illness',
+    question: {
+      th: 'หลังกรมธรรม์สุขภาพและอุบัติเหตุอนุมัติ 2 วันแล้วเกิดอุบัติเหตุรถล้ม กับป่วยเป็นไส้ติ่ง มักต่างกันอย่างไร?',
+      en: 'Two days after approval, how do claims usually differ between a sudden accident and acute appendicitis?',
+    },
+    options: [
+      {
+        id: 'a',
+        label: { th: 'อุบัติเหตุมักคุ้มครองทันทีหลังอนุมัติ ส่วนโรคภัยต้องพ้นระยะรอคอย 30 วัน', en: 'Accidents usually start right upon approval, while illnesses clear 30 days' },
+      },
+      {
+        id: 'b',
+        label: { th: 'โรคภัยคุ้มครองตั้งแต่วันแรก ส่วนอุบัติเหตุต้องรอครบกำหนดหนึ่งร้อยยี่สิบวัน', en: 'Illnesses cover day one while sudden accidents require 120 waiting days' },
+        wrongReason: {
+          th: 'ข้อเท็จจริงกลับกันครับ ระยะรอคอย 30/120 วันใช้กับโรคเจ็บป่วย เพื่อกันกรณีเป็นโรคมาก่อนทำสัญญา',
+          en: 'It works the other way around — waiting windows apply to illnesses, whereas genuine sudden accidents carry no waiting delay.',
+        },
+      },
+      {
+        id: 'c',
+        label: { th: 'ทั้งอุบัติเหตุและโรคทั่วไปจะเคลมไม่ได้เลยจนกว่าจะต่ออายุกรมธรรม์ปีที่สอง', en: 'Both sudden accidents and general illnesses wait until year-two renewal' },
+        wrongReason: {
+          th: 'ไม่ถึงปีที่สองครับ อุบัติเหตุเฉียบพลันคุ้มครองทันที และโรคทั่วไปใช้ระยะเวลารอคอยมาตรฐานเพียง 30 วัน',
+          en: 'Coverage does not hold for a full year — accidents start immediately and general illnesses unlock after 30 days.',
+        },
+      },
+    ],
+    correctId: 'a',
+    correctReason: {
+      th: 'อุบัติเหตุเป็นเหตุปัจจัยภายนอกที่เกิดขึ้นกะทันหัน จึงมักเริ่มคุ้มครองตั้งแต่วันอนุมัติ ส่วนโรคภัยส่วนใหญ่มี Waiting Period 30 วัน',
+      en: 'Sudden external accidents cannot be pre-planned so cover starts immediately, whereas illnesses typically enforce a 30-day wait.',
+    },
+    extraNote: {
+      th: 'อ่านข้อยกเว้นของ "อุบัติเหตุ" เพิ่มเติมด้วย เช่น การขับขี่/ซ้อนท้ายจักรยานยนต์ในบางแผนอาจจ่ายเพียงครึ่งเดียว',
+      en: 'Also inspect accident exclusions — some plans reduce payouts by 50% for motorcycle-related accidents.',
+    },
+  },
+  {
+    id: 'q27-beneficiary-role',
+    question: {
+      th: 'เหตุใดคนโสด First Jobber ที่มีประกันชีวิตหรือสวัสดิการบริษัท จึงควรระบุชื่อ "ผู้รับประโยชน์" ให้ชัดเจน?',
+      en: 'Why should an unmarried First Jobber still name clear "Beneficiaries" on workplace or life benefits?',
+    },
+    options: [
+      {
+        id: 'a',
+        label: { th: 'เพื่อให้เงินส่งตรงถึงพ่อแม่หรือคนที่ดูแลได้อย่างรวดเร็วไม่ติดขั้นตอนมรดก', en: 'So payouts reach parents or loved ones swiftly without estate probate delays' },
+      },
+      {
+        id: 'b',
+        label: { th: 'เพื่อใช้สิทธิ์ขอลดค่าห้องโรงพยาบาลเอกชนในระหว่างที่ยังมีชีวิตอยู่', en: 'To gain extra private hospital room discounts during clinic visits' },
+        wrongReason: {
+          th: 'ผู้รับประโยชน์ไม่ได้ลดค่าห้องรักษาพยาบาลของตัวผู้ทำสัญญา แต่เป็นผู้รับเงินชดเชยหากเกิดเหตุเสียชีวิต',
+          en: 'Beneficiary designation governs death-benefit payouts rather than hospital room discounts.',
+        },
+      },
+      {
+        id: 'c',
+        label: { th: 'เพื่อเปลี่ยนให้ผู้รับประโยชน์เป็นคนรับผิดชอบจ่ายค่าเบี้ยรายเดือนแทน', en: 'To shift monthly premium billing responsibility onto that named person' },
+        wrongReason: {
+          th: 'การระบุผู้รับประโยชน์เป็นสิทธิในการรับเงินชดเชย ไม่ได้โอนภาระหนี้หรือหน้าที่จ่ายเบี้ยไปให้ผู้อื่น',
+          en: 'A beneficiary receives policy proceeds and carries zero obligation to pay your premiums.',
+        },
+      },
+    ],
+    correctId: 'a',
+    correctReason: {
+      th: 'การระบุชื่อและสัดส่วน % ผู้รับประโยชน์ (เช่น บิดา มารดา) ชัดเจน ช่วยให้บริษัทจ่ายเงินได้ตรงตามเจตนาและรวดเร็วไม่ต้องรอร้องขอจัดการมรดกในศาล',
+      en: 'Clear beneficiary names and % splits allow rapid direct payouts to parents or dependents without lengthy court probate.',
+    },
+    extraNote: {
+      th: 'เมื่อแต่งงาน มีบุตร หรือเปลี่ยนสถานะครอบครัว อย่าลืมขออัปเดตเอกสารเปลี่ยนชื่อผู้รับประโยชน์ทุกครั้ง',
+      en: 'Remember to update beneficiary forms whenever you marry, have children, or change family obligations.',
+    },
+  },
+  {
+    id: 'q28-critical-illness-income',
+    question: {
+      th: 'ประกันสุขภาพจ่ายค่ารักษา รพ. อยู่แล้ว เหตุใดบางคนจึงต้องรู้จักบทบาทของ "โรคร้ายแรง (CI / เจอ-จ่าย-จบ)"?',
+      en: 'If health cover already pays hospital bills, why do people examine Critical Illness (CI) lump-sum plans?',
+    },
+    options: [
+      {
+        id: 'a',
+        label: { th: 'เพื่อได้เงินก้อนสดไว้จ่ายค่าผ่อนบ้าน ค่าเดินทาง และทดแทนรายได้ที่หยุดพักฟื้น', en: 'To provide lump-sum cash for rent, living bills, and lost work income' },
+      },
+      {
+        id: 'b',
+        label: { th: 'เพราะประกันสุขภาพเหมาจ่ายจะห้ามไม่ให้ผู้ป่วยนอนพักห้องมาตรฐานของโรงพยาบาล', en: 'Because medical plans forbid patients from staying in hospital rooms' },
+        wrongReason: {
+          th: 'ประกันสุขภาพยังคงคุ้มครองค่าห้องและค่ารักษาใน รพ. ตามวงเงิน เพียงแต่ไม่จ่ายเงินสดส่วนที่เสียรายได้นอก รพ.',
+          en: 'Medical cover still handles inpatient rooms and treatment, though it does not pay out-of-hospital living expenses.',
+        },
+      },
+      {
+        id: 'c',
+        label: { th: 'เพราะผลตรวจโรคร้ายแรงใช้เปลี่ยนเป็นเงินคืนเบี้ยสุขภาพย้อนหลังได้ทั้งหมด', en: 'Because severe diagnoses refund all prior annual medical premiums' },
+        wrongReason: {
+          th: 'สัญญาเพิ่มเติม CI จ่ายเงินตามทุนคุ้มครองที่ตกลงไว้ ไม่ใช่การคืนเบี้ยย้อนหลังของแผนสุขภาพเดิม',
+          en: 'CI contracts pay the specified sum assured upon diagnosis rather than refunding historical health premiums.',
+        },
+      },
+    ],
+    correctId: 'a',
+    correctReason: {
+      th: 'หากป่วยหนักจนต้องพักงานหลายเดือน โรงพยาบาลไม่คิดค่าอาหาร/ค่าเช่าห้องชุดของคุณ — เงินก้อน CI จึงช่วยประคองค่าใช้จ่ายชีวิตและคนข้างหลัง',
+      en: 'Serious recovery often interrupts work income while rent and family bills keep running — CI lump-sum cash bridges that gap.',
+    },
+    extraNote: {
+      th: 'หากมีคนพึ่งพิงรายได้ (เช่น ส่งเงินให้พ่อแม่ 1–2+ คน) ควรให้ความสำคัญกับทุนคุ้มครองรายได้และ CI มากขึ้น',
+      en: 'If family members depend on your paycheck, income protection and CI merit higher priority.',
+    },
+  },
+  {
+    id: 'q29-sublimit-vs-lumpsum',
+    question: {
+      th: 'สวัสดิการแบบ "ค่าห้องจำกัด ฿1,500/คืน + ค่าผ่าตัดจำกัดต่อครั้ง" ต่างจาก "เหมาจ่าย" อย่างไรเมื่อนอน รพ. เอกชน?',
+      en: 'How does a strict "฿1,500/night room + per-surgery sub-limit" plan differ from Lump-Sum private hospital cover?',
+    },
+    options: [
+      {
+        id: 'a',
+        label: { th: 'หากค่าใช้จ่ายจริงเกินเพดานข้อย่อย ผู้ป่วยอาจต้องควักจ่ายส่วนต่างเองแม้รวมยังไม่เต็มเป้า', en: 'Exceeding any single item cap requires out-of-pocket top-up even below total cap' },
+      },
+      {
+        id: 'b',
+        label: { th: 'โรงพยาบาลเอกชนจะปรับลดค่ารักษาทั้งบิลลงมาให้เท่าวงเงินย่อยโดยอัตโนมัติ', en: 'Private hospitals automatically discount bills down to match every sub-limit' },
+        wrongReason: {
+          th: 'โรงพยาบาลคิดราคาตามอัตราจริงของ รพ. หากวงเงินค่าห้องหรือค่าหมอไม่พอ ส่วนเกินทั้งหมดเป็นความรับผิดชอบของผู้ป่วย',
+          en: 'Hospitals bill standard rates regardless of your plan caps — any shortfall falls strictly on the patient.',
+        },
+      },
+      {
+        id: 'c',
+        label: { th: 'แบบแยกหมวดจะโอนยอดที่เหลือจากค่าอาหารมาเพิ่มค่าผ่าตัดให้เต็มจำนวนเสมอ', en: 'Unused meal caps automatically roll over into surgery ceilings cleanly' },
+        wrongReason: {
+          th: 'ข้อดีของ "เหมาจ่าย" คือการถัวเฉลี่ยวงเงินได้ แต่แผน Sub-limit จะล็อกเพดานแยกหมวดไม่สามารถนำมาทบข้ามช่องได้',
+          en: 'Sub-limits are siloed ceilings that cannot cross-subsidize other expense categories like Lump-Sum plans do.',
+        },
+      },
+    ],
+    correctId: 'a',
+    correctReason: {
+      th: 'แผนแบบแยกหมวดมักทำให้เกิด "ส่วนต่างหน้าเคาน์เตอร์" แม้ตัวเลขคุ้มครองรวมดูสูง หากค่าห้องจริงในเมืองอยู่ที่ ฿3,500–฿5,500/คืน',
+      en: 'Sub-limit caps frequently trigger billing gaps at checkout even when headline limits look adequate against urban room fees.',
+    },
+    extraNote: {
+      th: 'เช็กตารางค่ารักษา รพ. ใกล้บ้านเทียบกับวงเงินรายหมวดของสวัสดิการเดิม ก่อนประเมินว่าช่องว่างความคุ้มครองของคุณเหลือเท่าไร',
+      en: 'Compare local hospital room rates directly against your benefit sub-limits to gauge true coverage.',
+    },
+  },
+  {
+    id: 'q30-pdpa-localstorage',
+    question: {
+      th: 'ข้อดีของการวางแผนการเงินบนเว็บที่คำนวณและเก็บข้อมูลบนอุปกรณ์ผู้ใช้ (Local-First / Zero-Login) คืออะไร?',
+      en: 'Why is a Local-First, Zero-Login risk calculator safer under personal privacy principles (PDPA)?',
+    },
+    options: [
+      {
+        id: 'a',
+        label: { th: 'ข้อมูลรายได้และสุขภาพอยู่แค่ในเครื่องคุณ ลดความเสี่ยงการรั่วไหลและโทรตื๊อขาย', en: 'Income & health inputs remain on your device, cutting leak and tele-sales risk' },
+      },
+      {
+        id: 'b',
+        label: { th: 'ทำให้ข้อมูลส่วนตัวถูกส่งไปซิงก์ให้บริษัทนายหน้าประกันคัดเลือกโฆษณาให้ตรงจุด', en: 'It distributes your salary profiles to brokers for personalized product pitches' },
+        wrongReason: {
+          th: 'Zero-Login คือการไม่ส่งข้อมูลขึ้นเซิร์ฟเวอร์หรือบุคคลที่สามเลย เพื่อรักษาความเป็นกลางและไม่ให้ใครมาขายประกัน',
+          en: 'Zero-Login ensures zero external transmission or broker sharing — preserving complete sales neutrality.',
+        },
+      },
+      {
+        id: 'c',
+        label: { th: 'ทำให้เว็บคำนวณค่าตัวเลขให้สูงขึ้นสองเท่าเมื่อใช้งานบนเบราว์เซอร์สมาร์ทโฟน', en: 'It automatically doubles calculated emergency targets on mobile devices' },
+        wrongReason: {
+          th: 'สูตรคำนวณทางการเงินทำงานเหมือนกันทุกแพลตฟอร์ม ความต่างของ Local-First คือเรื่องความปลอดภัยของข้อมูลส่วนตัวล้วน ๆ',
+          en: 'Calculation math stays consistent everywhere; Local-First is purely about data ownership and privacy.',
+        },
+      },
+    ],
+    correctId: 'a',
+    correctReason: {
+      th: 'ไม่ต้องกรอกเบอร์โทร อีเมล หรือบัตรประชาชน และข้อมูลทุกตัวเก็บในเครื่องของคุณคนเดียว ทำให้ประเมินความเสี่ยงได้อย่างสบายใจ 100%',
+      en: 'Zero phone, email, or national ID collection means your personal risk math stays strictly private on your own machine.',
+    },
+    extraNote: {
+      th: 'อย่าลืมส่งออกไฟล์สำรอง .json เก็บไว้เป็นระยะในหน้า "ตั้งค่า" หากวางแผนจะเปลี่ยนเบราว์เซอร์หรือล้างแคช',
+      en: 'Export a .json backup periodically in Settings before clearing browser cache or switching devices.',
+    },
+  },
 ];
 
 // Keep backward-compatible alias if anything references LITERACY_QUIZ
@@ -1648,14 +2197,15 @@ function shuffleList(items) {
 }
 
 /**
- * Pick 5 fresh questions from the 20-question bank (avoiding previous round IDs)
+ * Pick 5 or 10 fresh questions from the 30-question bank (avoiding previous round IDs)
  * and shuffle the A/B/C option order on every question.
  */
 export function buildRandomQuizSession(count = 5, previousIds = []) {
+  const targetCount = Math.min(Math.max(1, Number(count) || 5), LITERACY_QUIZ_BANK.length);
   const avoid = new Set(Array.isArray(previousIds) ? previousIds : []);
   const fresh = shuffleList(LITERACY_QUIZ_BANK.filter((q) => !avoid.has(q.id)));
   const seen = shuffleList(LITERACY_QUIZ_BANK.filter((q) => avoid.has(q.id)));
-  const picked = [...fresh, ...seen].slice(0, count);
+  const picked = [...fresh, ...seen].slice(0, targetCount);
 
   return picked.map((q) => ({
     ...q,

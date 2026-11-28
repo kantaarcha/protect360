@@ -209,8 +209,8 @@ export const FULL_TUTORIAL_STEPS = [
       en: 'Learning Library: Plain-English "Glossary" Inside',
     },
     body: {
-      th: 'เมื่ออ่านเจอคำอย่าง OPD, IPD, Waiting Period หรือ Co-payment แล้วไม่แน่ใจว่าหมายถึงอะไร ให้กดแท็บ "แปลศัพท์" ตรงนี้เพื่อดูคำแปลภาษาคนแบบสั้น ๆ หรือลองเล่น "ควิซ 5 ข้อ" ใน 2 นาที',
-      en: 'Confused by OPD, IPD, Waiting Period, or Co-payment? Open the "Glossary" tab here for 2-minute plain-language definitions, or take the 5-question quiz.',
+      th: 'เมื่ออ่านเจอคำอย่าง OPD, IPD, Waiting Period หรือ Co-payment แล้วไม่แน่ใจว่าหมายถึงอะไร ให้กดแท็บ "แปลศัพท์" ตรงนี้เพื่อดูคำแปลภาษาคนแบบสั้น ๆ หรือลองเล่น "ควิซ 5 หรือ 10 ข้อ" ใน 2 นาที',
+      en: 'Confused by OPD, IPD, Waiting Period, or Co-payment? Open the "Glossary" tab here for 2-minute plain-language definitions, or take a 5- or 10-question quiz.',
     },
     plainTip: {
       th: 'อ่านเฉพาะหัวข้อที่สงสัยก็พอครับ ไม่จำเป็นต้องท่องจำทุกบท',
@@ -727,12 +727,12 @@ export const PER_TAB_TUTORIAL_STEPS = {
         document.querySelector('#learning-window-quiz')?.click?.();
       },
       title: {
-        th: '3/3 แท็บ "ควิซ 5 ข้อ" ทดสอบความเข้าใจ (ข้ามได้)',
-        en: '3/3 5-Question Quick Quiz (Optional)',
+        th: '3/3 แท็บ "ควิซความรู้" (เลือกทำ 5 หรือ 10 ข้อได้)',
+        en: '3/3 Literacy Quiz (Choose 5 or 10 Questions)',
       },
       body: {
-        th: 'อยากเช็กว่าเข้าใจเรื่องความเสี่ยงและสวัสดิการครบไหม กดลองทำควิซสุ่ม 5 ข้อสั้น ๆ พร้อมเฉลยละเอียดทีละข้อได้ตรงนี้ครับ',
-        en: 'Want to test your knowledge? Try a quick randomized 5-question check with instant explanations after each answer.',
+        th: 'อยากเช็กว่าเข้าใจเรื่องความเสี่ยงและสวัสดิการครบไหม เลือกได้เลยว่าจะลองทำชุด 5 ข้อ หรือ 10 ข้อ (สุ่มจากคลัง 30 ข้อ) พร้อมคำอธิบายเหตุผลทุกข้อ',
+        en: 'Pick a quick 5-question or 10-question set drawn from our 30-question bank, complete with instant explanations after every choice.',
       },
       plainTip: {
         th: 'ตอบผิดก็มีคำเฉลยอธิบายให้ทันที เพื่อเก็บเป็นทริกใช้จริงได้เลย',

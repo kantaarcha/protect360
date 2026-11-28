@@ -269,6 +269,8 @@ export default function Game({ onNavigate }) {
     const totalMonths = getTotalMonthsForDuration(durationUnit, effectiveDuration);
     const monthsPerTurn = totalMonths / turns;
 
+    const playerFirstName = (userProfile?.firstName || '').trim() || 'First Jobber';
+
     const config = {
       unit: durationUnit,
       durationValue: effectiveDuration,
@@ -277,7 +279,7 @@ export default function Game({ onNavigate }) {
       totalTurns: turns,
       totalMonths,
       monthsPerTurn,
-      persona: activePersona,
+      persona: { ...activePersona, displayName: playerFirstName },
       allocEmergency: allocations.emergency,
       allocProtection: allocations.protection,
       allocLifestyle: allocations.lifestyle,
@@ -1325,13 +1327,20 @@ export default function Game({ onNavigate }) {
               </span>
 
               <h2 className="gm-outcome-title">
-                {scorecard.isResilient
-                  ? lang === 'TH'
-                    ? `ยินดีด้วย ${runConfig.persona.displayName}! คุณผ่านครบ ${runConfig.durationValue} ${runConfig.unit === 'days' ? 'วัน' : 'เดือน'} แบบปลอดหนี้ฉุกเฉิน`
-                    : `Well done, ${runConfig.persona.displayName}! You survived ${runConfig.durationValue} ${runConfig.unit} completely debt-free.`
-                  : lang === 'TH'
-                    ? `จบรอบ ${runConfig.durationValue} ${runConfig.unit === 'days' ? 'วัน' : 'เดือน'} พร้อมบทเรียนสำคัญเรื่องช่องว่างความคุ้มครอง`
-                    : `Completed ${runConfig.durationValue} ${runConfig.unit} with a critical risk-gap lesson.`}
+                {(() => {
+                  const playerFirstName =
+                    (userProfile?.firstName || '').trim() ||
+                    runConfig.persona.displayName ||
+                    'First Jobber';
+                  if (scorecard.isResilient) {
+                    return lang === 'TH'
+                      ? `ยินดีด้วย ${playerFirstName}! คุณผ่านครบ ${runConfig.durationValue} ${runConfig.unit === 'days' ? 'วัน' : 'เดือน'} แบบปลอดหนี้ฉุกเฉิน`
+                      : `Well done, ${playerFirstName}! You survived ${runConfig.durationValue} ${runConfig.unit} completely debt-free.`;
+                  }
+                  return lang === 'TH'
+                    ? `เอาใจช่วย ${playerFirstName}! จบรอบ ${runConfig.durationValue} ${runConfig.unit === 'days' ? 'วัน' : 'เดือน'} พร้อมบทเรียนสำคัญเรื่องช่องว่างความคุ้มครอง`
+                    : `Keep going, ${playerFirstName}! Completed ${runConfig.durationValue} ${runConfig.unit} with a critical risk-gap lesson.`;
+                })()}
               </h2>
 
               <p className="gm-outcome-sub">{t(scorecard.headlineSummary)}</p>

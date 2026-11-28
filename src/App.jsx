@@ -54,6 +54,11 @@ import {
   TAB_BANNER_META,
   TUTORIAL_UI_COPY,
 } from './data/tutorialSteps';
+import {
+  JARGON_TERMS,
+  LEARNING_ARTICLES,
+  LITERACY_QUIZ_BANK,
+} from './utils/learningData';
 
 const ONBOARDING_STORAGE_KEY = 'protect360_onboarded_v1';
 
@@ -672,13 +677,19 @@ function AppShellContent() {
 
             <div className="smartlog-header-chips tabular-nums">
               <span className="smartlog-stat-chip blue">
-                {lang === 'TH' ? '10 บทความ + แหล่งอ้างอิง' : '10 Guides & Sources'}
+                {lang === 'TH'
+                  ? `${LEARNING_ARTICLES.length} บทความ + แหล่งอ้างอิง`
+                  : `${LEARNING_ARTICLES.length} Guides & Sources`}
               </span>
               <span className="smartlog-stat-chip neutral">
-                {lang === 'TH' ? '14 ศัพท์สำคัญ' : '14 Key Terms'}
+                {lang === 'TH'
+                  ? `${JARGON_TERMS.length} ศัพท์สำคัญ`
+                  : `${JARGON_TERMS.length} Key Terms`}
               </span>
               <span className="smartlog-stat-chip neutral">
-                {lang === 'TH' ? 'ควิซสุ่มคลัง 20 ข้อ' : '20-Q Random Quiz'}
+                {lang === 'TH'
+                  ? `ควิซสุ่มคลัง ${LITERACY_QUIZ_BANK.length} ข้อ`
+                  : `${LITERACY_QUIZ_BANK.length}-Q Random Quiz`}
               </span>
             </div>
           </header>
