@@ -28,6 +28,7 @@ import { formatTHB, useFinance } from '../context/FinanceContext';
 import LiquidTabs from '../components/LiquidTabs';
 import PixelAvatarStage from '../components/PixelAvatarStage';
 import {
+  ACCESSORY_OPTIONS,
   deriveAvatarSceneAndState,
   GENDER_OPTIONS,
   HAIR_PALETTES,
@@ -377,6 +378,7 @@ export default function Game({ onNavigate }) {
     });
     setLastTurnResult({
       ...logEntry,
+      eventId: currentEvent.id,
       eventCategory: currentEvent.category,
     });
     setHudPulseKey((k) => k + 1);
@@ -871,128 +873,152 @@ export default function Game({ onNavigate }) {
                 </div>
               </div>
 
-              <div className="gm-avatar-controls-col">
-                {/* Gender / Silhouette */}
-                <div className="gm-avatar-ctrl-row">
-                  <span className="gm-avatar-ctrl-label">
-                    {lang === 'TH' ? 'โครงร่าง / เพศ' : 'Silhouette'}
-                  </span>
-                  <div className="gm-avatar-pill-group">
-                    {GENDER_OPTIONS.map((g) => (
-                      <button
-                        key={g.id}
-                        id={`gm-avatar-gender-${g.id}`}
-                        type="button"
-                        className={`gm-avatar-opt-pill ${avatarConfig.gender === g.id ? 'active' : ''}`}
-                        onClick={() => updateAvatarConfig({ gender: g.id })}
-                      >
-                        {lang === 'TH' ? g.th : g.en}
-                      </button>
-                    ))}
+              <div className="gm-avatar-controls-split">
+                <div className="gm-avatar-subcol">
+                  {/* Gender / Silhouette */}
+                  <div className="gm-avatar-ctrl-row">
+                    <span className="gm-avatar-ctrl-label">
+                      {lang === 'TH' ? 'โครงร่าง / เพศ' : 'Silhouette'}
+                    </span>
+                    <div className="gm-avatar-pill-group">
+                      {GENDER_OPTIONS.map((g) => (
+                        <button
+                          key={g.id}
+                          id={`gm-avatar-gender-${g.id}`}
+                          type="button"
+                          className={`gm-avatar-opt-pill ${avatarConfig.gender === g.id ? 'active' : ''}`}
+                          onClick={() => updateAvatarConfig({ gender: g.id })}
+                        >
+                          {lang === 'TH' ? g.th : g.en}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Skin Tone */}
+                  <div className="gm-avatar-ctrl-row">
+                    <span className="gm-avatar-ctrl-label">
+                      {lang === 'TH' ? 'สีผิว' : 'Skin Tone'}
+                    </span>
+                    <div className="gm-swatch-group">
+                      {Object.values(SKIN_PALETTES).map((s) => (
+                        <button
+                          key={s.id}
+                          id={`gm-avatar-skin-${s.id}`}
+                          type="button"
+                          className={`gm-color-swatch ${avatarConfig.skinTone === s.id ? 'active' : ''}`}
+                          style={{ backgroundColor: s.base }}
+                          title={lang === 'TH' ? s.th : s.en}
+                          aria-label={lang === 'TH' ? s.th : s.en}
+                          onClick={() => updateAvatarConfig({ skinTone: s.id })}
+                        />
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Hair Style */}
+                  <div className="gm-avatar-ctrl-row">
+                    <span className="gm-avatar-ctrl-label">
+                      {lang === 'TH' ? 'ทรงผม' : 'Hairstyle'}
+                    </span>
+                    <div className="gm-avatar-pill-group">
+                      {HAIR_STYLE_OPTIONS.map((h) => (
+                        <button
+                          key={h.id}
+                          id={`gm-avatar-hair-${h.id}`}
+                          type="button"
+                          className={`gm-avatar-opt-pill ${avatarConfig.hairStyle === h.id ? 'active' : ''}`}
+                          onClick={() => updateAvatarConfig({ hairStyle: h.id })}
+                        >
+                          {lang === 'TH' ? h.th : h.en}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Hair Color */}
+                  <div className="gm-avatar-ctrl-row">
+                    <span className="gm-avatar-ctrl-label">
+                      {lang === 'TH' ? 'สีผม' : 'Hair Color'}
+                    </span>
+                    <div className="gm-swatch-group">
+                      {Object.values(HAIR_PALETTES).map((hc) => (
+                        <button
+                          key={hc.id}
+                          id={`gm-avatar-haircolor-${hc.id}`}
+                          type="button"
+                          className={`gm-color-swatch ${avatarConfig.hairColor === hc.id ? 'active' : ''}`}
+                          style={{ backgroundColor: hc.base }}
+                          title={lang === 'TH' ? hc.th : hc.en}
+                          aria-label={lang === 'TH' ? hc.th : hc.en}
+                          onClick={() => updateAvatarConfig({ hairColor: hc.id })}
+                        />
+                      ))}
+                    </div>
                   </div>
                 </div>
 
-                {/* Skin Tone */}
-                <div className="gm-avatar-ctrl-row">
-                  <span className="gm-avatar-ctrl-label">
-                    {lang === 'TH' ? 'สีผิว' : 'Skin Tone'}
-                  </span>
-                  <div className="gm-swatch-group">
-                    {Object.values(SKIN_PALETTES).map((s) => (
-                      <button
-                        key={s.id}
-                        id={`gm-avatar-skin-${s.id}`}
-                        type="button"
-                        className={`gm-color-swatch ${avatarConfig.skinTone === s.id ? 'active' : ''}`}
-                        style={{ backgroundColor: s.base }}
-                        title={lang === 'TH' ? s.th : s.en}
-                        aria-label={lang === 'TH' ? s.th : s.en}
-                        onClick={() => updateAvatarConfig({ skinTone: s.id })}
-                      />
-                    ))}
+                <div className="gm-avatar-subcol">
+                  {/* Outfit & Suit Color */}
+                  <div className="gm-avatar-ctrl-row">
+                    <span className="gm-avatar-ctrl-label">
+                      {lang === 'TH' ? 'สีชุด & สูทประจำตัว' : 'Outfit & Suit Color'}
+                    </span>
+                    <div className="gm-swatch-group">
+                      {Object.values(OUTFIT_PALETTES).map((op) => (
+                        <button
+                          key={op.id}
+                          id={`gm-avatar-outfit-${op.id}`}
+                          type="button"
+                          className={`gm-color-swatch ${avatarConfig.outfitColor === op.id ? 'active' : ''}`}
+                          style={{ backgroundColor: op.swatch }}
+                          title={lang === 'TH' ? op.th : op.en}
+                          aria-label={lang === 'TH' ? op.th : op.en}
+                          onClick={() => updateAvatarConfig({ outfitColor: op.id })}
+                        />
+                      ))}
+                    </div>
                   </div>
-                </div>
 
-                {/* Hair Style */}
-                <div className="gm-avatar-ctrl-row">
-                  <span className="gm-avatar-ctrl-label">
-                    {lang === 'TH' ? 'ทรงผม' : 'Hairstyle'}
-                  </span>
-                  <div className="gm-avatar-pill-group">
-                    {HAIR_STYLE_OPTIONS.map((h) => (
-                      <button
-                        key={h.id}
-                        id={`gm-avatar-hair-${h.id}`}
-                        type="button"
-                        className={`gm-avatar-opt-pill ${avatarConfig.hairStyle === h.id ? 'active' : ''}`}
-                        onClick={() => updateAvatarConfig({ hairStyle: h.id })}
-                      >
-                        {lang === 'TH' ? h.th : h.en}
-                      </button>
-                    ))}
+                  {/* Fun Accessories */}
+                  <div className="gm-avatar-ctrl-row">
+                    <span className="gm-avatar-ctrl-label">
+                      {lang === 'TH' ? 'ของแต่งตัวสนุก ๆ' : 'Fun Accessories'}
+                    </span>
+                    <div className="gm-avatar-pill-group">
+                      {ACCESSORY_OPTIONS.map((acc) => (
+                        <button
+                          key={acc.id}
+                          id={`gm-avatar-acc-${acc.id}`}
+                          type="button"
+                          className={`gm-avatar-opt-pill ${(avatarConfig.accessory || 'none') === acc.id ? 'active' : ''}`}
+                          onClick={() => updateAvatarConfig({ accessory: acc.id })}
+                        >
+                          {lang === 'TH' ? acc.th : acc.en}
+                        </button>
+                      ))}
+                    </div>
                   </div>
-                </div>
 
-                {/* Hair Color */}
-                <div className="gm-avatar-ctrl-row">
-                  <span className="gm-avatar-ctrl-label">
-                    {lang === 'TH' ? 'สีผม' : 'Hair Color'}
-                  </span>
-                  <div className="gm-swatch-group">
-                    {Object.values(HAIR_PALETTES).map((hc) => (
-                      <button
-                        key={hc.id}
-                        id={`gm-avatar-haircolor-${hc.id}`}
-                        type="button"
-                        className={`gm-color-swatch ${avatarConfig.hairColor === hc.id ? 'active' : ''}`}
-                        style={{ backgroundColor: hc.base }}
-                        title={lang === 'TH' ? hc.th : hc.en}
-                        aria-label={lang === 'TH' ? hc.th : hc.en}
-                        onClick={() => updateAvatarConfig({ hairColor: hc.id })}
-                      />
-                    ))}
-                  </div>
-                </div>
-
-                {/* Outfit & Suit Color */}
-                <div className="gm-avatar-ctrl-row">
-                  <span className="gm-avatar-ctrl-label">
-                    {lang === 'TH' ? 'สีชุด & สูทประจำตัว' : 'Outfit & Suit Color'}
-                  </span>
-                  <div className="gm-swatch-group">
-                    {Object.values(OUTFIT_PALETTES).map((op) => (
-                      <button
-                        key={op.id}
-                        id={`gm-avatar-outfit-${op.id}`}
-                        type="button"
-                        className={`gm-color-swatch ${avatarConfig.outfitColor === op.id ? 'active' : ''}`}
-                        style={{ backgroundColor: op.swatch }}
-                        title={lang === 'TH' ? op.th : op.en}
-                        aria-label={lang === 'TH' ? op.th : op.en}
-                        onClick={() => updateAvatarConfig({ outfitColor: op.id })}
-                      />
-                    ))}
-                  </div>
-                </div>
-
-                {/* Room / Studio Theme */}
-                <div className="gm-avatar-ctrl-row">
-                  <span className="gm-avatar-ctrl-label">
-                    {lang === 'TH' ? 'ธีมห้องพัก & ฉากทำงาน' : 'Room & Desk Theme'}
-                  </span>
-                  <div className="gm-swatch-group">
-                    {Object.values(ROOM_THEMES).map((rt) => (
-                      <button
-                        key={rt.id}
-                        id={`gm-avatar-room-${rt.id}`}
-                        type="button"
-                        className={`gm-color-swatch ${avatarConfig.roomTheme === rt.id ? 'active' : ''}`}
-                        style={{ backgroundColor: rt.swatch }}
-                        title={lang === 'TH' ? rt.th : rt.en}
-                        aria-label={lang === 'TH' ? rt.th : rt.en}
-                        onClick={() => updateAvatarConfig({ roomTheme: rt.id })}
-                      />
-                    ))}
+                  {/* Festive & Studio Room Themes */}
+                  <div className="gm-avatar-ctrl-row">
+                    <span className="gm-avatar-ctrl-label">
+                      {lang === 'TH' ? 'ธีมห้องพัก & เทศกาล' : 'Room & Festive Themes'}
+                    </span>
+                    <div className="gm-room-chip-group">
+                      {Object.values(ROOM_THEMES).map((rt) => (
+                        <button
+                          key={rt.id}
+                          id={`gm-avatar-room-${rt.id}`}
+                          type="button"
+                          className={`gm-room-chip ${avatarConfig.roomTheme === rt.id ? 'active' : ''}`}
+                          onClick={() => updateAvatarConfig({ roomTheme: rt.id })}
+                        >
+                          <span className="gm-room-dot" style={{ backgroundColor: rt.swatch }} aria-hidden="true" />
+                          <span>{lang === 'TH' ? rt.th : rt.en}</span>
+                        </button>
+                      ))}
+                    </div>
                   </div>
                 </div>
               </div>
