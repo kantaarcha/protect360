@@ -748,6 +748,353 @@ export function buildEventDeck(totalTurns, persona, previousEventIds = []) {
     },
   ];
 
+  // Compact factory to scale event pools smoothly up to 72-turn zero-repeat runs
+  const mkEv = (id, category, severity, billAmount, bTh, bEn, tTh, tEn, sTh, sEn) => ({
+    id,
+    category,
+    severity,
+    billAmount,
+    badge: { th: bTh, en: bEn },
+    title: { th: tTh, en: tEn },
+    story: { th: sTh, en: sEn },
+  });
+
+  CRITICAL_POOL.push(
+    mkEv('moto-crash-98k', 'accident', 'critical', 98000, 'วิกฤตอุบัติเหตุจราจร', 'Traffic Shock',
+      'อุบัติเหตุมอเตอร์ไซค์รับจ้างล้ม กระดูกไหปลาร้าหัก', 'Commute Crash — Collarbone Fracture',
+      'รถเสียหลักชนฟุตปาธช่วงเย็น ต้องผ่าตัดยึดเหล็กและพักฟื้น บิลโรงพยาบาลรวม ฿98,000',
+      'A sudden road spill fractures your collarbone, requiring surgery and inpatient care totaling ฿98,000.'),
+    mkEv('kidney-stone-88k', 'medical', 'critical', 88000, 'ผ่าตัดเร่งด่วน', 'Urgent Procedure',
+      'นิ่วในท่อไตอุดตันเฉียบพลัน ต้องส่องกล้องด่วน', 'Acute Kidney Stone — Urgent Endoscopy',
+      'ปวดบิดรุนแรงจนเข้าห้องฉุกเฉิน แพทย์ต้องส่องกล้องเอานิ่วออกและนอน รพ. ค่าใช้จ่าย ฿88,000',
+      'Sudden acute abdominal pain leads to an ER admission and endoscopic procedure costing ฿88,000.'),
+    mkEv('dengue-icu-92k', 'medical', 'critical', 92000, 'ป่วยหนักฉุกเฉิน', 'Critical Illness',
+      'ไข้เลือดออกเกล็ดเลือดต่ำมาก ต้องเฝ้าระวังใกล้ชิด', 'Severe Dengue — High-Dependency Ward',
+      'ไข้สูงหลายวันจนเกล็ดเลือดตก ต้องแอดมิตดูแลพิเศษและให้น้ำเกลือหลายวัน บิลรวม ฿92,000',
+      'Severe platelet drop from dengue requires close multi-day hospital monitoring totaling ฿92,000.')
+  );
+
+  INPATIENT_POOL.push(
+    mkEv('er-poison-24k', 'medical', 'high', 24000, 'เข้า รพ. 2 คืน', '2-Night Admission',
+      'อาหารเป็นพิษรุนแรง & ขาดน้ำ ต้องแอดมิตให้น้ำเกลือ (฿24,000)', 'Severe Food Poisoning Admission (฿24,000)',
+      'ติดเชื้อในทางเดินอาหารรุนแรงจนอาเจียนไม่หยุด ต้องนอน รพ. 2 คืน ค่ารักษา ฿24,000',
+      'Acute dehydration from food poisoning requires a 2-night IV ward stay costing ฿24,000.'),
+    mkEv('ankle-op-35k', 'accident', 'high', 35000, 'ผ่าตัดเล็ก & เฝือก', 'Minor Ortho Care',
+      'ตกบันไดข้อเท้าแตก ต้องใส่เฝือกและนอนดูอาการ (฿35,000)', 'Stair Fall — Ankle Casting & Ward (฿35,000)',
+      'ก้าวพลาดตกบันไดข้อเท้าร้าว แพทย์ให้นอนดูอาการและเข้าเฝือกขา บิลรวม ฿35,000',
+      'Missing a wet stair step cracks your ankle bone, requiring casting and short stay costing ฿35,000.'),
+    mkEv('viral-pneu-28k', 'medical', 'high', 28000, 'พักฟื้นผู้ป่วยใน', 'Inpatient Care',
+      'หลอดลมอักเสบติดเชื้อ & หอบเหนื่อย ต้องพ่นยาแอดมิต (฿28,000)', 'Infectious Bronchitis Stay (฿28,000)',
+      'ไอรุนแรงและค่าออกซิเจนตกจนต้องรับการดูแลแบบผู้ป่วยใน 3 วัน ค่าใช้จ่ายรวม ฿28,000',
+      'Low oxygen levels from bronchitis require 3 days of inpatient respiratory therapy totaling ฿28,000.'),
+    mkEv('burn-er-26k', 'accident', 'high', 26000, 'ทำแผลฉุกเฉิน รพ.', 'ER Wound Care',
+      'น้ำร้อนลวกระดับสอง ต้องทำแผลปลอดเชื้อและเฝ้าดู (฿26,000)', 'Severe Scald Burn — ER Care (฿26,000)',
+      'อุบัติเหตุหม้อต้มน้ำร้อนหกใส่แขน ต้องทำแผลเฉพาะทางและฉีดยาฆ่าเชื้อ บิลรวม ฿26,000',
+      'A boiling water burn requires specialized sterile wound care and monitoring costing ฿26,000.')
+  );
+
+  MINOR_MEDICAL_POOL.push(
+    mkEv('opd-eye-2400', 'medical', 'low', 2400, 'สุขภาพสายตา', 'Vision Care',
+      'ตาแห้งรุนแรง & เปลี่ยนเลนส์แว่นกรองแสง (฿2,400)', 'Computer Eye Strain & Glasses (฿2,400)',
+      'จ้องจอนานจนปวดกระบอกตา แพทย์ตรวจสายตาและสั่งตัดเลนส์ใหม่ ค่าใช้จ่ายรวม ฿2,400',
+      'Heavy screen fatigue requires an eye exam, drops, and updated prescription lenses for ฿2,400.'),
+    mkEv('opd-stomach-2100', 'medical', 'low', 2100, 'คลินิกทั่วไป', 'Clinic Visit',
+      'กรดไหลย้อน / กระเพาะอักเสบจากมื้อดึก (฿2,100)', 'Acute Gastritis Clinic Visit (฿2,100)',
+      'ทำงานข้ามมื้อจนปวดท้องแสบลิ้นปี่ ต้องพบแพทย์และรับยาต่อเนื่อง ฿2,100',
+      'Skipped meals trigger painful gastritis needing a doctor visit and course of meds for ฿2,100.'),
+    mkEv('opd-skin-1650', 'medical', 'low', 1650, 'แพทย์ผิวหนัง', 'Dermatology OPD',
+      'ผื่นลมพิษแพ้ฝุ่น PM2.5 ต้องฉีดยาและทายา (฿1,650)', 'PM2.5 Allergic Rash Clinic (฿1,650)',
+      'ฝุ่นหนาทำให้ผื่นขึ้นทั้งตัวจนนอนไม่หลับ ต้องไปคลินิกฉีดยาแก้แพ้ ค่าบิล ฿1,650',
+      'Heavy air pollution triggers widespread hives needing an outpatient clinic shot costing ฿1,650.'),
+    mkEv('opd-physio-2200', 'medical', 'low', 2200, 'ออฟฟิศซินโดรม', 'Physio Care',
+      'ปวดคอบ่าไหล่เรื้อรัง ต้องทำกายภาพบำบัด (฿2,200)', 'Office Syndrome Physio Session (฿2,200)',
+      'นั่งหน้าคอมนานจนปวดร้าวขึ้นศีรษะ ต้องไปคลินิกกายภาพอัลตราซาวด์ 2 ครั้ง ฿2,200',
+      'Stiff neck muscles require two targeted physiotherapy sessions totaling ฿2,200.'),
+    mkEv('opd-lab-1900', 'medical', 'low', 1900, 'ตรวจแล็บเพิ่ม', 'Lab Panel',
+      'เจาะเลือดตรวจไทรอยด์ & วิตามินตามแพทย์นัด (฿1,900)', 'Follow-Up Blood Lab Panel (฿1,900)',
+      'อ่อนเพลียผิดปกติ แพทย์แนะนำตรวจเลือดเฉพาะทางเพิ่มเติม ค่าตรวจ ฿1,900',
+      'Persistent fatigue leads to a targeted follow-up blood panel costing ฿1,900.'),
+    mkEv('opd-rabies-1400', 'accident', 'low', 1400, 'ฉีดวัคซีนด่วน', 'Clinic Shot',
+      'โดนแมวจรจัดข่วน ต้องฉีดวัคซีนป้องกันบาดทะยัก/พิษสุนัขบ้า (฿1,400)', 'Stray Cat Scratch Vaccines (฿1,400)',
+      'เล่นกับแมวหน้าซอยแล้วโดนข่วนลึก ต้องแวะคลินิกฉีดวัคซีนเข็มแรก ฿1,400',
+      'A stray cat scratch requires prompt outpatient tetanus & rabies vaccination for ฿1,400.'),
+    mkEv('opd-ear-1300', 'medical', 'low', 1300, 'คลินิกหูคอจมูก', 'ENT Clinic',
+      'หูอื้อ & ช่องหูอักเสบหลังว่ายน้ำ (฿1,300)', 'Ear Canal Infection Drops (฿1,300)',
+      'ปวดหูอื้อจนฟังประชุมไม่ชัด แพทย์ส่องดูดน้ำและสั่งยาหยอดหู ฿1,300',
+      'A painful outer ear infection requires suction cleaning and prescription ear drops for ฿1,300.'),
+    mkEv('opd-migraine-1750', 'medical', 'low', 1750, 'ผู้ป่วยนอก', 'OPD Relief',
+      'ไมเกรนกำเริบหนัก ต้องฉีดยาแก้ปวดคลินิก (฿1,750)', 'Severe Migraine Clinic Relief (฿1,750)',
+      'ปวดหัวข้างเดียวจนคลื่นไส้ทำงานต่อไม่ไหว ต้องแวะคลินิกฉีดยาระงับปวด ฿1,750',
+      'An intense migraine forces an afternoon clinic stop for relief medication totaling ฿1,750.'),
+    mkEv('opd-uti-1600', 'medical', 'low', 1600, 'ค่ารักษา OPD', 'Outpatient Care',
+      'กลั้นปัสสาวะนานจนติดเชื้อ ต้องตรวจและรับยาฆ่าเชื้อ (฿1,600)', 'UTI Lab & Antibiotic Course (฿1,600)',
+      'วันประชุมติดกันไม่ได้ลุกเข้าห้องน้ำจนอักเสบ ค่าตรวจและยา ฿1,600',
+      'Busy back-to-back meetings lead to a urinary infection needing lab tests & antibiotics for ฿1,600.'),
+    mkEv('opd-dental-clean-1200', 'medical', 'low', 1200, 'ทันตกรรม', 'Dental Check',
+      'เหงือกบวมอักเสบ & ขูดหินปูนส่วนเกินสิทธิ (฿1,200)', 'Gum Care & Deep Cleaning (฿1,200)',
+      'ปวดเหงือกซี่ใน ต้องรีบให้ทันตแพทย์ล้างเหงือกและขูดหินปูน ส่วนต่าง ฿1,200',
+      'Swollen gums need urgent dental deep cleaning beyond annual SSO allowance, costing ฿1,200.')
+  );
+
+  INCOME_POOL.push(
+    mkEv('shift-cut-4500', 'income', 'medium', Math.round(monthlyIncome * 0.18), 'รายได้หดกะทันหัน', 'Shift Cut',
+      'บริษัทลดชั่วโมง OT / ปรับลดเบี้ยขยันชั่วคราว (-18%)', 'Temporary Overtime & Allowance Cut (-18%)',
+      'ยอดขายไตรมาสชะลอตัว ทำให้งดจ่ายค่า OT และเบี้ยขยัน รายได้เดือนนี้หายไปชั่วคราว',
+      'Quarterly slowdown pauses overtime and allowances, trimming this period cash inflow.'),
+    mkEv('client-late-3800', 'income', 'medium', incomeDrop15, 'เงินเข้าช้ากว่านัด', 'Late Invoice',
+      'ลูกค้างานเสริมเลื่อนจ่ายเงินงวดออกไป 30 วัน', 'Side Client Delays Payment by 30 Days',
+      'บิลงานนอกที่หวังมาจ่ายค่าห้องถูกเลื่อนจ่าย ทำให้เงินหมุนเดือนนี้ขาดไปช่วงหนึ่ง',
+      'A freelance client delays settlement by a month, creating a temporary liquidity pinch.'),
+    mkEv('probation-freeze', 'income', 'medium', incomeDrop10, 'รายรับชะลอ', 'Cash Squeeze',
+      'หักปรับภาษีสะสมปลายไตรมาส ทำให้รับสุทธิน้อยลง', 'Quarter-End Tax Withholding Adjustment',
+      'บัญชีปรับยอดหัก ณ ที่จ่ายประจำเดือน ทำให้เงินเข้ามือลดลงกว่าปกติราว 10%',
+      'Payroll tax reconciliation trims take-home pay by ~10% this cycle.'),
+    mkEv('unpaid-leave-3200', 'income', 'medium', Math.round(monthlyIncome * 0.12), 'ลากิจไม่รับค่าจ้าง', 'Unpaid Leave',
+      'ต้องลากลับต่างจังหวัดดูแลธุระที่บ้าน 3 วัน (Leave w/o Pay)', 'Unpaid Emergency Family Leave (-12%)',
+      'มีเรื่องด่วนทางบ้านทำให้ต้องลางานเกินโควตาและถูกหักเงินตามสัดส่วนวันลา',
+      'Urgent family errands exceed paid leave days, deducting proportional daily wages.')
+  );
+
+  LIFESTYLE_POOL.push(
+    mkEv('life-staycation', 'lifestyle', 'low', 4200, 'ทริปพักใจ', 'Weekend Trip',
+      'เพื่อนชวนทริปพักโรงแรมใกล้กรุงเทพฯ สุดสัปดาห์ (฿4,200)', 'Friends Weekend Staycation Invite (฿4,200)',
+      'แก๊งชวนไปปล่อยใจพักพูลวิลล่าใกล้กรุง ค่าแชร์ห้อง+อาหารตก ฿4,200',
+      'Friends invite you on a weekend getaway villa split — share comes to ฿4,200.'),
+    mkEv('life-gym-annual', 'lifestyle', 'low', 3600, 'โปรฟิตเนส', 'Fitness Promo',
+      'โปรฟิตเนสเปิดใหม่ลดราคาค่าสมาชิกแรกเข้า (฿3,600)', 'Gym Opening Promo Bundle (฿3,600)',
+      'เซลส์ยื่นโปรสมัครฟิตเนสจ่ายก้อนแรกประหยัดกว่าปกติ รวมค่าลงทะเบียน ฿3,600',
+      'A nearby gym offers an upfront bundle at ฿3,600 instead of standard monthly dues.'),
+    mkEv('life-idol-merch', 'lifestyle', 'low', 2900, 'ของสะสมแฟนคลับ', 'Fan Merch Drop',
+      'พรีออเดอร์อัลบั้ม & แท่งไฟศิลปินคนโปรดล็อตสุดท้าย (฿2,900)', 'Limited Artist Merch Preorder (฿2,900)',
+      'ของสะสมคอลเลกชันพิเศษเปิดให้จอง 48 ชั่วโมงสุดท้าย ราคา ฿2,900',
+      'Your favorite artist drops a 48-hour limited collectible set priced at ฿2,900.'),
+    mkEv('life-bday-pool', 'lifestyle', 'low', 1800, 'ซองสังคม', 'Gift Pool',
+      'ลงขันซื้อของขวัญวันเกิด & เค้กให้หัวหน้าทีม (฿1,800)', 'Team Birthday Gift Pool (฿1,800)',
+      'เพื่อนร่วมทีมชวนร่วมลงขันซื้อของขวัญให้พี่ที่สนิทในออฟฟิศ คนละ ฿1,800',
+      'Teammates pool funds for a mentor birthday gift and dinner share of ฿1,800.'),
+    mkEv('life-skincare', 'lifestyle', 'low', 3400, 'โปร 11.11 / Mid-Month', 'Beauty Deal',
+      'สกินแคร์ตัวประจำหมดพร้อมกันช่วงโปร 1 แถม 1 (฿3,400)', 'Skincare BOGO Stock-Up (฿3,400)',
+      'เซรั่มและกันแดดจัดโปรยกชุดถูกกว่าซื้อแยก แต่ต้องจ่ายก้อนเดียว ฿3,400',
+      'Favorite skincare items hit a bulk 1-for-1 promo requiring ฿3,400 upfront.'),
+    mkEv('life-shoes', 'lifestyle', 'low', 4100, 'แฟชั่น & รองเท้า', 'Footwear Drop',
+      'รองเท้าวิ่ง/ทำงานคู่เก่าพื้นเริ่มหลุด เจอโปรลด 30% (฿4,100)', 'Work Sneaker Replacement Deal (฿4,100)',
+      'รองเท้าคู่เก่งพื้นเปิด เจอคู่ที่เล็งไว้ลดราคาเหลือ ฿4,100',
+      'Your daily sneakers are worn out and your target replacement is 30% off at ฿4,100.'),
+    mkEv('life-game-console', 'lifestyle', 'low', 5800, 'เกม & บันเทิง', 'Gaming Bundle',
+      'ลดราคาเกมใหญ่แห่งปี + จอยเล่นกับเพื่อน (฿5,800)', 'Annual Game Bundle + Controller (฿5,800)',
+      'เพื่อนชวนเล่นเกมออนไลน์ภาคใหม่ช่วงเลิกงาน ต้องจัดชุดเริ่มต้น ฿5,800',
+      'A big new multiplayer release tempts your friend group at ฿5,800.'),
+    mkEv('life-cafe-pass', 'lifestyle', 'low', 1950, 'กาแฟ & ของหวาน', 'Cafe Hopping',
+      'ร้านกาแฟเจ้าประจำออกแพ็กเกจคูปองรายเดือน 20 แก้ว (฿1,950)', '20-Cup Coffee Pass Deal (฿1,950)',
+      'ซื้อคูปองกาแฟล่วงหน้าตกแก้วละไม่ถึงร้อย ช่วยลดค่ารายวันแต่ต้องจ่ายก่อน ฿1,950',
+      'Pre-buying a 20-drink cafe pass lowers per-cup cost for ฿1,950 upfront.'),
+    mkEv('life-buffet', 'lifestyle', 'low', 2400, 'ปาร์ตี้ออฟฟิศ', 'Team Dinner',
+      'ฉลองปิดไตรมาสบังคับไปร้านปิ้งย่างพรีเมียม (฿2,400)', 'Department Quarter-End Feast (฿2,400)',
+      'รุ่นพี่จองร้านบุฟเฟต์ฉลองปิดงาน หารจ่ายแล้วตกคนละ ฿2,400',
+      'Department team dinner celebration comes to ฿2,400 per seat.'),
+    mkEv('life-reunion', 'lifestyle', 'low', 2600, 'งานเลี้ยงรุ่น', 'Alumni Meetup',
+      'นัดรวมรุ่นมหาวิทยาลัยครั้งแรกในรอบปี ค่าโต๊ะ ฿2,600', 'Annual College Reunion Share (฿2,600)',
+      'เพื่อนเก่าชวนเจอร้านอาหารริมน้ำนาน ๆ จัดที ค่าแชร์โต๊ะ ฿2,600',
+      'Old college friends gather for an annual dinner share costing ฿2,600.'),
+    mkEv('life-luggage', 'lifestyle', 'low', 3100, 'อุปกรณ์เดินทาง', 'Travel Gear',
+      'กระเป๋าเดินทางซิปแตกก่อนทริปครอบครัว (฿3,100)', 'Broken Luggage Before Family Trip (฿3,100)',
+      'ต้องซื้อกระเป๋าล้อลากใบใหม่แทนใบเก่าที่แตกกลางทาง ราคา ฿3,100',
+      'Your suitcase zipper breaks before a family visit, prompting a ฿3,100 replacement.'),
+    mkEv('life-course', 'lifestyle', 'low', 4800, 'อัปสกิลตัวเอง', 'Skill Course',
+      'คอร์สเรียน AI / Data ออนไลน์พร้อมเวิร์กชอป (฿4,800)', 'Online AI & Career Workshop (฿4,800)',
+      'คอร์สอัปสกิลสายงานตรงสายเปิดรับรุ่นสุดท้ายก่อนปรับราคา ค่าเรียน ฿4,800',
+      'A practical career workshop opens enrollment before a price hike at ฿4,800.'),
+    mkEv('life-chair-upgrade', 'lifestyle', 'low', 5200, 'Work From Home', 'Ergonomic Chair',
+      'เก้าอี้ทำงานลดปวดหลังลดราคาจัดหนัก (฿5,200)', 'Ergonomic Desk Chair Deal (฿5,200)',
+      'ทำงานจากห้องแล้วเริ่มปวดหลัง เจอเก้าอี้สุขภาพลดเหลือ ฿5,200',
+      'An ergonomic chair sale catches your eye to ease back pain at ฿5,200.'),
+    mkEv('life-pet-groom', 'lifestyle', 'low', 2100, 'สัตว์เลี้ยงที่บ้าน', 'Pet Treat',
+      'ตัดขน อาบน้ำ & ซื้อขนมให้เจ้าหมา/แมวที่บ้าน (฿2,100)', 'Pet Grooming & Treats (฿2,100)',
+      'ถึงรอบอาบน้ำตัดขนและซื้อทรายแมว/อาหารเม็ดล็อตใหญ่ รวม ฿2,100',
+      'Scheduled pet grooming and bulk pet food restock totals ฿2,100.'),
+    mkEv('life-earbuds', 'lifestyle', 'low', 3900, 'แกดเจ็ตหาย', 'Audio Gear',
+      'หูฟังตัดเสียงรบกวนข้างซ้ายหายบนรถไฟฟ้า (฿3,900)', 'Lost Noise-Canceling Earbud (฿3,900)',
+      'ทำหูฟังไร้สายหล่นหายระหว่างรีบเปลี่ยนสาย ซื้อใหม่ทดแทน ฿3,900',
+      'One wireless earbud slips away during a transfer; replacing it costs ฿3,900.'),
+    mkEv('life-festival', 'lifestyle', 'low', 2700, 'เทศกาลดนตรี/หนังสือ', 'Festival Pass',
+      'สัปดาห์หนังสือ/เทศกาลอาหารกับแก๊งเพื่อน (฿2,700)', 'Book Fair & Street Food Weekend (฿2,700)',
+      'เดินงานแฟร์ประจำปีเผลอหิ้วของติดมือกลับมาหลายถุง รวม ฿2,700',
+      'Annual book fair and food market weekend adds up to ฿2,700.'),
+    mkEv('life-haircut', 'lifestyle', 'low', 2200, 'ดูแลบุคลิก', 'Salon Care',
+      'ตัดผม ทำสี & ทรีตเมนต์ก่อนถ่ายรูปติดบัตร/งานใหญ่ (฿2,200)', 'Salon Trim & Styling Before Event (฿2,200)',
+      'เตรียมตัวเข้าประชุมใหญ่ประจำปี แวะร้านทำผมครบชุด ฿2,200',
+      'Sprucing up at the salon ahead of an annual company event costs ฿2,200.'),
+    mkEv('life-housewarm', 'lifestyle', 'low', 2500, 'ของขวัญขึ้นบ้านใหม่', 'Social Gift',
+      'งานขึ้นบ้านใหม่เพื่อนสนิท ซื้อเครื่องใช้ไฟฟ้าช่วยหาร (฿2,500)', 'Friend Housewarming Gift Share (฿2,500)',
+      'แก๊งเพื่อนซื้อหม้อทอด/เครื่องชงกาแฟให้เพื่อนย้ายเข้าคอนโด หารคนละ ฿2,500',
+      'Splitting a housewarming appliance gift with friends costs ฿2,500.'),
+    mkEv('life-movie-date', 'lifestyle', 'low', 1650, 'ดูหนัง & ดินเนอร์', 'Weekend Outing',
+      'ตั๋วหนัง IMAX + มื้อค่ำฉลองคืนวันศุกร์ (฿1,650)', 'Friday IMAX Movie & Dinner (฿1,650)',
+      'ปิดจ๊อบสัปดาห์หนักขอพักใจดูหนังรอบดึกกับมื้อค่ำดี ๆ ฿1,650',
+      'Winding down a tough week with IMAX tickets and a nice Friday dinner costs ฿1,650.'),
+    mkEv('life-desk-lamp', 'lifestyle', 'low', 2350, 'แต่งห้อง & โคมไฟ', 'Room Decor',
+      'แต่งมุมโต๊ะทำงานใหม่: โคมไฟถนอมสายตา & แผ่นรองโต๊ะ (฿2,350)', 'Cozy Desk Setup Upgrade (฿2,350)',
+      'จัดโต๊ะอ่านหนังสือ/ทำงานใหม่ให้น่านั่งขึ้น รวมไฟตั้งโต๊ะและอุปกรณ์เสริม ฿2,350',
+      'Refreshing your desk setup with an eye-care monitor light bar and desk mat runs ฿2,350.'),
+    mkEv('life-baking-hobby', 'lifestyle', 'low', 2050, 'งานอดิเรกวันหยุด', 'Hobby Kit',
+      'ซื้ออุปกรณ์ทำขนม/เวิร์กชอปเซรามิกวันอาทิตย์ (฿2,050)', 'Sunday Pottery / Baking Workshop (฿2,050)',
+      'หาเวลาพักสมองทำกิจกรรมคลายเครียดช่วงวันหยุด ค่าเวิร์กชอป ฿2,050',
+      'Taking a creative Sunday workshop to recharge after work costs ฿2,050.')
+  );
+
+  ROUTINE_EXPENSE_POOL.push(
+    mkEv('exp-water-leak', 'expense', 'low', 1900, 'ซ่อมบำรุงในห้อง', 'Plumbing Fix',
+      'ท่อน้ำใต้อ่างล้างหน้ารั่ว ต้องเรียกช่างเปลี่ยนข้อต่อ (฿1,900)', 'Bathroom Sink Pipe Leak Repair (฿1,900)',
+      'น้ำรั่วซึมจนเปียกพื้นห้องน้ำ ต้องจ้างช่างด่วนมาเปลี่ยนวาล์วและซิลิโคน ฿1,900',
+      'A dripping sink pipe requires an urgent plumber replacement costing ฿1,900.'),
+    mkEv('exp-router', 'expense', 'low', 2100, 'อุปกรณ์เน็ตเสีย', 'Router Replacement',
+      'เราเตอร์ Wi-Fi ช็อตช่วงฝนตก ทำงานจากห้องไม่ได้ (฿2,100)', 'Router Short-Circuit Replacement (฿2,100)',
+      'ไฟกระชากทำเราเตอร์ดับสนิท ต้องรีบซื้อตัวใหม่มาต่อประชุมงาน ฿2,100',
+      'A power surge fries your home Wi-Fi router; buying a new unit costs ฿2,100.'),
+    mkEv('exp-phone-bat', 'expense', 'low', 2500, 'แบตมือถือเสื่อม', 'Battery Swap',
+      'แบตมือถือบวมจนดันหน้าจอ ต้องเปลี่ยนศูนย์ทันที (฿2,500)', 'Swollen Phone Battery Swap (฿2,500)',
+      'แบตเตอรี่โทรศัพท์เสื่อมบวมอันตราย ต้องเปลี่ยนแบตแท้ที่ศูนย์บริการ ฿2,500',
+      'A swollen smartphone battery needs immediate authorized replacement for ฿2,500.'),
+    mkEv('exp-tire', 'expense', 'low', 2800, 'ดูแลยานพาหนะ', 'Tire Repair',
+      'เหยียบตะปูยางรั่วแก้มยางฉีก เปลี่ยนยางเส้นใหม่ (฿2,800)', 'Punctured Tire Replacement (฿2,800)',
+      'ขับรถไปทำงานเจอน็อตตำแก้มยางปะไม่ได้ ต้องเปลี่ยนยางฉุกเฉิน ฿2,800',
+      'A sidewall puncture cannot be patched and forces a new tire swap for ฿2,800.'),
+    mkEv('exp-glasses-break', 'expense', 'low', 2900, 'ของใช้จำเป็น', 'Glasses Fix',
+      'ขาแว่นสายตาหักกลางทาง ต้องเปลี่ยนกรอบใหม่ (฿2,900)', 'Snapped Eyeglass Frame Repair (฿2,900)',
+      'เผลอนั่งทับแว่นตาขาหัก มองจอไม่ชัดต้องเปลี่ยนกรอบใหม่ ฿2,900',
+      'Accidentally sitting on your glasses snaps the hinge, requiring a ฿2,900 frame swap.'),
+    mkEv('exp-locksmith', 'expense', 'low', 1500, 'เหตุไม่คาดคิดหน้าห้อง', 'Locksmith Fee',
+      'ทำกุญแจหักคาแม่กุญแจห้อง ต้องเรียกช่างสะเดาะกุญแจ (฿1,500)', 'Broken Key Emergency Locksmith (฿1,500)',
+      'ดึกแล้วยังเข้าห้องไม่ได้เพราะกุญแจหักคาเบ้า ค่าช่างนอกเวลา ฿1,500',
+      'A snapped apartment key late at night requires an after-hours locksmith at ฿1,500.'),
+    mkEv('exp-tax-gap', 'expense', 'low', 2300, 'ยื่นภาษีเพิ่มเติม', 'Tax Balance Due',
+      'คำนวณภาษีประจำปีจากรายได้เสริม ต้องจ่ายเพิ่ม (฿2,300)', 'Freelance Income Tax Top-Up (฿2,300)',
+      'มีรายได้หลายทางทำให้หัก ณ ที่จ่ายไว้ไม่พอ ต้องชำระส่วนต่างภาษี ฿2,300',
+      'Combined salary + side gig places your tax slightly above withheld amounts by ฿2,300.'),
+    mkEv('exp-pest', 'expense', 'low', 1700, 'ดูแลที่พัก', 'Pest Care',
+      'มด/แมลงบุกห้องพัก ต้องซื้ออุปกรณ์ฉีดพ่น & ล้างใหญ่ (฿1,700)', 'Apartment Pest Control Cleanup (฿1,700)',
+      'ช่วงหน้าฝนแมลงเข้าห้องต้องจัดการทำความสะอาดและกำจัดแมลง ฿1,700',
+      'Rainy season pests require deep cleaning supplies and treatment costing ฿1,700.'),
+    mkEv('exp-home-aid', 'expense', 'low', 3000, 'ช่วยเหลือทางบ้าน', 'Parents Help',
+      'พ่อแม่ที่ต่างจังหวัดโทรให้ช่วยค่าซ่อมเครื่องซักผ้าที่บ้าน (฿3,000)', 'Help Parents Fix Washing Machine (฿3,000)',
+      'เครื่องใช้ไฟฟ้าที่บ้านเสียกะทันหัน คุณโอนช่วยแบ่งเบาค่าซ่อม ฿3,000',
+      'Helping parents back home cover an unexpected appliance repair costs ฿3,000.'),
+    mkEv('exp-moto-brake', 'expense', 'low', 1850, 'ซ่อมบำรุงเดินทาง', 'Brake Service',
+      'ผ้าเบรกและโซ่มอเตอร์ไซค์สึกหมด ต้องเปลี่ยนยกชุด (฿1,850)', 'Bike Brake & Chain Service (฿1,850)',
+      'เบรกเริ่มมีเสียงดังอันตราย ช่วงฝนตกต้องเปลี่ยนผ้าเบรกและน้ำมันเครื่อง ฿1,850',
+      'Squeaky brakes in rainy traffic need immediate pads and chain servicing for ฿1,850.'),
+    mkEv('exp-key-deposit', 'expense', 'low', 1600, 'ค่าธรรมเนียมหอพัก', 'Access Card',
+      'คีย์การ์ดคอนโด/ที่จอดรถหาย โดนปรับทำบัตรใหม่ (฿1,600)', 'Lost Building Keycard Fee (฿1,600)',
+      'ทำคีย์การ์ดหล่นหาย ต้องจ่ายค่าออกบัตรใหม่และค่าปรับให้นิติบุคคล ฿1,600',
+      'Replacing a misplaced residential building & parking keycard costs ฿1,600.'),
+    mkEv('exp-scam-fee', 'expense', 'low', 2400, 'ระวังภัยออนไลน์', 'Refund Dispute',
+      'โดนตัดบัตรสมาชิกเว็บทดลองใช้ลืมกดยกเลิก (฿2,400)', 'Forgotten Auto-Renewal Subscription (฿2,400)',
+      'เผลอลืมยกเลิก Free Trial รายปี โดนตัดบัตรเต็มจำนวนกว่าจะยื่นเรื่องคืน ฿2,400',
+      'An overlooked annual free-trial auto-renewal charges ฿2,400 before cancellation.'),
+    mkEv('exp-air-filter', 'expense', 'low', 1950, 'สุขภาพในห้อง', 'Air Filter',
+      'เปลี่ยนไส้กรองเครื่องฟอกอากาศรับฤดูฝุ่น PM2.5 (฿1,950)', 'HEPA Filter Swap for Dust Season (฿1,950)',
+      'ไฟแดงเตือนไส้กรองหมดอายุกลางฤดูฝุ่น ต้องรีบซื้อไส้กรองแท้เปลี่ยน ฿1,950',
+      'Dusty PM2.5 alerts flash your purifier filter replacement light costing ฿1,950.'),
+    mkEv('exp-work-suit', 'expense', 'low', 2600, 'งานสำคัญบริษัท', 'Formal Attire',
+      'ต้องเดินทางพบลูกค้าด่วน ซื้อชุดสูท/รองเท้าสุภาพใหม่ (฿2,600)', 'Urgent Client Visit Business Attire (฿2,600)',
+      'ได้รับมอบหมายไปพรีเซนต์นอกสถานที่ ต้องเตรียมเสื้อสูท/รองเท้าให้เรียบร้อย ฿2,600',
+      'A sudden external client presentation requires crisp business attire for ฿2,600.'),
+    mkEv('exp-shipping-dmg', 'expense', 'low', 2100, 'เคลมของส่งงาน', 'Courier Claim',
+      'ส่งเอกสาร/อุปกรณ์งานด่วนพิเศษแบบประกันพัสดุ (฿2,100)', 'Urgent Insured Work Courier (฿2,100)',
+      'ต้องตีรถ/ส่งแมสเซนเจอร์ด่วนส่งต้นฉบับงานให้ลูกค้าข้ามจังหวัด ฿2,100',
+      'An urgent same-day insured equipment courier for a client deadline costs ฿2,100.'),
+    mkEv('exp-annual-checkup', 'expense', 'low', 2200, 'ป้องกันเชิงรุก', 'Wellness Check',
+      'ตรวจสุขภาพประจำปีส่วนเสริม (ตรวจตับ/ไขมัน/EKG ฿2,200)', 'Add-On Annual Health Checkup (฿2,200)',
+      'ตรวจเพิ่มเติมจากแพ็กเกจพื้นฐานบริษัทเพื่อความชัวร์ รายการเสริมรวม ฿2,200',
+      'Adding deeper lipid and ECG screening on top of company checkup costs ฿2,200.'),
+    mkEv('exp-laundry-dryer', 'expense', 'low', 1750, 'ซักอบหน้าฝน', 'Laundry Wash',
+      'ฝนตกทั้งสัปดาห์ผ้าไม่แห้ง & ซักผ้านวมใหญ่ทั้งหมด (฿1,750)', 'Rainy-Week Comforter & Dryer Bill (฿1,750)',
+      'ความชื้นสูงผ้าเหม็นอับ ต้องยกไปร้านซักอบไอน้ำและซักผ้านวมยกห้อง ฿1,750',
+      'Nonstop rainy humidity pushes comforters and work shirts to the laundromat for ฿1,750.'),
+    mkEv('exp-cloud-doc', 'expense', 'low', 1450, 'ต่ออายุเอกสาร/แอป', 'Doc Renewal',
+      'ต่ออายุใบขับขี่ / พาสปอร์ต & ค่าบริการเอกสารด่วน (฿1,450)', 'ID / License Renewal & Stamp Fee (฿1,450)',
+      'เอกสารสำคัญหมดอายุพร้อมกัน ต้องลางานไปดำเนินการและชำระค่าธรรมเนียม ฿1,450',
+      'Standard license and document renewal fees & transit come to ฿1,450.'),
+    mkEv('exp-fan-ac-clean', 'expense', 'low', 1600, 'ดูแลแอร์รายครึ่งปี', 'AC Cleaning',
+      'ล้างแอร์ฆ่าเชื้อราย 6 เดือน & เติมน้ำยาทำความเย็น (฿1,600)', '6-Month AC Coil Deep Cleaning (฿1,600)',
+      'แอร์เริ่มมีกลิ่นอับและไม่เย็นฉ่ำ เรียกช่างมาล้างใหญ่เพื่อประหยัดไฟ ฿1,600',
+      'Regular 6-month aircon deep cleaning restores cooling and lowers power bills for ฿1,600.'),
+    mkEv('exp-rain-gear', 'expense', 'low', 1550, 'อุปกรณ์หน้าฝน', 'Rain Protection',
+      'รองเท้ากันน้ำ & ร่มพกพาพังกลางพายุ ต้องซื้อใหม่ (฿1,550)', 'Storm Umbrella & Waterproof Shoes (฿1,550)',
+      'พายุพัดร่มหักกลางสี่แยกและน้ำท่วมซอย ต้องซื้อร่มทนลมกับรองเท้าลุยน้ำ ฿1,550',
+      'Sudden monsoon gusts snap your umbrella, forcing a waterproof gear replacement for ฿1,550.')
+  );
+
+  MEDIUM_EXPENSE_POOL.push(
+    mkEv('fridge-fix-5200', 'expense', 'medium', 5200, 'เครื่องใช้ไฟฟ้าพัง', 'Fridge Repair',
+      'ตู้เย็นในห้องไม่เย็น คอมเพรสเซอร์เสีย (฿5,200)', 'Refrigerator Compressor Breakdown (฿5,200)',
+      'กลับห้องมาพบของสดเสียยกตู้ ตู้เย็นพังต้องซ่อมหรือซื้อเครื่องใหม่ ฿5,200',
+      'Your apartment fridge stops cooling completely; repair/replacement hits ฿5,200.'),
+    mkEv('car-battery-4600', 'expense', 'medium', 4600, 'รถสตาร์ทไม่ติด', 'Car Battery Dead',
+      'แบตเตอรี่และไดชาร์จเสื่อม รถดับกลางลานจอด (฿4,600)', 'Dead Battery & Alternator Check (฿4,600)',
+      'ตอนเช้าบิดกุญแจเงียบสนิท ต้องเรียกช่างนอกสถานที่มาเปลี่ยนแบต ฿4,600',
+      'An early-morning dead battery needs roadside replacement & inspection costing ฿4,600.'),
+    mkEv('flood-room-5900', 'expense', 'medium', 5900, 'ภัยธรรมชาติใกล้ตัว', 'Storm Damage',
+      'ฝนสาดหน้าต่างรั่ว น้ำซึมโต๊ะทำงาน & พื้นลามิเนต (฿5,900)', 'Storm Water Seepage Cleanup (฿5,900)',
+      'พายุฝนถล่มซัดน้ำเข้าขอบหน้าต่าง พังสายไฟและพรมโต๊ะ ต้องซ่อมด่วน ฿5,900',
+      'Storm gusts push water through your window frame, soaking desk gear totaling ฿5,900.'),
+    mkEv('screen-crack-6200', 'expense', 'medium', 6200, 'มือถือจอแตก', 'Cracked Screen',
+      'ทำมือถือหล่นมุมกระแทกพื้น จอเปิดไม่ติด (฿6,200)', 'Shattered Smartphone Display (฿6,200)',
+      'รีบวิ่งขึ้นรถไฟฟ้าแล้วมือถือร่วงหน้าจอแตกมืด ต้องซ่อมจอเพื่อใช้สแกนจ่าย ฿6,200',
+      'Dropping your phone at the station shatters the display; urgent screen swap is ฿6,200.'),
+    mkEv('family-vet-4900', 'expense', 'medium', 4900, 'เคสด่วนครอบครัว', 'Urgent Home Bill',
+      'น้องหมาที่บ้านป่วยกะทันหัน พาไปตรวจเลือด/ให้น้ำเกลือ (฿4,900)', 'Emergency Family Pet Vet Bill (฿4,900)',
+      'สัตว์เลี้ยงคู่ใจที่บ้านซึมไม่กินอาหาร พาส่งคลินิกฉุกเฉิน ฿4,900',
+      'An emergency veterinary clinic trip for blood tests and IV fluids costs ฿4,900.')
+  );
+
+  WINDFALL_POOL.push(
+    mkEv('win-cashback-1500', 'windfall', 'positive', 1500, 'เงินคืน PromptPay', 'Cashback Credit',
+      'ได้เครดิตเงินคืน & แต้มบัตรประจำเดือน +฿1,500', 'Monthly Card & Wallet Cashback +฿1,500',
+      'คะแนนสะสมค่าใช้จ่ายรายวันแปลงเป็นเงินคืนเข้าบัญชี +฿1,500',
+      'Monthly wallet and card points convert cleanly into +฿1,500 cash credit.'),
+    mkEv('win-declutter-2400', 'windfall', 'positive', 2400, 'ปล่อยของมือสอง', 'Resale Income',
+      'ขายกล้อง/แกดเจ็ตที่ไม่ได้ใช้ในกลุ่มมือสองได้ +฿2,400', 'Sold Unused Desk Tech +฿2,400',
+      'จัดห้องแล้วปล่อยขายอุปกรณ์ที่ไม่ได้ใช้ ได้เงินสดโอนเข้าบัญชี +฿2,400',
+      'Decluttering unused desk electronics brings in +฿2,400 in cash.'),
+    mkEv('win-ot-2800', 'windfall', 'positive', 2800, 'ช่วยงานล่วงเวลา', 'Extra OT',
+      'ช่วยสลับเวร/ทำพรีเซนต์ด่วนวันเสาร์ รับค่าล่วงเวลา +฿2,800', 'Weekend Presentation OT Pay +฿2,800',
+      'รับอาสาช่วยปิดงานด่วนให้แผนก ได้เบี้ยล่วงเวลาพิเศษ +฿2,800',
+      'Volunteering for a weekend deck delivery earns +฿2,800 in overtime pay.'),
+    mkEv('win-mentor-3800', 'windfall', 'positive', 3800, 'สอนพิเศษ/วิทยากร', 'Guest Workshop',
+      'ได้รับเชิญเป็นวิทยากร/ติวเตอร์ช่วยรุ่นน้อง รับค่าตอบแทน +฿3,800', 'Guest Mentor Honorarium +฿3,800',
+      'แชร์ความรู้สายงานให้รุ่นน้องช่วงเย็นวันศุกร์ ได้ค่าตอบแทน +฿3,800',
+      'Hosting an evening skills session for students pays a +฿3,800 honorarium.'),
+    mkEv('win-interest-2100', 'windfall', 'positive', 2100, 'ดอกเบี้ยเงินฝาก', 'High-Yield Interest',
+      'รับดอกเบี้ยบัญชีออมทรัพย์ดอกเบี้ยสูงรอบครึ่งปี +฿2,100', 'Semi-Annual Savings Interest +฿2,100',
+      'วินัยการเก็บเงินสำรองในบัญชีดิจิทัลให้ผลตอบแทนดอกเบี้ยเข้า +฿2,100',
+      'Storing emergency cash in a high-yield account credits +฿2,100 interest.'),
+    mkEv('win-contest-5500', 'windfall', 'positive', 5500, 'รางวัลผลงานในทีม', 'Team Award',
+      'โปรเจกต์ลดขั้นตอนงานชนะรางวัลนวัตกรรมทีม รับ +฿5,500', 'Internal Innovation Award +฿5,500',
+      'ไอเดียปรับปรุงเวิร์กโฟลว์ของทีมคว้ารางวัลประจำไตรมาส รับส่วนแบ่ง +฿5,500',
+      'Your workflow improvement idea wins an internal award share of +฿5,500.'),
+    mkEv('win-dividend-6000', 'windfall', 'positive', 6000, 'ปันผลสหกรณ์/กองทุน', 'Dividend Payout',
+      'รับเงินปันผลสหกรณ์ออมทรัพย์ / กองทุนปันผล +฿6,000', 'Cooperative / Fund Dividend +฿6,000',
+      'เงินออมระยะกลางออกดอกผลเป็นเงินปันผลประจำปีโอนเข้า +฿6,000',
+      'Annual cooperative savings dividends credit +฿6,000 to your account.'),
+    mkEv('win-referral-8000', 'windfall', 'positive', 8000, 'โบนัสแนะนำคนเก่ง', 'Referral Bonus',
+      'แนะนำเพื่อนฝีมือดีเข้าบริษัทผ่านโปร รับโบนัส +฿8,000', 'Employee Referral Bonus +฿8,000',
+      'เพื่อนที่แนะนำมาร่วมงานผ่านทดลองงานเรียบร้อย HR จ่ายโบนัสแนะนำ +฿8,000',
+      'A colleague you referred passes probation, unlocking an +฿8,000 referral bonus.'),
+    mkEv('win-midyear-7500', 'windfall', 'positive', 7500, 'โบนัสกลางปี', 'Mid-Year Bonus',
+      'บริษัทปรับจ่ายเงินตอบแทนพิเศษกลางปี +฿7,500', 'Mid-Year Incentive Payout +฿7,500',
+      'ผลประกอบการครึ่งปีแรกทะลุเป้า ได้รับเงินตอบแทนพิเศษเข้าบัญชี +฿7,500',
+      'Strong first-half company performance pays out a +฿7,500 incentive.'),
+    mkEv('win-survey-1200', 'windfall', 'positive', 1200, 'เงินคืน & แบบสอบถาม', 'Focus Group Bonus',
+      'ร่วมทำวิจัยผู้บริโภค/แบบสอบถามออนไลน์ รับค่าตอบแทน +฿1,200', 'Verified Consumer Focus Group +฿1,200',
+      'สละเวลาพักเที่ยงทำแบบสอบถามและรีวิวแอปให้บริษัทวิจัย รับเงินโอนเข้า +฿1,200',
+      'Participating in a verified 30-minute focus group credits +฿1,200 cash.'),
+    mkEv('win-edit-gig-3500', 'windfall', 'positive', 3500, 'รับจ้างแปล/ตรวจงาน', 'Review Side Income',
+      'รับตรวจปรู๊ฟ / แปลเอกสารสั้นช่วงวันหยุด ได้ +฿3,500', 'Weekend Proofread & Edit Gig +฿3,500',
+      'รุ่นพี่ส่งงานตรวจเอกสารด่วนให้ทำช่วงวันเสาร์ รับค่าจ้างโอนตรง +฿3,500',
+      'Helping proofread a weekend bilingual report earns a fast +฿3,500 payout.')
+  );
+
   // Normalize monthlyCounts array (supports either passing monthlyCounts[] or a legacy totalTurns number)
   let monthlyCounts;
   if (Array.isArray(totalTurns) && totalTurns.length > 0) {
@@ -760,24 +1107,34 @@ export function buildEventDeck(totalTurns, persona, previousEventIds = []) {
   const totalEventCount = monthlyCounts.reduce((sum, n) => sum + n, 0);
   const monthsCount = monthlyCounts.length;
   const avoidIds = new Set(Array.isArray(previousEventIds) ? previousEventIds : []);
+  const usedInRunIds = new Set();
 
   const pickNextFrom = (pool, recentIds, lastId) => {
     const notLast = pool.filter((item) => item.id !== lastId);
     const candidates = notLast.length > 0 ? notLast : pool;
-    const fresh = shuffleArray(
-      candidates.filter((item) => !recentIds.has(item.id) && !avoidIds.has(item.id))
+    // Tier 1: Completely unseen in BOTH current run and immediately previous run
+    const ultraFresh = shuffleArray(
+      candidates.filter(
+        (item) => !usedInRunIds.has(item.id) && !avoidIds.has(item.id)
+      )
     );
-    if (fresh.length > 0) return fresh[0];
+    if (ultraFresh.length > 0) return ultraFresh[0];
+    // Tier 2: Never used yet anywhere inside THIS run (guarantees zero repeats across 72 events!)
+    const unusedThisRun = shuffleArray(
+      candidates.filter((item) => !usedInRunIds.has(item.id))
+    );
+    if (unusedThisRun.length > 0) return unusedThisRun[0];
+    // Tier 3: Fallback if sub-pool exhausted
     const notRecent = shuffleArray(candidates.filter((item) => !recentIds.has(item.id)));
     if (notRecent.length > 0) return notRecent[0];
     return shuffleArray(candidates)[0];
   };
 
   // Realistic annual shock caps so 1–12 month runs (3–72 events) mirror real First Jobber life:
-  // - Critical (~฿95k): exactly 1 per run (placed in the second half so player builds buffer first)
+  // - Critical (~฿88k–฿100k): 1 per run (placed in the second half so player builds buffer first)
   // - Inpatient (~฿22k–฿38k): 0 for 1 mo, 1 for 2–7 mo, 2 for 8–12 mo
   // - Income dip: max 1 for 1–4 mo, 2 for 5–8 mo, 3 for 9–12 mo
-  // - Medium repairs (฿4.8k–฿6.5k): max 1 for 1–4 mo, 2 for 5–8 mo, 3 for 9–12 mo
+  // - Medium repairs (฿4.6k–฿6.5k): max 1 for 1–4 mo, 2 for 5–8 mo, 3 for 9–12 mo
   const criticalIdx =
     totalEventCount <= 6
       ? Math.max(1, totalEventCount - 1)
@@ -868,6 +1225,7 @@ export function buildEventDeck(totalTurns, persona, previousEventIds = []) {
         }
       }
 
+      usedInRunIds.add(chosen.id);
       recentIds.add(chosen.id);
       if (recentIds.size > 10) {
         const oldest = recentIds.values().next().value;

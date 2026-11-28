@@ -2,11 +2,14 @@ import { useLanguage } from '../context/LanguageContext';
 import {
   DEFAULT_AVATAR_CONFIG,
   HAIR_PALETTES,
+  OUTFIT_PALETTES,
+  ROOM_THEMES,
   SKIN_PALETTES,
 } from '../utils/pixelAvatar';
 
-function PixelBackdrop({ sceneType, wealthTier }) {
+function PixelBackdrop({ sceneType, wealthTier, roomTheme = 'sky' }) {
   const isDim = wealthTier === 'struggling' && sceneType === 'office_room';
+  const room = ROOM_THEMES[roomTheme] || ROOM_THEMES.sky;
 
   if (sceneType === 'hospital') {
     return (
@@ -141,37 +144,47 @@ function PixelBackdrop({ sceneType, wealthTier }) {
     );
   }
 
-  // Default: Cozy PROTECT360 Room / Home Office
+  // Default: Cozy PROTECT360 Room / Home Office (customizable via roomTheme)
+  const useMidnightWall = isDim || room.lamp;
   return (
     <g>
-      <rect x="0" y="0" width="220" height="82" fill={isDim ? '#1E293B' : '#F1F6FC'} />
-      <rect x="0" y="82" width="220" height="30" fill={isDim ? '#334155' : '#E2EBF6'} />
-      <rect x="0" y="80" width="220" height="3" fill={isDim ? '#475569' : '#CBD8EA'} />
+      <rect x="0" y="0" width="220" height="82" fill={isDim ? '#1E293B' : room.wall} />
+      <rect x="0" y="82" width="220" height="30" fill={isDim ? '#334155' : room.floor} />
+      <rect x="0" y="80" width="220" height="3" fill={isDim ? '#475569' : room.trim} />
       {/* Window with Day/Twilight View */}
       <rect
         x="20"
         y="14"
         width="54"
         height="42"
-        fill={isDim ? '#0F172A' : '#CFE6FF'}
-        stroke={isDim ? '#475569' : '#1E3A5F'}
+        fill={isDim ? '#0F172A' : room.windowBg}
+        stroke={useMidnightWall ? '#475569' : '#1E3A5F'}
         strokeWidth="3"
       />
-      <rect x="46" y="14" width="2" height="42" fill={isDim ? '#475569' : '#1E3A5F'} />
-      <rect x="20" y="34" width="54" height="2" fill={isDim ? '#475569' : '#1E3A5F'} />
-      {isDim && <rect x="60" y="20" width="6" height="6" fill="#FDE68A" />}
+      <rect x="46" y="14" width="2" height="42" fill={useMidnightWall ? '#475569' : '#1E3A5F'} />
+      <rect x="20" y="34" width="54" height="2" fill={useMidnightWall ? '#475569' : '#1E3A5F'} />
+      {useMidnightWall && <rect x="60" y="20" width="6" height="6" fill="#FDE68A" />}
       {/* Desk & PROTECT360 Chart Monitor on Right */}
-      <rect x="148" y="54" width="60" height="28" fill={isDim ? '#475569' : '#8B6240'} />
-      <rect x="144" y="50" width="68" height="5" fill={isDim ? '#334155' : '#6A472B'} />
+      <rect x="148" y="54" width="60" height="28" fill={isDim ? '#475569' : room.desk} />
+      <rect x="144" y="50" width="68" height="5" fill={isDim ? '#334155' : room.deskTop} />
       <rect x="164" y="26" width="34" height="22" fill="#142B4A" />
       <rect x="167" y="29" width="28" height="16" fill="#0F2038" />
       {/* Tiny Upward Growth Graph */}
       <rect x="171" y="38" width="4" height="5" fill="#22B8A7" />
       <rect x="177" y="35" width="4" height="8" fill="#3B82F6" />
       <rect x="183" y="31" width="4" height="12" fill="#10B981" />
-      {/* Desk Plant */}
-      <rect x="150" y="42" width="10" height="8" fill="#D97706" />
-      <rect x="152" y="35" width="6" height="7" fill="#10B981" />
+      {/* Desk Plant / Warm Lamp in Midnight Theme */}
+      {room.lamp ? (
+        <g>
+          <rect x="152" y="42" width="4" height="8" fill="#94A3B8" />
+          <rect x="148" y="34" width="12" height="8" fill="#FDE047" />
+        </g>
+      ) : (
+        <g>
+          <rect x="150" y="42" width="10" height="8" fill="#D97706" />
+          <rect x="152" y="35" width="6" height="7" fill={room.plant} />
+        </g>
+      )}
     </g>
   );
 }
@@ -183,18 +196,19 @@ function PixelCharacter({
 }) {
   const skin = SKIN_PALETTES[avatarConfig?.skinTone] || SKIN_PALETTES.warm;
   const hair = HAIR_PALETTES[avatarConfig?.hairColor] || HAIR_PALETTES.espresso;
+  const palette = OUTFIT_PALETTES[avatarConfig?.outfitColor] || OUTFIT_PALETTES.royal;
   const gender = avatarConfig?.gender || 'neutral';
   const hairStyle = avatarConfig?.hairStyle || 'short';
   const outline = '#1E293B';
 
-  // Outfit Palette based on wealth & financial health
+  // Outfit Palette based on wealth & chosen theme color
   const outfit =
     wealthTier === 'prosperous'
       ? {
-          shirt: '#142B4A',
-          shirtShade: '#0C1C33',
+          shirt: palette.suit,
+          shirtShade: palette.suitShade,
           collar: '#FFFFFF',
-          accent: '#14B8A6',
+          accent: palette.tie,
           pants: '#0F172A',
         }
       : wealthTier === 'struggling'
@@ -206,11 +220,11 @@ function PixelCharacter({
             pants: '#334155',
           }
         : {
-            shirt: '#2563EB',
-            shirtShade: '#1D4ED8',
-            collar: '#DBEAFE',
-            accent: '#14B8A6',
-            pants: '#1E3A5F',
+            shirt: palette.shirt,
+            shirtShade: palette.shirtShade,
+            collar: palette.collar,
+            accent: palette.tie,
+            pants: palette.pants,
           };
 
   const torsoW = gender === 'feminine' ? 20 : gender === 'masculine' ? 24 : 22;
@@ -493,7 +507,11 @@ export default function PixelAvatarStage({
           role="img"
           aria-label={lang === 'TH' ? 'ตัวละคร Pixel ของคุณและฉากเหตุการณ์' : 'Your pixel character & dynamic event scene'}
         >
-          <PixelBackdrop sceneType={sceneType} wealthTier={wealthTier} />
+          <PixelBackdrop
+            sceneType={sceneType}
+            wealthTier={wealthTier}
+            roomTheme={avatarConfig?.roomTheme}
+          />
           <PixelCharacter
             avatarConfig={avatarConfig}
             wealthTier={wealthTier}

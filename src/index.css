@@ -10456,25 +10456,40 @@ p {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 18px;
+  gap: 20px;
   padding: 22px 24px;
-  color: #ffffff;
-  border: none;
+  color: var(--text-primary);
+  border: 1px solid var(--border-subtle);
+  background: var(--bg-surface);
 }
 
 .gm-outcome-banner.resilient {
-  background: linear-gradient(135deg, #142b4a 0%, #1d5b9e 58%, #159a8c 100%);
+  background: linear-gradient(135deg, var(--bg-surface) 0%, rgba(236, 253, 245, 0.78) 65%, rgba(224, 242, 254, 0.72) 100%);
+  border-color: rgba(16, 185, 129, 0.3);
+  border-left: 5px solid #10b981;
 }
 
 .gm-outcome-banner.debt-trap {
-  background: linear-gradient(135deg, #5c1f24 0%, #a83232 58%, #c96c2b 100%);
+  background: linear-gradient(135deg, var(--bg-surface) 0%, rgba(254, 242, 242, 0.82) 70%, rgba(255, 247, 237, 0.75) 100%);
+  border-color: rgba(239, 68, 68, 0.32);
+  border-left: 5px solid #e05252;
+}
+
+[data-theme='dark'] .gm-outcome-banner.resilient {
+  background: linear-gradient(135deg, #0f172a 0%, rgba(6, 78, 59, 0.34) 65%, rgba(30, 58, 138, 0.32) 100%);
+  border-color: rgba(52, 211, 153, 0.28);
+}
+
+[data-theme='dark'] .gm-outcome-banner.debt-trap {
+  background: linear-gradient(135deg, #0f172a 0%, rgba(127, 29, 29, 0.34) 70%, rgba(124, 45, 18, 0.28) 100%);
+  border-color: rgba(248, 113, 113, 0.32);
 }
 
 .gm-outcome-left {
   display: flex;
   flex-direction: column;
   gap: 8px;
-  max-width: 720px;
+  max-width: 600px;
 }
 
 .gm-outcome-badge {
@@ -10482,35 +10497,51 @@ p {
   align-items: center;
   gap: 6px;
   align-self: flex-start;
-  padding: 4px 12px;
+  padding: 5px 12px;
   border-radius: var(--radius-pill);
-  background: rgba(255, 255, 255, 0.18);
-  color: #ffffff;
+  background: rgba(16, 185, 129, 0.12);
+  color: #047857;
   font-size: 0.76rem;
   font-weight: 800;
 }
 
+.gm-outcome-banner.debt-trap .gm-outcome-badge {
+  background: rgba(239, 68, 68, 0.12);
+  color: #b91c1c;
+}
+
+[data-theme='dark'] .gm-outcome-badge {
+  background: rgba(16, 185, 129, 0.2);
+  color: #6ee7b7;
+}
+
+[data-theme='dark'] .gm-outcome-banner.debt-trap .gm-outcome-badge {
+  background: rgba(239, 68, 68, 0.2);
+  color: #fca5a5;
+}
+
 .gm-outcome-title {
   margin: 0;
-  font-size: 1.32rem;
+  font-size: 1.28rem;
   font-weight: 800;
-  color: #ffffff;
-  line-height: 1.28;
+  color: var(--text-primary);
+  line-height: 1.3;
 }
 
 .gm-outcome-sub {
   margin: 0;
   font-size: 0.88rem;
-  color: rgba(255, 255, 255, 0.9);
-  line-height: 1.5;
+  color: var(--text-secondary);
+  line-height: 1.52;
 }
 
 .gm-score-dial {
   min-width: 118px;
   padding: 14px 18px;
   border-radius: 20px;
-  background: rgba(255, 255, 255, 0.14);
-  border: 1px solid rgba(255, 255, 255, 0.25);
+  background: var(--bg-canvas);
+  border: 1px solid var(--border-subtle);
+  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.05);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -10523,20 +10554,32 @@ p {
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.04em;
-  color: rgba(255, 255, 255, 0.85);
+  color: var(--text-muted);
 }
 
 .gm-score-big {
-  font-size: 2.2rem;
+  font-size: 2.25rem;
   font-weight: 900;
   line-height: 1.05;
-  color: #ffffff;
+  color: #059669;
+}
+
+.gm-outcome-banner.debt-trap .gm-score-big {
+  color: #e05252;
+}
+
+[data-theme='dark'] .gm-score-big {
+  color: #34d399;
+}
+
+[data-theme='dark'] .gm-outcome-banner.debt-trap .gm-score-big {
+  color: #f87171;
 }
 
 .gm-score-max {
   font-size: 0.74rem;
   font-weight: 700;
-  color: rgba(255, 255, 255, 0.8);
+  color: var(--text-muted);
 }
 
 .gm-final-stats-grid {

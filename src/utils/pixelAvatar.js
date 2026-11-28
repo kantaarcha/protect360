@@ -5,6 +5,8 @@ export const DEFAULT_AVATAR_CONFIG = {
   skinTone: 'warm', // 'fair' | 'warm' | 'honey' | 'tan' | 'deep'
   hairStyle: 'short', // 'short' | 'bob' | 'ponytail' | 'curly'
   hairColor: 'espresso', // 'espresso' | 'chestnut' | 'navy' | 'caramel' | 'ash'
+  outfitColor: 'royal', // 'royal' | 'teal' | 'plum' | 'graphite' | 'sand'
+  roomTheme: 'sky', // 'sky' | 'sunset' | 'mint' | 'midnight'
 };
 
 export const GENDER_OPTIONS = [
@@ -36,6 +38,133 @@ export const HAIR_PALETTES = {
   ash: { id: 'ash', base: '#64748B', shine: '#94A3B8', th: 'เทาหม่น', en: 'Ash Slate' },
 };
 
+export const OUTFIT_PALETTES = {
+  royal: {
+    id: 'royal',
+    swatch: '#2563EB',
+    shirt: '#2563EB',
+    shirtShade: '#1D4ED8',
+    collar: '#DBEAFE',
+    suit: '#142B4A',
+    suitShade: '#0C1C33',
+    tie: '#14B8A6',
+    pants: '#1E3A5F',
+    th: 'น้ำเงิน P360',
+    en: 'P360 Royal',
+  },
+  teal: {
+    id: 'teal',
+    swatch: '#0D9488',
+    shirt: '#0D9488',
+    shirtShade: '#0F766E',
+    collar: '#CCFBF1',
+    suit: '#134E4A',
+    suitShade: '#0B3532',
+    tie: '#FACC15',
+    pants: '#1E3A5F',
+    th: 'เขียวมรกต',
+    en: 'Emerald Teal',
+  },
+  plum: {
+    id: 'plum',
+    swatch: '#4F46E5',
+    shirt: '#6366F1',
+    shirtShade: '#4F46E5',
+    collar: '#E0E7FF',
+    suit: '#312E81',
+    suitShade: '#1E1B4B',
+    tie: '#38BDF8',
+    pants: '#1E293B',
+    th: 'คราม Indigo',
+    en: 'Indigo Plum',
+  },
+  graphite: {
+    id: 'graphite',
+    swatch: '#334155',
+    shirt: '#475569',
+    shirtShade: '#334155',
+    collar: '#E2E8F0',
+    suit: '#1E293B',
+    suitShade: '#0F172A',
+    tie: '#22D3EE',
+    pants: '#0F172A',
+    th: 'กราไฟต์',
+    en: 'Graphite',
+  },
+  sand: {
+    id: 'sand',
+    swatch: '#A16207',
+    shirt: '#B45309',
+    shirtShade: '#92400E',
+    collar: '#FEF3C7',
+    suit: '#5C4033',
+    suitShade: '#3E2A21',
+    tie: '#FDE047',
+    pants: '#292524',
+    th: 'เอิร์ธโทน',
+    en: 'Warm Earth',
+  },
+};
+
+export const ROOM_THEMES = {
+  sky: {
+    id: 'sky',
+    swatch: '#93C5FD',
+    wall: '#F1F6FC',
+    floor: '#E2EBF6',
+    trim: '#CBD8EA',
+    windowBg: '#CFE6FF',
+    desk: '#8B6240',
+    deskTop: '#6A472B',
+    plant: '#10B981',
+    lamp: false,
+    th: 'ฟ้าโปร่ง P360',
+    en: 'Sky Studio',
+  },
+  sunset: {
+    id: 'sunset',
+    swatch: '#FDBA74',
+    wall: '#FFF7ED',
+    floor: '#F5E4D0',
+    trim: '#DEC3A6',
+    windowBg: '#FED7AA',
+    desk: '#7C4D2B',
+    deskTop: '#5B371E',
+    plant: '#16A34A',
+    lamp: false,
+    th: 'แสงอุ่นคาเฟ่',
+    en: 'Sunset Warm',
+  },
+  mint: {
+    id: 'mint',
+    swatch: '#6EE7B7',
+    wall: '#ECFDF5',
+    floor: '#D1FAE5',
+    trim: '#A7F3D0',
+    windowBg: '#BAE6FD',
+    desk: '#785A3C',
+    deskTop: '#573F27',
+    plant: '#059669',
+    lamp: false,
+    th: 'เขียวมินต์',
+    en: 'Mint Leaf',
+  },
+  midnight: {
+    id: 'midnight',
+    swatch: '#1E293B',
+    wall: '#1E293B',
+    floor: '#0F172A',
+    trim: '#334155',
+    windowBg: '#0B1324',
+    desk: '#475569',
+    deskTop: '#334155',
+    plant: '#34D399',
+    lamp: true,
+    th: 'เนวีกลางคืน',
+    en: 'Midnight Desk',
+  },
+};
+
 export function loadSavedAvatarConfig() {
   if (typeof window === 'undefined') return { ...DEFAULT_AVATAR_CONFIG };
   try {
@@ -51,6 +180,10 @@ export function loadSavedAvatarConfig() {
         ? parsed.hairStyle
         : DEFAULT_AVATAR_CONFIG.hairStyle,
       hairColor: HAIR_PALETTES[parsed?.hairColor] ? parsed.hairColor : DEFAULT_AVATAR_CONFIG.hairColor,
+      outfitColor: OUTFIT_PALETTES[parsed?.outfitColor]
+        ? parsed.outfitColor
+        : DEFAULT_AVATAR_CONFIG.outfitColor,
+      roomTheme: ROOM_THEMES[parsed?.roomTheme] ? parsed.roomTheme : DEFAULT_AVATAR_CONFIG.roomTheme,
     };
   } catch {
     return { ...DEFAULT_AVATAR_CONFIG };
@@ -103,9 +236,13 @@ export function deriveAvatarSceneAndState({
 
   let activeInjury = injuryTurnsLeft > 0 ? injuryType : 'none';
   if (phase === 'playing' && activeInjury === 'none') {
-    if (event?.id?.includes('fracture') || event?.id?.includes('sprain')) {
+    if (
+      event?.id?.includes('fracture') ||
+      event?.id?.includes('sprain') ||
+      event?.id?.includes('ankle')
+    ) {
       activeInjury = 'leg_cast';
-    } else if (event?.id?.includes('accident')) {
+    } else if (event?.category === 'accident') {
       activeInjury = 'arm_cast';
     } else if (cat === 'medical') {
       activeInjury = 'medical_mask';

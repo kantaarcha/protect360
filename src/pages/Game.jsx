@@ -33,6 +33,8 @@ import {
   HAIR_PALETTES,
   HAIR_STYLE_OPTIONS,
   loadSavedAvatarConfig,
+  OUTFIT_PALETTES,
+  ROOM_THEMES,
   saveAvatarConfig,
   SKIN_PALETTES,
 } from '../utils/pixelAvatar';
@@ -947,6 +949,48 @@ export default function Game({ onNavigate }) {
                         title={lang === 'TH' ? hc.th : hc.en}
                         aria-label={lang === 'TH' ? hc.th : hc.en}
                         onClick={() => updateAvatarConfig({ hairColor: hc.id })}
+                      />
+                    ))}
+                  </div>
+                </div>
+
+                {/* Outfit & Suit Color */}
+                <div className="gm-avatar-ctrl-row">
+                  <span className="gm-avatar-ctrl-label">
+                    {lang === 'TH' ? 'สีชุด & สูทประจำตัว' : 'Outfit & Suit Color'}
+                  </span>
+                  <div className="gm-swatch-group">
+                    {Object.values(OUTFIT_PALETTES).map((op) => (
+                      <button
+                        key={op.id}
+                        id={`gm-avatar-outfit-${op.id}`}
+                        type="button"
+                        className={`gm-color-swatch ${avatarConfig.outfitColor === op.id ? 'active' : ''}`}
+                        style={{ backgroundColor: op.swatch }}
+                        title={lang === 'TH' ? op.th : op.en}
+                        aria-label={lang === 'TH' ? op.th : op.en}
+                        onClick={() => updateAvatarConfig({ outfitColor: op.id })}
+                      />
+                    ))}
+                  </div>
+                </div>
+
+                {/* Room / Studio Theme */}
+                <div className="gm-avatar-ctrl-row">
+                  <span className="gm-avatar-ctrl-label">
+                    {lang === 'TH' ? 'ธีมห้องพัก & ฉากทำงาน' : 'Room & Desk Theme'}
+                  </span>
+                  <div className="gm-swatch-group">
+                    {Object.values(ROOM_THEMES).map((rt) => (
+                      <button
+                        key={rt.id}
+                        id={`gm-avatar-room-${rt.id}`}
+                        type="button"
+                        className={`gm-color-swatch ${avatarConfig.roomTheme === rt.id ? 'active' : ''}`}
+                        style={{ backgroundColor: rt.swatch }}
+                        title={lang === 'TH' ? rt.th : rt.en}
+                        aria-label={lang === 'TH' ? rt.th : rt.en}
+                        onClick={() => updateAvatarConfig({ roomTheme: rt.id })}
                       />
                     ))}
                   </div>
