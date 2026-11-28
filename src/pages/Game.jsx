@@ -26,6 +26,16 @@ import {
 import { useLanguage } from '../context/LanguageContext';
 import { formatTHB, useFinance } from '../context/FinanceContext';
 import LiquidTabs from '../components/LiquidTabs';
+import PixelAvatarStage from '../components/PixelAvatarStage';
+import {
+  deriveAvatarSceneAndState,
+  GENDER_OPTIONS,
+  HAIR_PALETTES,
+  HAIR_STYLE_OPTIONS,
+  loadSavedAvatarConfig,
+  saveAvatarConfig,
+  SKIN_PALETTES,
+} from '../utils/pixelAvatar';
 import {
   DEFAULT_CHALLENGE_PERSONA,
   DURATION_PRESETS,
@@ -98,6 +108,17 @@ export default function Game({ onNavigate }) {
   const [roundedNotice, setRoundedNotice] = useState(null);
   const [personaMode, setPersonaMode] = useState('default'); // 'profile' | 'default'
   const [askedHr, setAskedHr] = useState(false);
+
+  // Stardew-style Paper-Doll Pixel Character state (persisted locally under protect360_avatar_v1)
+  const [avatarConfig, setAvatarConfig] = useState(() => loadSavedAvatarConfig());
+  const [avatarPreviewMood, setAvatarPreviewMood] = useState('steady'); // 'steady' | 'struggling' | 'cast' | 'prosperous'
+  const updateAvatarConfig = (patch) => {
+    setAvatarConfig((prev) => {
+      const next = { ...prev, ...patch };
+      saveAvatarConfig(next);
+      return next;
+    });
+  };
 
   const activePersona = personaMode === 'profile' ? userPersona : DEFAULT_CHALLENGE_PERSONA;
   const monthlySurplus = Math.max(0, activePersona.monthlyIncome - activePersona.monthlyExpenses);
@@ -306,6 +327,8 @@ export default function Game({ onNavigate }) {
       totalProtectionAbsorbed: 0,
       totalInterestPaid: 0,
       installmentBalance: 0,
+      injuryType: 'none',
+      injuryTurnsLeft: 0,
       history: [],
     });
     setLastTurnResult(null);
@@ -326,8 +349,34 @@ export default function Game({ onNavigate }) {
       config: runConfig,
     });
 
-    setGameState(nextState);
-    setLastTurnResult(logEntry);
+    // Derive multi-turn pixel status effect (e.g. leg/arm cast lasts 2–3 turns after accident)
+    let nextInjuryType = gameState.injuryType || 'none';
+    let nextInjuryTurns = Math.max(0, (gameState.injuryTurnsLeft || 0) - 1);
+    if (nextInjuryTurns === 0) nextInjuryType = 'none';
+
+    if (currentEvent.id?.includes('fracture') || currentEvent.id?.includes('sprain')) {
+      nextInjuryType = 'leg_cast';
+      nextInjuryTurns = 3;
+    } else if (currentEvent.category === 'accident') {
+      nextInjuryType = 'arm_cast';
+      nextInjuryTurns = 3;
+    } else if (currentEvent.category === 'medical') {
+      nextInjuryType = 'medical_mask';
+      nextInjuryTurns = 2;
+    } else if (currentEvent.category === 'windfall') {
+      nextInjuryType = 'windfall';
+      nextInjuryTurns = 1;
+    }
+
+    setGameState({
+      ...nextState,
+      injuryType: nextInjuryType,
+      injuryTurnsLeft: nextInjuryTurns,
+    });
+    setLastTurnResult({
+      ...logEntry,
+      eventCategory: currentEvent.category,
+    });
     setHudPulseKey((k) => k + 1);
   };
 
@@ -419,6 +468,42 @@ export default function Game({ onNavigate }) {
     if (phase !== 'results' || !gameState || !runConfig) return null;
     return computeFinalScorecard({ state: gameState, config: runConfig });
   }, [phase, gameState, runConfig]);
+
+  const liveAvatarVisuals = useMemo(() => {
+    if (phase === 'lobby') {
+      if (avatarPreviewMood === 'struggling') {
+        return { wealthTier: 'struggling', sceneType: 'rainy_street', injury: 'none' };
+      }
+      if (avatarPreviewMood === 'cast') {
+        return { wealthTier: 'steady', sceneType: 'hospital', injury: 'leg_cast' };
+      }
+      if (avatarPreviewMood === 'prosperous') {
+        return { wealthTier: 'prosperous', sceneType: 'celebration', injury: 'windfall' };
+      }
+      return { wealthTier: 'steady', sceneType: 'office_room', injury: 'none' };
+    }
+    return deriveAvatarSceneAndState({
+      event: currentEvent,
+      lastTurnResult,
+      cash: gameState?.cash ?? activePersona.emergencyFund,
+      debt: gameState?.debt ?? 0,
+      peace: gameState?.peace ?? 70,
+      monthlyExpenses: runConfig?.persona?.monthlyExpenses ?? activePersona.monthlyExpenses,
+      injuryType: gameState?.injuryType ?? 'none',
+      injuryTurnsLeft: gameState?.injuryTurnsLeft ?? 0,
+      phase,
+      isResilient: Boolean(scorecard?.isResilient),
+    });
+  }, [
+    phase,
+    avatarPreviewMood,
+    currentEvent,
+    lastTurnResult,
+    gameState,
+    runConfig,
+    activePersona,
+    scorecard,
+  ]);
 
   // Stacked allocation percentages for Lobby visual bar
   const allocPcts = useMemo(() => {
@@ -732,6 +817,143 @@ export default function Game({ onNavigate }) {
               </div>
             </section>
           </div>
+
+          {/* Pixel Character Creator Studio (Stardew-style Layering matching PROTECT360 aesthetic) */}
+          <section id="gm-avatar-studio" className="bento-card gm-card gm-avatar-studio-card">
+            <div className="gm-card-head">
+              <div className="gm-card-title-row">
+                <span className="gm-icon-badge blue">
+                  <Sparkles size={18} strokeWidth={2.1} />
+                </span>
+                <div>
+                  <h2 className="gm-card-title">
+                    {lang === 'TH'
+                      ? 'ปรับแต่งตัวละคร Pixel ของคุณ (เปลี่ยนชุดและฉากตามสถานการณ์จริง)'
+                      : 'Customize Your Pixel Character (Reacts Live to Wealth & Events)'}
+                  </h2>
+                  <p className="gm-card-sub">
+                    {lang === 'TH'
+                      ? 'เลือกเพศ สีผิว และทรงผม — ระหว่างเล่นตัวละครจะเปลี่ยนเสื้อผ้าตามฐานะ (เสื้อขาด / ปกติ / สูท) และใส่เฝือกหรือหน้ากากตามเหตุการณ์จริง'
+                      : 'Choose silhouette, skin tone & hair — your character changes outfits by financial health and wears casts or recovery gear when events hit.'}
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div className="gm-avatar-studio-grid">
+              <div className="gm-avatar-preview-col">
+                <PixelAvatarStage
+                  avatarConfig={avatarConfig}
+                  sceneType={liveAvatarVisuals.sceneType}
+                  wealthTier={liveAvatarVisuals.wealthTier}
+                  injury={liveAvatarVisuals.injury}
+                />
+
+                <div className="gm-mood-preview-row" role="group" aria-label="Preview condition">
+                  {[
+                    { id: 'steady', th: 'ชุดปกติ', en: 'Normal' },
+                    { id: 'struggling', th: 'จน·เสื้อขาด', en: 'Tight/Torn' },
+                    { id: 'cast', th: 'อุบัติเหตุ·เฝือก', en: 'Injury Cast' },
+                    { id: 'prosperous', th: 'มั่งคั่ง·สูท', en: 'Wealthy Suit' },
+                  ].map((m) => (
+                    <button
+                      key={m.id}
+                      id={`gm-avatar-mood-${m.id}`}
+                      type="button"
+                      className={`gm-mood-chip ${avatarPreviewMood === m.id ? 'active' : ''}`}
+                      onClick={() => setAvatarPreviewMood(m.id)}
+                    >
+                      {lang === 'TH' ? m.th : m.en}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div className="gm-avatar-controls-col">
+                {/* Gender / Silhouette */}
+                <div className="gm-avatar-ctrl-row">
+                  <span className="gm-avatar-ctrl-label">
+                    {lang === 'TH' ? 'โครงร่าง / เพศ' : 'Silhouette'}
+                  </span>
+                  <div className="gm-avatar-pill-group">
+                    {GENDER_OPTIONS.map((g) => (
+                      <button
+                        key={g.id}
+                        id={`gm-avatar-gender-${g.id}`}
+                        type="button"
+                        className={`gm-avatar-opt-pill ${avatarConfig.gender === g.id ? 'active' : ''}`}
+                        onClick={() => updateAvatarConfig({ gender: g.id })}
+                      >
+                        {lang === 'TH' ? g.th : g.en}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Skin Tone */}
+                <div className="gm-avatar-ctrl-row">
+                  <span className="gm-avatar-ctrl-label">
+                    {lang === 'TH' ? 'สีผิว' : 'Skin Tone'}
+                  </span>
+                  <div className="gm-swatch-group">
+                    {Object.values(SKIN_PALETTES).map((s) => (
+                      <button
+                        key={s.id}
+                        id={`gm-avatar-skin-${s.id}`}
+                        type="button"
+                        className={`gm-color-swatch ${avatarConfig.skinTone === s.id ? 'active' : ''}`}
+                        style={{ backgroundColor: s.base }}
+                        title={lang === 'TH' ? s.th : s.en}
+                        aria-label={lang === 'TH' ? s.th : s.en}
+                        onClick={() => updateAvatarConfig({ skinTone: s.id })}
+                      />
+                    ))}
+                  </div>
+                </div>
+
+                {/* Hair Style */}
+                <div className="gm-avatar-ctrl-row">
+                  <span className="gm-avatar-ctrl-label">
+                    {lang === 'TH' ? 'ทรงผม' : 'Hairstyle'}
+                  </span>
+                  <div className="gm-avatar-pill-group">
+                    {HAIR_STYLE_OPTIONS.map((h) => (
+                      <button
+                        key={h.id}
+                        id={`gm-avatar-hair-${h.id}`}
+                        type="button"
+                        className={`gm-avatar-opt-pill ${avatarConfig.hairStyle === h.id ? 'active' : ''}`}
+                        onClick={() => updateAvatarConfig({ hairStyle: h.id })}
+                      >
+                        {lang === 'TH' ? h.th : h.en}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Hair Color */}
+                <div className="gm-avatar-ctrl-row">
+                  <span className="gm-avatar-ctrl-label">
+                    {lang === 'TH' ? 'สีผม' : 'Hair Color'}
+                  </span>
+                  <div className="gm-swatch-group">
+                    {Object.values(HAIR_PALETTES).map((hc) => (
+                      <button
+                        key={hc.id}
+                        id={`gm-avatar-haircolor-${hc.id}`}
+                        type="button"
+                        className={`gm-color-swatch ${avatarConfig.hairColor === hc.id ? 'active' : ''}`}
+                        style={{ backgroundColor: hc.base }}
+                        title={lang === 'TH' ? hc.th : hc.en}
+                        aria-label={lang === 'TH' ? hc.th : hc.en}
+                        onClick={() => updateAvatarConfig({ hairColor: hc.id })}
+                      />
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
 
           {/* 3. Pre-Game Strategy Allocation */}
           <section className="bento-card gm-card gm-strategy-card">
@@ -1146,6 +1368,16 @@ export default function Game({ onNavigate }) {
                 </div>
               </div>
 
+              <div className="gm-arena-pixel-wrap">
+                <PixelAvatarStage
+                  avatarConfig={avatarConfig}
+                  sceneType={liveAvatarVisuals.sceneType}
+                  wealthTier={liveAvatarVisuals.wealthTier}
+                  injury={liveAvatarVisuals.injury}
+                  compact
+                />
+              </div>
+
               <h2 className="gm-event-title">{t(currentEvent.title)}</h2>
               <p className="gm-event-story">{t(currentEvent.story)}</p>
 
@@ -1222,6 +1454,16 @@ export default function Game({ onNavigate }) {
                   </span>
                   <h3 className="gm-feedback-event-name">{t(lastTurnResult.eventTitle)}</h3>
                 </div>
+              </div>
+
+              <div className="gm-arena-pixel-wrap">
+                <PixelAvatarStage
+                  avatarConfig={avatarConfig}
+                  sceneType={liveAvatarVisuals.sceneType}
+                  wealthTier={liveAvatarVisuals.wealthTier}
+                  injury={liveAvatarVisuals.injury}
+                  compact
+                />
               </div>
 
               <div className="gm-feedback-banner">
@@ -1344,6 +1586,16 @@ export default function Game({ onNavigate }) {
               </h2>
 
               <p className="gm-outcome-sub">{t(scorecard.headlineSummary)}</p>
+            </div>
+
+            <div className="gm-results-avatar-wrap">
+              <PixelAvatarStage
+                avatarConfig={avatarConfig}
+                sceneType={liveAvatarVisuals.sceneType}
+                wealthTier={liveAvatarVisuals.wealthTier}
+                injury={liveAvatarVisuals.injury}
+                compact
+              />
             </div>
 
             <div className="gm-score-dial tabular-nums">
