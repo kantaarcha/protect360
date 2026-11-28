@@ -2059,7 +2059,11 @@ export default function AutoKey({ onNavigate }) {
           <CashflowCalendarView
             transactions={filteredTransactions}
             customCategories={customCategories}
+            coreCategories={CORE_CATEGORIES}
+            allCategoryMap={allCategoryMap}
             onQuickAddDate={handleQuickAddDate}
+            onUpdateTransaction={updateTransaction}
+            onRemoveTransaction={removeTransaction}
           />
         ) : (
           <>

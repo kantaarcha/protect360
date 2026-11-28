@@ -204,92 +204,6 @@ export default function OverviewDashboard({ onNavigate, onOpenProfile }) {
   return (
     <>
       <div className="bento-dashboard-stack">
-        {/* ================= PROMO BANNER CAROUSEL (4 FEATURED MODULES) ================= */}
-        {(() => {
-          const activeSlide = promoSlides[promoIndex] || promoSlides[0];
-          const SlideIcon = activeSlide.icon;
-          const handlePrev = () =>
-            setPromoIndex((prev) => (prev - 1 + promoSlides.length) % promoSlides.length);
-          const handleNext = () =>
-            setPromoIndex((prev) => (prev + 1) % promoSlides.length);
-
-          return (
-            <section
-              className={`bento-card ov-promo-carousel tone-${activeSlide.tone}`}
-              aria-label={lang === 'TH' ? 'แนะนำฟีเจอร์เด่นของ PROTECT360' : 'PROTECT360 Featured Highlights'}
-              onMouseEnter={() => setPromoPaused(true)}
-              onMouseLeave={() => setPromoPaused(false)}
-              onFocus={() => setPromoPaused(true)}
-              onBlur={() => setPromoPaused(false)}
-            >
-              <div className="ov-promo-main">
-                <div className="ov-promo-icon-box" aria-hidden="true">
-                  <SlideIcon size={24} strokeWidth={2} />
-                </div>
-
-                <div className="ov-promo-copy">
-                  <span className="ov-promo-eyebrow">
-                    <Sparkles size={12} aria-hidden="true" />
-                    <span>{t(activeSlide.eyebrow)}</span>
-                  </span>
-                  <h2 className="ov-promo-title">{t(activeSlide.title)}</h2>
-                  <p className="ov-promo-desc">{t(activeSlide.desc)}</p>
-                </div>
-
-                <div className="ov-promo-actions">
-                  <button
-                    id={`ov-promo-cta-${activeSlide.id}`}
-                    type="button"
-                    className="btn-primary-gradient ov-promo-cta-btn"
-                    onClick={() => onNavigate && onNavigate(activeSlide.target)}
-                  >
-                    <span>{t(activeSlide.cta)}</span>
-                    <ChevronRight size={15} strokeWidth={2.4} aria-hidden="true" />
-                  </button>
-                </div>
-              </div>
-
-              <div className="ov-promo-controls">
-                <div className="ov-promo-dots" role="tablist" aria-label="Promo slides">
-                  {promoSlides.map((slide, idx) => (
-                    <button
-                      key={slide.id}
-                      id={`ov-promo-dot-${slide.id}`}
-                      type="button"
-                      role="tab"
-                      aria-selected={idx === promoIndex}
-                      aria-label={t(slide.eyebrow)}
-                      className={`ov-promo-dot ${idx === promoIndex ? 'active' : ''}`}
-                      onClick={() => setPromoIndex(idx)}
-                    />
-                  ))}
-                </div>
-
-                <div className="ov-promo-arrows">
-                  <button
-                    id="ov-promo-prev-btn"
-                    type="button"
-                    className="ov-promo-arrow-btn"
-                    onClick={handlePrev}
-                    aria-label={lang === 'TH' ? 'สไลด์ก่อนหน้า' : 'Previous banner'}
-                  >
-                    <ChevronLeft size={16} />
-                  </button>
-                  <button
-                    id="ov-promo-next-btn"
-                    type="button"
-                    className="ov-promo-arrow-btn"
-                    onClick={handleNext}
-                    aria-label={lang === 'TH' ? 'สไลด์ถัดไป' : 'Next banner'}
-                  >
-                    <ChevronRight size={16} />
-                  </button>
-                </div>
-              </div>
-            </section>
-          );
-        })()}
-
         {/* ================= ROW 1: FLUSH 3-COLUMN TOP BENTO ================= */}
         <div className="bento-row-top">
           {/* Col 1: Liquid Emergency Fund + 2x2 Summary Metrics */}
@@ -858,6 +772,92 @@ export default function OverviewDashboard({ onNavigate, onOpenProfile }) {
               </button>
             </div>
           </section>
+
+        {/* ================= BOTTOM: PROMO BANNER CAROUSEL (4 FEATURED MODULES) ================= */}
+        {(() => {
+          const activeSlide = promoSlides[promoIndex] || promoSlides[0];
+          const SlideIcon = activeSlide.icon;
+          const handlePrev = () =>
+            setPromoIndex((prev) => (prev - 1 + promoSlides.length) % promoSlides.length);
+          const handleNext = () =>
+            setPromoIndex((prev) => (prev + 1) % promoSlides.length);
+
+          return (
+            <section
+              className={`bento-card ov-promo-carousel tone-${activeSlide.tone}`}
+              aria-label={lang === 'TH' ? 'แนะนำฟีเจอร์เด่นของ PROTECT360' : 'PROTECT360 Featured Highlights'}
+              onMouseEnter={() => setPromoPaused(true)}
+              onMouseLeave={() => setPromoPaused(false)}
+              onFocus={() => setPromoPaused(true)}
+              onBlur={() => setPromoPaused(false)}
+            >
+              <div className="ov-promo-main">
+                <div className="ov-promo-icon-box" aria-hidden="true">
+                  <SlideIcon size={24} strokeWidth={2} />
+                </div>
+
+                <div className="ov-promo-copy">
+                  <span className="ov-promo-eyebrow">
+                    <Sparkles size={12} aria-hidden="true" />
+                    <span>{t(activeSlide.eyebrow)}</span>
+                  </span>
+                  <h2 className="ov-promo-title">{t(activeSlide.title)}</h2>
+                  <p className="ov-promo-desc">{t(activeSlide.desc)}</p>
+                </div>
+
+                <div className="ov-promo-actions">
+                  <button
+                    id={`ov-promo-cta-${activeSlide.id}`}
+                    type="button"
+                    className="btn-primary-gradient ov-promo-cta-btn"
+                    onClick={() => onNavigate && onNavigate(activeSlide.target)}
+                  >
+                    <span>{t(activeSlide.cta)}</span>
+                    <ChevronRight size={15} strokeWidth={2.4} aria-hidden="true" />
+                  </button>
+                </div>
+              </div>
+
+              <div className="ov-promo-controls">
+                <div className="ov-promo-dots" role="tablist" aria-label="Promo slides">
+                  {promoSlides.map((slide, idx) => (
+                    <button
+                      key={slide.id}
+                      id={`ov-promo-dot-${slide.id}`}
+                      type="button"
+                      role="tab"
+                      aria-selected={idx === promoIndex}
+                      aria-label={t(slide.eyebrow)}
+                      className={`ov-promo-dot ${idx === promoIndex ? 'active' : ''}`}
+                      onClick={() => setPromoIndex(idx)}
+                    />
+                  ))}
+                </div>
+
+                <div className="ov-promo-arrows">
+                  <button
+                    id="ov-promo-prev-btn"
+                    type="button"
+                    className="ov-promo-arrow-btn"
+                    onClick={handlePrev}
+                    aria-label={lang === 'TH' ? 'สไลด์ก่อนหน้า' : 'Previous banner'}
+                  >
+                    <ChevronLeft size={16} />
+                  </button>
+                  <button
+                    id="ov-promo-next-btn"
+                    type="button"
+                    className="ov-promo-arrow-btn"
+                    onClick={handleNext}
+                    aria-label={lang === 'TH' ? 'สไลด์ถัดไป' : 'Next banner'}
+                  >
+                    <ChevronRight size={16} />
+                  </button>
+                </div>
+              </div>
+            </section>
+          );
+        })()}
       </div>
 
       {modalOpen && (

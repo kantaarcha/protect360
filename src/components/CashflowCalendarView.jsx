@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { Calendar, ChevronLeft, ChevronRight, PlusCircle } from 'lucide-react';
+import { Calendar, Check, ChevronLeft, ChevronRight, Pencil, PlusCircle, Trash2 } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import { formatTHB } from '../context/FinanceContext';
 import { getCategoryIconComponent } from '../utils/categoryRegistry';
@@ -80,26 +80,31 @@ function getInitialCalendarState(transactions) {
 }
 
 function formatCompactAmount(amount) {
-  const abs = Math.abs(amount);
+  const abs = Math.round(Math.abs(amount));
   const sign = amount > 0 ? '+' : amount < 0 ? '-' : '';
-  if (abs >= 100000) {
-    return `${sign}฿${Math.round(abs / 1000)}k`;
-  }
-  if (abs >= 10000) {
-    const k = abs / 1000;
-    return `${sign}฿${Number.isInteger(k) ? k : k.toFixed(1)}k`;
-  }
-  return `${sign}฿${Math.round(abs).toLocaleString('en-US')}`;
+  return `${sign}${abs.toLocaleString('en-US')}`;
 }
 
 export default function CashflowCalendarView({
   transactions = [],
   customCategories = [],
+  coreCategories = [],
+  allCategoryMap = {},
   onQuickAddDate,
+  onUpdateTransaction,
+  onRemoveTransaction,
 }) {
   const { lang, t } = useLanguage();
 
   const [calCursor, setCalCursor] = useState(() => getInitialCalendarState(transactions));
+  const [editingTxId, setEditingTxId] = useState(null);
+  const [confirmDeleteId, setConfirmDeleteId] = useState(null);
+  const [editDraft, setEditDraft] = useState({
+    title: '',
+    amount: '',
+    category: 'expense',
+    iconKey: 'food',
+  });
   const viewYear = calCursor.year;
   const viewMonth = calCursor.monthIndex;
   const selectedIso = calCursor.selectedIso;
@@ -386,6 +391,101 @@ export default function CashflowCalendarView({
                     : tx.category === 'saving'
                       ? 'saving'
                       : 'expense';
+                const isEditing = editingTxId === tx.id;
+                const isConfirming = confirmDeleteId === tx.id;
+
+                if (isEditing) {
+                  return (
+                    <div key={tx.id} className="ak-cal-tx-edit-card">
+                      <input
+                        id={`ak-cal-edit-title-${tx.id}`}
+                        type="text"
+                        className="ak-inline-input"
+                        value={editDraft.title}
+                        onChange={(e) =>
+                          setEditDraft((prev) => ({ ...prev, title: e.target.value }))
+                        }
+                        maxLength={80}
+                        aria-label={lang === 'TH' ? 'ชื่อรายการ' : 'Item title'}
+                      />
+                      <div className="form-grid-2">
+                        <input
+                          id={`ak-cal-edit-amt-${tx.id}`}
+                          type="number"
+                          min="0.01"
+                          step="0.01"
+                          className="ak-inline-input tabular-nums"
+                          value={editDraft.amount}
+                          onChange={(e) =>
+                            setEditDraft((prev) => ({ ...prev, amount: e.target.value }))
+                          }
+                          aria-label={lang === 'TH' ? 'จำนวนเงิน' : 'Amount'}
+                        />
+                        <select
+                          id={`ak-cal-edit-cat-${tx.id}`}
+                          className="ak-inline-select"
+                          value={editDraft.iconKey}
+                          onChange={(e) => {
+                            const nextKey = e.target.value;
+                            const matched = allCategoryMap[nextKey];
+                            setEditDraft((prev) => ({
+                              ...prev,
+                              iconKey: nextKey,
+                              category: matched ? matched.type : prev.category,
+                            }));
+                          }}
+                          aria-label={lang === 'TH' ? 'หมวดหมู่' : 'Category'}
+                        >
+                          {coreCategories.map((c) => (
+                            <option key={c.key} value={c.key}>
+                              {t(c.label)}
+                            </option>
+                          ))}
+                          {customCategories.map((c) => (
+                            <option key={c.id} value={c.id}>
+                              {t(c.label || { th: c.name, en: c.name })}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                      <div className="ak-tx-confirm-group">
+                        <button
+                          type="button"
+                          className="ak-tx-cancel-btn"
+                          onClick={() => setEditingTxId(null)}
+                        >
+                          {lang === 'TH' ? 'ยกเลิก' : 'Cancel'}
+                        </button>
+                        <button
+                          id={`ak-cal-save-${tx.id}`}
+                          type="button"
+                          className="ak-tx-save-confirm"
+                          onClick={() => {
+                            const numericAmount = Math.max(0, Number(editDraft.amount) || 0);
+                            if (numericAmount <= 0 || !onUpdateTransaction) return;
+                            const catMeta = allCategoryMap[editDraft.iconKey];
+                            const trimmedTitle = editDraft.title.trim();
+                            onUpdateTransaction(tx.id, {
+                              title: trimmedTitle ? { th: trimmedTitle, en: trimmedTitle } : tx.title,
+                              amount:
+                                editDraft.category === 'expense' ? -numericAmount : numericAmount,
+                              category: editDraft.category,
+                              iconKey: catMeta ? catMeta.key : tx.iconKey,
+                              categoryLabel: catMeta ? catMeta.label : tx.categoryLabel,
+                              customIcon: catMeta?.isCustom ? catMeta.iconName : undefined,
+                              customColor: catMeta?.isCustom ? catMeta.barColor : undefined,
+                            });
+                            setEditingTxId(null);
+                          }}
+                        >
+                          <Check size={13} strokeWidth={2.5} aria-hidden="true" />
+                          <span>{lang === 'TH' ? 'บันทึก' : 'Save'}</span>
+                        </button>
+                      </div>
+                    </div>
+                  );
+                }
+
                 return (
                   <div key={tx.id} className="ak-cal-tx-row">
                     <span className={`tx-icon-circle ${tx.iconKey || 'food'}`} aria-hidden="true">
@@ -398,6 +498,57 @@ export default function CashflowCalendarView({
                     <strong className={`tx-amount ${stream} tabular-nums`}>
                       {formatTHB(tx.amount, { showSign: true })}
                     </strong>
+
+                    {(onUpdateTransaction || onRemoveTransaction) && (
+                      <div className="ak-cal-tx-actions">
+                        {onUpdateTransaction && (
+                          <button
+                            id={`ak-cal-edit-btn-${tx.id}`}
+                            type="button"
+                            className="ak-cal-icon-btn"
+                            title={lang === 'TH' ? 'แก้ไขรายการ' : 'Edit entry'}
+                            aria-label={lang === 'TH' ? 'แก้ไขรายการ' : 'Edit entry'}
+                            onClick={() => {
+                              setConfirmDeleteId(null);
+                              setEditingTxId(tx.id);
+                              setEditDraft({
+                                title: t(tx.title),
+                                amount: String(Math.abs(Number(tx.amount) || 0)),
+                                category: tx.category || 'expense',
+                                iconKey: tx.iconKey || 'food',
+                              });
+                            }}
+                          >
+                            <Pencil size={13} strokeWidth={2.2} />
+                          </button>
+                        )}
+                        {onRemoveTransaction &&
+                          (isConfirming ? (
+                            <button
+                              id={`ak-cal-del-confirm-${tx.id}`}
+                              type="button"
+                              className="ak-tx-delete-confirm"
+                              onClick={() => {
+                                onRemoveTransaction(tx.id);
+                                setConfirmDeleteId(null);
+                              }}
+                            >
+                              {lang === 'TH' ? 'ยืนยัน' : 'Delete'}
+                            </button>
+                          ) : (
+                            <button
+                              id={`ak-cal-del-btn-${tx.id}`}
+                              type="button"
+                              className="ak-cal-icon-btn danger"
+                              title={lang === 'TH' ? 'ลบรายการ' : 'Delete entry'}
+                              aria-label={lang === 'TH' ? 'ลบรายการ' : 'Delete entry'}
+                              onClick={() => setConfirmDeleteId(tx.id)}
+                            >
+                              <Trash2 size={13} strokeWidth={2.2} />
+                            </button>
+                          ))}
+                      </div>
+                    )}
                   </div>
                 );
               })}

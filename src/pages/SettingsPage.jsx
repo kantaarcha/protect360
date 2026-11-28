@@ -18,6 +18,7 @@ import {
   Sparkles,
   Sun,
   Trash2,
+  TreePine,
   Type,
   Upload,
   Volume2,
@@ -48,6 +49,7 @@ const SETTINGS_COPY = {
     themeLabel: 'โหมดสีหน้าจอ (Theme)',
     themeLight: 'โหมดสว่าง',
     themeDark: 'โหมดมืด',
+    themeChristmas: 'คริสต์มาส',
     fontLabel: 'ขนาดตัวอักษรทั้งเว็บไซต์',
     fontReset: 'คืนค่า 100%',
     soundLabel: 'เสียงเอฟเฟกต์ตอนกด (3 เสียง)',
@@ -119,6 +121,7 @@ const SETTINGS_COPY = {
     themeLabel: 'Color Theme',
     themeLight: 'Light Mode',
     themeDark: 'Dark Mode',
+    themeChristmas: 'Christmas',
     fontLabel: 'Global Text Scale',
     fontReset: 'Reset 100%',
     soundLabel: 'UI Sound Effects (3 Tones)',
@@ -217,7 +220,7 @@ export default function SettingsPage({
     increaseFontSize,
     resetFontSize,
   } = useLanguage();
-  const { isDark, setTheme } = useTheme();
+  const { theme, isChristmas, setTheme } = useTheme();
   const {
     userProfile,
     monthlyIncome,
@@ -275,8 +278,9 @@ export default function SettingsPage({
     () => [
       { id: 'light', label: copy.themeLight, icon: Sun },
       { id: 'dark', label: copy.themeDark, icon: Moon },
+      { id: 'christmas', label: copy.themeChristmas, icon: TreePine },
     ],
-    [copy.themeLight, copy.themeDark]
+    [copy.themeLight, copy.themeDark, copy.themeChristmas]
   );
 
   const soundTabs = useMemo(
@@ -401,17 +405,21 @@ export default function SettingsPage({
               />
             </div>
 
-            {/* Theme Switcher: Light / Dark */}
+            {/* Theme Switcher: Light / Dark / Christmas */}
             <div className="st-control-block">
               <div className="st-control-label-row">
                 <span className="st-control-label">{copy.themeLabel}</span>
                 <span className="st-control-value">
-                  {isDark ? copy.themeDark : copy.themeLight}
+                  {isChristmas
+                    ? copy.themeChristmas
+                    : theme === 'dark'
+                      ? copy.themeDark
+                      : copy.themeLight}
                 </span>
               </div>
               <LiquidTabs
                 tabs={themeTabs}
-                activeId={isDark ? 'dark' : 'light'}
+                activeId={theme}
                 onChange={(mode) => setTheme(mode)}
                 variant="surface"
                 idPrefix="settings-theme"

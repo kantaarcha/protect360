@@ -140,7 +140,8 @@ export function formatNameWithTitle(userProfile, lang = 'TH') {
 
 /**
  * Resolve 24-hour time-of-day salutation:
- * - 05:00–11:59 => เช้า (Morning)
+ * - 05:00–09:59 => เช้า (Morning)
+ * - 10:00–11:59 => สาย (Late Morning)
  * - 12:00–15:59 => บ่าย (Afternoon)
  * - 16:00–18:59 => เย็น (Late Afternoon / Early Evening)
  * - 19:00–04:59 => ค่ำ (Night / Evening)
@@ -152,8 +153,10 @@ export function getTimeOfDayGreeting(lang = 'TH', dateOrHour = new Date()) {
       : (dateOrHour instanceof Date ? dateOrHour : new Date()).getHours();
 
   let bucket = 'night';
-  if (hour >= 5 && hour < 12) {
+  if (hour >= 5 && hour < 10) {
     bucket = 'morning';
+  } else if (hour >= 10 && hour < 12) {
+    bucket = 'late_morning';
   } else if (hour >= 12 && hour < 16) {
     bucket = 'afternoon';
   } else if (hour >= 16 && hour < 19) {
@@ -162,11 +165,13 @@ export function getTimeOfDayGreeting(lang = 'TH', dateOrHour = new Date()) {
 
   if (lang === 'EN') {
     if (bucket === 'morning') return 'Good morning';
+    if (bucket === 'late_morning') return 'Good late morning';
     if (bucket === 'afternoon') return 'Good afternoon';
     return 'Good evening';
   }
 
   if (bucket === 'morning') return 'สวัสดีตอนเช้า';
+  if (bucket === 'late_morning') return 'สวัสดีตอนสาย';
   if (bucket === 'afternoon') return 'สวัสดีตอนบ่าย';
   if (bucket === 'evening') return 'สวัสดีตอนเย็น';
   return 'สวัสดีตอนค่ำ';
