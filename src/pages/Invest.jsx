@@ -75,28 +75,58 @@ export default function Invest({ onNavigate }) {
   const [activeTab, setActiveTab] = useState('transfer');
 
   // --- TAB 1: Risk Transfer vs. Self-Insure state (0 clean slate by default; hypothetical values only in demo mode) ---
-  const [annualBudget, setAnnualBudget] = useState(() => (isDemoMode ? 15360 : 0));
-  const [emergencyBill, setEmergencyBill] = useState(() => (isDemoMode ? 150000 : 0));
-  const [loanAprPct, setLoanAprPct] = useState(() => (isDemoMode ? 20 : 0));
+  const [annualBudgetText, setAnnualBudgetText] = useState(() => (isDemoMode ? '15360' : '0'));
+  const [emergencyBillText, setEmergencyBillText] = useState(() => (isDemoMode ? '150000' : '0'));
+  const [loanAprText, setLoanAprText] = useState(() => (isDemoMode ? '20' : '0'));
 
-  // --- TAB 2: True IRR, Inflation & Tax state (0 clean slate by default) ---
-  const [annualContribution, setAnnualContribution] = useState(() => (isDemoMode ? 36000 : 0));
-  const [paymentYears, setPaymentYears] = useState(() => (isDemoMode ? 10 : 0));
-  const [planDuration, setPlanDuration] = useState(() => (isDemoMode ? 20 : 0));
-  const [annualCashback, setAnnualCashback] = useState(() => (isDemoMode ? 3600 : 0));
-  const [maturityLumpSum, setMaturityLumpSum] = useState(() => (isDemoMode ? 395000 : 0));
-  const [inflationRatePct, setInflationRatePct] = useState(() => (isDemoMode ? 2.5 : 0));
-  const [annualIncomeOverride, setAnnualIncomeOverride] = useState(null);
+  // --- TAB 2: True IRR, Inflation & Tax state (raw drafts let users clear & type freely without clamping locks) ---
+  const [annualContributionText, setAnnualContributionText] = useState(() =>
+    isDemoMode ? '36000' : '0'
+  );
+  const [paymentYearsText, setPaymentYearsText] = useState(() => (isDemoMode ? '10' : '0'));
+  const [planDurationText, setPlanDurationText] = useState(() => (isDemoMode ? '20' : '0'));
+  const [annualCashbackText, setAnnualCashbackText] = useState(() => (isDemoMode ? '3600' : '0'));
+  const [maturityLumpSumText, setMaturityLumpSumText] = useState(() =>
+    isDemoMode ? '395000' : '0'
+  );
+  const [inflationRateText, setInflationRateText] = useState(() => (isDemoMode ? '2.5' : '0'));
+  const [annualIncomeOverrideText, setAnnualIncomeOverrideText] = useState(null);
   const [selectedTimelineYear, setSelectedTimelineYear] = useState(null);
 
-  const effectiveAnnualIncome =
-    annualIncomeOverride !== null ? annualIncomeOverride : monthlyIncome * 12;
+  const sanitizeDraft = (raw, { allowDecimal = false } = {}) => {
+    const cleaned = String(raw ?? '').replace(/,/g, '');
+    if (!allowDecimal) return cleaned.replace(/[^\d]/g, '');
+    const onlyValid = cleaned.replace(/[^\d.]/g, '');
+    const dotIdx = onlyValid.indexOf('.');
+    if (dotIdx === -1) return onlyValid;
+    return `${onlyValid.slice(0, dotIdx + 1)}${onlyValid.slice(dotIdx + 1).replace(/\./g, '')}`;
+  };
 
   const parseNonNegative = (raw) => {
-    const cleaned = String(raw || '').replace(/[^\d.]/g, '');
+    const cleaned = String(raw ?? '').replace(/,/g, '').replace(/[^\d.]/g, '');
+    if (!cleaned || cleaned === '.') return 0;
     const num = Number(cleaned);
     return Number.isFinite(num) && num >= 0 ? num : 0;
   };
+
+  const annualBudget = parseNonNegative(annualBudgetText);
+  const emergencyBill = parseNonNegative(emergencyBillText);
+  const loanAprPct = parseNonNegative(loanAprText);
+  const annualContribution = parseNonNegative(annualContributionText);
+  const paymentYears = Math.round(parseNonNegative(paymentYearsText));
+  const planDuration = Math.round(parseNonNegative(planDurationText));
+  const annualCashback = parseNonNegative(annualCashbackText);
+  const maturityLumpSum = parseNonNegative(maturityLumpSumText);
+  const inflationRatePct = parseNonNegative(inflationRateText);
+
+  const effectiveAnnualIncome =
+    annualIncomeOverrideText !== null
+      ? parseNonNegative(annualIncomeOverrideText)
+      : monthlyIncome * 12;
+  const effectiveAnnualIncomeInputVal =
+    annualIncomeOverrideText !== null
+      ? annualIncomeOverrideText
+      : String(Math.round(monthlyIncome * 12));
 
   // Tab 1 Live Calculation
   const transferResult = useMemo(
@@ -193,11 +223,11 @@ export default function Invest({ onNavigate }) {
     irrResult.timeline[0];
 
   const applyPlanPreset = (preset) => {
-    setAnnualContribution(preset.annualContribution);
-    setPaymentYears(preset.paymentYears);
-    setPlanDuration(preset.planDuration);
-    setAnnualCashback(preset.annualCashback);
-    setMaturityLumpSum(preset.maturityLumpSum);
+    setAnnualContributionText(String(preset.annualContribution));
+    setPaymentYearsText(String(preset.paymentYears));
+    setPlanDurationText(String(preset.planDuration));
+    setAnnualCashbackText(String(preset.annualCashback));
+    setMaturityLumpSumText(String(preset.maturityLumpSum));
     setSelectedTimelineYear(preset.planDuration);
   };
 
@@ -293,13 +323,12 @@ export default function Invest({ onNavigate }) {
                   <div className="inv-input-slider-row">
                     <input
                       id="inv-annual-budget"
-                      type="number"
-                      min="0"
-                      max="200000"
-                      step="1000"
+                      type="text"
+                      inputMode="numeric"
                       className="form-input tabular-nums inv-num-box"
-                      value={annualBudget}
-                      onChange={(e) => setAnnualBudget(parseNonNegative(e.target.value))}
+                      value={annualBudgetText}
+                      placeholder="0"
+                      onChange={(e) => setAnnualBudgetText(sanitizeDraft(e.target.value))}
                     />
                     <input
                       type="range"
@@ -327,7 +356,7 @@ export default function Invest({ onNavigate }) {
                           )
                         )}%`,
                       }}
-                      onChange={(e) => setAnnualBudget(Number(e.target.value))}
+                      onChange={(e) => setAnnualBudgetText(String(e.target.value))}
                       aria-label={lang === 'TH' ? 'ปรับงบต่อปี' : 'Adjust annual budget'}
                     />
                   </div>
@@ -354,7 +383,7 @@ export default function Invest({ onNavigate }) {
                           className={`inv-preset-chip tabular-nums ${
                             emergencyBill === amt ? 'active' : ''
                           }`}
-                          onClick={() => setEmergencyBill(amt)}
+                          onClick={() => setEmergencyBillText(String(amt))}
                         >
                           {formatTHB(amt)}
                         </button>
@@ -364,13 +393,12 @@ export default function Invest({ onNavigate }) {
                   <div className="inv-input-slider-row">
                     <input
                       id="inv-emergency-bill"
-                      type="number"
-                      min="0"
-                      max="2000000"
-                      step="5000"
+                      type="text"
+                      inputMode="numeric"
                       className="form-input tabular-nums inv-num-box ak-amount-input expense"
-                      value={emergencyBill}
-                      onChange={(e) => setEmergencyBill(parseNonNegative(e.target.value))}
+                      value={emergencyBillText}
+                      placeholder="0"
+                      onChange={(e) => setEmergencyBillText(sanitizeDraft(e.target.value))}
                     />
                     <input
                       type="range"
@@ -388,7 +416,7 @@ export default function Invest({ onNavigate }) {
                           )
                         )}%`,
                       }}
-                      onChange={(e) => setEmergencyBill(Number(e.target.value))}
+                      onChange={(e) => setEmergencyBillText(String(e.target.value))}
                       aria-label={lang === 'TH' ? 'ปรับค่ารักษาฉุกเฉิน' : 'Adjust shock bill'}
                     />
                   </div>
@@ -409,14 +437,13 @@ export default function Invest({ onNavigate }) {
                   <div className="inv-input-slider-row">
                     <input
                       id="inv-loan-apr"
-                      type="number"
-                      min="0"
-                      max="36"
-                      step="1"
+                      type="text"
+                      inputMode="decimal"
                       className="form-input tabular-nums inv-num-box"
-                      value={loanAprPct}
+                      value={loanAprText}
+                      placeholder="0"
                       onChange={(e) =>
-                        setLoanAprPct(Math.min(36, parseNonNegative(e.target.value)))
+                        setLoanAprText(sanitizeDraft(e.target.value, { allowDecimal: true }))
                       }
                     />
                     <input
@@ -432,7 +459,7 @@ export default function Invest({ onNavigate }) {
                           Math.max(0, Math.round((Math.min(loanAprPct, 28) / 28) * 100))
                         )}%`,
                       }}
-                      onChange={(e) => setLoanAprPct(Number(e.target.value))}
+                      onChange={(e) => setLoanAprText(String(e.target.value))}
                       aria-label={lang === 'TH' ? 'ปรับอัตราดอกเบี้ย' : 'Adjust APR'}
                     />
                   </div>
@@ -919,12 +946,12 @@ export default function Invest({ onNavigate }) {
                   </label>
                   <input
                     id="irr-annual-contrib"
-                    type="number"
-                    min="1000"
-                    step="1000"
+                    type="text"
+                    inputMode="numeric"
                     className="form-input tabular-nums"
-                    value={annualContribution}
-                    onChange={(e) => setAnnualContribution(parseNonNegative(e.target.value))}
+                    value={annualContributionText}
+                    placeholder="0"
+                    onChange={(e) => setAnnualContributionText(sanitizeDraft(e.target.value))}
                   />
                   {irrResult.taxInfo.exceedsCap && (
                     <span className="inv-warn-micro">
@@ -942,15 +969,12 @@ export default function Invest({ onNavigate }) {
                     </label>
                     <input
                       id="irr-pay-years"
-                      type="number"
-                      min="1"
-                      max={planDuration}
+                      type="text"
+                      inputMode="numeric"
                       className="form-input tabular-nums"
-                      value={paymentYears}
-                      onChange={(e) => {
-                        const v = Math.max(1, Math.round(parseNonNegative(e.target.value)));
-                        setPaymentYears(Math.min(v, planDuration));
-                      }}
+                      value={paymentYearsText}
+                      placeholder="0"
+                      onChange={(e) => setPaymentYearsText(sanitizeDraft(e.target.value))}
                     />
                   </div>
 
@@ -960,19 +984,26 @@ export default function Invest({ onNavigate }) {
                     </label>
                     <input
                       id="irr-duration"
-                      type="number"
-                      min="2"
-                      max="40"
+                      type="text"
+                      inputMode="numeric"
                       className="form-input tabular-nums"
-                      value={planDuration}
-                      onChange={(e) => {
-                        const v = Math.max(2, Math.min(40, Math.round(parseNonNegative(e.target.value))));
-                        setPlanDuration(v);
-                        if (paymentYears > v) setPaymentYears(v);
-                      }}
+                      value={planDurationText}
+                      placeholder="0"
+                      onChange={(e) => setPlanDurationText(sanitizeDraft(e.target.value))}
                     />
                   </div>
                 </div>
+
+                {paymentYears > 0 && planDuration > 0 && paymentYears > planDuration && (
+                  <div className="ra-conservative-callout" role="note">
+                    <Info size={15} strokeWidth={2.2} className="ra-callout-icon" />
+                    <p>
+                      {lang === 'TH'
+                        ? `หมายเหตุ: จำนวนปีที่ส่ง (${paymentYears} ปี) มากกว่าอายุสัญญา (${planDuration} ปี) ระบบจึงคำนวณการจ่ายสูงสุดถึงปีที่ ${planDuration}`
+                        : `Note: Payment years (${paymentYears}) exceeds plan duration (${planDuration}), so calculations cap payments at year ${planDuration}.`}
+                    </p>
+                  </div>
+                )}
 
                 {!irrResult.taxInfo.isDurationEligible && (
                   <div className="ra-conservative-callout" role="note">
@@ -992,12 +1023,12 @@ export default function Invest({ onNavigate }) {
                     </label>
                     <input
                       id="irr-cashback"
-                      type="number"
-                      min="0"
-                      step="500"
+                      type="text"
+                      inputMode="numeric"
                       className="form-input tabular-nums"
-                      value={annualCashback}
-                      onChange={(e) => setAnnualCashback(parseNonNegative(e.target.value))}
+                      value={annualCashbackText}
+                      placeholder="0"
+                      onChange={(e) => setAnnualCashbackText(sanitizeDraft(e.target.value))}
                     />
                   </div>
 
@@ -1007,12 +1038,12 @@ export default function Invest({ onNavigate }) {
                     </label>
                     <input
                       id="irr-maturity"
-                      type="number"
-                      min="0"
-                      step="5000"
+                      type="text"
+                      inputMode="numeric"
                       className="form-input tabular-nums"
-                      value={maturityLumpSum}
-                      onChange={(e) => setMaturityLumpSum(parseNonNegative(e.target.value))}
+                      value={maturityLumpSumText}
+                      placeholder="0"
+                      onChange={(e) => setMaturityLumpSumText(sanitizeDraft(e.target.value))}
                     />
                   </div>
                 </div>
@@ -1026,14 +1057,13 @@ export default function Invest({ onNavigate }) {
                     </label>
                     <input
                       id="irr-inflation"
-                      type="number"
-                      min="0"
-                      max="15"
-                      step="0.5"
+                      type="text"
+                      inputMode="decimal"
                       className="form-input tabular-nums"
-                      value={inflationRatePct}
+                      value={inflationRateText}
+                      placeholder="0"
                       onChange={(e) =>
-                        setInflationRatePct(Math.min(15, parseNonNegative(e.target.value)))
+                        setInflationRateText(sanitizeDraft(e.target.value, { allowDecimal: true }))
                       }
                     />
                   </div>
@@ -1043,11 +1073,11 @@ export default function Invest({ onNavigate }) {
                       <label htmlFor="irr-annual-income" className="form-label">
                         {lang === 'TH' ? 'รายได้ประเมินทั้งปี (บาท)' : 'Annual Income (THB)'}
                       </label>
-                      {annualIncomeOverride !== null && (
+                      {annualIncomeOverrideText !== null && (
                         <button
                           type="button"
                           className="ak-mini-tool-btn"
-                          onClick={() => setAnnualIncomeOverride(null)}
+                          onClick={() => setAnnualIncomeOverrideText(null)}
                         >
                           {lang === 'TH' ? 'ซิงก์จาก AutoKey' : 'Sync'}
                         </button>
@@ -1055,12 +1085,14 @@ export default function Invest({ onNavigate }) {
                     </div>
                     <input
                       id="irr-annual-income"
-                      type="number"
-                      min="0"
-                      step="10000"
+                      type="text"
+                      inputMode="numeric"
                       className="form-input tabular-nums"
-                      value={effectiveAnnualIncome}
-                      onChange={(e) => setAnnualIncomeOverride(parseNonNegative(e.target.value))}
+                      value={effectiveAnnualIncomeInputVal}
+                      placeholder="0"
+                      onChange={(e) =>
+                        setAnnualIncomeOverrideText(sanitizeDraft(e.target.value))
+                      }
                     />
                   </div>
                 </div>

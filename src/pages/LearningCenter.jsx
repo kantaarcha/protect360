@@ -98,6 +98,8 @@ export default function LearningCenter({ onNavigate }) {
   const [quizIdx, setQuizIdx] = useState(0);
   const [selectedOptionId, setSelectedOptionId] = useState(null);
   const [quizScore, setQuizScore] = useState(0);
+  const [quizHistory, setQuizHistory] = useState([]);
+  const [quizReviewFilter, setQuizReviewFilter] = useState('wrong');
   const [quizFinished, setQuizFinished] = useState(false);
 
   // Persist learning progress safely in localStorage
@@ -238,9 +240,27 @@ export default function LearningCenter({ onNavigate }) {
   const handleSelectQuizOption = (optionId) => {
     if (isAnswered || !currentQuestion) return;
     setSelectedOptionId(optionId);
-    if (optionId === currentQuestion.correctId) {
+    const isRight = optionId === currentQuestion.correctId;
+    if (isRight) {
       setQuizScore((prev) => prev + 1);
     }
+    const chosenIdx = currentQuestion.options.findIndex((o) => o.id === optionId);
+    const rightIdx = currentQuestion.options.findIndex((o) => o.id === currentQuestion.correctId);
+    setQuizHistory((prev) => [
+      ...prev,
+      {
+        id: currentQuestion.id,
+        questionNumber: quizIdx + 1,
+        question: currentQuestion.question,
+        pickedOption: chosenIdx >= 0 ? currentQuestion.options[chosenIdx] : null,
+        pickedLetter: chosenIdx >= 0 ? String.fromCharCode(65 + chosenIdx) : '',
+        correctOption: rightIdx >= 0 ? currentQuestion.options[rightIdx] : null,
+        correctLetter: rightIdx >= 0 ? String.fromCharCode(65 + rightIdx) : '',
+        correctReason: currentQuestion.correctReason,
+        extraNote: currentQuestion.extraNote,
+        isCorrect: isRight,
+      },
+    ]);
   };
 
   const passThreshold = Math.ceil(quizSession.length * 0.8);
@@ -249,6 +269,7 @@ export default function LearningCenter({ onNavigate }) {
     if (quizIdx + 1 >= quizSession.length) {
       setQuizFinished(true);
       const passed = quizScore >= passThreshold;
+      setQuizReviewFilter(quizScore < quizSession.length ? 'wrong' : 'all');
       setProgress((prev) => ({
         ...prev,
         quizVerified: prev.quizVerified || passed,
@@ -267,6 +288,8 @@ export default function LearningCenter({ onNavigate }) {
     setQuizIdx(0);
     setSelectedOptionId(null);
     setQuizScore(0);
+    setQuizHistory([]);
+    setQuizReviewFilter('wrong');
     setQuizFinished(false);
   };
 
@@ -844,8 +867,8 @@ export default function LearningCenter({ onNavigate }) {
                           ? `ผ่านเกณฑ์โค้ชการเงิน! (${quizScore}/${quizSession.length})`
                           : `Literacy Verified! (${quizScore}/${quizSession.length})`
                         : lang === 'TH'
-                          ? `ได้คะแนน ${quizScore}/${quizSession.length} — ลองทบทวนอีกนิด!`
-                          : `Scored ${quizScore}/${quizSession.length} — Almost There!`}
+                          ? `ได้คะแนน ${quizScore}/${quizSession.length} — ลองทบทวนข้อที่พลาดด้านล่างได้เลย`
+                          : `Scored ${quizScore}/${quizSession.length} — Review missed questions below!`}
                     </strong>
                     <p>
                       {quizScore >= passThreshold
@@ -853,11 +876,142 @@ export default function LearningCenter({ onNavigate }) {
                           ? 'คุณเข้าใจกติกาสำคัญทั้งระยะเวลารอคอย สวัสดิการ และกรอบงบปลอดภัยพร้อมลุยสนามจำลองแล้ว'
                           : 'You mastered waiting periods, conservative benefit checks, and safe budgeting — ready for the game!'
                         : lang === 'TH'
-                          ? 'ลองสลับไปอ่านแท็บ "บทความ" เพิ่มเติม แล้วกดสุ่มชุดใหม่เพื่อทบทวนได้ตลอดเวลา'
-                          : 'Switch to the Guides tab to review and draw a fresh random quiz set anytime.'}
+                          ? 'สามารถไล่อ่านทบทวนข้อที่ตอบผิดพร้อมคำอธิบายด้านล่าง หรือกดสุ่มชุดใหม่เพื่อลองอีกครั้งได้ทันที'
+                          : 'Inspect the missed questions and explanations below, or draw a fresh random set anytime.'}
                     </p>
                   </div>
                 </div>
+
+                {/* Review Wrong / All Questions Section */}
+                {quizHistory.length > 0 && (() => {
+                  const wrongEntries = quizHistory.filter((entry) => !entry.isCorrect);
+                  const visibleEntries =
+                    quizReviewFilter === 'wrong' && wrongEntries.length > 0
+                      ? wrongEntries
+                      : quizHistory;
+
+                  return (
+                    <section className="lc-quiz-review-section" aria-label="Quiz Answer Review">
+                      <div className="lc-quiz-review-head">
+                        <h3 className="lc-quiz-review-title">
+                          {wrongEntries.length > 0
+                            ? lang === 'TH'
+                              ? `ทบทวนข้อที่ตอบผิด (${wrongEntries.length} ข้อ)`
+                              : `Missed Questions Review (${wrongEntries.length})`
+                            : lang === 'TH'
+                              ? `เฉลยครบทั้ง ${quizHistory.length} ข้อ (ถูกหมด!)`
+                              : `All ${quizHistory.length} Questions Reviewed (100%!)`}
+                        </h3>
+
+                        <div className="lc-quiz-len-group" role="group">
+                          {wrongEntries.length > 0 && (
+                            <button
+                              type="button"
+                              id="lc-review-filter-wrong"
+                              className={`lc-quiz-len-btn ${quizReviewFilter === 'wrong' ? 'active' : ''}`}
+                              onClick={() => setQuizReviewFilter('wrong')}
+                            >
+                              {lang === 'TH'
+                                ? `เฉพาะข้อที่ผิด (${wrongEntries.length})`
+                                : `Missed (${wrongEntries.length})`}
+                            </button>
+                          )}
+                          <button
+                            type="button"
+                            id="lc-review-filter-all"
+                            className={`lc-quiz-len-btn ${
+                              quizReviewFilter === 'all' || wrongEntries.length === 0 ? 'active' : ''
+                            }`}
+                            onClick={() => setQuizReviewFilter('all')}
+                          >
+                            {lang === 'TH'
+                              ? `ดูทั้งหมด (${quizHistory.length})`
+                              : `All (${quizHistory.length})`}
+                          </button>
+                        </div>
+                      </div>
+
+                      <div className="lc-quiz-review-list">
+                        {visibleEntries.map((entry) => (
+                          <article
+                            key={entry.id}
+                            className={`lc-quiz-review-card ${entry.isCorrect ? 'is-ok' : 'is-wrong'}`}
+                          >
+                            <div className="lc-quiz-review-card-top">
+                              <span className="lc-quiz-review-num tabular-nums">
+                                {lang === 'TH'
+                                  ? `ข้อที่ ${entry.questionNumber}/${quizSession.length}`
+                                  : `Q ${entry.questionNumber}/${quizSession.length}`}
+                              </span>
+                              <span
+                                className={`lc-quiz-review-status ${entry.isCorrect ? 'ok' : 'wrong'}`}
+                              >
+                                {entry.isCorrect ? (
+                                  <>
+                                    <CheckCircle2 size={13} aria-hidden="true" />
+                                    {lang === 'TH' ? 'ตอบถูก' : 'Correct'}
+                                  </>
+                                ) : (
+                                  <>
+                                    <XCircle size={13} aria-hidden="true" />
+                                    {lang === 'TH' ? 'ตอบผิด' : 'Missed'}
+                                  </>
+                                )}
+                              </span>
+                            </div>
+
+                            <h4 className="lc-quiz-review-q">{t(entry.question)}</h4>
+
+                            <div className="lc-quiz-review-choices">
+                              {!entry.isCorrect && entry.pickedOption && (
+                                <div className="lc-quiz-review-row wrong">
+                                  <span className="lc-quiz-review-letter">{entry.pickedLetter}</span>
+                                  <div>
+                                    <strong>
+                                      {lang === 'TH' ? 'ที่คุณเลือก: ' : 'Your pick: '}
+                                    </strong>
+                                    <span>{t(entry.pickedOption.label)}</span>
+                                  </div>
+                                </div>
+                              )}
+                              {entry.correctOption && (
+                                <div className="lc-quiz-review-row correct">
+                                  <span className="lc-quiz-review-letter">{entry.correctLetter}</span>
+                                  <div>
+                                    <strong>
+                                      {lang === 'TH' ? 'คำตอบที่ถูก: ' : 'Correct answer: '}
+                                    </strong>
+                                    <span>{t(entry.correctOption.label)}</span>
+                                  </div>
+                                </div>
+                              )}
+                            </div>
+
+                            {!entry.isCorrect && entry.pickedOption?.wrongReason && (
+                              <p className="lc-quiz-review-explain wrong-note">
+                                <strong>
+                                  {lang === 'TH'
+                                    ? `เหตุผลที่ข้อ ${entry.pickedLetter} ยังไม่ถูก: `
+                                    : `Why ${entry.pickedLetter} is incorrect: `}
+                                </strong>
+                                {t(entry.pickedOption.wrongReason)}
+                              </p>
+                            )}
+
+                            <p className="lc-quiz-review-explain">
+                              <strong>
+                                {lang === 'TH'
+                                  ? `คำอธิบายข้อที่ถูก (${entry.correctLetter}): `
+                                  : `Explanation (${entry.correctLetter}): `}
+                              </strong>
+                              {t(entry.correctReason)}
+                            </p>
+                          </article>
+                        ))}
+                      </div>
+                    </section>
+                  );
+                })()}
 
                 <div className="lc-quiz-result-actions">
                   <button

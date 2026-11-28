@@ -617,8 +617,8 @@ export const PER_TAB_TUTORIAL_STEPS = {
       selectors: ['#gm-duration-unit-days', '.gm-preset-grid'],
       spotlightSelector: '.gm-preset-grid',
       title: {
-        th: '1/4 เลือกระยะเวลาจำลองสถานการณ์',
-        en: '1/4 Choose Simulation Duration',
+        th: '1/5 เลือกระยะเวลาจำลองสถานการณ์',
+        en: '1/5 Choose Simulation Duration',
       },
       body: {
         th: 'มือใหม่แนะนำลองเล่นแบบ "30 วัน" ก่อน (ใช้เวลาแค่ ~1 นาที) เพื่อดูจังหวะการออกเหตุการณ์และผลกระทบต่อเงินสด เสร็จแล้วค่อยท้าทายตัวเองด้วยด่าน 90 หรือ 365 วัน',
@@ -636,8 +636,8 @@ export const PER_TAB_TUTORIAL_STEPS = {
       selectors: ['#gm-persona-default-btn'],
       spotlightSelector: '#gm-persona-default-btn',
       title: {
-        th: '2/4 ทริกสำคัญ: เลือกตัวเลือก B หากยังไม่กรอกข้อมูลจริง',
-        en: '2/4 Key Trick: Pick Option B If Your Data is Still ฿0',
+        th: '2/5 ทริกสำคัญ: เลือกตัวเลือก B หากยังไม่กรอกข้อมูลจริง',
+        en: '2/5 Key Trick: Pick Option B If Your Data is Still ฿0',
       },
       body: {
         th: 'ถ้าคุณยังไม่ได้บันทึกรายรับใน AutoKey "ตัวเลือก A" จะเริ่มต้นที่ ฿0 ทุกช่อง ให้กดเลือก "ตัวเลือก B • โจทย์มาตรฐาน" ตรงนี้แทน เพื่อให้มีเงินเดือน ฿25,000 และเงินสำรอง ฿15,000 เริ่มเล่นได้เลย',
@@ -649,14 +649,33 @@ export const PER_TAB_TUTORIAL_STEPS = {
       },
     },
     {
-      id: 'gm-step-3-hr-strategy',
+      id: 'gm-step-3-avatar-studio',
+      page: 'game',
+      badgeType: 'tip',
+      selectors: ['#gm-avatar-studio', '#gm-dd-theme-btn', '#gm-dd-acc-btn'],
+      spotlightSelector: '#gm-avatar-studio',
+      title: {
+        th: '3/5 แต่งตัวละคร Pixel & จัดธีมห้องส่วนตัว',
+        en: '3/5 Customize Pixel Character & Room Theme',
+      },
+      body: {
+        th: 'เลือกเพศ สีผิว ทรงผม สีสูท/ชุด และใส่พร็อพทั้งแว่นตา หูฟัง พกพาคู่หู (เลือกผสมได้หลายชิ้นที่ไม่ทับกัน) พร้อมจัดธีมห้อง 12 สไตล์ โดยห้องที่แต่งไว้จะตามเข้าไปในเหตุการณ์ใกล้ตัวและฉากบ้านด้วย รวมถึงสภาพชุดจะเปลี่ยนตามเงินสดและบาดแผลจริงระหว่างเล่น',
+        en: 'Customize gender, skin tone, hairstyles, outfit, non-overlapping accessories, and 12 room themes. Your decorated room follows into home/personal events, while your outfit reacts live to cash and injuries.',
+      },
+      plainTip: {
+        th: 'ลองกดแท็บ "ลองดูตอนเงินตึง / เฝือก" เพื่อพรีวิวอาการตัวละครก่อนลงสนามจริงได้',
+        en: 'Use the preview tabs above the character to test struggling and injury states.',
+      },
+    },
+    {
+      id: 'gm-step-4-hr-strategy',
       page: 'game',
       badgeType: 'core',
       selectors: ['#gm-hr-bonus-toggle', '.gm-strategy-card'],
       spotlightSelector: '#gm-hr-bonus-toggle',
       title: {
-        th: '3/4 แบ่งงบ 3 กอง & กดปุ่มฟรี "ทักถาม HR"',
-        en: '3/4 Allocate 3 Buckets & Claim Free HR Check Bonus',
+        th: '4/5 แบ่งงบ 3 กอง & กดปุ่มฟรี "ทักถาม HR"',
+        en: '4/5 Allocate 3 Buckets & Claim Free HR Check Bonus',
       },
       body: {
         th: 'ก่อนเริ่มเกมให้แบ่งเงินเหลือแต่ละเดือนลง 3 กอง (ออมฉุกเฉิน / โอนย้ายความเสี่ยง / ไลฟ์สไตล์) และอย่าลืมกดปุ่มฟรี "ทักแชตถามวงเงินประกันกลุ่มกับ HR" เพื่อปลดล็อกความคุ้มครองแฝง +฿50,000 ทันที',
@@ -668,18 +687,18 @@ export const PER_TAB_TUTORIAL_STEPS = {
       },
     },
     {
-      id: 'gm-step-4-play',
+      id: 'gm-step-5-play',
       page: 'game',
       badgeType: 'core',
       selectors: ['#gm-start-simulation-btn'],
       spotlightSelector: '#gm-start-simulation-btn',
       title: {
-        th: '4/4 กดเริ่มจำลอง & อ่านสรุปบทเรียนหลังจบด่าน',
-        en: '4/4 Start Simulation & Review Your Debrief',
+        th: '5/5 กดเริ่มจำลอง & อ่านสรุปบทเรียนหลังจบด่าน',
+        en: '5/5 Start Simulation & Review Your Debrief',
       },
       body: {
-        th: 'ระหว่างเล่นจะสุ่มเจอเหตุการณ์ชีวิตจริง (ป่วย ซ่อมของ ฉุกเฉิน ฯลฯ) ให้เลือกทางรับมือแล้วดูกราฟเงินสด+ความสบายใจ เมื่อจบด่านมีสรุปเหตุการณ์ที่ช่วยเซฟเงินและปุ่มนำค่าไปปรับใน Risk Analysis ต่อ',
-        en: 'Respond to surprise life events and watch Cash + Peace of Mind react. Afterward, review your debrief and carry lessons straight to Risk Analysis.',
+        th: 'ระหว่างเล่นจะสุ่มเจอเหตุการณ์ชีวิตจริง (ป่วย ซ่อมของ ฉุกเฉิน ฯลฯ) ให้เลือกทางรับมือแล้วดูกราฟเงินสด+ความสบายใจ เมื่อจบด่านมีบทสรุปโค้ช 4 เสาที่ชี้จุดต้องระวังและปุ่มนำค่าไปปรับใน Risk Analysis ต่อ',
+        en: 'Respond to surprise life events and watch Cash + Peace of Mind react. Afterward, review the 4-pillar coach debrief and carry lessons straight to Risk Analysis.',
       },
       plainTip: {
         th: 'เล่นจบ 1 รอบจะเห็นภาพชัดเจนขึ้นมากว่าทำไมต้องมีทั้งเงินสำรองและสิทธิคุ้มครองคู่กัน',
@@ -859,8 +878,8 @@ export const TAB_BANNER_META = {
     en: 'Invest mixes simple bill checks with IRR math — view a 4-step guide on what’s essential vs optional?',
   },
   game: {
-    th: 'ก่อนเริ่มเล่นเกมเอาตัวรอด — ดูทริกเลือกตัวละคร (ป้องกันเริ่มที่ ฿0) และสิทธิ HR ฟรี 4 ขั้นตอนไหม?',
-    en: 'Before starting Survival Game — view a 4-step tip on starter persona & the free HR bonus?',
+    th: 'ก่อนเริ่มเล่นเกมเอาตัวรอด — ดูทริกเลือกตัวละคร ตกแต่งห้อง (5 ขั้นตอน) และสิทธิ HR ฟรีไหม?',
+    en: 'Before starting Survival Game — view a 5-step guide on starter persona, avatar customization & free HR bonus?',
   },
   learning: {
     th: 'คลังความรู้มีทั้งบทความสั้นและ "แปลศัพท์ประกัน" — ดูวิธีใช้ 3 ขั้นตอนไว ๆ ไหม?',

@@ -187,8 +187,8 @@ export function computeLongTermIrrAnalysis({
   annualIncome = 0,
 }) {
   const contrib = Math.max(0, Number(annualContribution) || 0);
-  const rawDuration = Math.max(0, Math.min(40, Math.round(Number(planDuration) || 0)));
-  const rawPayYears = Math.max(0, Math.min(rawDuration || 40, Math.round(Number(paymentYears) || 0)));
+  const rawDuration = Math.max(0, Math.min(100, Math.round(Number(planDuration) || 0)));
+  const rawPayYears = Math.max(0, Math.min(rawDuration || 100, Math.round(Number(paymentYears) || 0)));
   const cashback = Math.max(0, Number(annualCashback) || 0);
   const maturity = Math.max(0, Number(maturityLumpSum) || 0);
   const inflation = Math.max(0, Number(inflationRatePct) || 0) / 100;
