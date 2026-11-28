@@ -1247,21 +1247,26 @@ export function FinanceProvider({ children }) {
     [showToast]
   );
 
-  const resetDemoData = useCallback(() => {
-    setStore({
-      userProfile: { ...INITIAL_USER_PROFILE },
-      financials: { ...INITIAL_FINANCIALS },
-      coverages: INITIAL_COVERAGES,
-      transactions: INITIAL_TRANSACTIONS,
-      riskProfile: { ...INITIAL_RISK_PROFILE },
-      customCategories: [],
-      isDemoMode: false,
-    });
-    showToast('info', {
-      th: 'รีเซ็ตข้อมูลทุกช่องกลับเป็น 0 / 00.00 เรียบร้อยแล้ว พร้อมให้คุณกรอกข้อมูลจริง',
-      en: 'Reset all fields to 0 / 00.00 — ready for your own numbers.',
-    });
-  }, [showToast]);
+  const resetDemoData = useCallback(
+    ({ silent = false } = {}) => {
+      setStore({
+        userProfile: { ...INITIAL_USER_PROFILE },
+        financials: { ...INITIAL_FINANCIALS },
+        coverages: INITIAL_COVERAGES,
+        transactions: INITIAL_TRANSACTIONS,
+        riskProfile: { ...INITIAL_RISK_PROFILE },
+        customCategories: [],
+        isDemoMode: false,
+      });
+      if (!silent) {
+        showToast('info', {
+          th: 'รีเซ็ตข้อมูลทุกช่องกลับเป็น 0 / 00.00 เรียบร้อยแล้ว พร้อมให้คุณกรอกข้อมูลจริง',
+          en: 'Reset all fields to 0 / 00.00 — ready for your own numbers.',
+        });
+      }
+    },
+    [showToast]
+  );
 
   const loadDemoSample = useCallback(() => {
     setStore({

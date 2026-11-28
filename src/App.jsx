@@ -17,7 +17,7 @@ import {
   Wallet,
   X,
 } from 'lucide-react';
-import { ThemeProvider } from './context/ThemeContext';
+import { ThemeProvider, useTheme } from './context/ThemeContext';
 import { LanguageProvider, useLanguage } from './context/LanguageContext';
 import { FinanceProvider, formatTHB, useFinance } from './context/FinanceContext';
 import SidebarNav from './components/SidebarNav';
@@ -43,7 +43,7 @@ import {
   syncReferenceHour,
 } from './utils/userHelpers';
 import { calculateThaiTaxImpact } from './utils/investMath';
-import { inferButtonSoundKind, playUiSound } from './utils/soundEffects';
+import { inferButtonSoundKind, playUiSound, setSoundEnabled } from './utils/soundEffects';
 import {
   clearAllTabTutorialStatuses,
   FULL_TUTORIAL_STEPS,
@@ -58,6 +58,7 @@ import {
 import {
   JARGON_TERMS,
   LEARNING_ARTICLES,
+  LEARNING_STORAGE_KEY,
   LITERACY_QUIZ_BANK,
 } from './utils/learningData';
 
@@ -121,7 +122,8 @@ function AppShellContent() {
     offsetHours: 0,
   }));
 
-  const { lang, t } = useLanguage();
+  const { lang, setLang, t, resetFontSize } = useLanguage();
+  const { setTheme } = useTheme();
   const {
     userProfile,
     monthlyIncome,
@@ -252,6 +254,43 @@ function AppShellContent() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
+  const handleFactoryResetAll = () => {
+    resetDemoData({ silent: true });
+    dismissToast?.();
+    setLang('TH');
+    setTheme('light');
+    resetFontSize();
+    setSoundEnabled(true);
+    clearAllTabTutorialStatuses();
+    try {
+      const keysToRemove = [];
+      for (let i = 0; i < window.localStorage.length; i += 1) {
+        const key = window.localStorage.key(i);
+        if (key && (key.startsWith('protect360') || key === LEARNING_STORAGE_KEY)) {
+          keysToRemove.push(key);
+        }
+      }
+      keysToRemove.forEach((key) => window.localStorage.removeItem(key));
+    } catch {
+      // Ignore storage access errors
+    }
+    setTutorialStatus('unseen');
+    setTabTutorialStatuses({});
+    setTutorialPromptOpen(false);
+    setDemoVideoModal({ open: false, mode: 'replay' });
+    setProfileModal({ open: false, tab: 'profile' });
+    setTutorialTour({
+      active: false,
+      mode: 'full',
+      targetPage: 'overview',
+      steps: FULL_TUTORIAL_STEPS,
+      index: 0,
+    });
+    setActivePage('overview');
+    setHasOnboarded(false);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   const handleNavigate = (pageId) => {
     setActivePage(pageId);
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -299,6 +338,7 @@ function AppShellContent() {
             onStartTutorial={handleStartTutorial}
             onResetTabTutorials={handleResetTabTutorials}
             onOpenDemoVideo={() => setDemoVideoModal({ open: true, mode: 'replay' })}
+            onFactoryReset={handleFactoryResetAll}
           />
         );
       case 'overview':

@@ -17,6 +17,7 @@ import {
   ShieldCheck,
   Sparkles,
   Sun,
+  Trash2,
   Type,
   Upload,
   Volume2,
@@ -60,6 +61,8 @@ const SETTINGS_COPY = {
     clockSourceInternet: 'อ้างอิงเวลาอินเทอร์เน็ต (24 ชม.)',
     clockSourceDevice: 'อ้างอิงเวลาในเครื่อง (24 ชม.)',
     editProfileBtn: 'แก้ไขข้อมูลส่วนตัว',
+    guidesTitle: 'หน้าต้อนรับ วิดีโอสาธิต และโหมดฝึกสอน',
+    guidesSub: 'ย้อนเปิดหน้าต้อนรับเริ่มต้น ดูวิดีโอสาธิต 9:16 หรือเริ่มโหมดฝึกสอนใช้งานใหม่ได้ทุกเมื่อ',
     replayWelcomeBtn: 'เปิดหน้าต้อนรับเริ่มต้นใช้งานอีกครั้ง',
     startTutorialBtn: 'เริ่มฝึกสอนใช้งาน (Tutorial)',
     watchDemoBtn: 'ดูวิดีโอสาธิตการใช้งาน (Demo)',
@@ -97,6 +100,11 @@ const SETTINGS_COPY = {
     resetBtn: 'ล้างทุกค่าเป็น 0',
     resetConfirmBtn: 'ยืนยันล้างเป็น 0',
     resetCancel: 'ยกเลิก',
+    factoryResetTitle: 'ล้างค่าทั้งหมดและเริ่มนับ 1 ใหม่ (Reset & Restart)',
+    factoryResetDesc:
+      'ลบข้อมูลการเงิน โปรไฟล์ คลังความรู้ ประวัติโหมดฝึกสอน และการตั้งค่าทั้งหมดในเครื่อง แล้วกลับไปหน้าเริ่มต้นใช้งานเพื่อเริ่มนับ 1 ใหม่ทั้งหมด',
+    factoryResetBtn: 'ล้างทั้งหมด & เริ่มใหม่',
+    factoryResetConfirmBtn: 'ยืนยันล้างทั้งหมดทันที',
     charterTitle: 'คำมั่นสัญญาพื้นที่กลาง (Zero-Sales Charter)',
     charterDesc:
       'PROTECT360 เป็นเครื่องมือให้ความรู้และประเมินความเสี่ยงตามหลักคณิตศาสตร์ประกันภัยเท่านั้น ไม่มีการขายประกัน ไม่เก็บข้อมูลติดต่อเพื่อเสนอขาย และไม่แนะนำบริษัทใดเป็นพิเศษ',
@@ -124,6 +132,8 @@ const SETTINGS_COPY = {
     clockSourceInternet: 'Synced with internet 24h clock',
     clockSourceDevice: 'Using device local 24h clock',
     editProfileBtn: 'Edit Personal Profile',
+    guidesTitle: 'Welcome Screen, Demo Clip & Tutorials',
+    guidesSub: 'Revisit the welcome flow, replay the 9:16 demo clip, or restart interactive walkthroughs anytime.',
     replayWelcomeBtn: 'Replay Welcome Screen',
     startTutorialBtn: 'Interactive Tutorial (8 Steps)',
     watchDemoBtn: 'Watch Demo Video',
@@ -161,6 +171,11 @@ const SETTINGS_COPY = {
     resetBtn: 'Reset to 0',
     resetConfirmBtn: 'Confirm Reset to 0',
     resetCancel: 'Cancel',
+    factoryResetTitle: 'Erase Everything & Restart From Step 1',
+    factoryResetDesc:
+      'Wipe all local financial data, profile details, learning progress, tutorial states, and preferences, then restart cleanly on the Welcome screen.',
+    factoryResetBtn: 'Erase All & Restart',
+    factoryResetConfirmBtn: 'Confirm Full Erase',
     charterTitle: 'Zero-Sales Neutrality Charter',
     charterDesc:
       'PROTECT360 is strictly an educational and actuarial risk-planning tool. No policy sales, no brokerage commissions, and no sponsored brand rankings.',
@@ -186,6 +201,7 @@ export default function SettingsPage({
   onStartTutorial,
   onResetTabTutorials,
   onOpenDemoVideo,
+  onFactoryReset,
 }) {
   const {
     lang,
@@ -220,10 +236,12 @@ export default function SettingsPage({
 
   const copy = SETTINGS_COPY[lang] || SETTINGS_COPY.TH;
   const [confirmReset, setConfirmReset] = useState(false);
+  const [confirmFactoryReset, setConfirmFactoryReset] = useState(false);
   const [feedback, setFeedback] = useState(null);
   const [soundActive, setSoundActive] = useState(() => isSoundEnabled());
   const fileInputRef = useRef(null);
   const resetTimerRef = useRef(null);
+  const factoryResetTimerRef = useRef(null);
 
   useEffect(() => {
     if (!confirmReset) return undefined;
@@ -234,6 +252,16 @@ export default function SettingsPage({
       if (resetTimerRef.current) window.clearTimeout(resetTimerRef.current);
     };
   }, [confirmReset]);
+
+  useEffect(() => {
+    if (!confirmFactoryReset) return undefined;
+    factoryResetTimerRef.current = window.setTimeout(() => {
+      setConfirmFactoryReset(false);
+    }, 6000);
+    return () => {
+      if (factoryResetTimerRef.current) window.clearTimeout(factoryResetTimerRef.current);
+    };
+  }, [confirmFactoryReset]);
 
   const langTabs = useMemo(
     () => [
@@ -313,11 +341,23 @@ export default function SettingsPage({
   const handleResetClick = () => {
     if (!confirmReset) {
       setConfirmReset(true);
+      setConfirmFactoryReset(false);
       return;
     }
     resetDemoData();
     setConfirmReset(false);
     setFeedback(null);
+  };
+
+  const handleFactoryResetClick = () => {
+    if (!confirmFactoryReset) {
+      setConfirmFactoryReset(true);
+      setConfirmReset(false);
+      return;
+    }
+    setConfirmFactoryReset(false);
+    setFeedback(null);
+    onFactoryReset?.();
   };
 
   const greetingNow = getGreetingText(userProfile, lang, referenceHour);
@@ -551,55 +591,72 @@ export default function SettingsPage({
               <Pencil size={15} strokeWidth={2.2} aria-hidden="true" />
               <span>{copy.editProfileBtn}</span>
             </button>
-
-            <button
-              id="settings-replay-onboarding-btn"
-              type="button"
-              className="btn-soft-gray st-action-btn"
-              onClick={onReplayOnboarding}
-            >
-              <Sparkles size={15} strokeWidth={2.2} aria-hidden="true" />
-              <span>{copy.replayWelcomeBtn}</span>
-            </button>
-
-            <button
-              id="settings-start-tutorial-btn"
-              type="button"
-              className="btn-soft-gray st-action-btn"
-              data-sound="action"
-              onClick={() => onStartTutorial?.('full')}
-            >
-              <Compass size={15} strokeWidth={2.2} aria-hidden="true" />
-              <span>{copy.startTutorialBtn}</span>
-              <span className="st-tutorial-status-pill">
-                {copy.tutorialBadge?.[tutorialStatus] || copy.tutorialBadge?.unseen}
-              </span>
-            </button>
-
-            <button
-              id="settings-watch-demo-btn"
-              type="button"
-              className="btn-soft-gray st-action-btn"
-              data-sound="action"
-              onClick={onOpenDemoVideo}
-            >
-              <PlayCircle size={15} strokeWidth={2.2} aria-hidden="true" />
-              <span>{copy.watchDemoBtn}</span>
-            </button>
-
-            <button
-              id="settings-reset-tab-tutorials-btn"
-              type="button"
-              className="btn-soft-gray st-action-btn"
-              data-sound="chime"
-              onClick={onResetTabTutorials}
-            >
-              <RotateCcw size={14} strokeWidth={2.2} aria-hidden="true" />
-              <span>{copy.resetTabTutorialsBtn}</span>
-            </button>
           </div>
         </section>
       </div>
+
+      {/* Dedicated Row: Welcome Replay, Interactive Tutorial, 9:16 Demo Video & Tab Guide Reset */}
+      <section id="st-guides-card" className="bento-card st-card st-guides-card" aria-labelledby="st-guides-heading">
+        <div className="st-card-head">
+          <span className="st-card-icon blue" aria-hidden="true">
+            <Compass size={18} strokeWidth={2.1} />
+          </span>
+          <div>
+            <h2 id="st-guides-heading" className="card-title">
+              {copy.guidesTitle}
+            </h2>
+            <p className="card-subtitle">{copy.guidesSub}</p>
+          </div>
+        </div>
+
+        <div className="st-guides-actions">
+          <button
+            id="settings-replay-onboarding-btn"
+            type="button"
+            className="btn-soft-gray st-action-btn"
+            onClick={onReplayOnboarding}
+          >
+            <Sparkles size={15} strokeWidth={2.2} aria-hidden="true" />
+            <span>{copy.replayWelcomeBtn}</span>
+          </button>
+
+          <button
+            id="settings-start-tutorial-btn"
+            type="button"
+            className="btn-soft-gray st-action-btn"
+            data-sound="action"
+            onClick={() => onStartTutorial?.('full')}
+          >
+            <Compass size={15} strokeWidth={2.2} aria-hidden="true" />
+            <span>{copy.startTutorialBtn}</span>
+            <span className="st-tutorial-status-pill">
+              {copy.tutorialBadge?.[tutorialStatus] || copy.tutorialBadge?.unseen}
+            </span>
+          </button>
+
+          <button
+            id="settings-watch-demo-btn"
+            type="button"
+            className="btn-soft-gray st-action-btn"
+            data-sound="action"
+            onClick={onOpenDemoVideo}
+          >
+            <PlayCircle size={15} strokeWidth={2.2} aria-hidden="true" />
+            <span>{copy.watchDemoBtn}</span>
+          </button>
+
+          <button
+            id="settings-reset-tab-tutorials-btn"
+            type="button"
+            className="btn-soft-gray st-action-btn"
+            data-sound="chime"
+            onClick={onResetTabTutorials}
+          >
+            <RotateCcw size={14} strokeWidth={2.2} aria-hidden="true" />
+            <span>{copy.resetTabTutorialsBtn}</span>
+          </button>
+        </div>
+      </section>
 
       {/* Row 2: Saved Locally & Full Data Portability Hub */}
       <section className="bento-card st-card" aria-labelledby="st-data-heading">
@@ -779,6 +836,46 @@ export default function SettingsPage({
               >
                 <RotateCcw size={15} strokeWidth={2.2} aria-hidden="true" />
                 <span>{confirmReset ? copy.resetConfirmBtn : copy.resetBtn}</span>
+              </button>
+            </div>
+          </div>
+
+          {/* 6) Two-Step Full Factory Reset & Restart From Step 1 */}
+          <div
+            id="settings-factory-reset-card"
+            className={`data-action-card factory-reset-card ${confirmFactoryReset ? 'danger-armed' : ''}`}
+          >
+            <div className="data-action-info">
+              <span className="data-action-icon factory-reset" aria-hidden="true">
+                <Trash2 size={18} strokeWidth={2.1} />
+              </span>
+              <div>
+                <div className="data-action-title">{copy.factoryResetTitle}</div>
+                <p className="data-action-desc">{copy.factoryResetDesc}</p>
+              </div>
+            </div>
+            <div className="reset-action-group">
+              {confirmFactoryReset && (
+                <button
+                  id="factory-reset-cancel-btn"
+                  type="button"
+                  className="btn-reset-cancel"
+                  onClick={() => setConfirmFactoryReset(false)}
+                >
+                  {copy.resetCancel}
+                </button>
+              )}
+              <button
+                id="factory-reset-btn"
+                type="button"
+                className={`data-action-btn ${confirmFactoryReset ? 'btn-danger-confirm' : 'btn-danger-soft'}`}
+                data-sound="action"
+                onClick={handleFactoryResetClick}
+              >
+                <Trash2 size={15} strokeWidth={2.2} aria-hidden="true" />
+                <span>
+                  {confirmFactoryReset ? copy.factoryResetConfirmBtn : copy.factoryResetBtn}
+                </span>
               </button>
             </div>
           </div>

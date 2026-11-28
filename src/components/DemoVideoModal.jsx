@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { ArrowRight, Compass, Film, Volume2, X } from 'lucide-react';
+import { ArrowRight, Compass, FastForward, Volume2, X } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import { TUTORIAL_UI_COPY } from '../data/tutorialSteps';
 
@@ -13,6 +13,7 @@ export default function DemoVideoModal({
   const copy = TUTORIAL_UI_COPY[lang] || TUTORIAL_UI_COPY.TH;
   const videoRef = useRef(null);
   const [needsUnmuteTap, setNeedsUnmuteTap] = useState(false);
+  const [videoEnded, setVideoEnded] = useState(false);
 
   const isGate = mode === 'gate';
   const handleDismissAction = isGate ? onContinueToPrompt : onClose;
@@ -65,40 +66,15 @@ export default function DemoVideoModal({
 
   return (
     <div
-      className="tutorial-prompt-backdrop"
+      className="tutorial-prompt-backdrop demo-video-backdrop"
       role="dialog"
       aria-modal="true"
-      aria-labelledby="demo-video-modal-title"
+      aria-label={copy.demoModalTitle}
       onClick={(e) => {
         if (e.target === e.currentTarget) handleDismissAction?.();
       }}
     >
-      <div id="demo-video-modal" className="modal-dialog demo-video-modal">
-        <div className="tutorial-prompt-top">
-          <span className="tutorial-prompt-badge">
-            <Film size={14} strokeWidth={2.2} aria-hidden="true" />
-            <span>{copy.demoModalBadge}</span>
-          </span>
-          <button
-            id="demo-video-close-x"
-            type="button"
-            className="modal-close-btn"
-            onClick={handleDismissAction}
-            aria-label={isGate ? copy.gateSkipBtn : copy.demoModalClose}
-          >
-            <X size={16} />
-          </button>
-        </div>
-
-        <div className="demo-video-head">
-          <h2 id="demo-video-modal-title" className="tutorial-prompt-title">
-            {copy.demoModalTitle}
-          </h2>
-          <p className="tutorial-prompt-sub">
-            {isGate ? copy.demoModalSub : copy.demoModalReplaySub}
-          </p>
-        </div>
-
+      <div id="demo-video-modal" className="demo-video-modal">
         <div className="demo-video-stage">
           <div className="demo-video-frame">
             <video
@@ -117,10 +93,11 @@ export default function DemoVideoModal({
                   setNeedsUnmuteTap(false);
                 }
               }}
+              onPlay={() => {
+                setVideoEnded(false);
+              }}
               onEnded={() => {
-                if (isGate) {
-                  onContinueToPrompt?.();
-                }
+                setVideoEnded(true);
               }}
             />
           </div>
@@ -129,7 +106,7 @@ export default function DemoVideoModal({
             <button
               id="demo-unmute-btn"
               type="button"
-              className="demo-unmute-pill"
+              className="demo-unmute-pill demo-unmute-pill--floating"
               onClick={handleEnableSound50}
             >
               <Volume2 size={14} strokeWidth={2.2} aria-hidden="true" />
@@ -138,44 +115,69 @@ export default function DemoVideoModal({
           )}
         </div>
 
-        {isGate ? (
-          <div className="demo-gate-actions">
-            <button
-              id="demo-gate-continue-btn"
-              type="button"
-              className="btn-primary-gradient tutorial-opt-btn demo-gate-primary"
-              data-sound="action"
-              onClick={onContinueToPrompt}
-            >
-              <span>{copy.gateContinueBtn}</span>
-              <ArrowRight size={16} strokeWidth={2.2} aria-hidden="true" />
-            </button>
-          </div>
-        ) : (
-          <div className="tutorial-prompt-actions">
+        <div className="demo-floating-actions">
+          {isGate ? (
+            videoEnded ? (
+              <button
+                id="demo-gate-continue-btn"
+                type="button"
+                className="btn-primary-gradient demo-tutorial-cta-btn"
+                data-sound="action"
+                onClick={onContinueToPrompt}
+              >
+                <Compass size={16} strokeWidth={2.2} aria-hidden="true" />
+                <span>{copy.gateEndedToTutorialBtn}</span>
+                <ArrowRight size={16} strokeWidth={2.2} aria-hidden="true" />
+              </button>
+            ) : (
+              <button
+                id="demo-gate-skip-btn"
+                type="button"
+                className="demo-skip-btn"
+                onClick={onContinueToPrompt}
+              >
+                <FastForward size={14} strokeWidth={2.2} aria-hidden="true" />
+                <span>{copy.gateSkipBtn}</span>
+              </button>
+            )
+          ) : videoEnded ? (
+            <>
+              <button
+                id="demo-modal-close-btn"
+                type="button"
+                className="demo-skip-btn"
+                onClick={onClose}
+              >
+                <X size={14} strokeWidth={2.2} aria-hidden="true" />
+                <span>{copy.demoModalClose}</span>
+              </button>
+              <button
+                id="demo-modal-start-tour-btn"
+                type="button"
+                className="btn-primary-gradient demo-tutorial-cta-btn"
+                data-sound="action"
+                onClick={() => {
+                  onClose?.();
+                  onStartTutorial?.('full');
+                }}
+              >
+                <Compass size={16} strokeWidth={2.2} aria-hidden="true" />
+                <span>{copy.replayEndedToTutorialBtn}</span>
+                <ArrowRight size={16} strokeWidth={2.2} aria-hidden="true" />
+              </button>
+            </>
+          ) : (
             <button
               id="demo-modal-close-btn"
               type="button"
-              className="btn-soft-gray tutorial-opt-btn"
+              className="demo-skip-btn"
               onClick={onClose}
             >
+              <X size={14} strokeWidth={2.2} aria-hidden="true" />
               <span>{copy.demoModalClose}</span>
             </button>
-            <button
-              id="demo-modal-start-tour-btn"
-              type="button"
-              className="btn-primary-gradient tutorial-opt-btn"
-              data-sound="action"
-              onClick={() => {
-                onClose?.();
-                onStartTutorial?.('full');
-              }}
-            >
-              <Compass size={16} strokeWidth={2.2} aria-hidden="true" />
-              <span>{copy.demoModalStartTour}</span>
-            </button>
-          </div>
-        )}
+          )}
+        </div>
       </div>
     </div>
   );
