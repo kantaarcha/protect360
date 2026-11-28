@@ -1860,20 +1860,79 @@ export function computeFinalScorecard({ state, config }) {
   const resilienceScore = clamp(debtScore + runwayScore + peaceScore + strategyScore, 0, 100);
   const isResilient = debt === 0 && cash > 0;
 
-  // Dynamic Neutral Actuarial Lessons
-  const takeaways = [];
+  // Dynamic Neutral Actuarial Lessons (with emphasis segments, risk tags, and action hints)
+  const rawTakeaways = [];
 
   if (totalProtectionAbsorbed > 0) {
-    takeaways.push({
+    rawTakeaways.push({
+      id: 'protection-transfer',
       tone: 'positive',
+      priority: 3,
+      badge: { th: 'จุดแข็งของรอบนี้', en: 'Strength' },
+      metric: {
+        th: `กันบิลใหญ่ ฿${totalProtectionAbsorbed.toLocaleString('en-US')}`,
+        en: `Shielded ฿${totalProtectionAbsorbed.toLocaleString('en-US')}`,
+      },
+      title: {
+        th: 'เกราะโอนย้ายความเสี่ยงช่วยรับบิลก้อนใหญ่แทนเงินเก็บ',
+        en: 'Risk transfer shielded your savings from major shocks',
+      },
+      segments: {
+        th: [
+          { text: 'ความคุ้มครองที่วางไว้ช่วยดูดซับค่ารักษา/เหตุฉุกเฉินแทนคุณรวม ' },
+          { text: `฿${totalProtectionAbsorbed.toLocaleString('en-US')}`, em: true },
+          { text: ' ทำให้เหตุใหญ่ระดับ ' },
+          { text: '฿100,000', em: true },
+          { text: ' ไม่กัดกินเงินออมทั้งชีวิตจนหมดตัว' },
+        ],
+        en: [
+          { text: 'Planned risk transfer absorbed ' },
+          { text: `฿${totalProtectionAbsorbed.toLocaleString('en-US')}`, em: true },
+          { text: ' in shock bills, stopping a ' },
+          { text: '฿100,000 crisis', em: true },
+          { text: ' from draining your long-term savings.' },
+        ],
+      },
+      nextStep: {
+        th: 'รักษาวินัยตรวจวงเงินคุ้มครองปีละครั้งให้สอดคล้องกับรายรับที่โตขึ้น',
+        en: 'Review your coverage limits once a year as your income and expenses grow.',
+      },
       text: {
         th: `การโอนย้ายความเสี่ยงช่วยดูดซับค่ารักษา/เหตุฉุกเฉินแทนคุณรวม ฿${totalProtectionAbsorbed.toLocaleString('en-US')} ทำให้บิลก้อนใหญ่ ฿100,000 ไม่ทำลายเงินเก็บทั้งชีวิต`,
         en: `Risk transfer absorbed ฿${totalProtectionAbsorbed.toLocaleString('en-US')} in shock costs, preventing a ฿100,000 emergency from wiping out your savings.`,
       },
     });
   } else {
-    takeaways.push({
+    rawTakeaways.push({
+      id: 'protection-transfer',
       tone: 'caution',
+      priority: 2,
+      badge: { th: 'จุดที่ต้องระวัง', en: 'Watch Out' },
+      metric: { th: 'เกราะคุ้มครอง ฿0', en: '฿0 Risk Shield' },
+      title: {
+        th: 'เงินสำรองต้องแบกบิลใหญ่ระดับ ฿45,000–฿100,000 เพียงลำพัง',
+        en: 'Liquid cash had to absorb ฿45,000–฿100,000 shocks alone',
+      },
+      segments: {
+        th: [
+          { text: 'รอบนี้คุณไม่มีวงเงินโอนย้ายความเสี่ยงช่วยซับแรงกระแทกเลย (' },
+          { text: '฿0', em: true },
+          { text: ') หากเจอค่ารักษาหรืออุบัติเหตุก้อนใหญ่ ' },
+          { text: '฿45,000–฿100,000', em: true },
+          { text: ' เงินสำรองที่เก็บมาทั้งปีจะถูกดูดหายไปในครั้งเดียว' },
+        ],
+        en: [
+          { text: 'You went through the run with ' },
+          { text: '฿0 shock transfer', em: true },
+          { text: '. One ' },
+          { text: '฿45,000–฿100,000 emergency', em: true },
+          { text: ' directly hits your emergency cash all at once.' },
+        ],
+      },
+      nextStep: {
+        th: 'ลองเช็กหน้าวิเคราะห์ความเสี่ยง เพื่อเปรียบเทียบสิทธิพื้นฐานที่มีอยู่แล้วกับความเสี่ยงจริง',
+        en: 'Visit Risk Analysis to compare existing baseline benefits against severe bill scenarios.',
+      },
       text: {
         th: 'คุณผ่านเกมโดยไม่มีวงเงินโอนย้ายความเสี่ยงช่วยรับบิลใหญ่ (฿45,000–฿100,000) ทำให้เงินสำรองฉุกเฉินต้องรับแรงกระแทกหนักเพียงลำพัง',
         en: 'You went through the simulation with ฿0 shock transfer, forcing your emergency fund to absorb ฿45,000–฿100,000 bills alone.',
@@ -1882,16 +1941,72 @@ export function computeFinalScorecard({ state, config }) {
   }
 
   if (config.askedHr) {
-    takeaways.push({
+    rawTakeaways.push({
+      id: 'hr-group-limit',
       tone: 'info',
+      priority: 4,
+      badge: { th: 'นิสัยการเงินดีมาก', en: 'Smart Move' },
+      metric: { th: 'ปลดล็อกฟรี +฿50,000', en: '+฿50,000 Free Cover' },
+      title: {
+        th: 'เช็กสิทธิประกันกลุ่มกับ HR ช่วยเพิ่มเกราะคุ้มครองฟรี',
+        en: 'Checking HR Group Insurance unlocked free protection',
+      },
+      segments: {
+        th: [
+          { text: 'การถามฝ่ายบุคคลเรื่องสวัสดิการก่อนตัดสินใจช่วยปลดล็อกวงเงินคุ้มครองเพิ่ม ' },
+          { text: '+฿50,000', em: true },
+          { text: ' โดย ' },
+          { text: 'ไม่ต้องเสียเงินเพิ่มแม้แต่บาทเดียว', em: true },
+          { text: ' และลดความเสี่ยงซื้อซ้ำซ้อน' },
+        ],
+        en: [
+          { text: 'Confirming Employer Group Insurance with HR unlocked ' },
+          { text: '+฿50,000', em: true },
+          { text: ' in baseline coverage at ' },
+          { text: 'zero extra cost', em: true },
+          { text: ', preventing duplicate spending.' },
+        ],
+      },
+      nextStep: {
+        th: 'เก็บตัวเลขสิทธิบัตรทอง/ประกันสังคม และประกันกลุ่มรวมไว้ในหน้าภาพรวมเพื่อดูช่องว่างจริง',
+        en: 'Record your state and employer benefits in Overview to track your true remaining gap.',
+      },
       text: {
         th: 'นิสัยที่ยอดเยี่ยม: การทักถาม HR เรื่องวงเงินประกันกลุ่มก่อนเริ่มช่วยปลดล็อกเกราะคุ้มครอง +฿50,000 โดยไม่ต้องจ่ายเบี้ยเพิ่มแม้แต่บาทเดียว',
         en: 'Great real-world habit: checking Employer Group Insurance limits with HR unlocked +฿50,000 in hidden coverage at zero extra cost.',
       },
     });
   } else {
-    takeaways.push({
-      tone: 'info',
+    rawTakeaways.push({
+      id: 'hr-group-limit',
+      tone: 'caution',
+      priority: 2,
+      badge: { th: 'ระวังพลาดสิทธิฟรี', en: 'Missed Benefit' },
+      metric: { th: 'อาจพลาดเกราะ +฿50,000', en: 'Up to +฿50,000 Unclaimed' },
+      title: {
+        th: 'ยังไม่ควรจ่ายเพิ่มก่อนเช็กสวัสดิการพื้นฐานกับ HR หรือสิทธิรัฐ',
+        en: 'Always verify HR & public coverage before paying extra',
+      },
+      segments: {
+        th: [
+          { text: 'ก่อนวางแผนป้องกันความเสี่ยงทุกครั้ง ควรเช็กวงเงิน ' },
+          { text: 'ประกันกลุ่มบริษัท / ประกันสังคม', em: true },
+          { text: ' ที่มีอยู่ก่อน มิฉะนั้นอาจ ' },
+          { text: 'พลาดสิทธิฟรีหรือจ่ายเงินซ้ำซ้อน', em: true },
+          { text: ' โดยไม่จำเป็น' },
+        ],
+        en: [
+          { text: 'Before allocating extra budget, verify existing ' },
+          { text: 'employer group or state benefits', em: true },
+          { text: ' so you do not ' },
+          { text: 'leave free coverage unused or overpay', em: true },
+          { text: '.' },
+        ],
+      },
+      nextStep: {
+        th: 'รอบหน้าลองกดปุ่มสอบถาม HR ก่อนเริ่มเล่น หรือทักถามสิทธิ์ OPD/IPD ของที่ทำงานจริง',
+        en: 'Try checking HR limits before starting your next run or check your real workplace policy.',
+      },
       text: {
         th: 'เคล็ดลับในชีวิตจริง: ก่อนตัดสินใจวางแผนป้องกันความเสี่ยง ลองสอบถามฝ่ายบุคคล (HR) เรื่องวงเงินประกันกลุ่มที่มีอยู่แล้ว เพื่อไม่ให้จ่ายซ้ำซ้อน',
         en: 'Real-world tip: always confirm your Employer Group Insurance limits with HR first so you know your true baseline before spending a baht.',
@@ -1900,22 +2015,107 @@ export function computeFinalScorecard({ state, config }) {
   }
 
   if (debt > 0) {
-    takeaways.push({
+    rawTakeaways.push({
+      id: 'debt-outcome',
       tone: 'danger',
+      priority: 1,
+      badge: { th: 'เตือนเร่งด่วน', en: 'Urgent Warning' },
+      metric: {
+        th: `หนี้ ฿${debt.toLocaleString('en-US')} · ดอก 20%/ปี`,
+        en: `฿${debt.toLocaleString('en-US')} Debt · 20% APR`,
+      },
+      title: {
+        th: 'จบเกมพร้อมหนี้ฉุกเฉินดอกเบี้ยสูง — เงินออมเสี่ยงถูกกัดกินต่อเนื่อง',
+        en: 'High-interest emergency debt is compounding against you',
+      },
+      segments: {
+        th: [
+          { text: 'คุณปิดรอบด้วยหนี้ฉุกเฉินคงค้าง ' },
+          { text: `฿${debt.toLocaleString('en-US')}`, em: true },
+          { text: ' (เสียดอกเบี้ยเดินไปแล้ว ' },
+          { text: `฿${totalInterestPaid.toLocaleString('en-US')}`, em: true },
+          { text: ') ในชีวิตจริง ' },
+          { text: 'ดอกเบี้ยระดับ 20%/ปี จะดึงกระแสเงินสดรายเดือนออกเรื่อยๆ', em: true },
+          { text: ' จนกลับมาตั้งหลักออมได้ช้ามาก' },
+        ],
+        en: [
+          { text: 'You closed with ' },
+          { text: `฿${debt.toLocaleString('en-US')}`, em: true },
+          { text: ' in emergency debt (' },
+          { text: `฿${totalInterestPaid.toLocaleString('en-US')} interest accrued`, em: true },
+          { text: '). At ' },
+          { text: '20% APR', em: true },
+          { text: ', debt compounds faster than normal savings can recover.' },
+        ],
+      },
+      nextStep: {
+        th: 'หากเกิดสถานการณ์จริง ต้องหยุดหนี้ดอกเบี้ยสูงก่อนและกันเงินสำรองขั้นต่ำ 3 เดือนของรายจ่าย',
+        en: 'Prioritize clearing high-APR balances first and build at least a 3-month cash buffer.',
+      },
       text: {
         th: `คุณจบเกมพร้อมหนี้ฉุกเฉินดอกเบี้ยสูง ฿${debt.toLocaleString('en-US')} (เสียดอกเบี้ยสะสมไปแล้ว ฿${totalInterestPaid.toLocaleString('en-US')}) — ในชีวิตจริง ดอกเบี้ย 20%/ปี จะกัดกินความสามารถในการออมระยะยาว`,
         en: `You finished with ฿${debt.toLocaleString('en-US')} in high-interest debt (฿${totalInterestPaid.toLocaleString('en-US')} interest already accrued) — 20% APR debt severely slows wealth building.`,
       },
     });
   } else {
-    takeaways.push({
-      tone: 'positive',
+    const runwayCaution = finalRunwayMonths < 2;
+    rawTakeaways.push({
+      id: 'debt-outcome',
+      tone: runwayCaution ? 'caution' : 'positive',
+      priority: runwayCaution ? 2 : 3,
+      badge: runwayCaution
+        ? { th: 'ปลอดหนี้แต่สำรองบาง', en: 'Thin Buffer' }
+        : { th: 'วินัยการเงินเยี่ยม', en: 'Healthy Reserve' },
+      metric: {
+        th: `ปลอดหนี้ · เหลือ ${finalRunwayMonths.toFixed(1)} เดือน`,
+        en: `Debt-Free · ${finalRunwayMonths.toFixed(1)} mo`,
+      },
+      title: runwayCaution
+        ? {
+            th: 'แม้จบเกมปลอดหนี้ 100% แต่เงินสำรองเหลือต่ำกว่า 2 เดือน',
+            en: 'Debt-free finish, but liquid buffer fell under 2 months',
+          }
+        : {
+            th: 'ปิดเกมปลอดหนี้ 100% พร้อมกันชนเงินสำรองที่อุ่นใจ',
+            en: 'Finished 100% debt-free with a solid cash cushion',
+          },
+      segments: {
+        th: [
+          { text: 'คุณจบเกมแบบ ' },
+          { text: 'ปลอดหนี้ฉุกเฉิน 100%', em: true },
+          { text: ' และมีเงินสดสำรองคงเหลือ ' },
+          { text: `฿${cash.toLocaleString('en-US')}`, em: true },
+          { text: ` (ใช้ได้ ` },
+          { text: `${finalRunwayMonths.toFixed(1)} เดือนของรายจ่าย`, em: true },
+          { text: runwayCaution ? ') — ยังค่อนข้างเปราะบางหากเกิดเหตุซ้ำติดกัน' : ') — เพียงพอรับมือเหตุสะดุดระยะสั้นได้' },
+        ],
+        en: [
+          { text: 'You finished ' },
+          { text: '100% free of emergency debt', em: true },
+          { text: ' with ' },
+          { text: `฿${cash.toLocaleString('en-US')}`, em: true },
+          { text: ' remaining (' },
+          { text: `${finalRunwayMonths.toFixed(1)} months of expenses`, em: true },
+          { text: runwayCaution ? ') — still thin if back-to-back shocks strike.' : ') — enough to absorb short-term disruptions.' },
+        ],
+      },
+      nextStep: runwayCaution
+        ? {
+            th: 'ตั้งเป้าเติมเงินสำรองใน AutoKey ให้ถึง 3–6 เดือนของรายจ่ายประจำ',
+            en: 'Aim to build your cash buffer toward 3–6 months of core monthly expenses.',
+          }
+        : {
+            th: 'คงสภาพคล่อง 3–6 เดือนไว้ แล้วนำส่วนเกินไปศึกษาเรื่องลงทุนระยะยาวในหน้า IRR',
+            en: 'Keep 3–6 months liquid, then explore long-term compounding in Invest (IRR).',
+          },
       text: {
         th: `คุณจบเกมแบบปลอดหนี้ฉุกเฉิน 100% และยังมีเงินสำรองคงเหลือ ฿${cash.toLocaleString('en-US')} (${finalRunwayMonths.toFixed(1)} เดือนของรายจ่าย)`,
         en: `You finished 100% free of emergency debt with ฿${cash.toLocaleString('en-US')} remaining (${finalRunwayMonths.toFixed(1)} months of expenses).`,
       },
     });
   }
+
+  const takeaways = rawTakeaways.sort((a, b) => a.priority - b.priority);
 
   const headlineSummary = isResilient
     ? totalProtectionAbsorbed > 0

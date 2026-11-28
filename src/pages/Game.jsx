@@ -1964,35 +1964,180 @@ export default function Game({ onNavigate }) {
           </section>
 
           {/* Actuarial Lesson Debrief Card (Neutral & Non-Sales) */}
-          <section className="bento-card gm-debrief-card">
-            <div className="gm-card-head">
-              <div className="gm-card-title-row">
-                <span className="gm-icon-badge teal">
-                  <ShieldCheck size={18} strokeWidth={2.1} />
-                </span>
-                <div>
-                  <h3 className="gm-card-title">
-                    {lang === 'TH'
-                      ? 'บทสรุปจากโค้ชการเงินที่เป็นกลาง (Actuarial Lesson Debrief)'
-                      : 'Neutral Financial Coach Debrief'}
-                  </h3>
-                  <p className="gm-card-sub">
-                    {lang === 'TH'
-                      ? 'วิเคราะห์ตรงไปตรงมาตามหลักคณิตศาสตร์ประกันภัย — ไม่แนะนำบริษัทหรือผลิตภัณฑ์ใด'
-                      : 'Objective actuarial diagnosis of what protected or hurt your cashflow — zero sales.'}
-                  </p>
-                </div>
-              </div>
-            </div>
+          <section className="bento-card gm-debrief-card" aria-label="Neutral Financial Coach Debrief">
+            {(() => {
+              const warnCount = scorecard.takeaways.filter(
+                (item) => item.tone === 'danger' || item.tone === 'caution'
+              ).length;
+              const goodCount = scorecard.takeaways.length - warnCount;
+              const langKey = lang === 'TH' ? 'th' : 'en';
+              const pillars = [
+                {
+                  id: 'debt',
+                  label: lang === 'TH' ? 'ปลอดหนี้ฉุกเฉิน' : 'Debt-Free',
+                  score: scorecard.breakdown?.debtScore ?? 0,
+                  max: 40,
+                },
+                {
+                  id: 'runway',
+                  label: lang === 'TH' ? 'เงินสำรองฉุกเฉิน' : 'Cash Runway',
+                  score: scorecard.breakdown?.runwayScore ?? 0,
+                  max: 30,
+                },
+                {
+                  id: 'peace',
+                  label: lang === 'TH' ? 'ความสบายใจ' : 'Peace of Mind',
+                  score: scorecard.breakdown?.peaceScore ?? 0,
+                  max: 20,
+                },
+                {
+                  id: 'strategy',
+                  label: lang === 'TH' ? 'วางแผนเกราะคุ้มครอง' : 'Risk Strategy',
+                  score: scorecard.breakdown?.strategyScore ?? 0,
+                  max: 10,
+                },
+              ];
 
-            <div className="gm-takeaways-list">
-              {scorecard.takeaways.map((item, i) => (
-                <div key={i} className={`gm-takeaway-item tone-${item.tone}`}>
-                  <span className="gm-takeaway-dot" aria-hidden="true" />
-                  <p>{t(item.text)}</p>
-                </div>
-              ))}
-            </div>
+              const renderToneIcon = (tone) => {
+                if (tone === 'danger') return <ShieldAlert size={16} strokeWidth={2.2} />;
+                if (tone === 'caution') return <AlertTriangle size={16} strokeWidth={2.2} />;
+                if (tone === 'positive') return <CheckCircle2 size={16} strokeWidth={2.2} />;
+                return <Info size={16} strokeWidth={2.2} />;
+              };
+
+              return (
+                <>
+                  <div className="gm-card-head gm-debrief-head">
+                    <div className="gm-card-title-row">
+                      <span className="gm-icon-badge teal">
+                        <ShieldCheck size={18} strokeWidth={2.1} />
+                      </span>
+                      <div>
+                        <h3 className="gm-card-title">
+                          {lang === 'TH'
+                            ? 'บทสรุปจากโค้ชการเงินที่เป็นกลาง'
+                            : 'Neutral Financial Coach Debrief'}
+                        </h3>
+                        <p className="gm-card-sub">
+                          {lang === 'TH'
+                            ? 'ชี้จุดแข็ง จุดเสี่ยงที่ต้องระวัง และขั้นตอนถัดไปตามหลักคณิตศาสตร์ประกันภัย (ไม่ขายประกัน)'
+                            : 'Objective breakdown of risks to watch out for, strengths, and next actions — zero sales.'}
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="gm-coach-status-pills">
+                      {warnCount > 0 && (
+                        <span className="gm-coach-pill warn tabular-nums">
+                          <AlertTriangle size={13} aria-hidden="true" />
+                          {lang === 'TH'
+                            ? `ต้องระวัง ${warnCount} เรื่อง`
+                            : `${warnCount} Alert${warnCount > 1 ? 's' : ''}`}
+                        </span>
+                      )}
+                      {goodCount > 0 && (
+                        <span className="gm-coach-pill good tabular-nums">
+                          <CheckCircle2 size={13} aria-hidden="true" />
+                          {lang === 'TH'
+                            ? `จุดแข็ง ${goodCount} เรื่อง`
+                            : `${goodCount} Strength${goodCount > 1 ? 's' : ''}`}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* 4-Pillar Score Breakdown Strip */}
+                  <div className="gm-coach-pillars" aria-label="Score breakdown by financial pillar">
+                    {pillars.map((pillar) => {
+                      const pct = Math.round((pillar.score / pillar.max) * 100);
+                      const statusClass =
+                        pct >= 75 ? 'good' : pct >= 45 ? 'warn' : 'danger';
+                      return (
+                        <div key={pillar.id} className={`gm-pillar-cell ${statusClass}`}>
+                          <div className="gm-pillar-top">
+                            <span className="gm-pillar-name">{pillar.label}</span>
+                            <strong className="gm-pillar-score tabular-nums">
+                              {pillar.score}/{pillar.max}
+                            </strong>
+                          </div>
+                          <div className="gm-pillar-track" aria-hidden="true">
+                            <div
+                              className={`gm-pillar-fill ${statusClass}`}
+                              style={{ width: `${pct}%` }}
+                            />
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+
+                  {/* Structured Actuarial Takeaways Cards */}
+                  <div className="gm-takeaways-list">
+                    {scorecard.takeaways.map((item, i) => {
+                      const segments = item.segments?.[langKey];
+                      return (
+                        <article
+                          key={item.id || i}
+                          className={`gm-takeaway-item tone-${item.tone}`}
+                        >
+                          <div className="gm-takeaway-top">
+                            <div className="gm-takeaway-tag-group">
+                              <span className="gm-takeaway-icon" aria-hidden="true">
+                                {renderToneIcon(item.tone)}
+                              </span>
+                              <span className="gm-takeaway-badge">
+                                {item.badge ? t(item.badge) : item.tone.toUpperCase()}
+                              </span>
+                            </div>
+                            {item.metric && (
+                              <span className="gm-takeaway-metric tabular-nums">
+                                {t(item.metric)}
+                              </span>
+                            )}
+                          </div>
+
+                          {item.title && (
+                            <h4 className="gm-takeaway-title">{t(item.title)}</h4>
+                          )}
+
+                          <p className="gm-takeaway-body">
+                            {Array.isArray(segments)
+                              ? segments.map((seg, idx) =>
+                                  seg.em ? (
+                                    <strong key={idx} className="gm-inline-emph">
+                                      {seg.text}
+                                    </strong>
+                                  ) : (
+                                    <span key={idx}>{seg.text}</span>
+                                  )
+                                )
+                              : t(item.text)}
+                          </p>
+
+                          {item.nextStep && (
+                            <div className="gm-takeaway-next">
+                              <ArrowRight size={13} aria-hidden="true" />
+                              <span>
+                                <strong>
+                                  {item.tone === 'danger' || item.tone === 'caution'
+                                    ? lang === 'TH'
+                                      ? 'คำแนะนำให้ระวัง/แก้ไข: '
+                                      : 'Action to prevent risk: '
+                                    : lang === 'TH'
+                                      ? 'ต่อยอดแนะนำ: '
+                                      : 'Next step: '}
+                                </strong>
+                                {t(item.nextStep)}
+                              </span>
+                            </div>
+                          )}
+                        </article>
+                      );
+                    })}
+                  </div>
+                </>
+              );
+            })()}
 
             {/* Compact Turn-by-Turn Decision Log */}
             <details className="gm-history-details">
