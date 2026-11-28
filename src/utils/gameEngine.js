@@ -1836,6 +1836,9 @@ export function computeFinalScorecard({ state, config }) {
   const { cash, debt, peace, totalProtectionAbsorbed, totalInterestPaid } = state;
   const monthlyExpenses = Math.max(5000, config.persona.monthlyExpenses || 20000);
   const monthlyIncome = Math.max(10000, config.persona.monthlyIncome || 25000);
+  const startingCash = Math.max(0, Number(config.persona.emergencyFund ?? 0));
+  const startingRunwayMonths = startingCash / monthlyExpenses;
+  const monthsCount = Math.max(1, Number(config.monthsCount || 1));
 
   // 1. Debt-free score (0..40)
   const debtScore =
@@ -1843,9 +1846,18 @@ export function computeFinalScorecard({ state, config }) {
       ? 40
       : Math.max(0, Math.round(40 - (debt / (monthlyIncome * 2.5)) * 40));
 
-  // 2. Emergency runway score (0..30) — full marks at >= 2.5 months of expenses
+  // 2. Fair, duration-aware Emergency Runway score (0..30)
+  // Short 30-day runs start with modest cash (e.g. 0.75 mo); scale full marks realistically per run length
   const finalRunwayMonths = cash / monthlyExpenses;
-  const runwayScore = Math.min(30, Math.round((finalRunwayMonths / 2.5) * 30));
+  const runwayFullMarkTarget =
+    monthsCount <= 1
+      ? Math.min(2.5, Math.max(1.0, startingRunwayMonths + 0.15))
+      : monthsCount <= 3
+        ? Math.min(2.5, Math.max(1.25, startingRunwayMonths + 0.35))
+        : monthsCount <= 6
+          ? Math.min(2.5, Math.max(1.7, startingRunwayMonths + 0.65))
+          : 2.5;
+  const runwayScore = Math.min(30, Math.round((finalRunwayMonths / runwayFullMarkTarget) * 30));
 
   // 3. Peace of mind score (0..20)
   const peaceScore = Math.round((clamp(peace, 0, 100) / 100) * 20);
@@ -2058,36 +2070,84 @@ export function computeFinalScorecard({ state, config }) {
       },
     });
   } else {
-    const runwayCaution = finalRunwayMonths < 2;
+    const grewBuffer = cash > startingCash;
+    const keptOrGrewBuffer = cash >= startingCash;
+    const strongBuffer =
+      finalRunwayMonths >= 2 ||
+      (keptOrGrewBuffer && finalRunwayMonths >= 0.8) ||
+      (monthsCount <= 2 && grewBuffer);
+    const bufferShrankBadly =
+      (startingCash > 0 && cash < startingCash * 0.7) || finalRunwayMonths < 0.5;
+
+    const outcomeTone = strongBuffer ? 'positive' : bufferShrankBadly ? 'caution' : 'info';
+    const outcomePriority = strongBuffer ? 3 : bufferShrankBadly ? 2 : 4;
+
     rawTakeaways.push({
       id: 'debt-outcome',
-      tone: runwayCaution ? 'caution' : 'positive',
-      priority: runwayCaution ? 2 : 3,
-      badge: runwayCaution
-        ? { th: 'ปลอดหนี้แต่สำรองบาง', en: 'Thin Buffer' }
-        : { th: 'วินัยการเงินเยี่ยม', en: 'Healthy Reserve' },
-      metric: {
-        th: `ปลอดหนี้ · เหลือ ${finalRunwayMonths.toFixed(1)} เดือน`,
-        en: `Debt-Free · ${finalRunwayMonths.toFixed(1)} mo`,
-      },
-      title: runwayCaution
-        ? {
-            th: 'แม้จบเกมปลอดหนี้ 100% แต่เงินสำรองเหลือต่ำกว่า 2 เดือน',
-            en: 'Debt-free finish, but liquid buffer fell under 2 months',
-          }
-        : {
-            th: 'ปิดเกมปลอดหนี้ 100% พร้อมกันชนเงินสำรองที่อุ่นใจ',
-            en: 'Finished 100% debt-free with a solid cash cushion',
-          },
+      tone: outcomeTone,
+      priority: outcomePriority,
+      badge: strongBuffer
+        ? finalRunwayMonths >= 2
+          ? { th: 'วินัยการเงินเยี่ยม', en: 'Healthy Reserve' }
+          : { th: 'ประคองเงินสำรองได้เยี่ยม', en: 'Strong Discipline' }
+        : bufferShrankBadly
+          ? { th: 'สำรองถูกดึงไปมาก', en: 'Heavy Cash Drain' }
+          : { th: 'ปลอดหนี้ • ค่อยๆ เติมต่อ', en: 'Debt-Free • Keep Growing' },
+      metric:
+        grewBuffer && startingCash > 0
+          ? {
+              th: `ปลอดหนี้ · โต ${startingRunwayMonths.toFixed(1)}→${finalRunwayMonths.toFixed(1)} ด.`,
+              en: `Debt-Free · ${startingRunwayMonths.toFixed(1)}→${finalRunwayMonths.toFixed(1)} mo`,
+            }
+          : {
+              th: `ปลอดหนี้ · เหลือ ${finalRunwayMonths.toFixed(1)} เดือน`,
+              en: `Debt-Free · ${finalRunwayMonths.toFixed(1)} mo`,
+            },
+      title: strongBuffer
+        ? finalRunwayMonths >= 2
+          ? {
+              th: 'ปิดเกมปลอดหนี้ 100% พร้อมกันชนเงินสำรองที่อุ่นใจ',
+              en: 'Finished 100% debt-free with a solid cash cushion',
+            }
+          : grewBuffer
+            ? {
+                th: 'เก่งมาก! จบรอบปลอดหนี้ 100% และสะสมเงินสำรองเพิ่มขึ้นได้จริง',
+                en: 'Well done! 100% debt-free and grew your cash reserve',
+              }
+            : {
+                th: 'ปิดเกมปลอดหนี้ 100% และรักษาเงินสำรองไม่ให้ลดลงได้',
+                en: 'Finished 100% debt-free while keeping your cash reserve intact',
+              }
+        : bufferShrankBadly
+          ? {
+              th: 'จบเกมปลอดหนี้ 100% แต่เงินสำรองถูกใช้รับบิลไปค่อนข้างมาก',
+              en: 'Debt-free finish, though bills drained much of the cash buffer',
+            }
+          : {
+              th: 'จบเกมปลอดหนี้ 100% — เหลืออีกก้าวเดียวในการเติมกันชนให้หนาขึ้น',
+              en: 'Finished 100% debt-free — steady momentum to grow your cushion',
+            },
       segments: {
         th: [
           { text: 'คุณจบเกมแบบ ' },
           { text: 'ปลอดหนี้ฉุกเฉิน 100%', em: true },
           { text: ' และมีเงินสดสำรองคงเหลือ ' },
           { text: `฿${cash.toLocaleString('en-US')}`, em: true },
-          { text: ` (ใช้ได้ ` },
-          { text: `${finalRunwayMonths.toFixed(1)} เดือนของรายจ่าย`, em: true },
-          { text: runwayCaution ? ') — ยังค่อนข้างเปราะบางหากเกิดเหตุซ้ำติดกัน' : ') — เพียงพอรับมือเหตุสะดุดระยะสั้นได้' },
+          { text: ' (' },
+          {
+            text:
+              grewBuffer && startingCash > 0
+                ? `โตขึ้นจาก ${startingRunwayMonths.toFixed(1)} → ${finalRunwayMonths.toFixed(1)} เดือนของรายจ่าย`
+                : `${finalRunwayMonths.toFixed(1)} เดือนของรายจ่าย`,
+            em: true,
+          },
+          {
+            text: strongBuffer
+              ? ') — รับมือเหตุการณ์รอบนี้ได้ดีมากโดยไม่ก่อหนี้เลย'
+              : bufferShrankBadly
+                ? ') — เหตุฉุกเฉินดึงเงินสดออกไปเยอะ แนะนำเติมสำรองเพิ่มในชีวิตจริง'
+                : ') — รักษาสมดุลได้มั่นคง ค่อยๆ เติมต่อให้ถึงเป้า 3 เดือนในระยะยาว',
+          },
         ],
         en: [
           { text: 'You finished ' },
@@ -2095,19 +2155,37 @@ export function computeFinalScorecard({ state, config }) {
           { text: ' with ' },
           { text: `฿${cash.toLocaleString('en-US')}`, em: true },
           { text: ' remaining (' },
-          { text: `${finalRunwayMonths.toFixed(1)} months of expenses`, em: true },
-          { text: runwayCaution ? ') — still thin if back-to-back shocks strike.' : ') — enough to absorb short-term disruptions.' },
+          {
+            text:
+              grewBuffer && startingCash > 0
+                ? `grew ${startingRunwayMonths.toFixed(1)} → ${finalRunwayMonths.toFixed(1)} months`
+                : `${finalRunwayMonths.toFixed(1)} months of expenses`,
+            em: true,
+          },
+          {
+            text: strongBuffer
+              ? ') — strong control throughout the run without taking on debt.'
+              : bufferShrankBadly
+                ? ') — unexpected bills reduced liquid cash significantly.'
+                : ') — solid footing as you keep building toward 3 months.',
+          },
         ],
       },
-      nextStep: runwayCaution
-        ? {
-            th: 'ตั้งเป้าเติมเงินสำรองใน AutoKey ให้ถึง 3–6 เดือนของรายจ่ายประจำ',
-            en: 'Aim to build your cash buffer toward 3–6 months of core monthly expenses.',
-          }
-        : {
-            th: 'คงสภาพคล่อง 3–6 เดือนไว้ แล้วนำส่วนเกินไปศึกษาเรื่องลงทุนระยะยาวในหน้า IRR',
-            en: 'Keep 3–6 months liquid, then explore long-term compounding in Invest (IRR).',
-          },
+      nextStep:
+        finalRunwayMonths >= 2
+          ? {
+              th: 'คงสภาพคล่อง 3–6 เดือนไว้ แล้วนำส่วนเกินไปศึกษาเรื่องลงทุนระยะยาวในหน้า IRR',
+              en: 'Keep 3–6 months liquid, then explore long-term compounding in Invest (IRR).',
+            }
+          : strongBuffer
+            ? {
+                th: 'ในชีวิตจริงทำวินัยออมแบบนี้ต่อไปเรื่อยๆ ใน AutoKey จะค่อยๆ ไต่ถึงเป้า 3–6 เดือนได้สบายครับ',
+                en: 'Keep up this saving pace in AutoKey to smoothly reach your 3–6 month real-life goal.',
+              }
+            : {
+                th: 'ตั้งเป้าค่อยๆ เติมเงินสำรองใน AutoKey ให้ถึง 3 เดือนของรายจ่ายประจำ',
+                en: 'Aim to top up your cash buffer in AutoKey toward 3 months of expenses.',
+              },
       text: {
         th: `คุณจบเกมแบบปลอดหนี้ฉุกเฉิน 100% และยังมีเงินสำรองคงเหลือ ฿${cash.toLocaleString('en-US')} (${finalRunwayMonths.toFixed(1)} เดือนของรายจ่าย)`,
         en: `You finished 100% free of emergency debt with ฿${cash.toLocaleString('en-US')} remaining (${finalRunwayMonths.toFixed(1)} months of expenses).`,
