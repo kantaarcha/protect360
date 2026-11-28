@@ -4,6 +4,7 @@ import {
   ArrowRight,
   CheckCircle2,
   Compass,
+  Film,
   HelpCircle,
   Lightbulb,
   Sparkles,
@@ -358,6 +359,21 @@ export default function TutorialOverlay({
               </h2>
               <p className="tutorial-prompt-sub">{copy.promptSubtitle}</p>
             </div>
+          </div>
+
+          <div className="tutorial-video-box">
+            <div className="tutorial-video-label">
+              <Film size={14} strokeWidth={2.2} aria-hidden="true" />
+              <span>{copy.promptVideoLabel}</span>
+            </div>
+            <video
+              id="tutorial-demo-video"
+              className="tutorial-demo-video"
+              src="/demo.mp4"
+              controls
+              playsInline
+              preload="metadata"
+            />
           </div>
 
           <ul className="tutorial-prompt-points">

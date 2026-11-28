@@ -12,6 +12,7 @@ import {
   Lock,
   Moon,
   Pencil,
+  PlayCircle,
   RotateCcw,
   ShieldCheck,
   Sparkles,
@@ -61,6 +62,7 @@ const SETTINGS_COPY = {
     editProfileBtn: 'แก้ไขข้อมูลส่วนตัว',
     replayWelcomeBtn: 'เปิดหน้าต้อนรับเริ่มต้นใช้งานอีกครั้ง',
     startTutorialBtn: 'เริ่มฝึกสอนใช้งาน (Tutorial)',
+    watchDemoBtn: 'ดูวิดีโอสาธิตการใช้งาน (Demo)',
     resetTabTutorialsBtn: 'รีเซ็ตแถบแนะนำเฉพาะหน้า',
     tutorialBadge: {
       unseen: 'ยังไม่เคยเริ่ม',
@@ -124,6 +126,7 @@ const SETTINGS_COPY = {
     editProfileBtn: 'Edit Personal Profile',
     replayWelcomeBtn: 'Replay Welcome Screen',
     startTutorialBtn: 'Interactive Tutorial (8 Steps)',
+    watchDemoBtn: 'Watch Demo Video',
     resetTabTutorialsBtn: 'Reset Per-Tab Guides',
     tutorialBadge: {
       unseen: 'Not started',
@@ -182,6 +185,7 @@ export default function SettingsPage({
   tutorialStatus = 'unseen',
   onStartTutorial,
   onResetTabTutorials,
+  onOpenDemoVideo,
 }) {
   const {
     lang,
@@ -570,6 +574,17 @@ export default function SettingsPage({
               <span className="st-tutorial-status-pill">
                 {copy.tutorialBadge?.[tutorialStatus] || copy.tutorialBadge?.unseen}
               </span>
+            </button>
+
+            <button
+              id="settings-watch-demo-btn"
+              type="button"
+              className="btn-soft-gray st-action-btn"
+              data-sound="action"
+              onClick={onOpenDemoVideo}
+            >
+              <PlayCircle size={15} strokeWidth={2.2} aria-hidden="true" />
+              <span>{copy.watchDemoBtn}</span>
             </button>
 
             <button

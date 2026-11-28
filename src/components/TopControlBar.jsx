@@ -1,9 +1,9 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
-import { Compass, HelpCircle, Lightbulb, Settings, ShieldCheck, X } from 'lucide-react';
+import { Compass, HelpCircle, Lightbulb, PlayCircle, Settings, ShieldCheck, X } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import { getPageContextualSteps, TUTORIAL_UI_COPY } from '../data/tutorialSteps';
 
-export default function TopControlBar({ activePage, onNavigate, onStartTutorial }) {
+export default function TopControlBar({ activePage, onNavigate, onStartTutorial, onOpenDemoVideo }) {
   const { lang, t, fontStepIdx } = useLanguage();
   const helpCopy = TUTORIAL_UI_COPY[lang] || TUTORIAL_UI_COPY.TH;
   const pageStepCount = getPageContextualSteps(activePage).length;
@@ -243,6 +243,18 @@ export default function TopControlBar({ activePage, onNavigate, onStartTutorial 
                 >
                   <Compass size={15} strokeWidth={2.2} aria-hidden="true" />
                   <span>{helpCopy.helpFullTour}</span>
+                </button>
+                <button
+                  id="top-help-video-btn"
+                  type="button"
+                  className="top-help-menu-item"
+                  onClick={() => {
+                    setShowHelpMenu(false);
+                    onOpenDemoVideo?.();
+                  }}
+                >
+                  <PlayCircle size={15} strokeWidth={2.2} aria-hidden="true" />
+                  <span>{helpCopy.helpWatchDemo}</span>
                 </button>
               </div>
             </div>

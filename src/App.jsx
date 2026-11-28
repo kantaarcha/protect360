@@ -25,6 +25,7 @@ import TopControlBar from './components/TopControlBar';
 import UserProfileModal from './components/UserProfileModal';
 import OnboardingFlow from './components/OnboardingFlow';
 import TutorialOverlay from './components/TutorialOverlay';
+import DemoVideoModal from './components/DemoVideoModal';
 import OverviewDashboard from './pages/OverviewDashboard';
 import AutoKey from './pages/AutoKey';
 import RiskAnalysis from './pages/RiskAnalysis';
@@ -106,6 +107,7 @@ function AppShellContent() {
     getSavedTabTutorialStatuses()
   );
   const [tutorialPromptOpen, setTutorialPromptOpen] = useState(false);
+  const [demoVideoOpen, setDemoVideoOpen] = useState(false);
   const [tutorialTour, setTutorialTour] = useState({
     active: false,
     mode: 'full',
@@ -296,6 +298,7 @@ function AppShellContent() {
             tutorialStatus={tutorialStatus}
             onStartTutorial={handleStartTutorial}
             onResetTabTutorials={handleResetTabTutorials}
+            onOpenDemoVideo={() => setDemoVideoOpen(true)}
           />
         );
       case 'overview':
@@ -366,6 +369,7 @@ function AppShellContent() {
             activePage={activePage}
             onNavigate={handleNavigate}
             onStartTutorial={handleStartTutorial}
+            onOpenDemoVideo={() => setDemoVideoOpen(true)}
           />
         </div>
 
@@ -814,6 +818,13 @@ function AppShellContent() {
         onCloseTour={handleCloseTour}
         onCompleteTour={handleCompleteTour}
       />
+
+      {demoVideoOpen && (
+        <DemoVideoModal
+          onClose={() => setDemoVideoOpen(false)}
+          onStartTutorial={handleStartTutorial}
+        />
+      )}
 
       {toast && (
         <div
