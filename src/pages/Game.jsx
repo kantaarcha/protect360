@@ -1117,11 +1117,6 @@ export default function Game({ onNavigate }) {
 
                           {isOpen && (
                             <div className="gm-dd-menu gm-dd-menu-tall" role="group" aria-label="Accessories menu">
-                              <div className="gm-dd-note">
-                                {lang === 'TH'
-                                  ? 'ใส่หลายชิ้นพร้อมกันได้ ยกเว้นตำแหน่งที่ซ้อนทับกัน'
-                                  : 'Equip multiple items together unless slots overlap'}
-                              </div>
                               {Object.entries(ACCESSORY_SLOTS).map(([slotKey, slotMeta]) => {
                                 const itemsInSlot = ACCESSORY_OPTIONS.filter((a) => a.slot === slotKey);
                                 return (
@@ -1150,14 +1145,7 @@ export default function Game({ onNavigate }) {
                                           }
                                           onClick={() => toggleAvatarAccessory(acc.id)}
                                         >
-                                          <span className="gm-dd-item-main">
-                                            <span>{lang === 'TH' ? acc.th : acc.en}</span>
-                                            {conflict && (
-                                              <small className="gm-dd-conflict-note">
-                                                {lang === 'TH' ? conflict.reasonTh : conflict.reasonEn}
-                                              </small>
-                                            )}
-                                          </span>
+                                          <span>{lang === 'TH' ? acc.th : acc.en}</span>
                                           {selected ? (
                                             <Check size={14} className="gm-dd-check" aria-hidden="true" />
                                           ) : conflict ? (

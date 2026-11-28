@@ -1,16 +1,22 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import {
   AlertTriangle,
   ArrowDownLeft,
   ArrowUpRight,
+  BookOpen,
+  ChevronLeft,
   ChevronRight,
+  Gamepad2,
+  Info,
   Pencil,
   PiggyBank,
   Plus,
   Search,
   Shield,
   ShieldAlert,
+  Sparkles,
   Trash2,
+  Wallet,
 } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import { formatTHB, useFinance } from '../context/FinanceContext';
@@ -42,6 +48,86 @@ export default function OverviewDashboard({ onNavigate, onOpenProfile }) {
   const [modalOpen, setModalOpen] = useState(false);
   const [editingCoverage, setEditingCoverage] = useState(null);
   const [deletingCoverage, setDeletingCoverage] = useState(null);
+  const [promoIndex, setPromoIndex] = useState(0);
+  const [promoPaused, setPromoPaused] = useState(false);
+
+  const promoSlides = useMemo(
+    () => [
+      {
+        id: 'game',
+        target: 'game',
+        tone: 'indigo',
+        icon: Gamepad2,
+        eyebrow: { th: 'ชวนลองเล่น • Survival Lab', en: 'Play Now • Survival Lab' },
+        title: {
+          th: 'ลองสร้างตัวละคร Pixel แล้วไปฝ่าวิกฤต 72 เหตุการณ์ชีวิตจริง!',
+          en: 'Customize Your Pixel Avatar & Survive 72 Real-Life Financial Events!',
+        },
+        desc: {
+          th: 'เลือกเพศ ทรงผม ของแต่งตัว และตกแต่งห้องพักได้ 12 ธีม เพื่อฝึกจัดสมดุลเงินสำรอง vs ความเสี่ยงแบบสนุก ๆ',
+          en: 'Pick outfits, multi-wear accessories, and 12 room themes while practicing real emergency cash vs. risk balance.',
+        },
+        cta: { th: 'ไปลองเล่นเกม', en: 'Play Survival Game' },
+      },
+      {
+        id: 'smartlog',
+        target: 'smartlog',
+        tone: 'blue',
+        icon: Wallet,
+        eyebrow: { th: 'ระบบเด่น • AutoKey', en: 'Featured Tool • AutoKey' },
+        title: {
+          th: 'จดรายรับ-จ่ายใน 3 วินาทีด้วย AutoKey พิมพ์ภาษาคนได้เลย',
+          en: 'Log Cashflow in 3 Seconds with AutoKey — Just Type Naturally',
+        },
+        desc: {
+          th: 'พิมพ์ง่าย ๆ เช่น "กาแฟ 65" ระบบแยกหมวด สรุปปฏิทินกำไร-ขาดทุนรายวัน และอัปเดตกราฟความพร้อมให้ทันที',
+          en: 'Type simple phrases like "Coffee 65" — AutoKey categorizes, plots your daily P&L calendar, and updates metrics automatically.',
+        },
+        cta: { th: 'เปิดใช้ AutoKey', en: 'Open AutoKey' },
+      },
+      {
+        id: 'learning',
+        target: 'learning',
+        tone: 'teal',
+        icon: BookOpen,
+        eyebrow: { th: 'อ่านฟรี • คลังความรู้เป็นกลาง', en: 'Free Guide • Neutral Library' },
+        title: {
+          th: 'อ่านจบใน 2 นาที: เงินสำรอง ประกันสังคม & ช่องว่างความคุ้มครอง',
+          en: '2-Minute Reads: Emergency Cash, Social Benefits & Protection Gaps',
+        },
+        desc: {
+          th: 'สรุปภาษาคนแบบไม่ง้อศัพท์เทคนิค พร้อมคลังคำศัพท์และควิซทบทวนความรู้ ไม่มีขายประกัน 100%',
+          en: 'Plain-language guides, glossary cards, and interactive literacy quizzes with zero product pitches.',
+        },
+        cta: { th: 'เข้าคลังความรู้', en: 'Explore Library' },
+      },
+      {
+        id: 'about',
+        target: 'about',
+        tone: 'amber',
+        icon: Info,
+        eyebrow: { th: 'เบื้องหลังแนวคิด • About Us', en: 'Behind P360 • Our Story' },
+        title: {
+          th: 'รู้จักที่มาของ PROTECT360 — เว็บนี้ถูกสร้างขึ้นมาได้ยังไง?',
+          en: 'How PROTECT360 Began — Built from Real Voices of Young Earners',
+        },
+        desc: {
+          th: 'ดูแรงบันดาลใจ เสียงสะท้อนจากคนทำงานรุ่นใหม่ และหลักความโปร่งใสที่ทำให้เรามุ่งสร้างพื้นที่วางแผนที่ปลอดภัย',
+          en: 'Read the real questions, user voices, and strict neutrality principles that shaped PROTECT360.',
+        },
+        cta: { th: 'อ่านที่มาของเรา', en: 'Read Our Story' },
+      },
+    ],
+    []
+  );
+
+  useEffect(() => {
+    if (promoPaused) return undefined;
+    const timer = window.setInterval(() => {
+      setPromoIndex((prev) => (prev + 1) % promoSlides.length);
+    }, 5500);
+    return () => window.clearInterval(timer);
+  }, [promoPaused, promoSlides.length]);
 
   const filterSlider = useLiquidSlider(txFilter, [lang, fontStepIdx]);
 
@@ -118,6 +204,92 @@ export default function OverviewDashboard({ onNavigate, onOpenProfile }) {
   return (
     <>
       <div className="bento-dashboard-stack">
+        {/* ================= PROMO BANNER CAROUSEL (4 FEATURED MODULES) ================= */}
+        {(() => {
+          const activeSlide = promoSlides[promoIndex] || promoSlides[0];
+          const SlideIcon = activeSlide.icon;
+          const handlePrev = () =>
+            setPromoIndex((prev) => (prev - 1 + promoSlides.length) % promoSlides.length);
+          const handleNext = () =>
+            setPromoIndex((prev) => (prev + 1) % promoSlides.length);
+
+          return (
+            <section
+              className={`bento-card ov-promo-carousel tone-${activeSlide.tone}`}
+              aria-label={lang === 'TH' ? 'แนะนำฟีเจอร์เด่นของ PROTECT360' : 'PROTECT360 Featured Highlights'}
+              onMouseEnter={() => setPromoPaused(true)}
+              onMouseLeave={() => setPromoPaused(false)}
+              onFocus={() => setPromoPaused(true)}
+              onBlur={() => setPromoPaused(false)}
+            >
+              <div className="ov-promo-main">
+                <div className="ov-promo-icon-box" aria-hidden="true">
+                  <SlideIcon size={24} strokeWidth={2} />
+                </div>
+
+                <div className="ov-promo-copy">
+                  <span className="ov-promo-eyebrow">
+                    <Sparkles size={12} aria-hidden="true" />
+                    <span>{t(activeSlide.eyebrow)}</span>
+                  </span>
+                  <h2 className="ov-promo-title">{t(activeSlide.title)}</h2>
+                  <p className="ov-promo-desc">{t(activeSlide.desc)}</p>
+                </div>
+
+                <div className="ov-promo-actions">
+                  <button
+                    id={`ov-promo-cta-${activeSlide.id}`}
+                    type="button"
+                    className="btn-primary-gradient ov-promo-cta-btn"
+                    onClick={() => onNavigate && onNavigate(activeSlide.target)}
+                  >
+                    <span>{t(activeSlide.cta)}</span>
+                    <ChevronRight size={15} strokeWidth={2.4} aria-hidden="true" />
+                  </button>
+                </div>
+              </div>
+
+              <div className="ov-promo-controls">
+                <div className="ov-promo-dots" role="tablist" aria-label="Promo slides">
+                  {promoSlides.map((slide, idx) => (
+                    <button
+                      key={slide.id}
+                      id={`ov-promo-dot-${slide.id}`}
+                      type="button"
+                      role="tab"
+                      aria-selected={idx === promoIndex}
+                      aria-label={t(slide.eyebrow)}
+                      className={`ov-promo-dot ${idx === promoIndex ? 'active' : ''}`}
+                      onClick={() => setPromoIndex(idx)}
+                    />
+                  ))}
+                </div>
+
+                <div className="ov-promo-arrows">
+                  <button
+                    id="ov-promo-prev-btn"
+                    type="button"
+                    className="ov-promo-arrow-btn"
+                    onClick={handlePrev}
+                    aria-label={lang === 'TH' ? 'สไลด์ก่อนหน้า' : 'Previous banner'}
+                  >
+                    <ChevronLeft size={16} />
+                  </button>
+                  <button
+                    id="ov-promo-next-btn"
+                    type="button"
+                    className="ov-promo-arrow-btn"
+                    onClick={handleNext}
+                    aria-label={lang === 'TH' ? 'สไลด์ถัดไป' : 'Next banner'}
+                  >
+                    <ChevronRight size={16} />
+                  </button>
+                </div>
+              </div>
+            </section>
+          );
+        })()}
+
         {/* ================= ROW 1: FLUSH 3-COLUMN TOP BENTO ================= */}
         <div className="bento-row-top">
           {/* Col 1: Liquid Emergency Fund + 2x2 Summary Metrics */}

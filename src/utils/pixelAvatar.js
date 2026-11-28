@@ -51,7 +51,7 @@ export const ACCESSORY_SLOTS = {
   ears: { th: 'หู & ศีรษะ', en: 'Ears & Band' },
   head: { th: 'หมวก & ศีรษะ', en: 'Headwear' },
   neck: { th: 'รอบคอ', en: 'Neck' },
-  companion: { th: 'พกพา & คู่หู', en: 'Carry & Buddy' },
+  companion: { th: 'พกพา & คู่หู', en: 'Carry & Buddy', allowMultiple: true },
 };
 
 export const ACCESSORY_OPTIONS = [
@@ -88,16 +88,16 @@ export function getAccessoryConflict(selectedList, candidateId) {
   if (active.includes(candidateId)) return null;
   const candidate = ACCESSORY_BY_ID[candidateId];
   if (!candidate) return { reasonTh: 'ไม่พบไอเทมนี้', reasonEn: 'Unavailable' };
+  const slotMeta = ACCESSORY_SLOTS[candidate.slot];
 
   for (const equippedId of active) {
     const equipped = ACCESSORY_BY_ID[equippedId];
     if (!equipped) continue;
-    if (equipped.slot === candidate.slot) {
-      const slotMeta = ACCESSORY_SLOTS[candidate.slot];
+    if (equipped.slot === candidate.slot && !slotMeta?.allowMultiple) {
       return {
         blockerId: equippedId,
-        reasonTh: `ใส่ได้ 1 ชิ้นในช่อง${slotMeta?.th || candidate.slot} (ใส่${equipped.th}อยู่)`,
-        reasonEn: `Slot ${slotMeta?.en || candidate.slot} occupied by ${equipped.en}`,
+        reasonTh: `ใส่ทับกับ "${equipped.th}" ไม่ได้`,
+        reasonEn: `Overlaps with "${equipped.en}"`,
       };
     }
     if (
@@ -460,6 +460,12 @@ export function deriveAvatarSceneAndState({
   } else if (eventCategory === 'windfall') {
     sceneType = 'celebration';
   } else if (
+    eventId === 'dental-care-1800' ||
+    eventId === 'dental-wisdom-4500' ||
+    eventId === 'opd-dental-clean-1200'
+  ) {
+    sceneType = 'dental_clinic';
+  } else if (
     eventId === 'family-pet-2600' ||
     eventId === 'life-pet-groom' ||
     eventId === 'family-vet-4900' ||
@@ -495,8 +501,7 @@ export function deriveAvatarSceneAndState({
     eventId === 'exp-tire' ||
     eventId === 'exp-moto-brake' ||
     eventId === 'car-battery-4600' ||
-    eventId === 'exp-shipping-dmg' ||
-    eventId === 'exp-cloud-doc'
+    eventId === 'exp-shipping-dmg'
   ) {
     sceneType = 'road_car';
   } else if (
@@ -508,6 +513,18 @@ export function deriveAvatarSceneAndState({
   ) {
     sceneType = 'party';
   } else if (
+    eventId === 'income-drop' ||
+    eventId === 'commission-delay' ||
+    eventId === 'shift-cut-4500' ||
+    eventId === 'client-late-3800' ||
+    eventId === 'probation-freeze' ||
+    eventId === 'exp-tax-gap' ||
+    eventId === 'exp-cloud-doc' ||
+    eventId === 'exp-work-suit' ||
+    eventId === 'life-course'
+  ) {
+    sceneType = 'office_meeting';
+  } else if (
     eventId === 'gear-fix-2200' ||
     eventId === 'laptop-repair-6500' ||
     eventId === 'opd-eye-2400' ||
@@ -515,9 +532,7 @@ export function deriveAvatarSceneAndState({
     eventId === 'exp-phone-bat' ||
     eventId === 'exp-scam-fee' ||
     eventId === 'screen-crack-6200' ||
-    eventId === 'exp-tax-gap' ||
-    eventId === 'life-earbuds' ||
-    eventId === 'life-course'
+    eventId === 'life-earbuds'
   ) {
     sceneType = 'cyber_desk';
   } else if (
@@ -542,10 +557,11 @@ export function deriveAvatarSceneAndState({
     eventId === 'slip-fracture-100k' ||
     eventId === 'minor-sprain-2800' ||
     eventId === 'exp-rain-gear' ||
-    eventId === 'exp-laundry-dryer' ||
-    eventCategory === 'income'
+    eventId === 'exp-laundry-dryer'
   ) {
     sceneType = 'rainy_street';
+  } else if (eventCategory === 'income') {
+    sceneType = 'office_meeting';
   } else if (eventCategory === 'medical' || eventCategory === 'accident') {
     sceneType = 'hospital';
   } else if (eventCategory === 'lifestyle') {

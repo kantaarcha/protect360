@@ -39,6 +39,58 @@ function PixelBackdrop({ sceneType, wealthTier, roomTheme = 'sky' }) {
     );
   }
 
+  if (sceneType === 'dental_clinic') {
+    return (
+      <g>
+        {/* Clean Bright Dental Studio */}
+        <rect x="0" y="0" width="220" height="82" fill="#ECFEFF" />
+        <rect x="0" y="82" width="220" height="30" fill="#CFFAFE" />
+        <rect x="0" y="80" width="220" height="3" fill="#67E8F9" />
+        {/* Happy Tooth Wall Poster Left */}
+        <rect x="20" y="16" width="28" height="34" rx="2" fill="#FFFFFF" stroke="#0891B2" strokeWidth="1.5" />
+        <rect x="27" y="23" width="14" height="14" rx="4" fill="#E0F2FE" stroke="#0284C7" strokeWidth="1" />
+        <rect x="28" y="34" width="5" height="6" fill="#E0F2FE" />
+        <rect x="35" y="34" width="5" height="6" fill="#E0F2FE" />
+        <rect x="31" y="28" width="2" height="2" fill="#0F172A" />
+        <rect x="36" y="28" width="2" height="2" fill="#0F172A" />
+        {/* Dental Chair + Overhead Exam Spotlight Right */}
+        <rect x="170" y="6" width="4" height="18" fill="#64748B" />
+        <rect x="160" y="24" width="22" height="7" rx="2" fill="#E2E8F0" stroke="#475569" strokeWidth="1.2" />
+        <polygon points="163,31 179,31 186,58 156,58" fill="#FEF08A" opacity="0.28" />
+        <rect x="144" y="58" width="54" height="16" rx="4" fill="#38BDF8" stroke="#0369A1" strokeWidth="1.2" />
+        <rect x="184" y="42" width="14" height="22" rx="3" fill="#0EA5E9" stroke="#0369A1" strokeWidth="1.2" />
+        <rect x="164" y="74" width="14" height="8" fill="#475569" />
+      </g>
+    );
+  }
+
+  if (sceneType === 'office_meeting') {
+    return (
+      <g>
+        {/* Work Desk / Finance & Paycheck Review Scene */}
+        <rect x="0" y="0" width="220" height="82" fill="#F1F5F9" />
+        <rect x="0" y="82" width="220" height="30" fill="#E2E8F0" />
+        <rect x="0" y="80" width="220" height="3" fill="#CBD5E1" />
+        {/* Whiteboard with Trend Chart & Urgent Memo */}
+        <rect x="16" y="14" width="60" height="38" fill="#FFFFFF" stroke="#64748B" strokeWidth="2" />
+        <path d="M22 42 L34 32 L46 36 L68 22" fill="none" stroke="#EF4444" strokeWidth="2.5" />
+        <rect x="52" y="20" width="10" height="6" fill="#FDE047" />
+        {/* Clock & Meeting Desk Right */}
+        <circle cx="184" cy="22" r="9" fill="#FFFFFF" stroke="#334155" strokeWidth="1.8" />
+        <rect x="183" y="16" width="2" height="6" fill="#0F172A" />
+        <rect x="184" y="21" width="5" height="2" fill="#EF4444" />
+        <rect x="146" y="56" width="62" height="26" fill="#475569" />
+        <rect x="142" y="52" width="70" height="5" fill="#334155" />
+        {/* Papers & Hot Coffee */}
+        <rect x="150" y="46" width="16" height="6" fill="#FFFFFF" stroke="#CBD5E1" strokeWidth="1" />
+        <rect x="154" y="44" width="14" height="5" fill="#F8FAFC" stroke="#94A3B8" strokeWidth="1" />
+        <rect x="184" y="42" width="10" height="10" rx="1" fill="#2563EB" />
+        <rect x="186" y="38" width="2" height="3" fill="#94A3B8" />
+        <rect x="190" y="37" width="2" height="4" fill="#94A3B8" />
+      </g>
+    );
+  }
+
   if (sceneType === 'pet_care') {
     return (
       <g>
@@ -921,6 +973,8 @@ export default function PixelAvatarStage({
 
   const sceneLabelMap = {
     office_room: { th: 'ฉาก: ห้องพักตามธีม', en: 'Scene: Custom Room' },
+    office_meeting: { th: 'ฉาก: ที่ทำงาน & เอกสารเงิน', en: 'Scene: Work & Paycheck' },
+    dental_clinic: { th: 'ฉาก: คลินิกทันตกรรม', en: 'Scene: Dental Clinic' },
     hospital: { th: 'ฉาก: โรงพยาบาล / ฉุกเฉิน', en: 'Scene: Hospital Room' },
     pet_care: { th: 'ฉาก: ดูแลน้องหมา / สัตว์เลี้ยง', en: 'Scene: Pet & Vet Care' },
     gaming_room: { th: 'ฉาก: เกมคอนโซล & บันเทิง', en: 'Scene: Gaming Lounge' },
@@ -938,8 +992,10 @@ export default function PixelAvatarStage({
 
   const bubbleText = (() => {
     if (injury === 'arm_cast' || injury === 'leg_cast') return lang === 'TH' ? 'โอ๊ย เจ็บ!' : 'Ouch!';
+    if (sceneType === 'dental_clinic') return lang === 'TH' ? 'เสียวฟัน!' : 'Tooth check!';
     if (injury === 'medical_mask') return lang === 'TH' ? 'พักฟื้นแป๊บ...' : 'Recovering...';
     if (wealthTier === 'struggling') return lang === 'TH' ? 'เงินตึงแล้ว!' : 'Cash tight!';
+    if (sceneType === 'office_meeting') return lang === 'TH' ? 'เรื่องงานเข้า!' : 'Pay alert!';
     if (sceneType === 'pet_care') return lang === 'TH' ? 'ดูแลน้อง!' : 'Pet care!';
     if (sceneType === 'gaming_room') return lang === 'TH' ? 'เกมใหม่ออก!' : 'Game night!';
     if (sceneType === 'beach_travel') return lang === 'TH' ? 'จัดกระเป๋า!' : 'Trip mode!';
