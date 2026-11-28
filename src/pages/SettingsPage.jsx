@@ -75,22 +75,22 @@ const SETTINGS_COPY = {
     dataTitle: 'บันทึกในเครื่อง & จัดการข้อมูล (PDPA-Safe)',
     dataSub: 'ข้อมูลทั้งหมดเก็บในอุปกรณ์นี้เท่านั้น (Zero-Login) ไม่มีเซิร์ฟเวอร์ติดตามหรือส่งออกโดยไม่ได้รับอนุญาต',
     localStatusActive: 'บันทึกในเครื่องอัตโนมัติ (localStorage)',
-    entriesUnit: 'รายการใน 360Flow',
+    entriesUnit: 'รายการใน AutoKey',
     coveragesUnit: 'สิทธิ/กรมธรรม์',
     modeReal: 'โหมดข้อมูลจริงของคุณ',
     modeSample: 'โหมดค่าสมมติคำนวณ',
     sampleTitle: 'ทดลองใส่ค่าและสถานการณ์สมมติ',
     sampleBadge: 'เงินและสถานการณ์สมมติคำนวณ',
     sampleDesc:
-      'จำลองข้อมูล “สมมติ ประกันภัย” (รายได้สมมติ ฿25,000/ด. · รายจ่าย ฿20,000/ด. · สำรอง ฿15,000 · ประกันสังคม ม.33 + ประกันกลุ่ม · 6 รายการ 360Flow) เพื่อดูผลลัพธ์การคำนวณทุกหน้าก่อนกรอกข้อมูลจริง',
+      'จำลองข้อมูล “สมมติ ประกันภัย” (รายได้สมมติ ฿25,000/ด. · รายจ่าย ฿20,000/ด. · สำรอง ฿15,000 · ประกันสังคม ม.33 + ประกันกลุ่ม · 6 รายการ AutoKey) เพื่อดูผลลัพธ์การคำนวณทุกหน้าก่อนกรอกข้อมูลจริง',
     sampleBtn: 'ใส่ค่าสมมติคำนวณ',
     sampleLoadedMsg: 'ใส่ค่าและสถานการณ์สมมติเรียบร้อยแล้ว (ตัวเลขสมมติเพื่อทดลองคำนวณเท่านั้น)',
-    excelTitle: 'ส่งออกบัญชี 360Flow เป็นไฟล์ Excel (.xlsx)',
+    excelTitle: 'ส่งออกบัญชี AutoKey เป็นไฟล์ Excel (.xlsx)',
     excelDesc: 'ดาวน์โหลดตาราง 2 ชีต (บัญชีรับ-จ่าย + สรุปภาพรวม) สไตล์ Google Forms พร้อมเปิดใน Excel / Sheets',
     excelBtn: 'ส่งออก .xlsx',
-    excelToast: 'ส่งออกไฟล์ Excel (.xlsx) ของ 360Flow เรียบร้อยแล้ว',
+    excelToast: 'ส่งออกไฟล์ Excel (.xlsx) ของ AutoKey เรียบร้อยแล้ว',
     exportTitle: 'สำรองข้อมูลทั้งหมด (Export .json)',
-    exportDesc: 'บันทึกโปรไฟล์ รายการ 360Flow และแผนความคุ้มครองเป็นไฟล์สำรองเพื่อย้ายเครื่องได้ทันที',
+    exportDesc: 'บันทึกโปรไฟล์ รายการ AutoKey และแผนความคุ้มครองเป็นไฟล์สำรองเพื่อย้ายเครื่องได้ทันที',
     exportBtn: 'ดาวน์โหลด .json',
     importTitle: 'กู้คืนข้อมูลจากไฟล์สำรอง (Import .json)',
     importDesc: 'อัปโหลดไฟล์สำรอง PROTECT360 (.json) เพื่อกู้คืนข้อมูลทั้งหมดลงเครื่องนี้',
@@ -146,22 +146,22 @@ const SETTINGS_COPY = {
     dataTitle: 'Saved Locally & Data Portability (PDPA-Safe)',
     dataSub: 'Everything stays on your own device via localStorage with zero login and zero server tracking.',
     localStatusActive: 'Auto-saved on this device',
-    entriesUnit: '360Flow entries',
+    entriesUnit: 'AutoKey entries',
     coveragesUnit: 'coverage cards',
     modeReal: 'Your Real Data Mode',
     modeSample: 'Hypothetical Sample Mode',
     sampleTitle: 'Try Hypothetical Sample Scenario',
     sampleBadge: 'Hypothetical Preview Only',
     sampleDesc:
-      'Loads simulated numbers for Sam Insure (฿25,000 income, ฿20,000 expenses, ฿15,000 reserve, SSO Sec. 33 + group cover, 6 sample 360Flow entries) so you can preview how every module calculates.',
+      'Loads simulated numbers for Sam Insure (฿25,000 income, ฿20,000 expenses, ฿15,000 reserve, SSO Sec. 33 + group cover, 6 sample AutoKey entries) so you can preview how every module calculates.',
     sampleBtn: 'Load Sample',
     sampleLoadedMsg: 'Loaded hypothetical sample scenario (simulated numbers for calculation preview only).',
-    excelTitle: 'Export 360Flow Cashbook as Excel (.xlsx)',
+    excelTitle: 'Export AutoKey Cashbook as Excel (.xlsx)',
     excelDesc: 'Download a clean 2-sheet workbook (Ledger + Summary) ready for Excel or Google Sheets.',
     excelBtn: 'Export .xlsx',
-    excelToast: 'Exported 360Flow 2-sheet Excel (.xlsx) file.',
+    excelToast: 'Exported AutoKey 2-sheet Excel (.xlsx) file.',
     exportTitle: 'Backup All Data (Export .json)',
-    exportDesc: 'Save your profile, 360Flow ledger, and coverage plan as a portable JSON backup.',
+    exportDesc: 'Save your profile, AutoKey ledger, and coverage plan as a portable JSON backup.',
     exportBtn: 'Download .json',
     importTitle: 'Restore From Backup (Import .json)',
     importDesc: 'Upload a PROTECT360 backup (.json) file to restore your entire workspace instantly.',
@@ -320,7 +320,7 @@ export default function SettingsPage({
     const url = window.URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
-    link.download = `protect360-360flow-${todayIso}.xlsx`;
+    link.download = `protect360-autokey-${todayIso}.xlsx`;
     document.body.appendChild(link);
     link.click();
     link.remove();
@@ -730,7 +730,7 @@ export default function SettingsPage({
             </button>
           </div>
 
-          {/* 2) Export 360Flow Excel (.xlsx) */}
+          {/* 2) Export AutoKey Excel (.xlsx) */}
           <div className="data-action-card">
             <div className="data-action-info">
               <span className="data-action-icon excel" aria-hidden="true">

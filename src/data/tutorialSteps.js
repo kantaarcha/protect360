@@ -12,7 +12,7 @@ export const TUTORIAL_UI_COPY = {
     promptSubtitle:
       'ออกแบบสำหรับคนทั่วไปที่ไม่ได้ทำงานสายบัญชีหรือสถิติ จะพาดูภาพรวมทุกแท็บแบบเข้าใจง่าย และแต่ละแท็บยังมีคู่มือเจาะลึกแยกให้อีกทีตอนเข้าไปใช้งานครับ',
     promptPoints: [
-      'เริ่มแค่ 2 จุด: จดเงินใน 360Flow และติ๊กสิทธิที่มีใน วิเคราะห์ความเสี่ยง',
+      'เริ่มแค่ 2 จุด: จดเงินใน AutoKey และติ๊กสิทธิที่มีใน วิเคราะห์ความเสี่ยง',
       'แต่ละแท็บมีคู่มือแยกเฉพาะหน้านั้น (3–5 ขั้น) และดูวิดีโอซ้ำได้ที่ปุ่ม ? หรือ ตั้งค่า',
     ],
     promptAccept: 'เริ่มทัวร์ภาพรวม (8 ขั้น)',
@@ -51,7 +51,7 @@ export const TUTORIAL_UI_COPY = {
     promptSubtitle:
       'Built for everyday users with zero accounting or statistics background. Start with a quick overview here — each tab also includes its own focused step-by-step guide when you open it.',
     promptPoints: [
-      'Start in 2 places: track cash in 360Flow & check perks in Risk Analysis',
+      'Start in 2 places: track cash in AutoKey & check perks in Risk Analysis',
       'Each tab has its own focused 3–5 step guide, and you can replay the video anytime via ? or Settings',
     ],
     promptAccept: 'Start Overview Tour (8 Steps)',
@@ -99,8 +99,8 @@ export const FULL_TUTORIAL_STEPS = [
       en: 'Overview: Automatic Summary Hub',
     },
     body: {
-      th: 'เข้ามาครั้งแรกจะเห็นเลขเป็น ฿0 เป็นเรื่องปกติครับ หน้านี้ทำหน้าที่รวมผลให้อัตโนมัติ แค่คุณจดเงินใน 360Flow และติ๊กสวัสดิการใน วิเคราะห์ความเสี่ยง กราฟเงินสำรองฉุกเฉินและคะแนน 4 ด้านจะอัปเดตตรงนี้เอง',
-      en: 'Seeing ฿0 on your first visit is completely normal. Overview updates automatically once you log cash in 360Flow and tick your benefits in Risk Analysis.',
+      th: 'เข้ามาครั้งแรกจะเห็นเลขเป็น ฿0 เป็นเรื่องปกติครับ หน้านี้ทำหน้าที่รวมผลให้อัตโนมัติ แค่คุณจดเงินใน AutoKey และติ๊กสวัสดิการใน วิเคราะห์ความเสี่ยง กราฟเงินสำรองฉุกเฉินและคะแนน 4 ด้านจะอัปเดตตรงนี้เอง',
+      en: 'Seeing ฿0 on your first visit is completely normal. Overview updates automatically once you log cash in AutoKey and tick your benefits in Risk Analysis.',
     },
     plainTip: {
       th: 'ศัพท์ง่าย ๆ: "กันชนฉุกเฉิน (Runway)" = จำนวนเดือนที่คุณยังอยู่ได้สบาย ๆ หากรายได้หยุดกะทันหัน (เป้ามาตรฐาน 3 เดือน)',
@@ -117,8 +117,8 @@ export const FULL_TUTORIAL_STEPS = [
       document.querySelector('#smartlog-mode-auto')?.click?.();
     },
     title: {
-      th: '360Flow: เลือก "กรอกด่วน" หรือลองกด "สแกนสลิป"',
-      en: '360Flow: Pick "Manual Entry" or try "Slip Scan"',
+      th: 'AutoKey: เลือก "กรอกด่วน" หรือลองกด "สแกนสลิป"',
+      en: 'AutoKey: Pick "Manual Entry" or try "Slip Scan"',
     },
     body: {
       th: 'อยากจดรายรับ-รายจ่ายด้วยตัวเองทันทีให้กดแท็บ "กรอกด่วน" ส่วนแท็บ "สแกนสลิป" มีปุ่มสลิปตัวอย่าง (เช่น เงินเดือนเข้า, ค่ากาแฟ) ให้กดทดสอบดูผลลัพธ์ไว ๆ ได้เลยโดยไม่ต้องอัปโหลดรูปจริง',
@@ -147,8 +147,8 @@ export const FULL_TUTORIAL_STEPS = [
       en: 'When setting savings aside, choose "Emergency Reserve" instead of Expense so it builds your 3-month cushion. Tap "Other" to create custom categories or export Excel below.',
     },
     plainTip: {
-      th: 'ในแท็บ 360Flow ยังมีสอนละเอียด 5 ขั้นแยกเฉพาะหน้าให้กดดูเพิ่มได้จากแถบด้านบนหรือปุ่ม ?',
-      en: '360Flow also includes its own focused 5-step guide accessible anytime via the top bar or ? button.',
+      th: 'ในแท็บ AutoKey ยังมีสอนละเอียด 5 ขั้นแยกเฉพาะหน้าให้กดดูเพิ่มได้จากแถบด้านบนหรือปุ่ม ?',
+      en: 'AutoKey also includes its own focused 5-step guide accessible anytime via the top bar or ? button.',
     },
   },
   {
@@ -272,8 +272,8 @@ export const PER_TAB_TUTORIAL_STEPS = {
         en: 'Shows how many months of expenses your liquid cash reserve currently covers (target 3–6 months for First Jobbers) and the exact remaining gap.',
       },
       plainTip: {
-        th: 'ยอดเงินสำรองจะเพิ่มขึ้นเองเมื่อคุณบันทึกรายการประเภท "เงินสำรอง" ในแท็บ 360Flow',
-        en: 'This reserve updates automatically whenever you log an "Emergency Reserve" entry in 360Flow.',
+        th: 'ยอดเงินสำรองจะเพิ่มขึ้นเองเมื่อคุณบันทึกรายการประเภท "เงินสำรอง" ในแท็บ AutoKey',
+        en: 'This reserve updates automatically whenever you log an "Emergency Reserve" entry in AutoKey.',
       },
     },
     {
@@ -351,7 +351,7 @@ export const PER_TAB_TUTORIAL_STEPS = {
         en: 'Displays total income, expenses, net savings, and emergency runway. Tap any card to inspect calculation sources or filter the ledger.',
       },
       plainTip: {
-        th: 'เลขทุกช่องใน 360Flow เชื่อมตรงกับหน้าภาพรวมและเกมจำลองชีวิตอัตโนมัติ',
+        th: 'เลขทุกช่องใน AutoKey เชื่อมตรงกับหน้าภาพรวมและเกมจำลองชีวิตอัตโนมัติ',
         en: 'All figures here sync straight to Overview and the Survival Game.',
       },
     },
@@ -640,12 +640,12 @@ export const PER_TAB_TUTORIAL_STEPS = {
         en: '2/4 Key Trick: Pick Option B If Your Data is Still ฿0',
       },
       body: {
-        th: 'ถ้าคุณยังไม่ได้บันทึกรายรับใน 360Flow "ตัวเลือก A" จะเริ่มต้นที่ ฿0 ทุกช่อง ให้กดเลือก "ตัวเลือก B • โจทย์มาตรฐาน" ตรงนี้แทน เพื่อให้มีเงินเดือน ฿25,000 และเงินสำรอง ฿15,000 เริ่มเล่นได้เลย',
-        en: 'If you haven’t logged income in 360Flow yet, Option A starts with ฿0. Choose "Option B • Challenge" here for a ready ฿25,000 income & ฿15,000 reserve setup.',
+        th: 'ถ้าคุณยังไม่ได้บันทึกรายรับใน AutoKey "ตัวเลือก A" จะเริ่มต้นที่ ฿0 ทุกช่อง ให้กดเลือก "ตัวเลือก B • โจทย์มาตรฐาน" ตรงนี้แทน เพื่อให้มีเงินเดือน ฿25,000 และเงินสำรอง ฿15,000 เริ่มเล่นได้เลย',
+        en: 'If you haven’t logged income in AutoKey yet, Option A starts with ฿0. Choose "Option B • Challenge" here for a ready ฿25,000 income & ฿15,000 reserve setup.',
       },
       plainTip: {
         th: 'เมื่อจดข้อมูลจริงครบในภายหลัง ค่อยกลับมาเลือกตัวเลือก A เพื่อจำลองชีวิตจริงของคุณเอง',
-        en: 'Come back to Option A later once your real 360Flow entries are filled in.',
+        en: 'Come back to Option A later once your real AutoKey entries are filled in.',
       },
     },
     {
@@ -847,8 +847,8 @@ export const TAB_BANNER_META = {
     en: 'First time in Overview — take a 4-step walkthrough of your summary cards? (~25 sec)',
   },
   smartlog: {
-    th: 'แท็บ 360Flow มีเครื่องมือเยอะมาก (สแกนสลิป, แยกเงินสำรอง, หมวดหมู่เอง, Excel) — ดูสอนใช้งาน 5 ขั้นไหม?',
-    en: '360Flow packs 5 tools (Slip Scan, Reserve vs Expense, Custom Categories, Excel) — view the 5-step guide?',
+    th: 'แท็บ AutoKey มีเครื่องมือเยอะมาก (สแกนสลิป, แยกเงินสำรอง, หมวดหมู่เอง, Excel) — ดูสอนใช้งาน 5 ขั้นไหม?',
+    en: 'AutoKey packs 5 tools (Slip Scan, Reserve vs Expense, Custom Categories, Excel) — view the 5-step guide?',
   },
   'risk-analysis': {
     th: 'เพิ่งเข้าหน้าวิเคราะห์ความเสี่ยง — ให้ช่วยสอนวิธีติ๊กสิทธิและอ่านผล 4 ด้าน (4 ขั้นตอน) ไหม?',

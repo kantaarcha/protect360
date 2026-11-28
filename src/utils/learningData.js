@@ -400,7 +400,7 @@ export const LEARNING_ARTICLES = [
     ],
     bridgeAction: {
       page: 'smartlog',
-      label: { th: 'กลับไปติดตามเงินสำรองใน 360Flow', en: 'Track Your Reserve in 360Flow' },
+      label: { th: 'กลับไปติดตามเงินสำรองใน AutoKey', en: 'Track Your Reserve in AutoKey' },
     },
   },
   // ==================== NEW PURPLE CATEGORY: รู้ไว้ใช่ว่า? ====================
@@ -1870,12 +1870,12 @@ export const LITERACY_QUIZ_BANK = [
     ],
     correctId: 'a',
     correctReason: {
-      th: 'กฎ 3 ขั้น PROTECT360 เริ่มจากการคุมกระแสเงินสด (360Flow) → สร้างเงินสำรอง 3–6 เดือน → เช็กสิทธิที่มีฟรี แล้วจึงค่อยโอนย้ายความเสี่ยงส่วนที่ขาด',
+      th: 'กฎ 3 ขั้น PROTECT360 เริ่มจากการคุมกระแสเงินสด (AutoKey) → สร้างเงินสำรอง 3–6 เดือน → เช็กสิทธิที่มีฟรี แล้วจึงค่อยโอนย้ายความเสี่ยงส่วนที่ขาด',
       en: 'The PROTECT360 order builds cash visibility and a 3–6 month emergency buffer first, checks free perks, then transfers major remaining risks.',
     },
     extraNote: {
-      th: 'ในสมุดบัญชี 360Flow อย่าลืมบันทึกเงินที่โอนเก็บเข้าบัญชีออมฉุกเฉินในหมวด "เงินสำรอง" ไม่ใช่รายจ่าย',
-      en: 'In 360Flow, log emergency transfers under "Emergency Reserve" rather than regular expenses.',
+      th: 'ในสมุดบัญชี AutoKey อย่าลืมบันทึกเงินที่โอนเก็บเข้าบัญชีออมฉุกเฉินในหมวด "เงินสำรอง" ไม่ใช่รายจ่าย',
+      en: 'In AutoKey, log emergency transfers under "Emergency Reserve" rather than regular expenses.',
     },
   },
   {

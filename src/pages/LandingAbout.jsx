@@ -88,8 +88,8 @@ const BOT_PLATES = [
       },
     ],
     whyLedToApp: {
-      th: 'ที่มาของการแยก “เงินสำรองฉุกเฉิน” ออกจากเงินใช้จ่ายรายวันในสมุดบัญชี 360Flow',
-      en: 'Directly motivated separating liquid emergency savings from daily cashflow in 360Flow.',
+      th: 'ที่มาของการแยก “เงินสำรองฉุกเฉิน” ออกจากเงินใช้จ่ายรายวันในสมุดบัญชี AutoKey',
+      en: 'Directly motivated separating liquid emergency savings from daily cashflow in AutoKey.',
     },
     url: BOT_2567_PDF_URL,
     ctaLabel: { th: 'เปิดรายงาน ธปท. ฉบับเต็ม (PDF)', en: 'Open BOT Report (PDF)' },
@@ -236,7 +236,7 @@ const WANTED_FEATURES_CHART = [
     colorKey: 'emerald',
     targetPage: 'smartlog',
     label: { th: 'วางแผนรายรับ รายจ่าย และงบประมาณสำหรับเบี้ยประกัน', en: 'Plan Cashflow & Premium Budget' },
-    solution: { th: '360Flow บันทึกรับ-จ่าย', en: '360Flow Cashbook' },
+    solution: { th: 'AutoKey บันทึกรับ-จ่าย', en: 'AutoKey Cashbook' },
   },
   {
     id: 'compare-value',
@@ -256,7 +256,7 @@ const WANTED_FEATURES_CHART = [
     colorKey: 'amber',
     targetPage: 'smartlog',
     label: { th: 'คำนวณเงินสำรองฉุกเฉินที่ควรมี', en: 'Calculate Ideal Emergency Reserve' },
-    solution: { th: 'ตัววัดเงินสำรอง 360Flow', en: '360Flow Reserve Tracker' },
+    solution: { th: 'ตัววัดเงินสำรอง AutoKey', en: 'AutoKey Reserve Tracker' },
   },
   {
     id: 'plain-language',
@@ -325,7 +325,7 @@ const VERBATIM_VOICES = [
       th: '“อยากวางแผนการเงินให้มีเงินเก็บมากขึ้น และทราบว่าควรมีความคุ้มครองด้านไหนที่จำเป็นโดยไม่เป็นภาระค่าใช้จ่ายมากเกินไป”',
       en: '“I want to build savings while knowing which protection is truly necessary without overburdening my budget.”',
     },
-    mappedTo: { th: 'แรงผลักดันสู่สมุดบัญชี 360Flow และกรอบงบ 10–15%', en: 'Drove 360Flow + 10–15% Guardrail' },
+    mappedTo: { th: 'แรงผลักดันสู่สมุดบัญชี AutoKey และกรอบงบ 10–15%', en: 'Drove AutoKey + 10–15% Guardrail' },
   },
 ];
 

@@ -67,8 +67,8 @@ const ONBOARDING_STORAGE_KEY = 'protect360_onboarded_v1';
 const PAGE_TITLES = {
   overview: null,
   smartlog: {
-    th: 'สมุดบัญชี 360Flow',
-    en: '360Flow Cashbook',
+    th: 'สมุดบัญชี AutoKey',
+    en: 'AutoKey Cashbook',
   },
   'risk-analysis': {
     th: 'วิเคราะห์ความเสี่ยง & ช่องว่างความคุ้มครอง',
@@ -515,7 +515,7 @@ function AppShellContent() {
             </button>
           </header>
         ) : activePage === 'smartlog' ? (
-          <header className="bento-card smartlog-header-card" aria-label="360Flow Cashbook">
+          <header className="bento-card smartlog-header-card" aria-label="AutoKey Cashbook">
             <div className="smartlog-header-left">
               <span className="smartlog-header-icon" aria-hidden="true">
                 <Wallet size={22} strokeWidth={2.1} />

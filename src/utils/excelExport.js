@@ -1,4 +1,4 @@
-// Pure JavaScript Zero-Dependency OpenXML (.xlsx) Workbook Exporter for PROTECT360 360Flow
+// Pure JavaScript Zero-Dependency OpenXML (.xlsx) Workbook Exporter for PROTECT360 AutoKey
 // Produces a native 2-sheet Excel workbook (Ledger + Summary) with live SUM formulas,
 // sharedStrings table (t="s"), Tahoma Thai charset (222), LTR readingOrder="0",
 // frozen header row, AutoFilter, styled Navy headers, and full NFC UTF-8 Thai support.
@@ -347,7 +347,7 @@ function buildStylesXml() {
 }
 
 /**
- * Generate a Google-Forms-style multi-sheet Excel (.xlsx) Blob for PROTECT360 360Flow.
+ * Generate a Google-Forms-style multi-sheet Excel (.xlsx) Blob for PROTECT360 AutoKey.
  */
 export function buildSmartLogExcelBlob({
   transactions = [],
@@ -555,7 +555,7 @@ export function buildSmartLogExcelBlob({
   });
 
   const sharedStringsXml = sharedStrings.toXml();
-  const sheet1Name = lang === 'TH' ? 'บัญชีรับ-จ่าย 360Flow' : '360Flow Ledger';
+  const sheet1Name = lang === 'TH' ? 'บัญชีรับ-จ่าย AutoKey' : 'AutoKey Ledger';
   const sheet2Name = lang === 'TH' ? 'สรุปภาพรวม' : 'Summary';
 
   const contentTypesXml = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>

@@ -29,7 +29,7 @@ const OB_COPY = {
     kicker: 'พื้นที่กลางให้ความรู้ทางการเงิน · ไม่ขายประกัน 100%',
     headline: 'เห็นตัวเลขจริงของเงินสำรองและความคุ้มครอง — โดยไม่มีใครมาขายประกัน',
     subhead:
-      'ออกแบบมาเพื่อวัยเริ่มต้นทำงาน ช่วยจัดระเบียบรายรับ-จ่ายใน 360Flow ประเมินช่องว่างความคุ้มครอง คำนวณผลตอบแทน IRR และซ้อมรับมือวิกฤตการเงินได้ด้วยตัวคุณเอง',
+      'ออกแบบมาเพื่อวัยเริ่มต้นทำงาน ช่วยจัดระเบียบรายรับ-จ่ายใน AutoKey ประเมินช่องว่างความคุ้มครอง คำนวณผลตอบแทน IRR และซ้อมรับมือวิกฤตการเงินได้ด้วยตัวคุณเอง',
     startBtn: 'เริ่มต้นใช้งาน',
     skipWelcome: 'เข้าสู่หน้าภาพรวมทันที',
     trust1Title: 'ไม่ขายประกัน 100%',
@@ -62,7 +62,7 @@ const OB_COPY = {
     kicker: 'Neutral Financial Education Space · 100% Zero Insurance Sales',
     headline: 'See the real math behind your cash buffer and protection — with zero sales pressure.',
     subhead:
-      'Built for First Jobbers to organize daily cashflow in 360Flow, measure real protection gaps, calculate true IRR, and rehearse financial shocks on your own terms.',
+      'Built for First Jobbers to organize daily cashflow in AutoKey, measure real protection gaps, calculate true IRR, and rehearse financial shocks on your own terms.',
     startBtn: 'Get Started',
     skipWelcome: 'Jump straight to Overview',
     trust1Title: '100% Zero Sales',

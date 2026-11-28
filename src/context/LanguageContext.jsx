@@ -20,7 +20,7 @@ const TRANSLATIONS = {
     },
     nav: {
       overview: 'ภาพรวม',
-      smartlog: '360Flow',
+      smartlog: 'AutoKey',
       riskAnalysis: 'วิเคราะห์เสี่ยง',
       invest: 'ลงทุน (IRR)',
       game: 'เล่นเกม',
@@ -128,7 +128,7 @@ const TRANSLATIONS = {
       colStatus: 'สถานะ',
       statusCompleted: 'สำเร็จ',
       emptySearch: 'ไม่พบรายการที่ตรงกับคำค้นหา',
-      viewAllActivities: 'ดูทั้งหมด & บันทึกเพิ่มใน 360Flow',
+      viewAllActivities: 'ดูทั้งหมด & บันทึกเพิ่มใน AutoKey',
     },
     modal: {
       addTitle: 'เพิ่มสิทธิหรืออัปเดตวงเงินความคุ้มครอง',
@@ -221,7 +221,7 @@ const TRANSLATIONS = {
     },
     nav: {
       overview: 'Overview',
-      smartlog: '360Flow',
+      smartlog: 'AutoKey',
       riskAnalysis: 'Risk Analysis',
       invest: 'Invest (IRR)',
       game: 'Game',
@@ -329,7 +329,7 @@ const TRANSLATIONS = {
       colStatus: 'Status',
       statusCompleted: 'Completed',
       emptySearch: 'No matching activities found',
-      viewAllActivities: 'View all & log in 360Flow',
+      viewAllActivities: 'View all & log in AutoKey',
     },
     modal: {
       addTitle: 'Add Coverage or Update Benefit Limit',
