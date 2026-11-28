@@ -107,7 +107,7 @@ function AppShellContent() {
     getSavedTabTutorialStatuses()
   );
   const [tutorialPromptOpen, setTutorialPromptOpen] = useState(false);
-  const [demoVideoOpen, setDemoVideoOpen] = useState(false);
+  const [demoVideoModal, setDemoVideoModal] = useState({ open: false, mode: 'replay' });
   const [tutorialTour, setTutorialTour] = useState({
     active: false,
     mode: 'full',
@@ -186,7 +186,7 @@ function AppShellContent() {
     setHasOnboarded(true);
     setActivePage('overview');
     if (getSavedTutorialStatus() === 'unseen') {
-      setTutorialPromptOpen(true);
+      setDemoVideoModal({ open: true, mode: 'gate' });
     }
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
@@ -298,7 +298,7 @@ function AppShellContent() {
             tutorialStatus={tutorialStatus}
             onStartTutorial={handleStartTutorial}
             onResetTabTutorials={handleResetTabTutorials}
-            onOpenDemoVideo={() => setDemoVideoOpen(true)}
+            onOpenDemoVideo={() => setDemoVideoModal({ open: true, mode: 'replay' })}
           />
         );
       case 'overview':
@@ -369,7 +369,7 @@ function AppShellContent() {
             activePage={activePage}
             onNavigate={handleNavigate}
             onStartTutorial={handleStartTutorial}
-            onOpenDemoVideo={() => setDemoVideoOpen(true)}
+            onOpenDemoVideo={() => setDemoVideoModal({ open: true, mode: 'replay' })}
           />
         </div>
 
@@ -740,7 +740,8 @@ function AppShellContent() {
           </header>
         )}
 
-        {!tutorialPromptOpen &&
+        {!demoVideoModal.open &&
+          !tutorialPromptOpen &&
           !tutorialTour.active &&
           TAB_BANNER_META[activePage] &&
           !tabTutorialStatuses[activePage] && (
@@ -819,9 +820,14 @@ function AppShellContent() {
         onCompleteTour={handleCompleteTour}
       />
 
-      {demoVideoOpen && (
+      {demoVideoModal.open && (
         <DemoVideoModal
-          onClose={() => setDemoVideoOpen(false)}
+          mode={demoVideoModal.mode}
+          onClose={() => setDemoVideoModal({ open: false, mode: 'replay' })}
+          onContinueToPrompt={() => {
+            setDemoVideoModal({ open: false, mode: 'replay' });
+            setTutorialPromptOpen(true);
+          }}
           onStartTutorial={handleStartTutorial}
         />
       )}

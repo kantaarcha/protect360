@@ -18444,45 +18444,13 @@ p {
   }
 }
 
-/* Patch 9.5 — Pre-Tutorial & Replay Demo Video Player */
+/* Patch 9.5 / 9.6 — Zero-Black-Bar 9:16 Demo Video Gate & Replay Modal */
 .tutorial-prompt-card {
-  width: min(560px, 100%);
-}
-
-.tutorial-video-box {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  padding: 10px 11px 11px;
-  border-radius: 14px;
-  background: var(--bg-canvas);
-  border: 1px solid var(--border-subtle);
-}
-
-.tutorial-video-label {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 0.78rem;
-  font-weight: 700;
-  color: var(--royal-deep);
-}
-
-[data-theme='dark'] .tutorial-video-label {
-  color: #93c5fd;
-}
-
-.tutorial-demo-video {
-  width: 100%;
-  max-height: 250px;
-  border-radius: 10px;
-  background: #0b1325;
-  display: block;
-  object-fit: contain;
+  width: min(500px, 100%);
 }
 
 .demo-video-modal {
-  width: min(740px, 100%);
+  width: min(440px, 100%);
   max-height: 92vh;
   overflow-y: auto;
   border-radius: 22px;
@@ -18506,31 +18474,75 @@ p {
   gap: 2px;
 }
 
+.demo-video-stage {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
 .demo-video-frame {
-  border-radius: 14px;
+  width: fit-content;
+  max-width: 100%;
+  margin: 0 auto;
+  border-radius: 18px;
   overflow: hidden;
-  background: #091122;
   border: 1px solid var(--border-subtle);
+  box-shadow: 0 14px 34px rgba(12, 30, 68, 0.16);
+  background: transparent;
+}
+
+[data-theme='dark'] .demo-video-frame {
+  border-color: rgba(148, 163, 184, 0.26);
+  box-shadow: 0 16px 38px rgba(0, 0, 0, 0.55);
 }
 
 .demo-video-player {
-  width: 100%;
-  max-height: 58vh;
+  aspect-ratio: 9 / 16;
+  height: min(55vh, 460px);
+  width: auto;
+  max-width: 100%;
   display: block;
-  background: #091122;
+  object-fit: cover;
+  background: transparent;
+}
+
+.demo-unmute-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border-radius: 999px;
+  border: 1px solid rgba(40, 120, 200, 0.34);
+  background: rgba(40, 120, 200, 0.1);
+  color: var(--royal-deep);
+  font-size: 0.78rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+[data-theme='dark'] .demo-unmute-pill {
+  border-color: rgba(96, 165, 250, 0.4);
+  background: rgba(59, 130, 246, 0.18);
+  color: #93c5fd;
+}
+
+.demo-gate-actions {
+  display: flex;
+  width: 100%;
+}
+
+.demo-gate-primary {
+  width: 100%;
 }
 
 @media (max-width: 560px) {
-  .tutorial-demo-video {
-    max-height: 195px;
-  }
-
   .demo-video-modal {
     padding: 16px 15px;
+    gap: 11px;
   }
 
   .demo-video-player {
-    max-height: 46vh;
+    height: min(50vh, 390px);
   }
 }
-
