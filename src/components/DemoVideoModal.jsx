@@ -16,7 +16,6 @@ export default function DemoVideoModal({
   const [videoEnded, setVideoEnded] = useState(false);
 
   const isGate = mode === 'gate';
-  const handleDismissAction = isGate ? onContinueToPrompt : onClose;
 
   // Initialize video at 50% volume and attempt playback (fallback cleanly to muted + unmute pill if browser policy restricts audio)
   useEffect(() => {
@@ -43,16 +42,6 @@ export default function DemoVideoModal({
     };
   }, []);
 
-  useEffect(() => {
-    const handleKey = (e) => {
-      if (e.key === 'Escape') {
-        handleDismissAction?.();
-      }
-    };
-    window.addEventListener('keydown', handleKey);
-    return () => window.removeEventListener('keydown', handleKey);
-  }, [handleDismissAction]);
-
   const handleEnableSound50 = () => {
     const vid = videoRef.current;
     if (!vid) return;
@@ -70,9 +59,6 @@ export default function DemoVideoModal({
       role="dialog"
       aria-modal="true"
       aria-label={copy.demoModalTitle}
-      onClick={(e) => {
-        if (e.target === e.currentTarget) handleDismissAction?.();
-      }}
     >
       <div id="demo-video-modal" className="demo-video-modal">
         <div className="demo-video-stage">
